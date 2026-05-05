@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [ ! -d ".git" ]; then
+  exit 0
+fi
+git config core.hooksPath .githooks
+exit 0

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+branch=$(git rev-parse --abbrev-ref HEAD)
+case "$branch" in
+  main|development|staging|production)
+    echo "Push blocked: direct pushes to '$branch' are not allowed. Use a PR." >&2
+    exit 1
+    ;;
+  *)
+    exit 0
+    ;;
+esac
