@@ -1,0 +1,153 @@
+import { body, validationResult } from "express-validator";
+import { sendValidationError } from "../../core/response.js";
+import { userRepository } from "../../repository/UserRepository.js";
+// ✅ Password complexity regex
+export const validatePassword = (password) => {
+  const re =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+  return re.test(String(password));
+};
+
+// ✅ Express-validator rules for registration
+export const validateUserRegistration = [
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage("Name is required")
+    .isLength({ min: 2 })
+    .withMessage("Name must be at least 2 characters"),
+
+  body("email").trim().isEmail().withMessage("Invalid email format"),
+
+  body("password")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long")
+    .custom((value) => {
+      if (!validatePassword(value)) {
+        throw new Error(
+          "Password must include uppercase, lowercase, number, and special character",
+        );
+      }
+      return true;
+    }),
+];
+
+// ✅ Express-validator rules for login
+export const validateUserLogin = [
+  body("email")
+    .trim()
+    .isEmail()
+    .withMessage("Valid email is required")
+    .custom(async (email) => {
+      const user = await userRepository.findByEmail(email);
+      if (!user) throw new Error("Invalid credentials");
+    }),
+
+  body("password").notEmpty().withMessage("Password is required"),
+];
+
+// ✅ Forgot password validation
+export const validateForgotPassword = [
+  body("email").isEmail().withMessage("Invalid email"),
+  // .custom(async (email) => {
+  //   const user = await UserRepository.findByEmail(email);
+  //   if (!user) throw new Error("Email not found");
+  // }),
+];
+
+// ✅ Reset password validation
+export const validateResetPassword = [
+  body("email")
+    .isEmail()
+    .withMessage("Invalid email")
+    .custom(async (email) => {
+      const user = await UserRepository.findByEmail(email);
+      if (!user) throw new Error("Invalid request");
+    }),
+  body("otp")
+    .isLength({ min: 4, max: 4 })
+    .isNumeric()
+    .withMessage("OTP must be a 4-digit number"),
+  body("newPassword")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long")
+    .custom((value) => {
+      if (!validatePassword(value)) {
+        throw new Error(
+          "Password must include uppercase, lowercase, number, and special character",
+        );
+      }
+      return true;
+    }),
+  body("confirmPassword").custom((value, { req }) => {
+    if (value !== req.body.newPassword) {
+      throw new Error("Password confirmation does not match");
+    }
+    return true;
+  }),
+];
+
+// ✅ Change password validation
+export const validateChangePassword = [
+  body("email")
+    .isEmail()
+    .withMessage("Invalid email")
+    .custom(async (email) => {
+      const user = await UserRepository.findByEmail(email);
+      if (!user) throw new Error("Invalid request");
+    }),
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("Current password is required"),
+  body("newPassword")
+    .isLength({ min: 6 })
+    .withMessage("New password must be at least 6 characters long")
+    .custom((value) => {
+      if (!validatePassword(value)) {
+        throw new Error(
+          "Password must include uppercase, lowercase, number, and special character",
+        );
+      }
+      return true;
+    }),
+];
+
+// ✅ Email verification validation
+export const validateEmailVerification = [
+  body("email")
+    .isEmail()
+    .withMessage("Invalid email")
+    .custom(async (email) => {
+      const user = await UserRepository.findByEmail(email);
+      if (!user) throw new Error("Invalid request");
+      if (user.emailVerified) throw new Error("Invalid request");
+    }),
+  body("otp")
+    .isLength({ min: 4, max: 4 })
+    .isNumeric()
+    .withMessage("OTP must be a 4-digit number"),
+];
+
+// ✅ Resend verification validation
+export const validateResendVerification = [
+  body("email")
+    .isEmail()
+    .withMessage("Invalid email")
+    .custom(async (email) => {
+      const user = await UserRepository.findByEmail(email);
+      if (!user) throw new Error("Invalid request");
+      if (user.emailVerified) throw new Error("Invalid request");
+    }),
+];
+// middleware to check validation errors
+export const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return sendValidationError(res, {
+      statusCode: 400,
+      message: "Validation failed",
+      errors: errors.array(),
+    });
+  }
+  next();
+};

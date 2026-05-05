@@ -1,0 +1,258 @@
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import compression from "compression";
+import cron from "node-cron";
+import { logger } from "./core/logger.js";
+
+import "./config/env.js";
+import { connectMongoDB } from "./config/mongodb.js";
+import { initializeRedis, isRedisAvailable } from "./config/redis.js";
+import { attachRequestMeta } from "./middleware/requestMeta.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+import auth from "./routes/AuthRoute.js";
+
+// Routes utils
+import { measurePerformance } from "./utilis/performance.js";
+import { scheduleRenderKeepAlive } from "./utilis/keepAlive.js";
+
+const PORT = process.env.PORT || 3000;
+const REQUEST_TIMEOUT_MS = Number.parseInt(
+  process.env.REQUEST_TIMEOUT_MS || "10000",
+  10,
+);
+const SOCKET_TIMEOUT_MS = Number.parseInt(
+  process.env.SOCKET_TIMEOUT_MS || "120000",
+  10,
+);
+
+let mongoConnectionReady = false;
+let redisConnectionReady = false;
+
+// Validate NODE_ENV
+if (!process.env.NODE_ENV) {
+  console.error(
+    '❌ FATAL: NODE_ENV is not set. Set to "production" for production deployments.',
+  );
+  process.exit(1);
+}
+
+if (process.env.NODE_ENV === "production") {
+  logger.info("Running in PRODUCTION mode - security hardened");
+} else {
+  logger.warn(
+    "⚠️ Running in NON-PRODUCTION mode - additional debugging enabled",
+  );
+}
+
+const app = express();
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https:"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  }),
+);
+
+// CORS
+const rawAllowedOrigins = process.env.ALLOWED_ORIGINS || "";
+const allowedOrigins = rawAllowedOrigins
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  maxAge: 86400,
+};
+
+if (allowedOrigins.length > 0) {
+  corsOptions.origin = (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("CORS origin not allowed"));
+  };
+}
+
+app.use(cors(corsOptions));
+
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("tiny"));
+}
+
+app.use(compression());
+
+// Health check
+const healthCheckHandler = measurePerformance(async (_req, res) => {
+  const dbStatus = mongoConnectionReady ? "connected" : "disconnected";
+  const redisStatus = redisConnectionReady ? "connected" : "disconnected";
+
+  const healthy = dbStatus === "connected";
+
+  res.status(healthy ? 200 : 503).json({
+    status: healthy ? "healthy" : "unhealthy",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    services: {
+      database: dbStatus,
+      redis: redisStatus,
+    },
+  });
+}, "GET /health");
+
+app.get("/health", healthCheckHandler);
+
+// Parsers
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(attachRequestMeta);
+
+// API Router
+const apiRouter = express.Router();
+app.use("/api/v1", apiRouter);
+apiRouter.use("/auth", auth);
+// Root
+const rootHandler = measurePerformance(async (_req, res) => {
+  res.status(200).json({ message: "Mowdmin API is running" });
+}, "GET /");
+
+app.get("/", rootHandler);
+
+// 404
+app.use((req, _res, next) => {
+  const error = new Error(`Route ${req.originalUrl} not found`);
+  error.statusCode = 404;
+  next(error);
+});
+
+app.use(errorHandler);
+
+// Process safety
+process.on("uncaughtException", (err) => {
+  logger.error("UNCAUGHT EXCEPTION! Shutting down...", {
+    name: err.name,
+    message: err.message,
+  });
+  process.exit(1);
+});
+
+let server;
+
+async function bootstrap() {
+  try {
+    // MongoDB only
+    logger.info("Connecting to MongoDB...");
+    await connectMongoDB();
+    mongoConnectionReady = true;
+
+    // Redis
+    logger.info("Connecting to Redis...");
+    await initializeRedis();
+    redisConnectionReady = isRedisAvailable();
+
+    // Cron jobs
+    logger.info("Starting background cron jobs...");
+
+    cron.schedule("0 * * * *", async () => {
+      try {
+        const PaymentService = (await import("./services/PaymentService.js"))
+          .default;
+        await PaymentService.expirePendingPayments();
+      } catch (err) {
+        logger.error("[Cron] Error running expirePendingPayments", {
+          message: err.message,
+        });
+      }
+    });
+
+    try {
+      // EventCleanupWorker.start("0 2 * * *");
+      // logger.info("Event cleanup worker scheduled");
+    } catch (err) {
+      logger.error("Failed to start event cleanup worker", {
+        message: err.message,
+      });
+    }
+
+    scheduleRenderKeepAlive({ port: PORT });
+
+    // Start server
+    server = app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV}`);
+    });
+
+    server.setTimeout(SOCKET_TIMEOUT_MS);
+    server.requestTimeout = REQUEST_TIMEOUT_MS;
+    server.headersTimeout = REQUEST_TIMEOUT_MS + 5000;
+
+    // Graceful shutdown
+    const gracefulShutdown = async (signal) => {
+      logger.info(`${signal} received, shutting down gracefully...`);
+
+      server.close(async () => {
+        logger.info("HTTP server closed");
+
+        try {
+          // Close Redis
+          try {
+            const { getRedisClient } = await import("./config/redis.js");
+            const redis = await getRedisClient();
+            if (redis && redis.isOpen) {
+              await redis.quit();
+              logger.info("Redis connection closed");
+            }
+          } catch {}
+
+          logger.info("Graceful shutdown complete");
+          process.exit(0);
+        } catch (error) {
+          logger.error("Error during shutdown", { message: error.message });
+          process.exit(1);
+        }
+      });
+
+      setTimeout(() => {
+        logger.error("Forced shutdown after timeout");
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+  } catch (err) {
+    logger.error("Startup failed", { message: err.message });
+    process.exit(1);
+  }
+}
+
+process.on("unhandledRejection", (err) => {
+  logger.error("UNHANDLED REJECTION! Shutting down...", {
+    name: err.name,
+    message: err.message,
+  });
+
+  if (server) {
+    server.close(() => process.exit(1));
+  } else {
+    process.exit(1);
+  }
+});
+
+export default app;
+
+if (process.env.NODE_ENV !== "test") {
+  bootstrap();
+}
