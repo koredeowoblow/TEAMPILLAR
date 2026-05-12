@@ -4,7 +4,9 @@ const buildFallbackRequestMeta = (res) => {
 
   const headerRequestId =
     (typeof req.get === "function" &&
-      (req.get("X-Request-Id") || req.get("X-Correlation-Id") || req.get("X-Amzn-Trace-Id"))) ||
+      (req.get("X-Request-Id") ||
+        req.get("X-Correlation-Id") ||
+        req.get("X-Amzn-Trace-Id"))) ||
     req.headers?.["x-request-id"] ||
     req.headers?.["x-correlation-id"] ||
     req.headers?.["x-amzn-trace-id"];
@@ -16,7 +18,10 @@ const buildFallbackRequestMeta = (res) => {
       headerRequestId ||
       undefined,
     ip: req.ip,
-    userAgent: (typeof req.get === "function" ? req.get("User-Agent") : req.headers?.["user-agent"]) || undefined,
+    userAgent:
+      (typeof req.get === "function"
+        ? req.get("User-Agent")
+        : req.headers?.["user-agent"]) || undefined,
     // method: req.method,
     // path: req.originalUrl || req.url,
     timestamp: new Date().toISOString(),
@@ -29,21 +34,40 @@ const mergeMeta = (res, meta = {}) => {
   return { ...fallbackMeta, ...requestMeta, ...meta };
 };
 
-export const sendSuccess = (res, { message = "Success", data = {}, meta = {}, statusCode = 200 } = {}) => {
+export const sendSuccess = (
+  res,
+  {
+    message = "Operation successful",
+    data = null,
+    meta = {},
+    statusCode = 200,
+  } = {},
+) => {
   return res.status(statusCode).json({
-    status: "success",
-    message,
+    success: true,
     data,
+    message,
     meta: mergeMeta(res, meta),
+    errors: null,
   });
 };
 
-export const sendError = (res, { message = "Error", statusCode = 400, data = {}, meta = {} } = {}) => {
+export const sendError = (
+  res,
+  {
+    message = "Error",
+    statusCode = 400,
+    data = null,
+    meta = {},
+    errorCode = "ERR_INTERNAL",
+  } = {},
+) => {
   return res.status(statusCode).json({
-    status: "error",
-    message,
+    success: false,
     data,
+    message,
     meta: mergeMeta(res, meta),
+    errors: { code: errorCode },
   });
 };
 
@@ -51,12 +75,19 @@ export const sendError = (res, { message = "Error", statusCode = 400, data = {},
 // This helper keeps that shape but ensures meta is consistently included.
 export const sendValidationError = (
   res,
-  { message = "Validation failed", statusCode = 422, errors = [], meta = {} } = {}
+  {
+    message = "Validation failed",
+    statusCode = 422,
+    errors = [],
+    meta = {},
+    errorCode = "ERR_VALIDATION",
+  } = {},
 ) => {
   return res.status(statusCode).json({
     success: false,
+    data: null,
     message,
-    errors,
     meta: mergeMeta(res, meta),
+    errors: { code: errorCode, details: errors },
   });
 };

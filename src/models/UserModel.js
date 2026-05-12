@@ -13,6 +13,14 @@ const UserSchema = new mongoose.Schema(
     emailVerified: { type: Boolean, default: false },
     emailVerifiedAt: { type: Date, default: null },
     isAdmin: { type: Boolean, default: false },
+    role: {
+      type: String,
+      enum: ["STUDENT", "ADMIN", "TUTOR"],
+      default: "STUDENT",
+    },
+    isPro: { type: Boolean, default: false },
+    onboarding: { type: Object, default: {} },
+    stats: { type: Object, default: {} },
   },
   {
     timestamps: true,

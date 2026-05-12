@@ -5,13 +5,20 @@ import morgan from "morgan";
 import compression from "compression";
 import cron from "node-cron";
 import { logger } from "./core/logger.js";
-
 import "./config/env.js";
 import { connectMongoDB } from "./config/mongodb.js";
 import { initializeRedis, isRedisAvailable } from "./config/redis.js";
 import { attachRequestMeta } from "./middleware/requestMeta.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import auth from "./routes/AuthRoute.js";
+import practice from "./routes/PracticeRoute.js";
+import student from "./routes/StudentRoute.js";
+import admin from "./routes/AdminRoute.js";
+import analytics from "./routes/AnalyticsRoute.js";
+import billing from "./routes/BillingRoute.js";
+import classes from "./routes/ClassesRoute.js";
+import ai from "./routes/AIRoute.js";
+import exams from "./routes/ExamRoute.js";
 
 // Routes utils
 import { measurePerformance } from "./utilis/performance.js";
@@ -122,7 +129,20 @@ app.use(attachRequestMeta);
 // API Router
 const apiRouter = express.Router();
 app.use("/api/v1", apiRouter);
+
 apiRouter.use("/auth", auth);
+apiRouter.use("/practice", practice);
+apiRouter.use("/student", student);
+apiRouter.use("/analytics", analytics);
+apiRouter.use("/billing", billing);
+apiRouter.use("/classes", classes);
+apiRouter.use("/ai", ai);
+apiRouter.use("/exams", exams);
+
+// Admin & Student Registry routes
+apiRouter.use("/", admin); // Exposes /students, /tutors, etc. at /api/v1/
+apiRouter.use("/admin", admin); // Exposes /admin/settings, etc.
+
 // Root
 const rootHandler = measurePerformance(async (_req, res) => {
   res.status(200).json({ message: "Mowdmin API is running" });

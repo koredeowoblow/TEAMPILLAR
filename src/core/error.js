@@ -40,9 +40,15 @@ const sendErrorDev = (err, res) => {
   return sendError(res, {
     statusCode: err.statusCode,
     status: err.status,
-    message: "Something went wrong",
+    message: err.message || "Something went wrong",
     meta: err?.meta,
-    data: { stack: null, error: null },
+    errorCode: err?.errorCode || "ERR_INTERNAL",
+    data: {
+      name: err?.name || "Error",
+      stack: err?.stack || null,
+      details: err?.errors || err?.details || null,
+      cause: err?.cause?.message || null,
+    },
   });
 };
 
@@ -54,6 +60,7 @@ const sendErrorProd = (err, res) => {
       status: err.status,
       message: err.message,
       meta: err?.meta,
+      errorCode: err?.errorCode || "ERR_INTERNAL",
     });
   }
 

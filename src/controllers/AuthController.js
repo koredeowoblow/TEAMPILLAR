@@ -21,6 +21,14 @@ class AuthController {
       ip: req.ip,
       userAgent: req.headers["user-agent"],
     };
+    console.log(
+      "Login attempt for",
+      email,
+      "from IP:",
+      meta.ip,
+      "User-Agent:",
+      meta.userAgent,
+    );
     const { user, token, refreshToken, expiresAt } = await AuthService.login(
       email,
       password,

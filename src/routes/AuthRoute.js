@@ -17,9 +17,21 @@ import {
   passwordResetLimiter,
 } from "../middleware/rateLimiter.js";
 import { tryCatch } from "../utilis/try-catch.js";
+import { logger } from "../core/logger.js";
 // import upload from "../Config/multer.js";
 
 const auth = Router();
+
+const logLoginRequest = (req, _res, next) => {
+  if (process.env.NODE_ENV !== "production") {
+    logger.info("Login route hit", {
+      email: req.body?.email,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+  }
+  next();
+};
 
 auth.post(
   "/register",
@@ -29,7 +41,7 @@ auth.post(
 );
 auth.post(
   "/login",
-  authLimiter,
+  // authLimiter,
   validateUserLogin,
   handleValidationErrors,
   tryCatch(AuthController.login),
@@ -82,6 +94,13 @@ auth.post(
   tryCatch(AuthController.resendEmailVerification),
 );
 
+auth.get("/me", protectUser, tryCatch(AuthController.getProfile));
+auth.patch(
+  "/profile",
+  protectUser,
+  tryCatch(AuthController.createOrUpdateProfile),
+);
+
 // Social Authentication
 auth.post("/google", authLimiter, tryCatch(AuthController.googleAuth));
 auth.post("/apple", authLimiter, tryCatch(AuthController.appleAuth));
@@ -101,6 +120,7 @@ auth.get(
 );
 auth.put(
   "/admin/users/:userId",
+  logLoginRequest,
   protectUser,
   protectAdmin,
   tryCatch(AuthController.adminUpdateUser),
