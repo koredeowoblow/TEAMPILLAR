@@ -3,6 +3,7 @@ import { practiceRepository } from "../repository/PracticeRepository.js";
 import { userRepository } from "../repository/UserRepository.js";
 import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utilis/AppError.js";
+import { resolveSubjectId } from "../utilis/subjectResolver.js";
 
 class PracticeService {
   // Return randomized set of questions for subjectId
@@ -12,7 +13,9 @@ class PracticeService {
     const filters = arguments[1]?.filters || {};
     const deterministic = arguments[1]?.deterministic || false;
 
-    const mongoFilter = { subjectId, ...filters };
+    // Resolve subject name/code to ObjectId
+    const resolvedSubjectId = await resolveSubjectId(subjectId);
+    const mongoFilter = { subjectId: resolvedSubjectId, ...filters };
     let questions = await questionRepository.find(mongoFilter, { limit: 0 });
 
     // Apply shuffle unless deterministic flag is set (useful for tests)
@@ -87,12 +90,14 @@ class PracticeService {
     const user = await userRepository.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
-    const subject = await Subject.findById(subjectId);
+    // Resolve subject name/code to ObjectId
+    const resolvedSubjectId = await resolveSubjectId(subjectId);
+    const subject = await Subject.findById(resolvedSubjectId);
     if (!subject) throw new AppError("Subject not found", 404);
 
     const session = await practiceRepository.create({
       userId,
-      subjectId,
+      subjectId: resolvedSubjectId,
       sessionStatus: "ACTIVE",
       startTime: new Date(),
     });

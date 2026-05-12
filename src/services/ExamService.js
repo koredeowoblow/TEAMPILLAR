@@ -1,6 +1,7 @@
 import Exam from "../models/ExamModel.js";
 import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utilis/AppError.js";
+import { resolveSubjectId } from "../utilis/subjectResolver.js";
 
 class ExamService {
   static async createExam({
@@ -12,12 +13,13 @@ class ExamService {
     instructions,
     createdBy,
   }) {
-    // Basic validation
-    const subj = await Subject.findById(subject);
+    // Resolve subject name/code to ObjectId
+    const resolvedSubjectId = await resolveSubjectId(subject);
+    const subj = await Subject.findById(resolvedSubjectId);
     if (!subj) throw new AppError("Subject not found", 404);
 
     const exam = await Exam.create({
-      subject,
+      subject: resolvedSubjectId,
       classGroup,
       examDate: new Date(examDate),
       duration: Number(duration),
