@@ -2,12 +2,14 @@ import express from "express";
 import PracticeController from "../controllers/PracticeController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
 import { requireRole } from "../middleware/rbac.js";
-import { tryCatch } from "../utilis/try-catch.js";
+import { tryCatch } from "../utils/try-catch.js";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
 import {
   validateGetQuestions,
   validateStartSession,
   validateSubmitSession,
+  validateSessionVisibility,
+  validateNextQuestions,
 } from "../middleware/Validation/practiceValidation.js";
 const router = express.Router();
 
@@ -19,6 +21,15 @@ router.get(
   handleValidationErrors,
   tryCatch(PracticeController.getQuestions),
 );
+
+// Adaptive Engine: mid-session batched fetching
+router.post(
+  "/questions/next",
+  protectUser,
+  validateNextQuestions,
+  handleValidationErrors,
+  tryCatch(PracticeController.getNextQuestions),
+);
 router.post(
   "/submit",
   protectUser,
@@ -28,50 +39,34 @@ router.post(
 );
 router.get("/results/:id", protectUser, tryCatch(PracticeController.getResult));
 
-// Subjects and session lifecycle
+// Subjects
 router.get("/subjects", protectUser, tryCatch(PracticeController.getSubjects));
-// Admin CRUD for subjects
+
+// Session Lifecycle
 router.post(
-  "/subjects",
-  protectUser,
-  requireRole("ADMIN"),
-  tryCatch(PracticeController.createSubject),
-);
-router.put(
-  "/subjects/:id",
-  protectUser,
-  requireRole("ADMIN"),
-  tryCatch(PracticeController.updateSubject),
-);
-router.delete(
-  "/subjects/:id",
-  protectUser,
-  requireRole("ADMIN"),
-  tryCatch(PracticeController.deleteSubject),
-);
-router.post(
-  "/start",
+  "/session/start",
   protectUser,
   validateStartSession,
   handleValidationErrors,
   tryCatch(PracticeController.startSession),
 );
 
-// PRD-compliant session paths
-router.post(
-  "/session/start",
-  protectUser,
-  tryCatch(PracticeController.startSession),
-);
 router.post(
   "/session/submit",
   protectUser,
+  validateSubmitSession,
+  handleValidationErrors,
   tryCatch(PracticeController.submit),
 );
+
 router.post(
   "/session/visibility",
   protectUser,
+  validateSessionVisibility,
+  handleValidationErrors,
   tryCatch(PracticeController.recordVisibility),
 );
+
+router.get("/results/:id", protectUser, tryCatch(PracticeController.getResult));
 
 export default router;

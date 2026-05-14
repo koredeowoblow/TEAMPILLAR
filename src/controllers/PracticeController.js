@@ -1,13 +1,18 @@
 import PracticeService from "../services/PracticeService.js";
+import AdaptiveEngineService from "../services/AdaptiveEngineService.js";
+import { questionRepository } from "../repository/QuestionRepository.js";
 import Subject from "../models/SubjectModel.js";
+import mongoose from "mongoose";
 import { sendSuccess, sendError } from "../core/response.js";
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 
 class PracticeController {
   static async getQuestions(req, res) {
     const { subjectId, limit } = req.query;
     if (!subjectId) throw new AppError("subjectId is required", 400);
     const questions = await PracticeService.getQuestionsForSubject(subjectId, {
+      userId: req.user?.id,
+      isAdmin: req.user?.role === "ADMIN",
       limit: Number(limit) || 20,
     });
     return sendSuccess(res, {
@@ -24,6 +29,29 @@ class PracticeController {
     return sendSuccess(res, {
       message: "Subjects retrieved",
       data: result,
+      statusCode: 200,
+    });
+  }
+
+  static async getNextQuestions(req, res) {
+    const userId = req.user?.id;
+    const { sessionId, subjectId, filters } = req.body;
+    
+    if (!userId) throw new AppError("Unauthorized", 401);
+    if (!sessionId || !subjectId) throw new AppError("sessionId and subjectId are required", 400);
+
+    const midSessionMatch = await AdaptiveEngineService.recalculateMidSession(sessionId, userId, subjectId, filters || {});
+    
+    const questions = await PracticeService.getQuestionsForSubject(subjectId, {
+      userId,
+      sessionId,
+      limit: 10,
+      filters: midSessionMatch
+    });
+
+    return sendSuccess(res, {
+      message: "Next questions retrieved",
+      data: questions,
       statusCode: 200,
     });
   }
@@ -47,7 +75,8 @@ class PracticeController {
 
   static async getResult(req, res) {
     const { id } = req.params;
-    const session = await PracticeService.getSessionResult(id);
+    const userId = req.user?.id;
+    const session = await PracticeService.getSessionResult(id, userId);
     return sendSuccess(res, {
       message: "Session retrieved",
       data: session,
@@ -134,14 +163,39 @@ class PracticeController {
 
   static async deleteSubject(req, res) {
     const { id } = req.params;
-    const subj = await Subject.findById(id);
-    if (!subj) throw new AppError("Subject not found", 404);
-    await subj.remove();
-    return sendSuccess(res, {
-      message: "Subject deleted",
-      data: { id: String(id) },
-      statusCode: 200,
-    });
+    if (!mongoose.Types.ObjectId.isValid(id))
+      throw new AppError("Invalid subject ID", 400);
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const subj = await Subject.findById(id).session(session);
+      if (!subj) {
+        await session.abortTransaction();
+        session.endSession();
+        throw new AppError("Subject not found", 404);
+      }
+
+      // Cascade delete questions
+      await questionRepository.deleteMany({ subjectId: id }, { session });
+      
+      // Delete the subject
+      await Subject.findByIdAndDelete(id).session(session);
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return sendSuccess(res, {
+        message: "Subject deleted and associated questions removed",
+        data: { id: String(id) },
+        statusCode: 200,
+      });
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
   }
 }
 

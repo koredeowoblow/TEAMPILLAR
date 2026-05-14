@@ -1,4 +1,4 @@
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 import { logger } from "./logger.js";
 import { sendError } from "./response.js";
 

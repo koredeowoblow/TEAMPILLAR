@@ -1,4 +1,5 @@
 import PracticeSession from "../models/PracticeSessionModel.js";
+import mongoose from "mongoose";
 
 class PracticeRepository {
   async create(sessionData) {
@@ -10,8 +11,13 @@ class PracticeRepository {
     return await PracticeSession.countDocuments(filter).exec();
   }
 
-  async findById(id) {
-    return await PracticeSession.findById(id).exec();
+  async findById(id, populate = []) {
+    if (!mongoose.Types.ObjectId.isValid(id)) return null;
+    const query = PracticeSession.findById(id);
+    if (populate.length > 0) {
+      populate.forEach((p) => query.populate(p));
+    }
+    return await query.exec();
   }
 
   async update(id, updateData) {

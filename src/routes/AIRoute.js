@@ -1,7 +1,7 @@
 import express from "express";
 import AIController from "../controllers/AIController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
-import { tryCatch } from "../utilis/try-catch.js";
+import { tryCatch } from "../utils/try-catch.js";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
 
@@ -30,6 +30,17 @@ router.post(
     .withMessage("weakTopics must be an array"),
   handleValidationErrors,
   tryCatch(AIController.generateStudyPlan),
+);
+
+router.post(
+  "/question-insight",
+  protectUser,
+  body("id").notEmpty().withMessage("id is required"),
+  body("failRate").isNumeric().withMessage("failRate must be numeric"),
+  body("topic").optional().isString(),
+  body("distractor").optional().isString(),
+  handleValidationErrors,
+  tryCatch(AIController.generateQuestionInsight),
 );
 
 export default router;

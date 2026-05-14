@@ -21,8 +21,8 @@ import ai from "./routes/AIRoute.js";
 import exams from "./routes/ExamRoute.js";
 
 // Routes utils
-import { measurePerformance } from "./utilis/performance.js";
-import { scheduleRenderKeepAlive } from "./utilis/keepAlive.js";
+import { measurePerformance } from "./utils/performance.js";
+import { scheduleRenderKeepAlive } from "./utils/keepAlive.js";
 
 const PORT = process.env.PORT || 3000;
 const REQUEST_TIMEOUT_MS = Number.parseInt(
@@ -145,7 +145,7 @@ apiRouter.use("/admin", admin); // Exposes /admin/settings, etc.
 
 // Root
 const rootHandler = measurePerformance(async (_req, res) => {
-  res.status(200).json({ message: "Mowdmin API is running" });
+  res.status(200).json({ message: "Pillar API is running" });
 }, "GET /");
 
 app.get("/", rootHandler);
@@ -234,12 +234,25 @@ async function bootstrap() {
               await redis.quit();
               logger.info("Redis connection closed");
             }
-          } catch {}
+          } catch (rErr) {
+            logger.warn("Error closing Redis during shutdown", { message: rErr.message });
+          }
+
+          // Wait for pending AI requests
+          try {
+            const { default: AIService } = await import("./services/AIService.js");
+            const cleanShutdown = await AIService.waitForRequests(10000);
+            if (!cleanShutdown) {
+              logger.warn("Some AI requests did not complete in time during shutdown");
+            }
+          } catch (aiErr) {
+            logger.error("Error during AI shutdown", { message: aiErr.message });
+          }
 
           logger.info("Graceful shutdown complete");
           process.exit(0);
         } catch (error) {
-          logger.error("Error during shutdown", { message: error.message });
+          logger.error("Error during overall shutdown", { message: error.message });
           process.exit(1);
         }
       });

@@ -1,4 +1,5 @@
-import { sendSuccess } from "../core/response.js";
+import { sendSuccess, sendError } from "../core/response.js";
+import { AppError } from "../utils/AppError.js";
 import fetch from "node-fetch";
 import crypto from "crypto";
 
@@ -31,12 +32,9 @@ class BillingController {
 
   static async initialize(req, res) {
     const { planId, email } = req.body;
-    if (!planId)
-      return sendSuccess(res, {
-        message: "planId is required",
-        data: null,
-        statusCode: 400,
-      });
+    if (!planId) {
+      throw new AppError("planId is required", 400);
+    }
     const plan = planId === "pro" ? { amount: 5000 } : { amount: 0 };
     const amountKobo = plan.amount * 100;
 
@@ -65,10 +63,18 @@ class BillingController {
       body: JSON.stringify(body),
     });
     const data = await initRes.json();
+    if (!initRes.ok) {
+      return sendError(res, {
+        message: "Payment initialization failed",
+        data,
+        statusCode: 400,
+      });
+    }
+
     return sendSuccess(res, {
       message: "Payment initialized",
       data,
-      statusCode: initRes.ok ? 200 : 400,
+      statusCode: 200,
     });
   }
 

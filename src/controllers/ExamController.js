@@ -1,6 +1,6 @@
 import ExamService from "../services/ExamService.js";
 import { sendSuccess } from "../core/response.js";
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 
 class ExamController {
   static async create(req, res) {

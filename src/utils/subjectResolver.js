@@ -17,13 +17,15 @@ export async function resolveSubjectId(identifier) {
     return new mongoose.Types.ObjectId(identifier);
   }
 
+  const escapedIdentifier = identifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
   // Try to find by name (case-insensitive), code, or partial match
   // First try exact or partial matches (case-insensitive)
   let subject = await Subject.findOne({
     $or: [
-      { name: { $regex: `^${identifier}$`, $options: "i" } },
-      { code: { $regex: `^${identifier}$`, $options: "i" } },
-      { name: { $regex: identifier, $options: "i" } },
+      { name: { $regex: `^${escapedIdentifier}$`, $options: "i" } },
+      { code: { $regex: `^${escapedIdentifier}$`, $options: "i" } },
+      { name: { $regex: escapedIdentifier, $options: "i" } },
     ],
   });
 
@@ -34,12 +36,13 @@ export async function resolveSubjectId(identifier) {
       .replace(/[\s\-_]+/g, " ")
       .trim();
     const withoutTrailingS = norm.replace(/s$/i, "");
+    const escapedNorm = withoutTrailingS.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     // Try looser match using normalized tokens
     subject = await Subject.findOne({
       $or: [
-        { name: { $regex: withoutTrailingS, $options: "i" } },
-        { code: { $regex: withoutTrailingS, $options: "i" } },
+        { name: { $regex: escapedNorm, $options: "i" } },
+        { code: { $regex: escapedNorm, $options: "i" } },
       ],
     });
   }

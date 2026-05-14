@@ -31,14 +31,16 @@ const QuestionSchema = new mongoose.Schema(
       topic: { type: String },
       difficulty: {
         type: String,
-        enum: ["EASY", "MEDIUM", "HARD"],
-        default: "MEDIUM",
+        enum: ["easy", "medium", "hard"],
+        default: "medium",
       },
     },
   },
   { timestamps: true },
 );
 
+QuestionSchema.index({ subjectId: 1, "metadata.topic": 1, "metadata.difficulty": 1 });
+QuestionSchema.index({ "metadata.difficulty": 1 });
 QuestionSchema.index({ "metadata.topic": 1 });
 
 export default mongoose.model("Question", QuestionSchema);

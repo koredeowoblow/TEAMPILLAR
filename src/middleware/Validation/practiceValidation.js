@@ -18,16 +18,32 @@ export const validateStartSession = [
 ];
 
 export const validateSubmitSession = [
-  body("sessionId").notEmpty().withMessage("sessionId is required"),
+  body("sessionId")
+    .notEmpty().withMessage("sessionId is required")
+    .isMongoId().withMessage("Invalid sessionId format"),
   body("responses")
     .isArray({ min: 0 })
     .withMessage("responses must be an array"),
   body("responses.*.questionId")
-    .notEmpty()
-    .withMessage("questionId is required for each response"),
+    .notEmpty().withMessage("questionId is required for each response")
+    .isMongoId().withMessage("Invalid questionId format"),
   body("responses.*.selectedOption").optional(),
   body("tabSwitches")
     .optional()
     .isInt({ min: 0 })
     .withMessage("tabSwitches must be a non-negative integer"),
+];
+
+export const validateSessionVisibility = [
+  body("sessionId")
+    .notEmpty().withMessage("sessionId is required")
+    .isMongoId().withMessage("Invalid sessionId format"),
+  body("increment").optional().isInt({ min: 1 }),
+];
+
+export const validateNextQuestions = [
+  body("sessionId")
+    .notEmpty().withMessage("sessionId is required")
+    .isMongoId().withMessage("Invalid sessionId format"),
+  body("subjectId").notEmpty().withMessage("subjectId is required"),
 ];

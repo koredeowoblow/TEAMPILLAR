@@ -1,7 +1,7 @@
 import express from "express";
 import AnalyticsController from "../controllers/AnalyticsController.js";
 import { protectUser, protectAdmin } from "../middleware/authMiddleware.js";
-import { tryCatch } from "../utilis/try-catch.js";
+import { tryCatch } from "../utils/try-catch.js";
 import {
   validateAnalyticsSummary,
   validateStudentAnalytics,

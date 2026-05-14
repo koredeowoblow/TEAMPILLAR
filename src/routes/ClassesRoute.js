@@ -1,7 +1,7 @@
 import express from "express";
 import ClassesController from "../controllers/ClassesController.js";
 import { protectUser, protectAdmin } from "../middleware/authMiddleware.js";
-import { tryCatch } from "../utilis/try-catch.js";
+import { tryCatch } from "../utils/try-catch.js";
 
 const router = express.Router();
 

@@ -47,7 +47,6 @@ export const sendSuccess = (
     success: true,
     data,
     message,
-    meta: mergeMeta(res, meta),
     errors: null,
   });
 };
@@ -66,7 +65,6 @@ export const sendError = (
     success: false,
     data,
     message,
-    meta: mergeMeta(res, meta),
     errors: { code: errorCode },
   });
 };
@@ -87,7 +85,6 @@ export const sendValidationError = (
     success: false,
     data: null,
     message,
-    meta: mergeMeta(res, meta),
     errors: { code: errorCode, details: errors },
   });
 };

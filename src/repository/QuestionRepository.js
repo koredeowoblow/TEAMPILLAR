@@ -6,6 +6,10 @@ class QuestionRepository {
     return await q.save();
   }
 
+  async insertMany(docs) {
+    return await Question.insertMany(docs);
+  }
+
   async findById(id) {
     return await Question.findById(id).exec();
   }
@@ -16,6 +20,18 @@ class QuestionRepository {
     if (options.skip) query.skip(options.skip);
     if (options.sort) query.sort(options.sort);
     return await query.exec();
+  }
+
+  async findByIdAndUpdate(id, data, options = {}) {
+    return await Question.findByIdAndUpdate(id, data, { new: true, ...options }).exec();
+  }
+
+  async findByIdAndDelete(id) {
+    return await Question.findByIdAndDelete(id).exec();
+  }
+
+  async deleteMany(filter = {}) {
+    return await Question.deleteMany(filter).exec();
   }
 
   async aggregate(pipeline = []) {

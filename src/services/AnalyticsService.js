@@ -2,6 +2,9 @@ import { practiceRepository } from "../repository/PracticeRepository.js";
 import { userRepository } from "../repository/UserRepository.js";
 import Question from "../models/QuestionModel.js";
 import Subject from "../models/SubjectModel.js";
+import cache from "../utils/cache.js";
+import AIService from "./AIService.js";
+import { CONSTANTS } from "../config/constants.js";
 
 const monthLabels = [
   "Jan",
@@ -20,6 +23,10 @@ const monthLabels = [
 
 class AnalyticsService {
   static async getReports({ from, to } = {}) {
+    const cacheKey = `analytics:reports:${from || "all"}:${to || "all"}`;
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
     const match = {};
     if (from || to) match.createdAt = {};
     if (from) match.createdAt.$gte = new Date(from);
@@ -76,7 +83,7 @@ class AnalyticsService {
       .map(([, value]) => {
         const score = Math.round(
           value.scores.reduce((sum, current) => sum + current, 0) /
-            value.scores.length,
+          value.scores.length,
         );
         return {
           month: value.month,
@@ -133,8 +140,8 @@ class AnalyticsService {
 
     const questions = questionIds.size
       ? await Question.find({ _id: { $in: [...questionIds] } })
-          .populate("subjectId", "name")
-          .lean()
+        .populate("subjectId", "name")
+        .lean()
       : [];
     const questionMap = {};
     questions.forEach((question) => {
@@ -194,37 +201,51 @@ class AnalyticsService {
           : 0;
 
         return {
-          id:
-            question?.metadata?.questionCode ||
-            `Q-${String(questionId).slice(-6).toUpperCase()}`,
-          subject:
-            question?.subjectId?.name ||
-            subjectMap[String(question?.subjectId)] ||
-            "Unknown",
-          failRate,
+          id: question?.metadata?.questionCode || `Q-${String(questionId).slice(-6).toUpperCase()}`,
+          _id: questionId,
+          subject: question?.subjectId?.name || subjectMap[String(question?.subjectId)] || "Unknown",
+          failureRate: failRate,
           distractor: mostCommonWrongOptionText,
           topic: question?.metadata?.topic || "General",
+          content: question?.content,
+          metadata: question?.metadata,
+          options: question?.options,
           _sortIndex: index,
         };
       })
-      .sort((a, b) => b.failRate - a.failRate || a._sortIndex - b._sortIndex)
+      .sort((a, b) => b.failureRate - a.failureRate || a._sortIndex - b._sortIndex)
       .slice(0, 10)
       .map(({ _sortIndex, ...item }) => item);
 
-    return {
+    const aiInsights = await AIService.generateAnalyticsInsights({
+      performanceTrend,
+      subjectComparison,
+      commonMistakes,
+      enrollmentTrend,
+    });
+
+    const finalReport = {
       performanceTrend,
       subjectComparison,
       enrollmentTrend,
       subjectAverages,
       commonMistakes,
+      aiInsights,
       briefingConfig: {
         active: process.env.BRIEFING_ACTIVE !== "false",
         frequency: process.env.BRIEFING_FREQUENCY || "weekly",
       },
     };
+
+    await cache.set(cacheKey, finalReport, CONSTANTS.CACHE.ANALYTICS_REPORTS_TTL);
+    return finalReport;
   }
 
   static async getSummary() {
+    const cacheKey = "analytics:summary";
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
     const totalStudents = await userRepository.count({ role: "STUDENT" });
     const totalSessions = await practiceRepository.count({});
     const avgScorePipeline = [
@@ -236,7 +257,7 @@ class AnalyticsService {
       { role: "STUDENT" },
       { sort: { "analytics.overallScore": -1 } },
     );
-    return {
+    const finalSummary = {
       totalStudents,
       totalSessions,
       engagementRate: totalStudents
@@ -253,6 +274,19 @@ class AnalyticsService {
         avgScore: topPerformer?.analytics?.overallScore || 0,
       },
     };
+    // Add AI Insights to Summary
+    try {
+      const aiInsights = await AIService.generateAnalyticsInsights({
+        averageScore: avgScore,
+        enrollmentTrend: [{ students: totalStudents }], // Simple wrap for context
+        subjectComparison: [], // Summary doesn't have subject breakdown yet
+      });
+      finalSummary.aiInsights = aiInsights;
+    } catch (err) {
+      console.warn("AI Summary Insight Error:", err.message);
+    }
+    await cache.set(cacheKey, finalSummary, CONSTANTS.CACHE.ANALYTICS_SUMMARY_TTL);
+    return finalSummary;
   }
 
   static async getStudentAnalytics(userId) {
@@ -299,8 +333,8 @@ class AnalyticsService {
     const subjectPerformance = Object.entries(subjectScores).map(([, data]) => {
       const avgSubj = data.scores.length
         ? Math.round(
-            data.scores.reduce((a, b) => a + b, 0) / data.scores.length,
-          )
+          data.scores.reduce((a, b) => a + b, 0) / data.scores.length,
+        )
         : 0;
       return { name: data.name, score: avgSubj };
     });
@@ -324,6 +358,13 @@ class AnalyticsService {
         frequency: topicCounts[topic],
       }));
 
+    const aiRecommendations = await AIService.generateStudentInsights({
+      userId,
+      averageScore: avgScore,
+      targetScore: user.onboarding?.targetScore || 280,
+      weakTopics: weakTopicsList,
+    });
+
     return {
       targetScore: user.onboarding?.targetScore || 280,
       overallScore,
@@ -332,6 +373,7 @@ class AnalyticsService {
       subjectPerformance,
       weakTopics: weakTopicsList,
       totalSessions: total,
+      aiRecommendations,
     };
   }
 }

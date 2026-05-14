@@ -1,226 +1,304 @@
-import AuthService from "../services/AuthService.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
 import AnalyticsService from "../services/AnalyticsService.js";
 import { sendSuccess } from "../core/response.js";
 import { userRepository } from "../repository/UserRepository.js";
-import PracticeSession from "../models/PracticeSessionModel.js";
 import Subject from "../models/SubjectModel.js";
 import ClassModel from "../models/ClassModel.js";
+import AdminService from "../services/AdminService.js";
+import { sanitizeQuestion } from "../utils/sanitizers.js";
+import mongoose from "mongoose";
 
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
+/* ── Inline CSV serialiser (zero external deps) ── */
+function toCSV(rows, headers) {
+  const sanitizeCSV = (val) => {
+    let str = String(val ?? "");
+    if (/^[=+\-@]/.test(str)) {
+      str = "'" + str;
+    }
+    return str;
+  };
+
+  const esc = (v) => {
+    const s = sanitizeCSV(v);
+    return s.includes(",") || s.includes('"') || s.includes("\n")
+      ? `"${s.replace(/"/g, '""')}"`
+      : s;
+  };
+  const header = headers.map((h) => esc(h.label)).join(",");
+  const body = rows.map((r) => headers.map((h) => esc(r[h.key])).join(",")).join("\n");
+  return `${header}\n${body}`;
 }
 
 class AdminController {
+  /* ─────────────────── STUDENTS ─────────────────── */
+
   static async listStudents(req, res) {
     const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
-    const limit = Math.max(Number.parseInt(req.query.limit, 10) || 50, 1);
-    const skip = (page - 1) * limit;
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 50, 1), 100);
     const search = req.query.search || req.query.q;
-
-    const filter = { role: "STUDENT" };
-    if (search) {
-      const regex = new RegExp(search, "i");
-      filter.$or = [{ name: regex }, { email: regex }];
-    }
-
-    const students = await userRepository.find(filter, {
-      skip,
-      limit,
-      sort: { createdAt: -1 },
-    });
-
-    const studentIds = students.map((student) => String(student._id));
-    const sessions = studentIds.length
-      ? await PracticeSession.find({ userId: { $in: studentIds } })
-          .sort({ createdAt: -1 })
-          .lean()
-      : [];
-
-    const subjectIds = [
-      ...new Set(
-        sessions
-          .map((session) => (session.subjectId ? String(session.subjectId) : null))
-          .filter(Boolean),
-      ),
-    ];
-
-    const subjects = subjectIds.length
-      ? await Subject.find({ _id: { $in: subjectIds } }).lean()
-      : [];
-    const subjectMap = {};
-    subjects.forEach((subject) => {
-      subjectMap[String(subject._id)] = subject.name;
-    });
-
-    const sessionsByUser = {};
-    sessions.forEach((session) => {
-      const userId = String(session.userId);
-      if (!sessionsByUser[userId]) sessionsByUser[userId] = [];
-      sessionsByUser[userId].push(session);
-    });
-
-    const data = students.map((student) => {
-      const userId = String(student._id);
-      const userSessions = sessionsByUser[userId] || [];
-      const scoreList = userSessions.map((session) => Number(session.score || 0));
-
-      const avgPercent = scoreList.length
-        ? Math.round(scoreList.reduce((sum, score) => sum + score, 0) / scoreList.length)
-        : 0;
-      const avgScore = clamp(avgPercent * 4, 0, 400);
-
-      const recent = scoreList.slice(0, 3);
-      const previous = scoreList.slice(3, 6);
-      const recentAvg = recent.length
-        ? recent.reduce((sum, score) => sum + score, 0) / recent.length
-        : avgPercent;
-      const previousAvg = previous.length
-        ? previous.reduce((sum, score) => sum + score, 0) / previous.length
-        : avgPercent;
-      const trend = recentAvg >= previousAvg ? "up" : "down";
-
-      const derivedSubjects = [
-        ...new Set(
-          userSessions
-            .map((session) => subjectMap[String(session.subjectId)] || null)
-            .filter(Boolean),
-        ),
-      ];
-
-      const subjectsList = Array.isArray(student.onboarding?.subjects) && student.onboarding.subjects.length
-        ? student.onboarding.subjects
-        : derivedSubjects;
-
-      const progressRaw = Number(student.stats?.progress || student.onboarding?.progress || 0);
-      const progress = progressRaw > 0
-        ? clamp(Math.round(progressRaw), 0, 100)
-        : clamp(Math.round((userSessions.length / 20) * 100), 0, 100);
-
-      return {
-        id: userId,
-        name: student.name || "",
-        subjects: subjectsList,
-        avgScore,
-        trend,
-        progress,
-      };
-    });
-
-    return sendSuccess(res, {
-      message: "Students retrieved",
-      data,
-      statusCode: 200,
-    });
+    const data = await AdminService.listStudents({ page, limit, search });
+    return sendSuccess(res, { message: "Students retrieved", data, statusCode: 200 });
   }
 
   static async getStudent(req, res) {
     const { id } = req.params;
-    const user = await AuthService.getUserById(id);
-    const profile = {
-      name: user.name || "",
-      email: user.email || "",
-      targetScore: user.onboarding?.targetScore || 280,
-      subjects: user.onboarding?.subjects || [],
-      emailVerified: user.emailVerified || false,
-      role: user.role || "STUDENT",
-    };
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return sendSuccess(res, { message: "Invalid student ID", data: null, statusCode: 400 });
+
+    const user = await userRepository.findById(id);
+    if (!user || user.role !== "STUDENT")
+      return sendSuccess(res, { message: "Student not found", data: null, statusCode: 404 });
+
     return sendSuccess(res, {
       message: "Student retrieved",
-      data: profile,
+      data: {
+        id: String(user._id),
+        name: user.name || "",
+        email: user.email || "",
+        targetScore: user.onboarding?.targetScore || 280,
+        subjects: user.onboarding?.subjects || [],
+        emailVerified: user.emailVerified || false,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
       statusCode: 200,
     });
   }
 
-  static async uploadQuestions(req, res) {
-    const questions = req.body.questions || req.body;
-    if (!Array.isArray(questions)) {
-      return sendSuccess(res, {
-        message: "Provide an array of questions",
-        data: null,
-        statusCode: 400,
-      });
+  static async updateStudent(req, res) {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return sendSuccess(res, { message: "Invalid student ID", data: null, statusCode: 400 });
+
+    // Whitelist — admins cannot touch password or role via this endpoint
+    const ALLOWED = ["name", "onboarding", "emailVerified", "status"];
+    const updateData = {};
+    for (const key of ALLOWED) {
+      if (req.body[key] !== undefined) updateData[key] = req.body[key];
     }
-    const created = [];
-    for (const q of questions) {
-      const saved = await questionRepository.create(q);
-      created.push(saved);
-    }
+
+    const updated = await userRepository.updateUser(id, updateData);
+    if (!updated || updated.role !== "STUDENT")
+      return sendSuccess(res, { message: "Student not found", data: null, statusCode: 404 });
+
     return sendSuccess(res, {
-      message: "Questions uploaded",
-      data: { created: created.length },
-      statusCode: 201,
+      message: "Student updated",
+      data: { id: String(updated._id), name: updated.name, email: updated.email },
+      statusCode: 200,
     });
   }
 
-  static async getTutors(_req, res) {
-    const tutors = await userRepository.find({ role: "TUTOR" }, { sort: { createdAt: -1 } });
-    const tutorIds = tutors.map((tutor) => String(tutor._id));
+  static async deleteStudent(req, res) {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return sendSuccess(res, { message: "Invalid student ID", data: null, statusCode: 400 });
+
+    const user = await userRepository.findById(id);
+    if (!user || user.role !== "STUDENT")
+      return sendSuccess(res, { message: "Student not found", data: null, statusCode: 404 });
+
+    await userRepository.deleteUser(id);
+    return sendSuccess(res, { message: "Student deleted", data: { id }, statusCode: 200 });
+  }
+
+  static async exportStudents(req, res) {
+    const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
+    const filter = { role: "STUDENT" };
+
+    if (ids.length > 0) {
+      const validIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id));
+      if (validIds.length > 0) filter._id = { $in: validIds };
+    }
+
+    const students = await userRepository.find(filter, { limit: 5000, sort: { createdAt: -1 } });
+
+    const headers = [
+      { key: "name", label: "Full Name" },
+      { key: "email", label: "Email" },
+      { key: "targetScore", label: "Target Score" },
+      { key: "subjects", label: "Subjects" },
+      { key: "emailVerified", label: "Email Verified" },
+      { key: "createdAt", label: "Joined" },
+    ];
+
+    const rows = students.map((s) => ({
+      name: s.name || "",
+      email: s.email || "",
+      targetScore: s.onboarding?.targetScore || "",
+      subjects: (s.onboarding?.subjects || []).join("; "),
+      emailVerified: s.emailVerified ? "Yes" : "No",
+      createdAt: s.createdAt ? new Date(s.createdAt).toISOString().split("T")[0] : "",
+    }));
+
+    const csv = toCSV(rows, headers);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="pillar-students-${new Date().toISOString().split("T")[0]}.csv"`,
+    );
+    return res.status(200).send(csv);
+  }
+
+  static async sendReminder(req, res) {
+    const { studentIds, message } = req.body;
+    if (!Array.isArray(studentIds) || studentIds.length === 0)
+      return sendSuccess(res, { message: "Provide at least one student ID", data: null, statusCode: 400 });
+
+    const validIds = studentIds.filter((id) => mongoose.Types.ObjectId.isValid(id));
+    if (validIds.length === 0)
+      return sendSuccess(res, { message: "No valid student IDs", data: null, statusCode: 400 });
+
+    const reminderNote = {
+      sentAt: new Date(),
+      message: message || "Keep up your UTME preparation on Pillar!",
+      sentBy: req.user?.id,
+    };
+
+    // Fire-and-forget batch update — record reminder on each user doc
+    await Promise.all(
+      validIds.map((id) =>
+        userRepository.updateUser(id, {
+          $push: { "notifications.reminders": reminderNote },
+        }),
+      ),
+    );
+
+    return sendSuccess(res, { message: "Reminders sent", data: { sent: validIds.length }, statusCode: 200 });
+  }
+
+  /* ─────────────────── QUESTIONS ─────────────────── */
+
+  static async uploadQuestions(req, res) {
+    const rawQuestions = req.body.questions || req.body;
+    const questions = Array.isArray(rawQuestions) ? rawQuestions : [rawQuestions];
+
+    const sanitized = questions.map((q) => {
+      const sq = sanitizeQuestion(q);
+      // Map correctAnswer string (A,B,C,D) to isCorrect flag in options array
+      if (q.correctAnswer && Array.isArray(sq.options)) {
+        sq.options = sq.options.map((opt) => ({
+          ...opt,
+          isCorrect: String(opt.id).toUpperCase() === String(q.correctAnswer).toUpperCase(),
+        }));
+      }
+      return sq;
+    });
+
+    const created = await questionRepository.insertMany(sanitized);
+    return sendSuccess(res, { message: "Questions uploaded", data: { created: created.length }, statusCode: 201 });
+  }
+
+  static async updateQuestion(req, res) {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return sendSuccess(res, { message: "Invalid question ID", data: null, statusCode: 400 });
+
+    const sanitized = sanitizeQuestion(req.body);
+    // Map correctAnswer string (A,B,C,D) to isCorrect flag in options array
+    if (req.body.correctAnswer && Array.isArray(sanitized.options)) {
+      sanitized.options = sanitized.options.map((opt) => ({
+        ...opt,
+        isCorrect: String(opt.id).toUpperCase() === String(req.body.correctAnswer).toUpperCase(),
+      }));
+    }
+    const updated = await questionRepository.findByIdAndUpdate(id, sanitized, { new: true });
+    if (!updated)
+      return sendSuccess(res, { message: "Question not found", data: null, statusCode: 404 });
+
+    return sendSuccess(res, { message: "Question updated", data: updated, statusCode: 200 });
+  }
+
+  static async deleteQuestion(req, res) {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return sendSuccess(res, { message: "Invalid question ID", data: null, statusCode: 400 });
+
+    const deleted = await questionRepository.findByIdAndDelete(id);
+    if (!deleted)
+      return sendSuccess(res, { message: "Question not found", data: null, statusCode: 404 });
+
+    return sendSuccess(res, { message: "Question deleted", data: { id }, statusCode: 200 });
+  }
+
+  /* ─────────────────── TUTORS ─────────────────── */
+
+  static async getTutors(req, res) {
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.max(Number.parseInt(req.query.limit, 10) || 50, 1);
+    const skip = (page - 1) * limit;
+
+    const tutors = await userRepository.find({ role: "TUTOR" }, { skip, limit, sort: { createdAt: -1 } });
+    const tutorIds = tutors.map((t) => String(t._id));
 
     const classDocs = tutorIds.length
       ? await ClassModel.find({ teacherId: { $in: tutorIds } }).lean()
       : [];
 
     const classesByTutor = {};
-    classDocs.forEach((classDoc) => {
-      const tutorId = classDoc.teacherId ? String(classDoc.teacherId) : null;
-      if (!tutorId) return;
-      if (!classesByTutor[tutorId]) classesByTutor[tutorId] = [];
-      classesByTutor[tutorId].push(classDoc);
+    classDocs.forEach((c) => {
+      const tid = c.teacherId ? String(c.teacherId) : null;
+      if (!tid) return;
+      if (!classesByTutor[tid]) classesByTutor[tid] = [];
+      classesByTutor[tid].push(c);
     });
 
     const data = tutors.map((tutor) => {
-      const tutorId = String(tutor._id);
-      const tutorClasses = classesByTutor[tutorId] || [];
-
+      const tid = String(tutor._id);
+      const tutorClasses = classesByTutor[tid] || [];
       let studentCount = 0;
       const subjectsSet = new Set();
 
-      tutorClasses.forEach((classDoc) => {
-        const meta = classDoc.metadata || {};
-        if (Array.isArray(meta.studentIds)) {
-          studentCount += meta.studentIds.length;
-        } else {
-          studentCount += Number(meta.studentCount || 0);
-        }
-
-        if (Array.isArray(meta.subjects)) {
-          meta.subjects.forEach((subject) => subjectsSet.add(subject));
-        }
+      tutorClasses.forEach((c) => {
+        const meta = c.metadata || {};
+        studentCount += Array.isArray(meta.studentIds) ? meta.studentIds.length : Number(meta.studentCount || 0);
+        if (Array.isArray(meta.subjects)) meta.subjects.forEach((s) => subjectsSet.add(s));
       });
 
-      if (Array.isArray(tutor.onboarding?.subjects)) {
-        tutor.onboarding.subjects.forEach((subject) => subjectsSet.add(subject));
-      }
+      if (Array.isArray(tutor.onboarding?.subjects))
+        tutor.onboarding.subjects.forEach((s) => subjectsSet.add(s));
 
       const subjects = [...subjectsSet];
       const primary = subjects[0] || "General";
-      const title = tutor.onboarding?.title || `Senior ${primary} Tutor`;
-
-      return {
-        id: tutorId,
-        name: tutor.name || "",
-        title,
-        studentCount,
-        subjects,
-      };
+      return { id: tid, name: tutor.name || "", title: tutor.onboarding?.title || `Senior ${primary} Tutor`, studentCount, subjects };
     });
 
-    return sendSuccess(res, {
-      message: "Tutors retrieved",
-      data,
-      statusCode: 200,
-    });
+    return sendSuccess(res, { message: "Tutors retrieved", data, statusCode: 200 });
   }
+
+  /* ─────────────────── ANALYTICS ─────────────────── */
 
   static async analyticsReports(req, res) {
     const { from, to } = req.query;
     const results = await AnalyticsService.getReports({ from, to });
-    return sendSuccess(res, {
-      message: "Reports generated",
-      data: results,
-      statusCode: 200,
-    });
+    return sendSuccess(res, { message: "Reports generated", data: results, statusCode: 200 });
+  }
+
+  static async exportAnalytics(req, res) {
+    const { from, to } = req.query;
+    const results = await AnalyticsService.getReports({ from, to });
+    
+    const rows = results.commonMistakes || [];
+    const headers = [
+      { label: "Question ID", key: "id" },
+      { label: "Subject", key: "subject" },
+      { label: "Topic", key: "topic" },
+      { label: "Top Distractor", key: "distractor" },
+      { label: "Fail Rate (%)", key: "failRate" }
+    ];
+
+    const csvStr = toCSV(rows, headers);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="analytics_${new Date().toISOString().split("T")[0]}.csv"`);
+    return res.status(200).send(csvStr);
+  }
+
+  static async scheduleReport(req, res) {
+    const { email, frequency } = req.body;
+    if (!email || !frequency) {
+      return sendSuccess(res, { message: "Email and frequency are required", data: null, statusCode: 400 });
+    }
+    console.log(`[STUB] Scheduled ${frequency} report for ${email}`);
+    return sendSuccess(res, { message: "Report schedule saved", data: { email, frequency }, statusCode: 200 });
   }
 
   static async dashboardStats(_req, res) {
@@ -228,26 +306,34 @@ class AdminController {
     return sendSuccess(res, {
       message: "Dashboard stats",
       data: {
-        totalStudents: summary.totalStudents || 0,
-        engagementRate: summary.engagementRate || 0,
-        topPerformer: {
-          name: summary.topPerformer?.name || "No data",
-          avgScore: summary.topPerformer?.avgScore || 0,
-        },
+        totalStudents: summary.totalStudents ?? 0,
+        engagementRate: summary.engagementRate ?? 0,
+        studentGrowth: summary.studentGrowth ?? null,
+        topPerformer: summary.topPerformer
+          ? {
+              id: summary.topPerformer.id ?? null,
+              name: summary.topPerformer.name ?? null,
+              avgScore: summary.topPerformer.avgScore ?? 0,
+              initials: summary.topPerformer.initials ?? "??",
+            }
+          : null,
       },
       statusCode: 200,
     });
   }
 
+  /* ─────────────────── SETTINGS ─────────────────── */
+
   static async getSettings(_req, res) {
-    const settings = {
-      environment: process.env.NODE_ENV || "development",
-      port: process.env.PORT || 3000,
-      allowedOrigins: process.env.ALLOWED_ORIGINS || "",
-    };
     return sendSuccess(res, {
       message: "Application settings",
-      data: settings,
+      data: {
+        maintenanceMode: process.env.MAINTENANCE_MODE === "true",
+        signupsEnabled: process.env.SIGNUPS_ENABLED !== "false",
+        examDate: process.env.UTME_DATE || null,
+        maxQuestionsPerSession: Number(process.env.MAX_QUESTIONS_PER_SESSION || 60),
+        supportEmail: process.env.SUPPORT_EMAIL || null,
+      },
       statusCode: 200,
     });
   }

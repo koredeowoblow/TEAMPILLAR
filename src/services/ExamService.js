@@ -1,7 +1,7 @@
 import Exam from "../models/ExamModel.js";
 import Subject from "../models/SubjectModel.js";
-import { AppError } from "../utilis/AppError.js";
-import { resolveSubjectId } from "../utilis/subjectResolver.js";
+import { AppError } from "../utils/AppError.js";
+import { resolveSubjectId } from "../utils/subjectResolver.js";
 
 class ExamService {
   static async createExam({

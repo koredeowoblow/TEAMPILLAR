@@ -16,7 +16,7 @@ import {
   otpLimiter,
   passwordResetLimiter,
 } from "../middleware/rateLimiter.js";
-import { tryCatch } from "../utilis/try-catch.js";
+import { tryCatch } from "../utils/try-catch.js";
 import { logger } from "../core/logger.js";
 // import upload from "../Config/multer.js";
 
@@ -35,13 +35,14 @@ const logLoginRequest = (req, _res, next) => {
 
 auth.post(
   "/register",
+  authLimiter,
   validateUserRegistration,
   handleValidationErrors,
   tryCatch(AuthController.register),
 );
 auth.post(
   "/login",
-  // authLimiter,
+  authLimiter,
   validateUserLogin,
   handleValidationErrors,
   tryCatch(AuthController.login),

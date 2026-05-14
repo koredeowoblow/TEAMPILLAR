@@ -1,4 +1,4 @@
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 
 // RBAC roles mapping to allowed actions
 const rolePermissions = {

@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
+
+
 const UserSchema = new mongoose.Schema(
   {
     name: { type: String },
@@ -20,7 +22,9 @@ const UserSchema = new mongoose.Schema(
     },
     isPro: { type: Boolean, default: false },
     onboarding: { type: Object, default: {} },
-    stats: { type: Object, default: {} },
+    stats: {
+      predictedScore: { type: Number, default: 0 },
+    },
   },
   {
     timestamps: true,
@@ -34,3 +38,4 @@ UserSchema.pre("save", async function () {
   }
 });
 export default mongoose.model("User", UserSchema);
+

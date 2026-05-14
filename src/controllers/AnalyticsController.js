@@ -1,6 +1,10 @@
 import AnalyticsService from "../services/AnalyticsService.js";
 import { sendSuccess } from "../core/response.js";
 
+/**
+ * Controller for handling platform-wide and student-specific analytics.
+ * All endpoints are enriched with AI-driven strategic insights and pedagogical recommendations.
+ */
 class AnalyticsController {
   static async summary(req, res) {
     const data = await AnalyticsService.getSummary();
@@ -23,7 +27,8 @@ class AnalyticsController {
 
   static async studentAnalytics(req, res) {
     const { id } = req.params;
-    const data = await AnalyticsService.getStudentAnalytics(id);
+    const targetId = id === "me" ? req.user?.id : id;
+    const data = await AnalyticsService.getStudentAnalytics(targetId);
     return sendSuccess(res, {
       message: "Student analytics",
       data,

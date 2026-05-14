@@ -1,13 +1,14 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { escapeRegex } from "../utils/stringUtils.js";
 import EmailService from "./emailService.js";
 import OTPService from "./OTPService.js";
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 import { userRepository } from "../repository/UserRepository.js";
 import AuthRepository from "../repository/AuthRepository.js";
 import { logger } from "../core/logger.js";
-import { invalidateCachedSessionUser } from "../utilis/authSessionCache.js";
+import { invalidateCachedSessionUser } from "../utils/authSessionCache.js";
 
 const authRepository = new AuthRepository();
 
@@ -243,7 +244,7 @@ class AuthService {
     let filter = {};
 
     if (search) {
-      const regex = new RegExp(search, "i");
+      const regex = new RegExp(escapeRegex(search), "i");
       filter = {
         $or: [{ name: regex }, { email: regex }],
       };

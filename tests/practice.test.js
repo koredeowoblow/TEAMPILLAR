@@ -35,21 +35,22 @@ describe("PracticeService deterministic selection and scoring", () => {
       },
     ];
 
-    const origFind = questionRepository.find;
-    questionRepository.find = jest.fn().mockResolvedValue(sample);
+    const origAggregate = questionRepository.aggregate;
+    questionRepository.aggregate = jest.fn().mockResolvedValue(sample);
 
-    const a = await PracticeService.getQuestionsForSubject("subj", {
+    const validSubjectId = "5f8d0a92d2b5880017a8e5f2";
+    const a = await PracticeService.getQuestionsForSubject(validSubjectId, {
       limit: 3,
       deterministic: true,
     });
-    const b = await PracticeService.getQuestionsForSubject("subj", {
+    const b = await PracticeService.getQuestionsForSubject(validSubjectId, {
       limit: 3,
       deterministic: true,
     });
 
     expect(a.map((q) => q._id)).toEqual(b.map((q) => q._id));
 
-    questionRepository.find = origFind;
+    questionRepository.aggregate = origAggregate;
   });
 
   test("UTME scoring selects english + top 3 subjects", () => {

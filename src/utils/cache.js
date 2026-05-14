@@ -28,4 +28,15 @@ const set = async (key, value, ttlSeconds = 3600) => {
   return true;
 };
 
-export default { get, set };
+const flush = async () => {
+  try {
+    if (isRedisAvailable()) {
+      const redis = await getRedisClient();
+      await redis.flushAll();
+    }
+  } catch (err) {}
+  lru.clear();
+  return true;
+};
+
+export default { get, set, flush };

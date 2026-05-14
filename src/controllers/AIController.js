@@ -1,16 +1,16 @@
 import AIService from "../services/AIService.js";
 import { sendSuccess } from "../core/response.js";
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 
 class AIController {
   static async explain(req, res) {
-    const { questionId, context } = req.body;
+    const { questionId, context, selectedOptionId } = req.body;
     if (!questionId) {
       throw new AppError("questionId is required", 400);
     }
     const explanation = await AIService.generateExplanation(
       questionId,
-      context || {},
+      { ...(context || {}), selectedOptionId },
     );
     return sendSuccess(res, {
       message: "Explanation generated",
@@ -32,6 +32,21 @@ class AIController {
     return sendSuccess(res, {
       message: "Study plan generated",
       data: studyPlan,
+      statusCode: 200,
+    });
+  }
+
+  static async generateQuestionInsight(req, res) {
+    const { id, failRate, topic, distractor } = req.body;
+    const insight = await AIService.generateQuestionInsight({
+      id,
+      failRate,
+      topic,
+      distractor,
+    });
+    return sendSuccess(res, {
+      message: "Question insight generated",
+      data: insight,
       statusCode: 200,
     });
   }
