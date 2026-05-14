@@ -4,7 +4,7 @@ const AuthSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserMongo",
+      ref: "User",
       required: true,
     },
     tokenHash: {

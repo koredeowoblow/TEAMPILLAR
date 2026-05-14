@@ -1,13 +1,14 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { escapeRegex } from "../utils/stringUtils.js";
 import EmailService from "./emailService.js";
 import OTPService from "./OTPService.js";
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 import { userRepository } from "../repository/UserRepository.js";
 import AuthRepository from "../repository/AuthRepository.js";
 import { logger } from "../core/logger.js";
-import { invalidateCachedSessionUser } from "../utilis/authSessionCache.js";
+import { invalidateCachedSessionUser } from "../utils/authSessionCache.js";
 
 const authRepository = new AuthRepository();
 
@@ -111,15 +112,20 @@ class AuthService {
 
   // ================= LOGIN =================
   static async login(email, password, meta = {}) {
-    const user = await userRepository.findByEmail(email);
-    if (!user) throw new AppError("Invalid credentials", 401);
+    const user = await userRepository.findByEmail(email, {
+      includePassword: true,
+    });
+    console.log("Login attempt for", email, "User found:", !!user);
+    if (!user)
+      throw new AppError("Invalid credentials", 401, {}, "ERR_AUTH_INVALID");
 
     if (!user.password) {
-      throw new AppError("Invalid credentials", 400);
+      throw new AppError("Invalid credentials", 401, {}, "ERR_AUTH_INVALID");
     }
 
     const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) throw new AppError("Invalid credentials", 401);
+    if (!isValid)
+      throw new AppError("Invalid credentials", 401, {}, "ERR_AUTH_INVALID");
 
     const { token, expiresAt } = this.generateToken(user._id);
     const { refreshToken, expiresAt: refreshExpiresAt } =
@@ -238,7 +244,7 @@ class AuthService {
     let filter = {};
 
     if (search) {
-      const regex = new RegExp(search, "i");
+      const regex = new RegExp(escapeRegex(search), "i");
       filter = {
         $or: [{ name: regex }, { email: regex }],
       };
@@ -271,6 +277,11 @@ class AuthService {
     delete safe.password;
 
     return safe;
+  }
+
+  // Convenience: controller expects getProfile()
+  static async getProfile(userId) {
+    return await this.getUserById(userId);
   }
 
   static async toggleAdminStatus(userId) {

@@ -1,0 +1,1126 @@
+{
+  "title": "UTME Practice Questions",
+  "total_questions": 500,
+  "subjects": {
+    "Mathematics": [
+      {
+        "id": "MATH001",
+        "question": "If 2^x = 32, find the value of x.",
+        "options": { "A": "4", "B": "5", "C": "6", "D": "3" },
+        "answer": "B",
+        "topic": "Indices"
+      },
+      {
+        "id": "MATH002",
+        "question": "Simplify: log 8 + log 2 - log 4",
+        "options": { "A": "log 4", "B": "log 6", "C": "log 8", "D": "log 16" },
+        "answer": "A",
+        "topic": "Logarithms"
+      },
+      {
+        "id": "MATH003",
+        "question": "Find the quadratic equation whose roots are 3 and -5.",
+        "options": { "A": "x² + 2x - 15 = 0", "B": "x² - 2x - 15 = 0", "C": "x² + 2x + 15 = 0", "D": "x² - 2x + 15 = 0" },
+        "answer": "A",
+        "topic": "Quadratic Equations"
+      },
+      {
+        "id": "MATH004",
+        "question": "What is the sum of the interior angles of a hexagon?",
+        "options": { "A": "540°", "B": "720°", "C": "900°", "D": "360°" },
+        "answer": "B",
+        "topic": "Geometry"
+      },
+      {
+        "id": "MATH005",
+        "question": "If the mean of 5 numbers is 8, what is their sum?",
+        "options": { "A": "35", "B": "40", "C": "45", "D": "50" },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "MATH006",
+        "question": "Solve: 3x - 7 = 2x + 5",
+        "options": { "A": "x = 10", "B": "x = 11", "C": "x = 12", "D": "x = 13" },
+        "answer": "C",
+        "topic": "Linear Equations"
+      },
+      {
+        "id": "MATH007",
+        "question": "The gradient of the line joining (2, 3) and (6, 11) is:",
+        "options": { "A": "1", "B": "2", "C": "3", "D": "4" },
+        "answer": "B",
+        "topic": "Coordinate Geometry"
+      },
+      {
+        "id": "MATH008",
+        "question": "What is the value of sin 60°?",
+        "options": { "A": "1/2", "B": "√2/2", "C": "√3/2", "D": "1" },
+        "answer": "C",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "MATH009",
+        "question": "If P = {2,4,6,8} and Q = {1,2,3,4}, find P ∩ Q.",
+        "options": { "A": "{2,4}", "B": "{1,2,4,6,8}", "C": "{4,8}", "D": "{1,3}" },
+        "answer": "A",
+        "topic": "Sets"
+      },
+      {
+        "id": "MATH010",
+        "question": "Evaluate: ⁵C₃",
+        "options": { "A": "5", "B": "10", "C": "15", "D": "20" },
+        "answer": "B",
+        "topic": "Permutation and Combination"
+      },
+      {
+        "id": "MATH011",
+        "question": "The area of a circle with diameter 14 cm is: (π = 22/7)",
+        "options": { "A": "44 cm²", "B": "88 cm²", "C": "154 cm²", "D": "616 cm²" },
+        "answer": "C",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "MATH012",
+        "question": "Find the 10th term of the arithmetic sequence: 3, 7, 11, 15, ...",
+        "options": { "A": "35", "B": "39", "C": "43", "D": "47" },
+        "answer": "B",
+        "topic": "Sequences and Series"
+      },
+      {
+        "id": "MATH013",
+        "question": "If f(x) = 2x² - 3x + 1, find f(2).",
+        "options": { "A": "2", "B": "3", "C": "4", "D": "5" },
+        "answer": "B",
+        "topic": "Functions"
+      },
+      {
+        "id": "MATH014",
+        "question": "Differentiate y = 3x³ + 2x - 5 with respect to x.",
+        "options": { "A": "9x² + 2", "B": "9x² - 2", "C": "3x² + 2", "D": "6x² + 2" },
+        "answer": "A",
+        "topic": "Calculus - Differentiation"
+      },
+      {
+        "id": "MATH015",
+        "question": "Evaluate ∫(4x + 3)dx",
+        "options": { "A": "4x² + 3x + c", "B": "2x² + 3x + c", "C": "4x + c", "D": "8x + c" },
+        "answer": "B",
+        "topic": "Calculus - Integration"
+      },
+      {
+        "id": "MATH016",
+        "question": "A bag contains 3 red and 5 blue balls. What is the probability of picking a red ball?",
+        "options": { "A": "3/8", "B": "5/8", "C": "1/2", "D": "3/5" },
+        "answer": "A",
+        "topic": "Probability"
+      },
+      {
+        "id": "MATH017",
+        "question": "Factorize: x² - 5x + 6",
+        "options": { "A": "(x-2)(x-3)", "B": "(x+2)(x+3)", "C": "(x-1)(x-6)", "D": "(x+1)(x-6)" },
+        "answer": "A",
+        "topic": "Algebra"
+      },
+      {
+        "id": "MATH018",
+        "question": "What is 15% of 200?",
+        "options": { "A": "25", "B": "30", "C": "35", "D": "40" },
+        "answer": "B",
+        "topic": "Percentages"
+      },
+      {
+        "id": "MATH019",
+        "question": "Express 0.00045 in standard form.",
+        "options": { "A": "4.5 × 10⁻³", "B": "4.5 × 10⁻⁴", "C": "4.5 × 10⁻⁵", "D": "45 × 10⁻⁵" },
+        "answer": "B",
+        "topic": "Number Bases"
+      },
+      {
+        "id": "MATH020",
+        "question": "The volume of a cylinder of radius 7 cm and height 10 cm is: (π = 22/7)",
+        "options": { "A": "1540 cm³", "B": "154 cm³", "C": "770 cm³", "D": "440 cm³" },
+        "answer": "A",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "MATH021",
+        "question": "Solve: x² - 9 = 0",
+        "options": { "A": "x = 3 only", "B": "x = -3 only", "C": "x = ±3", "D": "x = ±9" },
+        "answer": "C",
+        "topic": "Quadratic Equations"
+      },
+      {
+        "id": "MATH022",
+        "question": "Convert 1101₂ to base 10.",
+        "options": { "A": "11", "B": "12", "C": "13", "D": "14" },
+        "answer": "C",
+        "topic": "Number Bases"
+      },
+      {
+        "id": "MATH023",
+        "question": "Two angles of a triangle are 65° and 70°. Find the third angle.",
+        "options": { "A": "40°", "B": "45°", "C": "50°", "D": "55°" },
+        "answer": "B",
+        "topic": "Geometry"
+      },
+      {
+        "id": "MATH024",
+        "question": "If y varies directly as x and y = 12 when x = 4, find y when x = 7.",
+        "options": { "A": "18", "B": "21", "C": "24", "D": "28" },
+        "answer": "B",
+        "topic": "Variation"
+      },
+      {
+        "id": "MATH025",
+        "question": "The simple interest on ₦5000 at 4% per annum for 3 years is:",
+        "options": { "A": "₦400", "B": "₦500", "C": "₦600", "D": "₦700" },
+        "answer": "C",
+        "topic": "Commercial Mathematics"
+      },
+      {
+        "id": "MATH026",
+        "question": "What is the range of the data: 4, 7, 2, 9, 5, 11, 3?",
+        "options": { "A": "7", "B": "8", "C": "9", "D": "11" },
+        "answer": "C",
+        "topic": "Statistics"
+      },
+      {
+        "id": "MATH027",
+        "question": "Simplify: (x²y³)² ÷ (xy)²",
+        "options": { "A": "x²y⁴", "B": "x³y³", "C": "x²y²", "D": "x⁴y⁴" },
+        "answer": "A",
+        "topic": "Indices"
+      },
+      {
+        "id": "MATH028",
+        "question": "Find the equation of a line with slope 2 passing through (1, 3).",
+        "options": { "A": "y = 2x + 1", "B": "y = 2x - 1", "C": "y = 2x + 3", "D": "y = x + 2" },
+        "answer": "A",
+        "topic": "Coordinate Geometry"
+      },
+      {
+        "id": "MATH029",
+        "question": "A man buys a car for ₦800,000 and sells it for ₦700,000. Find his percentage loss.",
+        "options": { "A": "10%", "B": "12.5%", "C": "15%", "D": "20%" },
+        "answer": "B",
+        "topic": "Commercial Mathematics"
+      },
+      {
+        "id": "MATH030",
+        "question": "The sum of the first n terms of a GP is given by S = a(rⁿ - 1)/(r - 1). Find S for a=2, r=3, n=4.",
+        "options": { "A": "70", "B": "80", "C": "90", "D": "100" },
+        "answer": "B",
+        "topic": "Sequences and Series"
+      },
+      {
+        "id": "MATH031",
+        "question": "Solve the inequality: 2x + 3 > 7",
+        "options": { "A": "x > 1", "B": "x > 2", "C": "x < 2", "D": "x > 3" },
+        "answer": "B",
+        "topic": "Inequalities"
+      },
+      {
+        "id": "MATH032",
+        "question": "Find the median of: 3, 5, 7, 9, 11, 13.",
+        "options": { "A": "7", "B": "8", "C": "9", "D": "10" },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "MATH033",
+        "question": "Evaluate: tan 45°",
+        "options": { "A": "0", "B": "1/2", "C": "1", "D": "√3" },
+        "answer": "C",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "MATH034",
+        "question": "The perimeter of a square with area 64 cm² is:",
+        "options": { "A": "16 cm", "B": "24 cm", "C": "32 cm", "D": "36 cm" },
+        "answer": "C",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "MATH035",
+        "question": "Simplify: (2/3) ÷ (4/9)",
+        "options": { "A": "8/27", "B": "3/2", "C": "6/4", "D": "2/3" },
+        "answer": "B",
+        "topic": "Fractions"
+      },
+      {
+        "id": "MATH036",
+        "question": "If 3^(2x) = 27, find x.",
+        "options": { "A": "1", "B": "1.5", "C": "2", "D": "3" },
+        "answer": "B",
+        "topic": "Indices"
+      },
+      {
+        "id": "MATH037",
+        "question": "A circle has circumference 44 cm. Find its radius. (π = 22/7)",
+        "options": { "A": "5 cm", "B": "6 cm", "C": "7 cm", "D": "8 cm" },
+        "answer": "C",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "MATH038",
+        "question": "Express 3/4 as a percentage.",
+        "options": { "A": "34%", "B": "57%", "C": "75%", "D": "80%" },
+        "answer": "C",
+        "topic": "Percentages"
+      },
+      {
+        "id": "MATH039",
+        "question": "What is the determinant of the matrix [[2, 1], [3, 4]]?",
+        "options": { "A": "5", "B": "6", "C": "7", "D": "8" },
+        "answer": "A",
+        "topic": "Matrices"
+      },
+      {
+        "id": "MATH040",
+        "question": "Find the LCM of 12 and 18.",
+        "options": { "A": "24", "B": "30", "C": "36", "D": "48" },
+        "answer": "C",
+        "topic": "Number Theory"
+      },
+      {
+        "id": "MATH041",
+        "question": "Simplify log₃81",
+        "options": { "A": "2", "B": "3", "C": "4", "D": "5" },
+        "answer": "C",
+        "topic": "Logarithms"
+      },
+      {
+        "id": "MATH042",
+        "question": "In how many ways can 4 people be arranged in a row?",
+        "options": { "A": "16", "B": "24", "C": "32", "D": "48" },
+        "answer": "B",
+        "topic": "Permutation and Combination"
+      },
+      {
+        "id": "MATH043",
+        "question": "If the angles of a triangle are in ratio 1:2:3, find the largest angle.",
+        "options": { "A": "60°", "B": "80°", "C": "90°", "D": "120°" },
+        "answer": "C",
+        "topic": "Geometry"
+      },
+      {
+        "id": "MATH044",
+        "question": "What is the value of cos 0°?",
+        "options": { "A": "0", "B": "1/2", "C": "√3/2", "D": "1" },
+        "answer": "D",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "MATH045",
+        "question": "If a = 3 and b = -2, evaluate a² - 2ab + b².",
+        "options": { "A": "15", "B": "20", "C": "25", "D": "30" },
+        "answer": "C",
+        "topic": "Algebra"
+      },
+      {
+        "id": "MATH046",
+        "question": "The compound interest on ₦2000 at 10% for 2 years is:",
+        "options": { "A": "₦400", "B": "₦420", "C": "₦440", "D": "₦450" },
+        "answer": "B",
+        "topic": "Commercial Mathematics"
+      },
+      {
+        "id": "MATH047",
+        "question": "Rationalize: 1/(√5 - √3)",
+        "options": { "A": "(√5 + √3)/2", "B": "(√5 - √3)/2", "C": "(√5 + √3)/8", "D": "(√3 - √5)/2" },
+        "answer": "A",
+        "topic": "Surds"
+      },
+      {
+        "id": "MATH048",
+        "question": "What is the mode of: 2, 3, 3, 4, 5, 5, 5, 6?",
+        "options": { "A": "3", "B": "4", "C": "5", "D": "6" },
+        "answer": "C",
+        "topic": "Statistics"
+      },
+      {
+        "id": "MATH049",
+        "question": "Evaluate: d/dx (sin x)",
+        "options": { "A": "-sin x", "B": "cos x", "C": "-cos x", "D": "tan x" },
+        "answer": "B",
+        "topic": "Calculus"
+      },
+      {
+        "id": "MATH050",
+        "question": "Expand: (x + 3)²",
+        "options": { "A": "x² + 6x + 9", "B": "x² + 3x + 9", "C": "x² + 9", "D": "x² - 6x + 9" },
+        "answer": "A",
+        "topic": "Algebra"
+      }
+    ],
+    "English_Language": [
+      {
+        "id": "ENG001",
+        "question": "Choose the word that is nearest in meaning to 'BENEVOLENT'.",
+        "options": { "A": "Cruel", "B": "Generous", "C": "Stingy", "D": "Ignorant" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG002",
+        "question": "Identify the figure of speech in: 'The wind whispered through the trees.'",
+        "options": { "A": "Simile", "B": "Metaphor", "C": "Personification", "D": "Hyperbole" },
+        "answer": "C",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "ENG003",
+        "question": "Select the correct spelling:",
+        "options": { "A": "Recieve", "B": "Receive", "C": "Receve", "D": "Receeve" },
+        "answer": "B",
+        "topic": "Spelling"
+      },
+      {
+        "id": "ENG004",
+        "question": "The plural of 'criterion' is:",
+        "options": { "A": "Criterions", "B": "Criterias", "C": "Criteria", "D": "Criterium" },
+        "answer": "C",
+        "topic": "Grammar"
+      },
+      {
+        "id": "ENG005",
+        "question": "Choose the antonym of 'LOQUACIOUS'.",
+        "options": { "A": "Talkative", "B": "Noisy", "C": "Reserved", "D": "Active" },
+        "answer": "C",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG006",
+        "question": "Which sentence is grammatically correct?",
+        "options": { "A": "Neither of the boys were present.", "B": "Neither of the boys was present.", "C": "Neither of the boys are present.", "D": "Neither of the boys have been present." },
+        "answer": "B",
+        "topic": "Grammar"
+      },
+      {
+        "id": "ENG007",
+        "question": "The literary device used in 'as brave as a lion' is:",
+        "options": { "A": "Metaphor", "B": "Simile", "C": "Irony", "D": "Alliteration" },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "ENG008",
+        "question": "Identify the verb in: 'The students studied hard for the exam.'",
+        "options": { "A": "students", "B": "studied", "C": "hard", "D": "exam" },
+        "answer": "B",
+        "topic": "Parts of Speech"
+      },
+      {
+        "id": "ENG009",
+        "question": "Choose the word that best completes: 'The thief was caught ___ the act.'",
+        "options": { "A": "on", "B": "at", "C": "in", "D": "with" },
+        "answer": "C",
+        "topic": "Prepositions"
+      },
+      {
+        "id": "ENG010",
+        "question": "The past tense of 'arise' is:",
+        "options": { "A": "Arised", "B": "Arosen", "C": "Arose", "D": "Arisen" },
+        "answer": "C",
+        "topic": "Tenses"
+      },
+      {
+        "id": "ENG011",
+        "question": "Choose the word nearest in meaning to 'ACRIMONIOUS'.",
+        "options": { "A": "Bitter", "B": "Sweet", "C": "Calm", "D": "Helpful" },
+        "answer": "A",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG012",
+        "question": "Which of these is a compound sentence?",
+        "options": { "A": "She sings beautifully.", "B": "She sings and dances.", "C": "Because she sings, people gather.", "D": "She who sings is happy." },
+        "answer": "B",
+        "topic": "Sentence Structure"
+      },
+      {
+        "id": "ENG013",
+        "question": "The underlined word in 'He runs QUICKLY' is a/an:",
+        "options": { "A": "Adjective", "B": "Verb", "C": "Adverb", "D": "Noun" },
+        "answer": "C",
+        "topic": "Parts of Speech"
+      },
+      {
+        "id": "ENG014",
+        "question": "Choose the word that does NOT belong: calm, serene, peaceful, agitated.",
+        "options": { "A": "calm", "B": "serene", "C": "peaceful", "D": "agitated" },
+        "answer": "D",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG015",
+        "question": "Which sentence uses the subjunctive mood correctly?",
+        "options": { "A": "I wish he was here.", "B": "I wish he were here.", "C": "I wish he is here.", "D": "I wish he has been here." },
+        "answer": "B",
+        "topic": "Grammar"
+      },
+      {
+        "id": "ENG016",
+        "question": "The word 'PROLIFIC' means:",
+        "options": { "A": "Lazy", "B": "Highly productive", "C": "Destructive", "D": "Boring" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG017",
+        "question": "Identify the passive voice: ",
+        "options": { "A": "The boy kicked the ball.", "B": "The ball was kicked by the boy.", "C": "Kicking the ball made him tired.", "D": "The boy who kicked the ball ran away." },
+        "answer": "B",
+        "topic": "Grammar"
+      },
+      {
+        "id": "ENG018",
+        "question": "Which of these is an oxymoron?",
+        "options": { "A": "Sweet sorrow", "B": "As cold as ice", "C": "Life is a journey", "D": "The stars danced" },
+        "answer": "A",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "ENG019",
+        "question": "The correct form is: 'He is one of the students who ___.'",
+        "options": { "A": "has passed", "B": "have passed", "C": "passes", "D": "is passing" },
+        "answer": "B",
+        "topic": "Concord"
+      },
+      {
+        "id": "ENG020",
+        "question": "Choose the correctly punctuated sentence:",
+        "options": { "A": "Its a beautiful day.", "B": "It's a beautiful day.", "C": "Its' a beautiful day.", "D": "It is, a beautiful day." },
+        "answer": "B",
+        "topic": "Punctuation"
+      },
+      {
+        "id": "ENG021",
+        "question": "The word 'EPHEMERAL' means:",
+        "options": { "A": "Long-lasting", "B": "Short-lived", "C": "Magnificent", "D": "Invisible" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG022",
+        "question": "Choose the correct reported speech: He said, 'I am tired.'",
+        "options": { "A": "He said he was tired.", "B": "He said he is tired.", "C": "He said I am tired.", "D": "He said he had tired." },
+        "answer": "A",
+        "topic": "Indirect Speech"
+      },
+      {
+        "id": "ENG023",
+        "question": "'A group of fish' is called a:",
+        "options": { "A": "Pack", "B": "Flock", "C": "Shoal", "D": "Swarm" },
+        "answer": "C",
+        "topic": "Collective Nouns"
+      },
+      {
+        "id": "ENG024",
+        "question": "Identify the clause type: 'Although it was raining, they went out.'",
+        "options": { "A": "Relative clause", "B": "Adverbial clause", "C": "Noun clause", "D": "Adjective clause" },
+        "answer": "B",
+        "topic": "Clauses"
+      },
+      {
+        "id": "ENG025",
+        "question": "Which word is a synonym for 'GARRULOUS'?",
+        "options": { "A": "Quiet", "B": "Talkative", "C": "Rude", "D": "Confident" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG026",
+        "question": "The stressed syllable in the word 'PHOTOGRAPH' is:",
+        "options": { "A": "pho", "B": "to", "C": "graph", "D": "photo" },
+        "answer": "A",
+        "topic": "Phonology"
+      },
+      {
+        "id": "ENG027",
+        "question": "Choose the word with a different vowel sound from the others: beat, seat, great, feat.",
+        "options": { "A": "beat", "B": "seat", "C": "great", "D": "feat" },
+        "answer": "C",
+        "topic": "Phonology"
+      },
+      {
+        "id": "ENG028",
+        "question": "The word ENERVATE means:",
+        "options": { "A": "To energize", "B": "To weaken", "C": "To encourage", "D": "To confuse" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG029",
+        "question": "Identify the subject in: 'Swimming is a great exercise.'",
+        "options": { "A": "great", "B": "exercise", "C": "Swimming", "D": "is" },
+        "answer": "C",
+        "topic": "Grammar"
+      },
+      {
+        "id": "ENG030",
+        "question": "'Peter and Paul ___ here yesterday.' Choose the correct verb:",
+        "options": { "A": "was", "B": "is", "C": "were", "D": "are" },
+        "answer": "C",
+        "topic": "Concord"
+      },
+      {
+        "id": "ENG031",
+        "question": "Which word is an abstract noun?",
+        "options": { "A": "Table", "B": "Kindness", "C": "River", "D": "Doctor" },
+        "answer": "B",
+        "topic": "Nouns"
+      },
+      {
+        "id": "ENG032",
+        "question": "The literary device 'repetition of initial consonant sounds' is called:",
+        "options": { "A": "Assonance", "B": "Alliteration", "C": "Rhyme", "D": "Onomatopoeia" },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "ENG033",
+        "question": "Choose the correct word: 'The news ___ shocking.'",
+        "options": { "A": "were", "B": "are", "C": "was", "D": "have been" },
+        "answer": "C",
+        "topic": "Concord"
+      },
+      {
+        "id": "ENG034",
+        "question": "The word 'MAGNANIMOUS' means:",
+        "options": { "A": "Selfish", "B": "Noble and generous", "C": "Angry", "D": "Timid" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG035",
+        "question": "Choose the correct use of apostrophe: 'the boys' books' means:",
+        "options": { "A": "Books belonging to one boy", "B": "Books belonging to boys", "C": "Boy's books only", "D": "Books for one specific boy" },
+        "answer": "B",
+        "topic": "Punctuation"
+      },
+      {
+        "id": "ENG036",
+        "question": "What part of speech is 'however' in 'However, he refused to go'?",
+        "options": { "A": "Conjunction", "B": "Preposition", "C": "Adverb", "D": "Pronoun" },
+        "answer": "C",
+        "topic": "Parts of Speech"
+      },
+      {
+        "id": "ENG037",
+        "question": "Which is an example of an imperative sentence?",
+        "options": { "A": "She loves reading.", "B": "Does he know?", "C": "Close the door!", "D": "What a beautiful day!" },
+        "answer": "C",
+        "topic": "Sentence Types"
+      },
+      {
+        "id": "ENG038",
+        "question": "Choose the correct pronoun: '___ of the two men is guilty.'",
+        "options": { "A": "None", "B": "Neither", "C": "Each", "D": "Both" },
+        "answer": "B",
+        "topic": "Pronouns"
+      },
+      {
+        "id": "ENG039",
+        "question": "Identify the gerund in: 'Running is good for health.'",
+        "options": { "A": "good", "B": "health", "C": "Running", "D": "for" },
+        "answer": "C",
+        "topic": "Grammar"
+      },
+      {
+        "id": "ENG040",
+        "question": "The word OBLIVIOUS means:",
+        "options": { "A": "Aware", "B": "Unaware", "C": "Obvious", "D": "Obedient" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG041",
+        "question": "Choose the sentence with correct subject-verb agreement:",
+        "options": { "A": "The committee have decided.", "B": "The committee has decided.", "C": "The committee are deciding.", "D": "The committee decide." },
+        "answer": "B",
+        "topic": "Concord"
+      },
+      {
+        "id": "ENG042",
+        "question": "A metaphor is different from a simile because it:",
+        "options": { "A": "Uses 'like' or 'as'", "B": "Makes a direct comparison", "C": "Uses exaggeration", "D": "Repeats sounds" },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "ENG043",
+        "question": "The antonym of 'VERBOSE' is:",
+        "options": { "A": "Wordy", "B": "Concise", "C": "Complex", "D": "Vocal" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG044",
+        "question": "Which sentence contains a dangling modifier?",
+        "options": { "A": "Running fast, he won the race.", "B": "Running fast, the race was won.", "C": "He ran fast and won.", "D": "He won by running fast." },
+        "answer": "B",
+        "topic": "Grammar"
+      },
+      {
+        "id": "ENG045",
+        "question": "Choose the word with silent letter: knife, moon, star, river.",
+        "options": { "A": "moon", "B": "star", "C": "knife", "D": "river" },
+        "answer": "C",
+        "topic": "Phonology"
+      },
+      {
+        "id": "ENG046",
+        "question": "The figure of speech in 'He is a lion in battle' is:",
+        "options": { "A": "Simile", "B": "Metaphor", "C": "Hyperbole", "D": "Synecdoche" },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "ENG047",
+        "question": "The word CULPABLE means:",
+        "options": { "A": "Innocent", "B": "Responsible for wrongdoing", "C": "Capable", "D": "Uncertain" },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "ENG048",
+        "question": "Choose the correctly spelt word:",
+        "options": { "A": "Accomodate", "B": "Accommodate", "C": "Accommadate", "D": "Acomodate" },
+        "answer": "B",
+        "topic": "Spelling"
+      },
+      {
+        "id": "ENG049",
+        "question": "Identify the type of pronoun in: 'This is my book.'",
+        "options": { "A": "Personal pronoun", "B": "Demonstrative pronoun", "C": "Possessive pronoun", "D": "Relative pronoun" },
+        "answer": "B",
+        "topic": "Pronouns"
+      },
+      {
+        "id": "ENG050",
+        "question": "What word class is 'beautiful' in 'She is beautiful'?",
+        "options": { "A": "Noun", "B": "Adverb", "C": "Adjective", "D": "Verb" },
+        "answer": "C",
+        "topic": "Parts of Speech"
+      }
+    ],
+    "Physics": [
+      { "id": "PHY001", "question": "The SI unit of force is:", "options": { "A": "Joule", "B": "Newton", "C": "Watt", "D": "Pascal" }, "answer": "B", "topic": "Mechanics" },
+      { "id": "PHY002", "question": "Which of the following is a vector quantity?", "options": { "A": "Speed", "B": "Mass", "C": "Temperature", "D": "Velocity" }, "answer": "D", "topic": "Scalars and Vectors" },
+      { "id": "PHY003", "question": "The acceleration due to gravity on Earth is approximately:", "options": { "A": "8.9 m/s²", "B": "9.8 m/s²", "C": "10.8 m/s²", "D": "11 m/s²" }, "answer": "B", "topic": "Gravity" },
+      { "id": "PHY004", "question": "Ohm's law states that V = IR. If V = 12V and R = 4Ω, find I.", "options": { "A": "2A", "B": "3A", "C": "4A", "D": "48A" }, "answer": "B", "topic": "Electricity" },
+      { "id": "PHY005", "question": "The energy stored in a spring is:", "options": { "A": "Kinetic energy", "B": "Thermal energy", "C": "Elastic potential energy", "D": "Chemical energy" }, "answer": "C", "topic": "Energy" },
+      { "id": "PHY006", "question": "Sound travels fastest in:", "options": { "A": "Air", "B": "Water", "C": "Steel", "D": "Vacuum" }, "answer": "C", "topic": "Waves" },
+      { "id": "PHY007", "question": "The phenomenon where light bends when passing from one medium to another is:", "options": { "A": "Reflection", "B": "Diffraction", "C": "Refraction", "D": "Polarization" }, "answer": "C", "topic": "Optics" },
+      { "id": "PHY008", "question": "Which law states that the pressure of a gas is inversely proportional to its volume at constant temperature?", "options": { "A": "Charles' Law", "B": "Boyle's Law", "C": "Gay-Lussac's Law", "D": "Avogadro's Law" }, "answer": "B", "topic": "Properties of Matter" },
+      { "id": "PHY009", "question": "The unit of electrical resistance is:", "options": { "A": "Volt", "B": "Ampere", "C": "Ohm", "D": "Watt" }, "answer": "C", "topic": "Electricity" },
+      { "id": "PHY010", "question": "A body moving in a circle at constant speed has:", "options": { "A": "Constant velocity", "B": "Zero acceleration", "C": "Centripetal acceleration", "D": "No force acting on it" }, "answer": "C", "topic": "Circular Motion" },
+      { "id": "PHY011", "question": "The speed of light in vacuum is approximately:", "options": { "A": "3×10⁶ m/s", "B": "3×10⁸ m/s", "C": "3×10¹⁰ m/s", "D": "3×10⁴ m/s" }, "answer": "B", "topic": "Optics" },
+      { "id": "PHY012", "question": "Which type of wave does NOT require a medium to travel?", "options": { "A": "Sound waves", "B": "Water waves", "C": "Electromagnetic waves", "D": "Mechanical waves" }, "answer": "C", "topic": "Waves" },
+      { "id": "PHY013", "question": "The principle of conservation of energy states that energy can be:", "options": { "A": "Created from nothing", "B": "Destroyed", "C": "Converted from one form to another", "D": "Both created and destroyed" }, "answer": "C", "topic": "Energy" },
+      { "id": "PHY014", "question": "The unit of power is:", "options": { "A": "Joule", "B": "Newton", "C": "Watt", "D": "Pascal" }, "answer": "C", "topic": "Work, Energy and Power" },
+      { "id": "PHY015", "question": "An object is in equilibrium when the net force acting on it is:", "options": { "A": "Maximum", "B": "Minimum", "C": "Zero", "D": "Equal to gravity" }, "answer": "C", "topic": "Statics" },
+      { "id": "PHY016", "question": "What type of mirror is used in car rear-view mirrors?", "options": { "A": "Concave", "B": "Convex", "C": "Plane", "D": "Parabolic" }, "answer": "B", "topic": "Optics" },
+      { "id": "PHY017", "question": "The SI unit of electric charge is:", "options": { "A": "Ampere", "B": "Volt", "C": "Coulomb", "D": "Farad" }, "answer": "C", "topic": "Electrostatics" },
+      { "id": "PHY018", "question": "Newton's first law of motion describes:", "options": { "A": "Acceleration", "B": "Inertia", "C": "Momentum", "D": "Friction" }, "answer": "B", "topic": "Mechanics" },
+      { "id": "PHY019", "question": "The half-life of a radioactive element is the time taken for:", "options": { "A": "All atoms to decay", "B": "Half the atoms to decay", "C": "One atom to decay", "D": "The element to gain energy" }, "answer": "B", "topic": "Radioactivity" },
+      { "id": "PHY020", "question": "Which of the following has the shortest wavelength?", "options": { "A": "Radio waves", "B": "Microwaves", "C": "X-rays", "D": "Infrared rays" }, "answer": "C", "topic": "Electromagnetic Spectrum" },
+      { "id": "PHY021", "question": "Work done = Force × Distance. Find work if F = 10N, d = 5m.", "options": { "A": "2 J", "B": "15 J", "C": "50 J", "D": "100 J" }, "answer": "C", "topic": "Work, Energy and Power" },
+      { "id": "PHY022", "question": "The process by which heat is transferred without a material medium is:", "options": { "A": "Conduction", "B": "Convection", "C": "Radiation", "D": "Diffusion" }, "answer": "C", "topic": "Heat Transfer" },
+      { "id": "PHY023", "question": "A concave lens is also called a _____ lens.", "options": { "A": "Converging", "B": "Diverging", "C": "Reflecting", "D": "Magnifying" }, "answer": "B", "topic": "Optics" },
+      { "id": "PHY024", "question": "The device used to measure current in a circuit is:", "options": { "A": "Voltmeter", "B": "Galvanometer", "C": "Ammeter", "D": "Ohmmeter" }, "answer": "C", "topic": "Electricity" },
+      { "id": "PHY025", "question": "Momentum is defined as:", "options": { "A": "Mass × Acceleration", "B": "Mass × Velocity", "C": "Force × Time", "D": "Weight × Distance" }, "answer": "B", "topic": "Mechanics" },
+      { "id": "PHY026", "question": "Which particle has no charge?", "options": { "A": "Proton", "B": "Electron", "C": "Neutron", "D": "Positron" }, "answer": "C", "topic": "Atomic Structure" },
+      { "id": "PHY027", "question": "The freezing point of water in Kelvin is:", "options": { "A": "0 K", "B": "100 K", "C": "273 K", "D": "373 K" }, "answer": "C", "topic": "Temperature" },
+      { "id": "PHY028", "question": "The refractive index of glass is 1.5. What is the critical angle?", "options": { "A": "sin⁻¹(1/1.5)", "B": "sin⁻¹(1.5)", "C": "tan⁻¹(1.5)", "D": "cos⁻¹(1.5)" }, "answer": "A", "topic": "Optics" },
+      { "id": "PHY029", "question": "Which type of nuclear reaction occurs in the sun?", "options": { "A": "Fission", "B": "Fusion", "C": "Radioactive decay", "D": "Ionization" }, "answer": "B", "topic": "Nuclear Physics" },
+      { "id": "PHY030", "question": "The period of a simple pendulum depends on:", "options": { "A": "Mass of the bob", "B": "Length of the string", "C": "Amplitude of swing", "D": "Colour of the bob" }, "answer": "B", "topic": "Simple Harmonic Motion" },
+      { "id": "PHY031", "question": "A step-up transformer:", "options": { "A": "Increases voltage and decreases current", "B": "Decreases voltage and increases current", "C": "Increases both voltage and current", "D": "Decreases both voltage and current" }, "answer": "A", "topic": "Electromagnetic Induction" },
+      { "id": "PHY032", "question": "The efficiency of a machine is given by:", "options": { "A": "Input/Output × 100%", "B": "Output/Input × 100%", "C": "Work done × Time", "D": "Force × Distance" }, "answer": "B", "topic": "Machines" },
+      { "id": "PHY033", "question": "Surface tension is a property of:", "options": { "A": "Solids only", "B": "Gases only", "C": "Liquids only", "D": "All matter" }, "answer": "C", "topic": "Properties of Matter" },
+      { "id": "PHY034", "question": "The instrument used to measure atmospheric pressure is:", "options": { "A": "Thermometer", "B": "Barometer", "C": "Manometer", "D": "Hygrometer" }, "answer": "B", "topic": "Pressure" },
+      { "id": "PHY035", "question": "The formula for kinetic energy is:", "options": { "A": "mgh", "B": "½mv²", "C": "mv", "D": "Fd" }, "answer": "B", "topic": "Energy" },
+      { "id": "PHY036", "question": "In a parallel circuit, the voltage across each component is:", "options": { "A": "Different", "B": "Zero", "C": "The same", "D": "Shared equally" }, "answer": "C", "topic": "Electricity" },
+      { "id": "PHY037", "question": "Alpha particles are:", "options": { "A": "High-energy electrons", "B": "Helium nuclei", "C": "Electromagnetic waves", "D": "Neutrons" }, "answer": "B", "topic": "Radioactivity" },
+      { "id": "PHY038", "question": "The law of reflection states that the angle of incidence equals:", "options": { "A": "Angle of diffraction", "B": "Angle of refraction", "C": "Angle of reflection", "D": "Angle of deviation" }, "answer": "C", "topic": "Optics" },
+      { "id": "PHY039", "question": "Pressure = Force/Area. If F = 100N and A = 5m², find P.", "options": { "A": "10 Pa", "B": "20 Pa", "C": "25 Pa", "D": "50 Pa" }, "answer": "B", "topic": "Pressure" },
+      { "id": "PHY040", "question": "Which of these is NOT an effect of heat?", "options": { "A": "Expansion", "B": "Change of state", "C": "Magnetism", "D": "Temperature rise" }, "answer": "C", "topic": "Thermal Physics" },
+      { "id": "PHY041", "question": "The loudness of sound depends on its:", "options": { "A": "Frequency", "B": "Wavelength", "C": "Amplitude", "D": "Speed" }, "answer": "C", "topic": "Sound" },
+      { "id": "PHY042", "question": "A body thrown upward with initial velocity v reaches maximum height when:", "options": { "A": "v = 0", "B": "v is maximum", "C": "Acceleration = g", "D": "It has traveled half the distance" }, "answer": "A", "topic": "Projectile Motion" },
+      { "id": "PHY043", "question": "Electrical power is given by:", "options": { "A": "P = I/V", "B": "P = IV", "C": "P = V/I", "D": "P = I+V" }, "answer": "B", "topic": "Electricity" },
+      { "id": "PHY044", "question": "The phenomenon of bouncing back of waves at a surface is called:", "options": { "A": "Refraction", "B": "Diffraction", "C": "Reflection", "D": "Interference" }, "answer": "C", "topic": "Waves" },
+      { "id": "PHY045", "question": "Which material is a good conductor of electricity?", "options": { "A": "Wood", "B": "Rubber", "C": "Copper", "D": "Glass" }, "answer": "C", "topic": "Electricity" },
+      { "id": "PHY046", "question": "The angle of friction is the angle between:", "options": { "A": "Normal force and friction", "B": "Resultant reaction and normal reaction", "C": "Motion and friction", "D": "Weight and motion" }, "answer": "B", "topic": "Friction" },
+      { "id": "PHY047", "question": "Charles' law relates volume of gas to:", "options": { "A": "Pressure at constant temperature", "B": "Temperature at constant pressure", "C": "Both pressure and temperature", "D": "Mass at constant temperature" }, "answer": "B", "topic": "Gases" },
+      { "id": "PHY048", "question": "When two resistors R₁ and R₂ are in series, total resistance is:", "options": { "A": "R₁ × R₂", "B": "R₁ + R₂", "C": "R₁R₂/(R₁+R₂)", "D": "R₁ - R₂" }, "answer": "B", "topic": "Electricity" },
+      { "id": "PHY049", "question": "The SI unit of frequency is:", "options": { "A": "Metre", "B": "Second", "C": "Hertz", "D": "Joule" }, "answer": "C", "topic": "Waves" },
+      { "id": "PHY050", "question": "The gravitational potential energy of a body is:", "options": { "A": "½mv²", "B": "mgh", "C": "mv", "D": "Fd" }, "answer": "B", "topic": "Energy" }
+    ],
+    "Chemistry": [
+      { "id": "CHEM001", "question": "The atomic number of Nitrogen is:", "options": { "A": "6", "B": "7", "C": "8", "D": "14" }, "answer": "B", "topic": "Atomic Structure" },
+      { "id": "CHEM002", "question": "What is the chemical formula of water?", "options": { "A": "H₂O₂", "B": "HO", "C": "H₂O", "D": "H₃O" }, "answer": "C", "topic": "Chemical Formulas" },
+      { "id": "CHEM003", "question": "The process of separating a mixture of miscible liquids based on different boiling points is:", "options": { "A": "Filtration", "B": "Evaporation", "C": "Distillation", "D": "Chromatography" }, "answer": "C", "topic": "Separation Techniques" },
+      { "id": "CHEM004", "question": "Which of the following is an example of a physical change?", "options": { "A": "Burning of wood", "B": "Rusting of iron", "C": "Melting of ice", "D": "Cooking of food" }, "answer": "C", "topic": "Physical and Chemical Changes" },
+      { "id": "CHEM005", "question": "The pH of a neutral solution is:", "options": { "A": "0", "B": "7", "C": "14", "D": "10" }, "answer": "B", "topic": "Acids, Bases and Salts" },
+      { "id": "CHEM006", "question": "Avogadro's number is approximately:", "options": { "A": "6.02 × 10²³", "B": "3.14 × 10²³", "C": "9.8 × 10²³", "D": "1.6 × 10¹⁹" }, "answer": "A", "topic": "Mole Concept" },
+      { "id": "CHEM007", "question": "Which gas is produced when zinc reacts with dilute HCl?", "options": { "A": "Oxygen", "B": "Carbon dioxide", "C": "Hydrogen", "D": "Chlorine" }, "answer": "C", "topic": "Chemical Reactions" },
+      { "id": "CHEM008", "question": "The valency of carbon is:", "options": { "A": "2", "B": "3", "C": "4", "D": "6" }, "answer": "C", "topic": "Valency and Bonding" },
+      { "id": "CHEM009", "question": "Which of the following is a noble gas?", "options": { "A": "Nitrogen", "B": "Chlorine", "C": "Argon", "D": "Hydrogen" }, "answer": "C", "topic": "Periodic Table" },
+      { "id": "CHEM010", "question": "A substance that speeds up a chemical reaction without being consumed is called:", "options": { "A": "Solvent", "B": "Catalyst", "C": "Inhibitor", "D": "Reagent" }, "answer": "B", "topic": "Chemical Kinetics" },
+      { "id": "CHEM011", "question": "The chemical symbol for Gold is:", "options": { "A": "Go", "B": "Gd", "C": "Au", "D": "Ag" }, "answer": "C", "topic": "Periodic Table" },
+      { "id": "CHEM012", "question": "Electrolysis of water produces:", "options": { "A": "H₂ at cathode, O₂ at anode", "B": "O₂ at cathode, H₂ at anode", "C": "HCl at cathode, O₂ at anode", "D": "NaOH at both electrodes" }, "answer": "A", "topic": "Electrochemistry" },
+      { "id": "CHEM013", "question": "Which type of bond is formed by sharing of electrons?", "options": { "A": "Ionic bond", "B": "Covalent bond", "C": "Metallic bond", "D": "Hydrogen bond" }, "answer": "B", "topic": "Chemical Bonding" },
+      { "id": "CHEM014", "question": "The molar mass of NaCl is:", "options": { "A": "23 g/mol", "B": "35.5 g/mol", "C": "58.5 g/mol", "D": "40 g/mol" }, "answer": "C", "topic": "Mole Concept" },
+      { "id": "CHEM015", "question": "The process by which plants make food using sunlight is:", "options": { "A": "Respiration", "B": "Photosynthesis", "C": "Transpiration", "D": "Fermentation" }, "answer": "B", "topic": "Applied Chemistry" },
+      { "id": "CHEM016", "question": "Which of the following is an alkali metal?", "options": { "A": "Calcium", "B": "Sodium", "C": "Aluminium", "D": "Iron" }, "answer": "B", "topic": "Periodic Table" },
+      { "id": "CHEM017", "question": "Rust is chemically known as:", "options": { "A": "Iron oxide (FeO)", "B": "Iron hydroxide Fe(OH)₂", "C": "Hydrated iron (III) oxide Fe₂O₃.nH₂O", "D": "Iron carbonate FeCO₃" }, "answer": "C", "topic": "Corrosion" },
+      { "id": "CHEM018", "question": "The law of conservation of mass states that mass is:", "options": { "A": "Created in chemical reactions", "B": "Destroyed in chemical reactions", "C": "Neither created nor destroyed", "D": "Converted to energy" }, "answer": "C", "topic": "Chemical Laws" },
+      { "id": "CHEM019", "question": "Which of the following is an organic compound?", "options": { "A": "NaCl", "B": "H₂SO₄", "C": "CH₄", "D": "KOH" }, "answer": "C", "topic": "Organic Chemistry" },
+      { "id": "CHEM020", "question": "The products of neutralization of an acid and a base are:", "options": { "A": "Acid and water", "B": "Salt and water", "C": "Base and acid", "D": "Gas and water" }, "answer": "B", "topic": "Acids, Bases and Salts" },
+      { "id": "CHEM021", "question": "Which indicator turns red in an acidic solution?", "options": { "A": "Litmus", "B": "Methyl orange", "C": "Phenolphthalein", "D": "Both A and B" }, "answer": "D", "topic": "Indicators" },
+      { "id": "CHEM022", "question": "The number of electrons in Carbon (C) is:", "options": { "A": "4", "B": "6", "C": "8", "D": "12" }, "answer": "B", "topic": "Atomic Structure" },
+      { "id": "CHEM023", "question": "What is the IUPAC name of CH₃CH₂OH?", "options": { "A": "Methanol", "B": "Ethanol", "C": "Propanol", "D": "Butanol" }, "answer": "B", "topic": "Organic Chemistry" },
+      { "id": "CHEM024", "question": "Which gas is used in fire extinguishers?", "options": { "A": "Oxygen", "B": "Nitrogen", "C": "Carbon dioxide", "D": "Hydrogen" }, "answer": "C", "topic": "Applied Chemistry" },
+      { "id": "CHEM025", "question": "Isotopes are atoms of the same element with different numbers of:", "options": { "A": "Protons", "B": "Electrons", "C": "Neutrons", "D": "Shells" }, "answer": "C", "topic": "Atomic Structure" },
+      { "id": "CHEM026", "question": "The process of converting vegetable oil to margarine involves:", "options": { "A": "Hydrolysis", "B": "Hydrogenation", "C": "Esterification", "D": "Polymerization" }, "answer": "B", "topic": "Organic Chemistry" },
+      { "id": "CHEM027", "question": "The chemical formula of sulphuric acid is:", "options": { "A": "HCl", "B": "H₂SO₃", "C": "H₂SO₄", "D": "HSO₄" }, "answer": "C", "topic": "Acids" },
+      { "id": "CHEM028", "question": "When a metal reacts with water, it produces:", "options": { "A": "An acid", "B": "A base and hydrogen gas", "C": "A salt and oxygen", "D": "An oxide only" }, "answer": "B", "topic": "Reactivity Series" },
+      { "id": "CHEM029", "question": "What type of reaction is: A + BC → AC + B?", "options": { "A": "Decomposition", "B": "Synthesis", "C": "Displacement", "D": "Combustion" }, "answer": "C", "topic": "Chemical Reactions" },
+      { "id": "CHEM030", "question": "The gas that turns lime water milky is:", "options": { "A": "Oxygen", "B": "Hydrogen", "C": "Carbon dioxide", "D": "Nitrogen" }, "answer": "C", "topic": "Gas Tests" },
+      { "id": "CHEM031", "question": "The atomic mass unit (amu) of Oxygen is:", "options": { "A": "8", "B": "14", "C": "16", "D": "18" }, "answer": "C", "topic": "Atomic Structure" },
+      { "id": "CHEM032", "question": "Which of the following metals is the most reactive?", "options": { "A": "Gold", "B": "Iron", "C": "Potassium", "D": "Copper" }, "answer": "C", "topic": "Reactivity Series" },
+      { "id": "CHEM033", "question": "Fermentation of glucose produces:", "options": { "A": "Methane and water", "B": "Ethanol and CO₂", "C": "Lactic acid and H₂", "D": "Acetic acid and O₂" }, "answer": "B", "topic": "Organic Chemistry" },
+      { "id": "CHEM034", "question": "The chemical used to test for starch is:", "options": { "A": "Benedict's solution", "B": "Fehling's solution", "C": "Iodine solution", "D": "Biuret solution" }, "answer": "C", "topic": "Food Tests" },
+      { "id": "CHEM035", "question": "In a redox reaction, the species that gains electrons is:", "options": { "A": "Oxidized", "B": "Reduced", "C": "Neutralized", "D": "Hydrolyzed" }, "answer": "B", "topic": "Redox Reactions" },
+      { "id": "CHEM036", "question": "The principal ore of aluminium is:", "options": { "A": "Haematite", "B": "Bauxite", "C": "Malachite", "D": "Galena" }, "answer": "B", "topic": "Metallurgy" },
+      { "id": "CHEM037", "question": "Soap is made by the reaction between fat/oil and:", "options": { "A": "Acid", "B": "Salt", "C": "Strong alkali", "D": "Water" }, "answer": "C", "topic": "Organic Chemistry" },
+      { "id": "CHEM038", "question": "The formula for ethene is:", "options": { "A": "C₂H₂", "B": "C₂H₄", "C": "C₂H₆", "D": "CH₄" }, "answer": "B", "topic": "Organic Chemistry" },
+      { "id": "CHEM039", "question": "Alloys are mixtures of:", "options": { "A": "Two or more metals", "B": "A metal and a non-metal", "C": "Metals only", "D": "Either A or B" }, "answer": "D", "topic": "Alloys" },
+      { "id": "CHEM040", "question": "Which of the following is a mixture?", "options": { "A": "Water", "B": "Salt", "C": "Air", "D": "Ammonia" }, "answer": "C", "topic": "Pure Substances and Mixtures" },
+      { "id": "CHEM041", "question": "The electronegativity of an element increases as you move:", "options": { "A": "Down a group", "B": "Across a period from left to right", "C": "Across a period from right to left", "D": "Down a period" }, "answer": "B", "topic": "Periodic Trends" },
+      { "id": "CHEM042", "question": "Chlorine has atomic number 17. How many electrons are in its outer shell?", "options": { "A": "5", "B": "6", "C": "7", "D": "8" }, "answer": "C", "topic": "Electronic Configuration" },
+      { "id": "CHEM043", "question": "The standard temperature and pressure (STP) temperature is:", "options": { "A": "0°C and 1 atm", "B": "25°C and 1 atm", "C": "100°C and 1 atm", "D": "0°C and 2 atm" }, "answer": "A", "topic": "Gases" },
+      { "id": "CHEM044", "question": "The volume of 1 mole of gas at STP is:", "options": { "A": "11.2 L", "B": "22.4 L", "C": "44.8 L", "D": "33.6 L" }, "answer": "B", "topic": "Mole Concept" },
+      { "id": "CHEM045", "question": "Which of the following is a diatomic molecule?", "options": { "A": "Sulphur", "B": "Phosphorus", "C": "Oxygen", "D": "Carbon" }, "answer": "C", "topic": "Molecules" },
+      { "id": "CHEM046", "question": "Petroleum refining uses the technique of:", "options": { "A": "Simple distillation", "B": "Fractional distillation", "C": "Steam distillation", "D": "Destructive distillation" }, "answer": "B", "topic": "Petroleum Chemistry" },
+      { "id": "CHEM047", "question": "The chemical formula of ammonia is:", "options": { "A": "NO₂", "B": "N₂O", "C": "NH₃", "D": "N₂H₄" }, "answer": "C", "topic": "Chemical Formulas" },
+      { "id": "CHEM048", "question": "A buffer solution resists changes in:", "options": { "A": "Temperature", "B": "Volume", "C": "pH", "D": "Concentration" }, "answer": "C", "topic": "Acids, Bases and Salts" },
+      { "id": "CHEM049", "question": "The process of converting liquid to vapour below its boiling point is called:", "options": { "A": "Boiling", "B": "Condensation", "C": "Evaporation", "D": "Sublimation" }, "answer": "C", "topic": "States of Matter" },
+      { "id": "CHEM050", "question": "The IUPAC name of CH₃COOH is:", "options": { "A": "Methanoic acid", "B": "Ethanoic acid", "C": "Propanoic acid", "D": "Butanoic acid" }, "answer": "B", "topic": "Organic Chemistry" }
+    ],
+    "Biology": [
+      { "id": "BIO001", "question": "The powerhouse of the cell is the:", "options": { "A": "Nucleus", "B": "Ribosome", "C": "Mitochondria", "D": "Chloroplast" }, "answer": "C", "topic": "Cell Biology" },
+      { "id": "BIO002", "question": "The process by which plants make food using sunlight is called:", "options": { "A": "Respiration", "B": "Photosynthesis", "C": "Transpiration", "D": "Digestion" }, "answer": "B", "topic": "Photosynthesis" },
+      { "id": "BIO003", "question": "DNA stands for:", "options": { "A": "Dioxynucleic Acid", "B": "Deoxyribonucleic Acid", "C": "Dinucleic Acid", "D": "Diribonucleic Acid" }, "answer": "B", "topic": "Genetics" },
+      { "id": "BIO004", "question": "The basic unit of life is the:", "options": { "A": "Tissue", "B": "Organ", "C": "Cell", "D": "Organism" }, "answer": "C", "topic": "Cell Biology" },
+      { "id": "BIO005", "question": "Which blood group is the universal donor?", "options": { "A": "A", "B": "B", "C": "AB", "D": "O" }, "answer": "D", "topic": "Blood" },
+      { "id": "BIO006", "question": "The female reproductive organ in flowering plants is the:", "options": { "A": "Stamen", "B": "Pistil", "C": "Petal", "D": "Sepal" }, "answer": "B", "topic": "Plant Reproduction" },
+      { "id": "BIO007", "question": "Osmosis is the movement of water molecules from:", "options": { "A": "High concentration to low concentration", "B": "Low concentration to high concentration", "C": "High water potential to low water potential", "D": "Low water potential to high water potential" }, "answer": "C", "topic": "Transport in Organisms" },
+      { "id": "BIO008", "question": "The study of heredity is called:", "options": { "A": "Ecology", "B": "Genetics", "C": "Morphology", "D": "Taxonomy" }, "answer": "B", "topic": "Genetics" },
+      { "id": "BIO009", "question": "Which part of the brain controls balance?", "options": { "A": "Cerebrum", "B": "Medulla oblongata", "C": "Cerebellum", "D": "Hypothalamus" }, "answer": "C", "topic": "Nervous System" },
+      { "id": "BIO010", "question": "Enzymes are biological:", "options": { "A": "Carbohydrates", "B": "Lipids", "C": "Catalysts", "D": "Vitamins" }, "answer": "C", "topic": "Enzymes" },
+      { "id": "BIO011", "question": "The process by which organisms break down glucose to release energy is:", "options": { "A": "Photosynthesis", "B": "Respiration", "C": "Digestion", "D": "Transpiration" }, "answer": "B", "topic": "Respiration" },
+      { "id": "BIO012", "question": "Which of the following is NOT a mammal?", "options": { "A": "Whale", "B": "Bat", "C": "Snake", "D": "Human" }, "answer": "C", "topic": "Classification" },
+      { "id": "BIO013", "question": "Chlorophyll is located in the:", "options": { "A": "Mitochondria", "B": "Nucleus", "C": "Chloroplast", "D": "Vacuole" }, "answer": "C", "topic": "Photosynthesis" },
+      { "id": "BIO014", "question": "The hormone responsible for regulating blood sugar is:", "options": { "A": "Adrenaline", "B": "Insulin", "C": "Thyroxine", "D": "Oestrogen" }, "answer": "B", "topic": "Endocrine System" },
+      { "id": "BIO015", "question": "Mitosis results in:", "options": { "A": "Two cells with half the chromosome number", "B": "Four cells with half the chromosome number", "C": "Two cells with the same chromosome number", "D": "One cell with double chromosome number" }, "answer": "C", "topic": "Cell Division" },
+      { "id": "BIO016", "question": "The primary producers in an ecosystem are:", "options": { "A": "Herbivores", "B": "Carnivores", "C": "Decomposers", "D": "Green plants" }, "answer": "D", "topic": "Ecology" },
+      { "id": "BIO017", "question": "Which vitamin is produced when the skin is exposed to sunlight?", "options": { "A": "Vitamin A", "B": "Vitamin B", "C": "Vitamin C", "D": "Vitamin D" }, "answer": "D", "topic": "Nutrition" },
+      { "id": "BIO018", "question": "The gas released during photosynthesis is:", "options": { "A": "Carbon dioxide", "B": "Nitrogen", "C": "Oxygen", "D": "Hydrogen" }, "answer": "C", "topic": "Photosynthesis" },
+      { "id": "BIO019", "question": "Which of these is a function of the liver?", "options": { "A": "Producing insulin", "B": "Detoxification", "C": "Producing bile", "D": "Both B and C" }, "answer": "D", "topic": "Excretion" },
+      { "id": "BIO020", "question": "The membrane that separates the thorax from the abdomen is the:", "options": { "A": "Pleural membrane", "B": "Pericardium", "C": "Diaphragm", "D": "Peritoneum" }, "answer": "C", "topic": "Breathing" },
+      { "id": "BIO021", "question": "Which blood cells are responsible for immunity?", "options": { "A": "Red blood cells", "B": "Platelets", "C": "White blood cells", "D": "Plasma cells" }, "answer": "C", "topic": "Blood" },
+      { "id": "BIO022", "question": "The organ that filters blood in the body is the:", "options": { "A": "Liver", "B": "Heart", "C": "Spleen", "D": "Kidney" }, "answer": "D", "topic": "Excretion" },
+      { "id": "BIO023", "question": "Mendel's law of segregation states that:", "options": { "A": "Genes are on chromosomes", "B": "Alleles separate during gamete formation", "C": "Dominant genes mask recessive ones", "D": "Genes mutate randomly" }, "answer": "B", "topic": "Genetics" },
+      { "id": "BIO024", "question": "Insects belong to the class:", "options": { "A": "Arachnida", "B": "Crustacea", "C": "Insecta", "D": "Myriapoda" }, "answer": "C", "topic": "Classification" },
+      { "id": "BIO025", "question": "The function of the stomata in plants is:", "options": { "A": "Photosynthesis", "B": "Gas exchange and water loss", "C": "Nutrient absorption", "D": "Support" }, "answer": "B", "topic": "Plant Biology" },
+      { "id": "BIO026", "question": "The genetic material of viruses can be:", "options": { "A": "DNA only", "B": "RNA only", "C": "DNA or RNA", "D": "Neither DNA nor RNA" }, "answer": "C", "topic": "Microbiology" },
+      { "id": "BIO027", "question": "Which of these is a characteristic of living things?", "options": { "A": "Movement", "B": "Growth", "C": "Reproduction", "D": "All of the above" }, "answer": "D", "topic": "Characteristics of Life" },
+      { "id": "BIO028", "question": "The structural and functional unit of the kidney is the:", "options": { "A": "Alveolus", "B": "Nephron", "C": "Neuron", "D": "Villus" }, "answer": "B", "topic": "Excretion" },
+      { "id": "BIO029", "question": "Anaerobic respiration in yeast produces:", "options": { "A": "Lactic acid", "B": "Ethanol and CO₂", "C": "Water and CO₂", "D": "Glucose and O₂" }, "answer": "B", "topic": "Respiration" },
+      { "id": "BIO030", "question": "The study of fungi is called:", "options": { "A": "Phycology", "B": "Mycology", "C": "Virology", "D": "Bacteriology" }, "answer": "B", "topic": "Classification" },
+      { "id": "BIO031", "question": "Which part of the flower becomes the seed?", "options": { "A": "Ovary", "B": "Ovule", "C": "Petal", "D": "Stigma" }, "answer": "B", "topic": "Plant Reproduction" },
+      { "id": "BIO032", "question": "Haemoglobin is found in:", "options": { "A": "White blood cells", "B": "Platelets", "C": "Red blood cells", "D": "Plasma" }, "answer": "C", "topic": "Blood" },
+      { "id": "BIO033", "question": "The term 'ecology' refers to the study of:", "options": { "A": "Cells", "B": "Fossils", "C": "Organisms and their environment", "D": "Genes" }, "answer": "C", "topic": "Ecology" },
+      { "id": "BIO034", "question": "Which of the following transmits malaria?", "options": { "A": "Housefly", "B": "Female Anopheles mosquito", "C": "Tsetse fly", "D": "Sandfly" }, "answer": "B", "topic": "Disease" },
+      { "id": "BIO035", "question": "The process of meiosis results in:", "options": { "A": "Two diploid cells", "B": "Four haploid cells", "C": "Two haploid cells", "D": "Four diploid cells" }, "answer": "B", "topic": "Cell Division" },
+      { "id": "BIO036", "question": "Which of the following is an example of mutualism?", "options": { "A": "Tapeworm in the gut", "B": "Rhizobium in legume roots", "C": "Mistletoe on a tree", "D": "A tick on a dog" }, "answer": "B", "topic": "Ecology" },
+      { "id": "BIO037", "question": "The human heart has how many chambers?", "options": { "A": "2", "B": "3", "C": "4", "D": "5" }, "answer": "C", "topic": "Circulatory System" },
+      { "id": "BIO038", "question": "The sense organ for hearing is the:", "options": { "A": "Nose", "B": "Eye", "C": "Ear", "D": "Skin" }, "answer": "C", "topic": "Sense Organs" },
+      { "id": "BIO039", "question": "Which of the following is not a component of blood?", "options": { "A": "Plasma", "B": "Platelets", "C": "Bile", "D": "Red blood cells" }, "answer": "C", "topic": "Blood" },
+      { "id": "BIO040", "question": "The movement of molecules from high to low concentration is called:", "options": { "A": "Osmosis", "B": "Active transport", "C": "Diffusion", "D": "Facilitated diffusion" }, "answer": "C", "topic": "Transport" },
+      { "id": "BIO041", "question": "Vitamins are classified as:", "options": { "A": "Macronutrients", "B": "Micronutrients", "C": "Energy foods", "D": "Structural nutrients" }, "answer": "B", "topic": "Nutrition" },
+      { "id": "BIO042", "question": "The backbone is part of the:", "options": { "A": "Appendicular skeleton", "B": "Axial skeleton", "C": "Exoskeleton", "D": "Endoskeleton only" }, "answer": "B", "topic": "Skeletal System" },
+      { "id": "BIO043", "question": "Which of these diseases is caused by a bacterium?", "options": { "A": "Malaria", "B": "Measles", "C": "Tuberculosis", "D": "Hepatitis" }, "answer": "C", "topic": "Disease" },
+      { "id": "BIO044", "question": "The process by which water is lost from leaves is:", "options": { "A": "Osmosis", "B": "Transpiration", "C": "Evaporation", "D": "Diffusion" }, "answer": "B", "topic": "Transport in Plants" },
+      { "id": "BIO045", "question": "Which of these is a warm-blooded animal?", "options": { "A": "Frog", "B": "Snake", "C": "Fish", "D": "Bird" }, "answer": "D", "topic": "Classification" },
+      { "id": "BIO046", "question": "In which organ does most digestion take place?", "options": { "A": "Stomach", "B": "Oesophagus", "C": "Small intestine", "D": "Large intestine" }, "answer": "C", "topic": "Digestive System" },
+      { "id": "BIO047", "question": "A food chain always begins with a:", "options": { "A": "Consumer", "B": "Decomposer", "C": "Green plant", "D": "Carnivore" }, "answer": "C", "topic": "Ecology" },
+      { "id": "BIO048", "question": "Which of the following is involved in the translation of mRNA?", "options": { "A": "Ribosome", "B": "Nucleus", "C": "Mitochondria", "D": "Golgi apparatus" }, "answer": "A", "topic": "Molecular Biology" },
+      { "id": "BIO049", "question": "Phototropism in plants is a response to:", "options": { "A": "Water", "B": "Gravity", "C": "Light", "D": "Touch" }, "answer": "C", "topic": "Plant Biology" },
+      { "id": "BIO050", "question": "The scientific name of man is:", "options": { "A": "Homo erectus", "B": "Homo habilis", "C": "Homo sapiens", "D": "Homo neanderthalensis" }, "answer": "C", "topic": "Classification" }
+    ],
+    "Government": [
+      { "id": "GOV001", "question": "The 1999 Constitution of Nigeria was promulgated on:", "options": { "A": "October 1, 1999", "B": "May 29, 1999", "C": "January 1, 1999", "D": "June 12, 1999" }, "answer": "B", "topic": "Nigerian Constitution" },
+      { "id": "GOV002", "question": "The doctrine of separation of powers was propounded by:", "options": { "A": "John Locke", "B": "Jean-Jacques Rousseau", "C": "Baron de Montesquieu", "D": "Thomas Hobbes" }, "answer": "C", "topic": "Political Theories" },
+      { "id": "GOV003", "question": "The highest court in Nigeria is the:", "options": { "A": "Federal High Court", "B": "Court of Appeal", "C": "Supreme Court", "D": "Magistrate Court" }, "answer": "C", "topic": "Nigerian Judiciary" },
+      { "id": "GOV004", "question": "Federalism is a system of government in which power is:", "options": { "A": "Concentrated in one authority", "B": "Shared between central and regional governments", "C": "Held by the military", "D": "Given entirely to states" }, "answer": "B", "topic": "Types of Government" },
+      { "id": "GOV005", "question": "The concept of 'rule of law' was popularized by:", "options": { "A": "A.V. Dicey", "B": "John Stuart Mill", "C": "Karl Marx", "D": "Thomas Jefferson" }, "answer": "A", "topic": "Rule of Law" },
+      { "id": "GOV006", "question": "ECOWAS was established in:", "options": { "A": "1960", "B": "1963", "C": "1975", "D": "1980" }, "answer": "C", "topic": "International Organisations" },
+      { "id": "GOV007", "question": "Nigeria became a republic in:", "options": { "A": "1960", "B": "1963", "C": "1966", "D": "1979" }, "answer": "B", "topic": "Nigerian History" },
+      { "id": "GOV008", "question": "In a parliamentary system, the executive is responsible to the:", "options": { "A": "Judiciary", "B": "Military", "C": "Legislature", "D": "Electorate directly" }, "answer": "C", "topic": "Systems of Government" },
+      { "id": "GOV009", "question": "The United Nations was established in:", "options": { "A": "1919", "B": "1939", "C": "1945", "D": "1950" }, "answer": "C", "topic": "International Organisations" },
+      { "id": "GOV010", "question": "The Nigerian Senate consists of how many members?", "options": { "A": "109", "B": "360", "C": "120", "D": "100" }, "answer": "A", "topic": "Nigerian Legislature" },
+      { "id": "GOV011", "question": "Pressure groups differ from political parties mainly because they:", "options": { "A": "Contest elections", "B": "Seek to influence government policy without taking power", "C": "Operate internationally only", "D": "Have no members" }, "answer": "B", "topic": "Political Participation" },
+      { "id": "GOV012", "question": "The first military coup in Nigeria occurred in:", "options": { "A": "1964", "B": "1966", "C": "1967", "D": "1970" }, "answer": "B", "topic": "Nigerian Military History" },
+      { "id": "GOV013", "question": "A constitution that can be easily amended is described as:", "options": { "A": "Rigid", "B": "Flexible", "C": "Federal", "D": "Unitary" }, "answer": "B", "topic": "Constitutionalism" },
+      { "id": "GOV014", "question": "The Electoral Commission in Nigeria is called:", "options": { "A": "NEC", "B": "INEC", "C": "FEDECO", "D": "NECO" }, "answer": "B", "topic": "Elections" },
+      { "id": "GOV015", "question": "Sovereignty means:", "options": { "A": "Power to tax citizens", "B": "Supreme authority of the state", "C": "Military dominance", "D": "International recognition" }, "answer": "B", "topic": "Political Concepts" },
+      { "id": "GOV016", "question": "The OAU was later renamed:", "options": { "A": "ECOWAS", "B": "African Development Bank", "C": "African Union", "D": "NEPAD" }, "answer": "C", "topic": "International Organisations" },
+      { "id": "GOV017", "question": "The Nigerian Head of State during the civil war was:", "options": { "A": "Yakubu Gowon", "B": "Murtala Mohammed", "C": "Aguiyi-Ironsi", "D": "Olusegun Obasanjo" }, "answer": "A", "topic": "Nigerian History" },
+      { "id": "GOV018", "question": "Delegated legislation refers to:", "options": { "A": "Laws made by the president", "B": "Laws made by subordinate bodies under authority from the legislature", "C": "International treaties", "D": "Judicial decisions" }, "answer": "B", "topic": "Legislature" },
+      { "id": "GOV019", "question": "Which of the following is a feature of democratic government?", "options": { "A": "Absence of elections", "B": "Rule by one person", "C": "Protection of human rights", "D": "No opposition parties" }, "answer": "C", "topic": "Democracy" },
+      { "id": "GOV020", "question": "The policy of apartheid was practiced in:", "options": { "A": "Kenya", "B": "Zimbabwe", "C": "South Africa", "D": "Nigeria" }, "answer": "C", "topic": "African Politics" },
+      { "id": "GOV021", "question": "Judicial independence means the judiciary is free from:", "options": { "A": "Citizens", "B": "Press interference", "C": "Executive and legislative interference", "D": "International pressure" }, "answer": "C", "topic": "Judiciary" },
+      { "id": "GOV022", "question": "Nigeria operates a _____ system of government.", "options": { "A": "Unitary", "B": "Confederate", "C": "Federal", "D": "Parliamentary" }, "answer": "C", "topic": "Nigerian Government" },
+      { "id": "GOV023", "question": "The House of Representatives in Nigeria has:", "options": { "A": "109 members", "B": "360 members", "C": "469 members", "D": "250 members" }, "answer": "B", "topic": "Nigerian Legislature" },
+      { "id": "GOV024", "question": "Bicameralism refers to a legislature with:", "options": { "A": "One chamber", "B": "Two chambers", "C": "Three chambers", "D": "Four chambers" }, "answer": "B", "topic": "Legislature" },
+      { "id": "GOV025", "question": "The principle of checks and balances ensures that:", "options": { "A": "The president has absolute power", "B": "No arm of government becomes too powerful", "C": "The military controls government", "D": "Citizens are excluded from governance" }, "answer": "B", "topic": "Separation of Powers" },
+      { "id": "GOV026", "question": "Citizenship can be acquired by:", "options": { "A": "Birth only", "B": "Naturalization only", "C": "Birth, naturalization, or registration", "D": "Payment of taxes" }, "answer": "C", "topic": "Citizenship" },
+      { "id": "GOV027", "question": "The Social Contract theory was developed by:", "options": { "A": "Lenin", "B": "Rousseau, Hobbes, and Locke", "C": "Marx and Engels", "D": "Mill and Bentham" }, "answer": "B", "topic": "Political Theories" },
+      { "id": "GOV028", "question": "Which of these is NOT a fundamental right in Nigeria?", "options": { "A": "Right to life", "B": "Right to education", "C": "Right to freedom of expression", "D": "Right to freedom of movement" }, "answer": "B", "topic": "Human Rights" },
+      { "id": "GOV029", "question": "Totalitarianism is a system where:", "options": { "A": "Citizens control the government", "B": "The state has total control over all aspects of life", "C": "Power is shared among regions", "D": "Religious leaders rule" }, "answer": "B", "topic": "Types of Government" },
+      { "id": "GOV030", "question": "Nigeria was amalgamated in:", "options": { "A": "1900", "B": "1906", "C": "1914", "D": "1922" }, "answer": "C", "topic": "Nigerian History" },
+      { "id": "GOV031", "question": "The Security Council of the UN has how many permanent members?", "options": { "A": "3", "B": "5", "C": "7", "D": "10" }, "answer": "B", "topic": "United Nations" },
+      { "id": "GOV032", "question": "A referendum is when:", "options": { "A": "The president dissolves parliament", "B": "Citizens vote directly on a specific issue", "C": "The judiciary reviews a law", "D": "Political parties elect their leaders" }, "answer": "B", "topic": "Elections" },
+      { "id": "GOV033", "question": "The concept of popular sovereignty means power belongs to:", "options": { "A": "The military", "B": "The people", "C": "The president", "D": "International bodies" }, "answer": "B", "topic": "Political Concepts" },
+      { "id": "GOV034", "question": "Nigeria's independence was granted on:", "options": { "A": "October 1, 1960", "B": "January 15, 1960", "C": "June 12, 1960", "D": "August 27, 1960" }, "answer": "A", "topic": "Nigerian History" },
+      { "id": "GOV035", "question": "A political party differs from a pressure group because it:", "options": { "A": "Influences government", "B": "Has members", "C": "Seeks to form government", "D": "Operates locally" }, "answer": "C", "topic": "Political Parties" },
+      { "id": "GOV036", "question": "Local government councils are examples of:", "options": { "A": "Federal institutions", "B": "Grassroots democracy", "C": "Military administration", "D": "Judicial bodies" }, "answer": "B", "topic": "Local Government" },
+      { "id": "GOV037", "question": "Impeachment is a process of:", "options": { "A": "Electing a new president", "B": "Removing a public official from office", "C": "Amending the constitution", "D": "Declaring war" }, "answer": "B", "topic": "Executive" },
+      { "id": "GOV038", "question": "Which of these is a merit of federalism?", "options": { "A": "Uniformity of laws", "B": "Accommodation of diversity", "C": "Quick decision making", "D": "Concentration of power" }, "answer": "B", "topic": "Federalism" },
+      { "id": "GOV039", "question": "The Willink Commission (1957) was set up to:", "options": { "A": "Create regions", "B": "Investigate fears of minorities", "C": "Draft the 1960 constitution", "D": "Conduct elections" }, "answer": "B", "topic": "Nigerian History" },
+      { "id": "GOV040", "question": "OPEC is an acronym for:", "options": { "A": "Oil Producing European Countries", "B": "Organization of Petroleum Exporting Countries", "C": "Oil and Petroleum Exporting Club", "D": "Organization for Petroleum Economic Control" }, "answer": "B", "topic": "International Organisations" },
+      { "id": "GOV041", "question": "Which arm of government makes laws?", "options": { "A": "Executive", "B": "Judiciary", "C": "Legislature", "D": "Military" }, "answer": "C", "topic": "Separation of Powers" },
+      { "id": "GOV042", "question": "The Macpherson Constitution of Nigeria was introduced in:", "options": { "A": "1946", "B": "1951", "C": "1954", "D": "1960" }, "answer": "B", "topic": "Nigerian Constitutional History" },
+      { "id": "GOV043", "question": "An ombudsman is an official who:", "options": { "A": "Makes laws", "B": "Investigates citizens' complaints against government", "C": "Prosecutes criminals", "D": "Manages elections" }, "answer": "B", "topic": "Public Administration" },
+      { "id": "GOV044", "question": "Which of these is NOT a type of democracy?", "options": { "A": "Representative democracy", "B": "Direct democracy", "C": "Military democracy", "D": "Liberal democracy" }, "answer": "C", "topic": "Democracy" },
+      { "id": "GOV045", "question": "The Nigerian Civil War lasted from:", "options": { "A": "1966-1970", "B": "1967-1970", "C": "1965-1969", "D": "1968-1972" }, "answer": "B", "topic": "Nigerian History" },
+      { "id": "GOV046", "question": "Bicameral legislature exists in:", "options": { "A": "Ghana", "B": "Nigeria", "C": "Togo", "D": "Benin Republic" }, "answer": "B", "topic": "Legislature" },
+      { "id": "GOV047", "question": "Foreign policy is concerned with:", "options": { "A": "Domestic laws", "B": "A country's relations with other nations", "C": "Economic planning", "D": "Military strategy" }, "answer": "B", "topic": "Foreign Policy" },
+      { "id": "GOV048", "question": "Who wrote 'The Prince', a classic work on political leadership?", "options": { "A": "Thomas Hobbes", "B": "Niccolo Machiavelli", "C": "Karl Marx", "D": "John Locke" }, "answer": "B", "topic": "Political Philosophy" },
+      { "id": "GOV049", "question": "The process of acquiring the political culture of one's society is called:", "options": { "A": "Socialization", "B": "Political recruitment", "C": "Political communication", "D": "Political participation" }, "answer": "A", "topic": "Political Culture" },
+      { "id": "GOV050", "question": "A unicameral legislature has:", "options": { "A": "Two houses", "B": "Three houses", "C": "One house", "D": "No house" }, "answer": "C", "topic": "Legislature" }
+    ],
+    "Economics": [
+      { "id": "ECO001", "question": "Economics is defined as the study of:", "options": { "A": "Money and banking", "B": "How scarce resources are allocated", "C": "Stock markets", "D": "Trade between countries" }, "answer": "B", "topic": "Introduction to Economics" },
+      { "id": "ECO002", "question": "The law of demand states that as price increases, quantity demanded:", "options": { "A": "Increases", "B": "Remains the same", "C": "Decreases", "D": "Becomes zero" }, "answer": "C", "topic": "Demand" },
+      { "id": "ECO003", "question": "A market where there is only one seller is called:", "options": { "A": "Oligopoly", "B": "Monopoly", "C": "Duopoly", "D": "Perfect competition" }, "answer": "B", "topic": "Market Structures" },
+      { "id": "ECO004", "question": "GDP stands for:", "options": { "A": "Gross Domestic Poverty", "B": "Gross Domestic Product", "C": "General Domestic Production", "D": "General Development Plan" }, "answer": "B", "topic": "National Income" },
+      { "id": "ECO005", "question": "Inflation is defined as:", "options": { "A": "An increase in national income", "B": "A sustained rise in the general price level", "C": "A fall in unemployment", "D": "Growth in imports" }, "answer": "B", "topic": "Inflation" },
+      { "id": "ECO006", "question": "Supply curve normally slopes:", "options": { "A": "Downward from left to right", "B": "Upward from left to right", "C": "Horizontally", "D": "Vertically" }, "answer": "B", "topic": "Supply" },
+      { "id": "ECO007", "question": "The opportunity cost of a decision is:", "options": { "A": "The money spent on it", "B": "The best alternative forgone", "C": "The profit from the decision", "D": "The tax paid" }, "answer": "B", "topic": "Fundamental Concepts" },
+      { "id": "ECO008", "question": "Which of the following is a characteristic of perfect competition?", "options": { "A": "Few sellers", "B": "Product differentiation", "C": "Many buyers and sellers", "D": "Barriers to entry" }, "answer": "C", "topic": "Market Structures" },
+      { "id": "ECO009", "question": "Fiscal policy involves the use of:", "options": { "A": "Interest rates", "B": "Money supply", "C": "Government spending and taxation", "D": "Exchange rates" }, "answer": "C", "topic": "Economic Policy" },
+      { "id": "ECO010", "question": "Elasticity of demand measures:", "options": { "A": "The total revenue of firms", "B": "How responsive demand is to price changes", "C": "The supply of goods", "D": "The cost of production" }, "answer": "B", "topic": "Elasticity" },
+      { "id": "ECO011", "question": "The barter system involves:", "options": { "A": "Exchange of goods for money", "B": "Exchange of goods for goods", "C": "Exchange of money for services", "D": "Credit transactions" }, "answer": "B", "topic": "Money and Banking" },
+      { "id": "ECO012", "question": "A budget deficit occurs when:", "options": { "A": "Government revenue exceeds expenditure", "B": "Exports exceed imports", "C": "Government expenditure exceeds revenue", "D": "Savings exceed investment" }, "answer": "C", "topic": "Public Finance" },
+      { "id": "ECO013", "question": "Which of the following is NOT a factor of production?", "options": { "A": "Land", "B": "Labour", "C": "Money", "D": "Capital" }, "answer": "C", "topic": "Factors of Production" },
+      { "id": "ECO014", "question": "The central bank of Nigeria is called:", "options": { "A": "First Bank", "B": "Nigeria Deposit Insurance Corporation", "C": "Central Bank of Nigeria", "D": "Bank of Industry" }, "answer": "C", "topic": "Money and Banking" },
+      { "id": "ECO015", "question": "A rise in the price of a complement good will:", "options": { "A": "Increase demand for the main good", "B": "Decrease demand for the main good", "C": "Not affect demand", "D": "Increase supply" }, "answer": "B", "topic": "Demand" },
+      { "id": "ECO016", "question": "Transfer payments include:", "options": { "A": "Wages and salaries", "B": "Pensions and unemployment benefits", "C": "Profits and dividends", "D": "Rent and interest" }, "answer": "B", "topic": "National Income" },
+      { "id": "ECO017", "question": "Economic development is best described as:", "options": { "A": "Increase in GDP only", "B": "Qualitative and quantitative improvement in living standards", "C": "Increase in imports", "D": "Rise in population" }, "answer": "B", "topic": "Development Economics" },
+      { "id": "ECO018", "question": "Devaluation of currency means:", "options": { "A": "Increasing the value of local currency", "B": "Reducing the value of local currency relative to foreign currencies", "C": "Printing more money", "D": "Raising interest rates" }, "answer": "B", "topic": "International Trade" },
+      { "id": "ECO019", "question": "Which of these is a merit of the price mechanism?", "options": { "A": "It ensures equal distribution of income", "B": "It allocates resources efficiently", "C": "It eliminates poverty", "D": "It controls inflation" }, "answer": "B", "topic": "Price Mechanism" },
+      { "id": "ECO020", "question": "The Malthusian theory of population states that population grows:", "options": { "A": "Arithmetically while food grows geometrically", "B": "Geometrically while food grows arithmetically", "C": "At the same rate as food supply", "D": "Only when birth rates rise" }, "answer": "B", "topic": "Population" },
+      { "id": "ECO021", "question": "A trade union is an organisation that:", "options": { "A": "Controls trade between countries", "B": "Represents workers' interests", "C": "Manages government spending", "D": "Sets interest rates" }, "answer": "B", "topic": "Labour Market" },
+      { "id": "ECO022", "question": "Marginal utility is the additional utility from consuming:", "options": { "A": "The first unit", "B": "All units", "C": "One more unit", "D": "The last possible unit" }, "answer": "C", "topic": "Theory of Consumer Behaviour" },
+      { "id": "ECO023", "question": "Which of these is NOT a function of money?", "options": { "A": "Medium of exchange", "B": "Store of value", "C": "Unit of account", "D": "Source of production" }, "answer": "D", "topic": "Money" },
+      { "id": "ECO024", "question": "Economic rent refers to payment for:", "options": { "A": "Buildings", "B": "Land in its original state", "C": "Machinery", "D": "Labour" }, "answer": "B", "topic": "Distribution of Income" },
+      { "id": "ECO025", "question": "The multiplier effect occurs when an initial injection of spending leads to:", "options": { "A": "A smaller increase in total income", "B": "No change in total income", "C": "A larger increase in total income", "D": "Decreased government revenue" }, "answer": "C", "topic": "National Income" },
+      { "id": "ECO026", "question": "Which of these is a characteristic of a developing economy?", "options": { "A": "High per capita income", "B": "High literacy rate", "C": "Dependence on primary production", "D": "Advanced technology" }, "answer": "C", "topic": "Development Economics" },
+      { "id": "ECO027", "question": "Stagflation is a situation involving:", "options": { "A": "High inflation and low unemployment", "B": "High inflation and high unemployment", "C": "Low inflation and high growth", "D": "Deflation and growth" }, "answer": "B", "topic": "Macroeconomics" },
+      { "id": "ECO028", "question": "Monetary policy is controlled by:", "options": { "A": "The Finance Minister", "B": "The President", "C": "The Central Bank", "D": "Commercial Banks" }, "answer": "C", "topic": "Monetary Policy" },
+      { "id": "ECO029", "question": "Comparative advantage in trade means a country should produce:", "options": { "A": "What it is best at absolutely", "B": "What it can produce at relatively lower opportunity cost", "C": "All goods to be self-sufficient", "D": "Only luxury goods" }, "answer": "B", "topic": "International Trade" },
+      { "id": "ECO030", "question": "Public goods are characterised by:", "options": { "A": "Excludability and rivalry", "B": "Non-excludability and non-rivalry", "C": "High prices and limited supply", "D": "Private ownership" }, "answer": "B", "topic": "Public Finance" },
+      { "id": "ECO031", "question": "The demand curve for a Giffen good:", "options": { "A": "Slopes downward", "B": "Slopes upward", "C": "Is horizontal", "D": "Is vertical" }, "answer": "B", "topic": "Demand" },
+      { "id": "ECO032", "question": "Fixed costs are those that:", "options": { "A": "Change with output", "B": "Do not change with output in the short run", "C": "Are always zero", "D": "Rise as production decreases" }, "answer": "B", "topic": "Theory of the Firm" },
+      { "id": "ECO033", "question": "Which of these best describes an oligopoly?", "options": { "A": "One seller", "B": "Many small sellers", "C": "A few large sellers", "D": "Two sellers only" }, "answer": "C", "topic": "Market Structures" },
+      { "id": "ECO034", "question": "The law of diminishing returns applies to:", "options": { "A": "The long run", "B": "The short run", "C": "All time periods", "D": "International trade" }, "answer": "B", "topic": "Production Theory" },
+      { "id": "ECO035", "question": "Balance of payments refers to:", "options": { "A": "Government budget", "B": "Record of all economic transactions between a country and the rest of the world", "C": "Central bank reserves", "D": "National savings" }, "answer": "B", "topic": "International Trade" },
+      { "id": "ECO036", "question": "A subsidy is a payment made by the government to:", "options": { "A": "Consumers to reduce taxes", "B": "Producers to lower their costs", "C": "Increase import prices", "D": "Reduce trade deficits" }, "answer": "B", "topic": "Government Intervention" },
+      { "id": "ECO037", "question": "Which of these is a primary sector activity?", "options": { "A": "Manufacturing", "B": "Banking", "C": "Farming", "D": "Retail" }, "answer": "C", "topic": "Sectors of the Economy" },
+      { "id": "ECO038", "question": "The quantity theory of money is expressed as:", "options": { "A": "MV = PT", "B": "GDP = C + I + G", "C": "AD = AS", "D": "Y = C + S" }, "answer": "A", "topic": "Monetary Theory" },
+      { "id": "ECO039", "question": "Which of these is an automatic stabilizer?", "options": { "A": "New road construction", "B": "Unemployment benefits", "C": "Military spending", "D": "Tax cuts" }, "answer": "B", "topic": "Fiscal Policy" },
+      { "id": "ECO040", "question": "The Lorenz curve is used to measure:", "options": { "A": "Economic growth", "B": "Income inequality", "C": "Unemployment levels", "D": "Inflation rates" }, "answer": "B", "topic": "Distribution of Income" },
+      { "id": "ECO041", "question": "Elasticity of supply greater than 1 means supply is:", "options": { "A": "Inelastic", "B": "Unitary elastic", "C": "Elastic", "D": "Perfectly inelastic" }, "answer": "C", "topic": "Elasticity" },
+      { "id": "ECO042", "question": "Mixed economy combines elements of:", "options": { "A": "Capitalism only", "B": "Socialism only", "C": "Both capitalism and socialism", "D": "Neither capitalism nor socialism" }, "answer": "C", "topic": "Economic Systems" },
+      { "id": "ECO043", "question": "Tariffs are taxes imposed on:", "options": { "A": "Domestic goods", "B": "Imported goods", "C": "Exported goods", "D": "Luxury goods" }, "answer": "B", "topic": "International Trade" },
+      { "id": "ECO044", "question": "An increase in income that does not change the demand for a good suggests the good is:", "options": { "A": "A luxury", "B": "Normal", "C": "Inferior", "D": "A necessity" }, "answer": "B", "topic": "Demand" },
+      { "id": "ECO045", "question": "The term 'entrepreneur' refers to a person who:", "options": { "A": "Only provides capital", "B": "Only manages workers", "C": "Organises other factors of production and bears risk", "D": "Only buys and sells goods" }, "answer": "C", "topic": "Factors of Production" },
+      { "id": "ECO046", "question": "Consumer surplus is the difference between:", "options": { "A": "Price paid and marginal cost", "B": "Willingness to pay and actual price paid", "C": "Total revenue and total cost", "D": "Supply and demand" }, "answer": "B", "topic": "Consumer Theory" },
+      { "id": "ECO047", "question": "Hyperinflation refers to:", "options": { "A": "Inflation above 5% per year", "B": "Extremely rapid and uncontrollable inflation", "C": "Negative inflation", "D": "Moderate inflation" }, "answer": "B", "topic": "Inflation" },
+      { "id": "ECO048", "question": "Which international institution provides loans for development projects?", "options": { "A": "IMF", "B": "WTO", "C": "World Bank", "D": "OPEC" }, "answer": "C", "topic": "International Economic Institutions" },
+      { "id": "ECO049", "question": "The concept of scarcity in economics means:", "options": { "A": "There are no resources", "B": "Resources are insufficient relative to unlimited wants", "C": "Only poor countries have limited resources", "D": "Goods are not available for purchase" }, "answer": "B", "topic": "Introduction to Economics" },
+      { "id": "ECO050", "question": "Gross National Product (GNP) differs from GDP because it includes:", "options": { "A": "Government expenditure", "B": "Income earned by citizens abroad", "C": "Domestic investments only", "D": "Agricultural output" }, "answer": "B", "topic": "National Income" }
+    ],
+    "Literature_in_English": [
+      { "id": "LIT001", "question": "A story told in first person is narrated by:", "options": { "A": "The author", "B": "A character using 'I'", "C": "An omniscient narrator", "D": "The reader" }, "answer": "B", "topic": "Prose Narrative" },
+      { "id": "LIT002", "question": "A soliloquy is a speech made:", "options": { "A": "By two characters", "B": "To the audience by one character alone on stage", "C": "By the chorus", "D": "In whispers" }, "answer": "B", "topic": "Drama" },
+      { "id": "LIT003", "question": "A sonnet contains how many lines?", "options": { "A": "10", "B": "12", "C": "14", "D": "16" }, "answer": "C", "topic": "Poetry" },
+      { "id": "LIT004", "question": "Dramatic irony occurs when:", "options": { "A": "Two characters disagree", "B": "The audience knows something a character doesn't", "C": "The plot is predictable", "D": "Characters speak in riddles" }, "answer": "B", "topic": "Literary Devices" },
+      { "id": "LIT005", "question": "A tragedy typically ends with:", "options": { "A": "A wedding", "B": "Reconciliation", "C": "The downfall or death of the protagonist", "D": "A celebration" }, "answer": "C", "topic": "Drama" },
+      { "id": "LIT006", "question": "The theme of a literary work refers to its:", "options": { "A": "Plot summary", "B": "Central message or idea", "C": "Setting", "D": "Main character" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT007", "question": "An epic is a long narrative poem that deals with:", "options": { "A": "Love and romance", "B": "Heroic deeds and events of historic importance", "C": "Humour and satire", "D": "Nature and seasons" }, "answer": "B", "topic": "Poetry" },
+      { "id": "LIT008", "question": "The resolution or dénouement of a play occurs:", "options": { "A": "At the beginning", "B": "During the climax", "C": "After the climax when conflicts are resolved", "D": "In the prologue" }, "answer": "C", "topic": "Drama" },
+      { "id": "LIT009", "question": "Onomatopoeia refers to words that:", "options": { "A": "Rhyme with each other", "B": "Imitate natural sounds", "C": "Create visual images", "D": "Have opposite meanings" }, "answer": "B", "topic": "Literary Devices" },
+      { "id": "LIT010", "question": "The protagonist in a story is the:", "options": { "A": "Narrator", "B": "Author", "C": "Main character", "D": "Villain" }, "answer": "C", "topic": "Prose" },
+      { "id": "LIT011", "question": "Blank verse is poetry that has:", "options": { "A": "Neither rhyme nor rhythm", "B": "Regular rhythm but no rhyme", "C": "Rhyme but no rhythm", "D": "Both rhyme and rhythm" }, "answer": "B", "topic": "Poetry" },
+      { "id": "LIT012", "question": "The exposition in a play provides:", "options": { "A": "The climax of the plot", "B": "Background information about characters and setting", "C": "The resolution", "D": "The falling action" }, "answer": "B", "topic": "Drama" },
+      { "id": "LIT013", "question": "A foil character in fiction is one who:", "options": { "A": "Is identical to the protagonist", "B": "Contrasts with the protagonist to highlight their traits", "C": "Tells the story", "D": "Is the villain" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT014", "question": "The term 'catharsis' in drama refers to:", "options": { "A": "Comic relief", "B": "Purging of emotions like pity and fear by the audience", "C": "The final scene", "D": "A speech by the villain" }, "answer": "B", "topic": "Drama" },
+      { "id": "LIT015", "question": "A ballad is a type of poem that:", "options": { "A": "Tells a story, often with repetition", "B": "Has exactly 14 lines", "C": "Has no structure", "D": "Is written in free verse only" }, "answer": "A", "topic": "Poetry" },
+      { "id": "LIT016", "question": "The omniscient narrator knows:", "options": { "A": "Only what one character thinks", "B": "Everything about all characters", "C": "Nothing about the future", "D": "Only external events" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT017", "question": "Satire is a literary device used to:", "options": { "A": "Praise public figures", "B": "Criticize and mock societal vices", "C": "Tell children's stories", "D": "Describe nature" }, "answer": "B", "topic": "Literary Devices" },
+      { "id": "LIT018", "question": "The antagonist in a story is the character who:", "options": { "A": "Helps the protagonist", "B": "Opposes the protagonist", "C": "Tells the story", "D": "Is the narrator" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT019", "question": "Which of these is a feature of oral literature?", "options": { "A": "Fixed written text", "B": "Performance and audience participation", "C": "Individual authorship", "D": "Formal publication" }, "answer": "B", "topic": "Oral Literature" },
+      { "id": "LIT020", "question": "A metaphor in literature makes a comparison:", "options": { "A": "Using 'like' or 'as'", "B": "Directly, without 'like' or 'as'", "C": "Using negation", "D": "Through questions" }, "answer": "B", "topic": "Literary Devices" },
+      { "id": "LIT021", "question": "Stream of consciousness is a narrative technique that:", "options": { "A": "Follows strict chronology", "B": "Presents a character's flowing thoughts and feelings", "C": "Uses only dialogue", "D": "Tells events in reverse" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT022", "question": "A comedy typically ends with:", "options": { "A": "Death of the hero", "B": "Tragedy and sorrow", "C": "Happiness, celebration, or marriage", "D": "Ambiguity" }, "answer": "C", "topic": "Drama" },
+      { "id": "LIT023", "question": "Free verse poetry does NOT have:", "options": { "A": "Imagery", "B": "Regular rhyme or metre", "C": "Emotion", "D": "Characters" }, "answer": "B", "topic": "Poetry" },
+      { "id": "LIT024", "question": "Flashback in a story is a technique used to:", "options": { "A": "Preview future events", "B": "Return to past events", "C": "Describe the setting", "D": "Introduce new characters" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT025", "question": "The unities in classical drama are unities of:", "options": { "A": "Character, language, and plot", "B": "Time, place, and action", "C": "Setting, character, and theme", "D": "Dialogue, music, and dance" }, "answer": "B", "topic": "Drama" },
+      { "id": "LIT026", "question": "A couplet in poetry is:", "options": { "A": "Four lines", "B": "Two successive rhyming lines", "C": "Six lines", "D": "A stanza with no rhyme" }, "answer": "B", "topic": "Poetry" },
+      { "id": "LIT027", "question": "Which of these is an example of hyperbole?", "options": { "A": "He walks like a giant.", "B": "Time is a thief.", "C": "I have told you a million times.", "D": "The wind whispered." }, "answer": "C", "topic": "Literary Devices" },
+      { "id": "LIT028", "question": "The setting of a story refers to its:", "options": { "A": "Theme", "B": "Plot", "C": "Time and place of the action", "D": "Narrator" }, "answer": "C", "topic": "Prose" },
+      { "id": "LIT029", "question": "In poetry, 'enjambment' means:", "options": { "A": "End-stopping each line", "B": "A sentence continues beyond the end of the line", "C": "Repetition of sounds", "D": "A pause within a line" }, "answer": "B", "topic": "Poetry" },
+      { "id": "LIT030", "question": "A Shakespearean sonnet consists of:", "options": { "A": "Two quatrains and a sestet", "B": "Three quatrains and a couplet", "C": "Four tercets", "D": "Seven couplets" }, "answer": "B", "topic": "Poetry" },
+      { "id": "LIT031", "question": "The rising action in a play refers to:", "options": { "A": "The resolution of the conflict", "B": "Events that build tension toward the climax", "C": "The opening scene", "D": "The falling action" }, "answer": "B", "topic": "Drama" },
+      { "id": "LIT032", "question": "Irony involves saying the:", "options": { "A": "Opposite of what is meant", "B": "Exact truth", "C": "Same thing repeatedly", "D": "Most obvious thing" }, "answer": "A", "topic": "Literary Devices" },
+      { "id": "LIT033", "question": "An allegory is a story in which characters and events are:", "options": { "A": "Purely fictional with no meaning", "B": "Symbols for deeper moral or political meanings", "C": "Based on real historical events only", "D": "Always comedic" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT034", "question": "The persona in a poem is:", "options": { "A": "The author", "B": "The speaker or voice in the poem", "C": "The reader", "D": "The title" }, "answer": "B", "topic": "Poetry" },
+      { "id": "LIT035", "question": "Which of these is a feature of drama?", "options": { "A": "Long descriptive passages", "B": "Dialogue and stage directions", "C": "No characters", "D": "Only written for reading" }, "answer": "B", "topic": "Drama" },
+      { "id": "LIT036", "question": "A fable is a short story that:", "options": { "A": "Has no moral", "B": "Features animals with a moral lesson", "C": "Is always about humans", "D": "Lacks a plot" }, "answer": "B", "topic": "Oral Literature" },
+      { "id": "LIT037", "question": "Assonance is the repetition of:", "options": { "A": "Consonant sounds", "B": "Vowel sounds in nearby words", "C": "Whole words", "D": "Sentences" }, "answer": "B", "topic": "Literary Devices" },
+      { "id": "LIT038", "question": "A novel is different from a short story primarily because of:", "options": { "A": "Genre", "B": "Length and complexity of plot", "C": "Language used", "D": "The author" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT039", "question": "Suspense in a narrative is created by:", "options": { "A": "Telling the end at the beginning", "B": "Keeping the reader uncertain about what happens next", "C": "Too much description", "D": "Flashbacks only" }, "answer": "B", "topic": "Narrative Technique" },
+      { "id": "LIT040", "question": "A dirge is a poem or song that:", "options": { "A": "Celebrates victory", "B": "Mourns the dead", "C": "Praises the living", "D": "Tells a funny story" }, "answer": "B", "topic": "Poetry" },
+      { "id": "LIT041", "question": "The climax in a narrative is the:", "options": { "A": "Introduction of the conflict", "B": "Point of highest tension", "C": "Final chapter", "D": "Setting description" }, "answer": "B", "topic": "Plot" },
+      { "id": "LIT042", "question": "Which of these is an example of alliteration?", "options": { "A": "Peter Piper picked a peck of pickled peppers", "B": "He runs as fast as a cheetah", "C": "The stars danced", "D": "It was bittersweet" }, "answer": "A", "topic": "Literary Devices" },
+      { "id": "LIT043", "question": "Characterization refers to:", "options": { "A": "The plot structure", "B": "How a writer creates and develops characters", "C": "Setting of the story", "D": "The poem's rhythm" }, "answer": "B", "topic": "Prose" },
+      { "id": "LIT044", "question": "A third-person limited narrator has access to:", "options": { "A": "All characters' thoughts", "B": "Only the thoughts of one character", "C": "No character's thoughts", "D": "The author's intentions" }, "answer": "B", "topic": "Prose Narrative" },
+      { "id": "LIT045", "question": "Proverbs in oral literature serve to:", "options": { "A": "Entertain only", "B": "Convey wisdom and cultural values", "C": "Confuse the audience", "D": "Describe settings" }, "answer": "B", "topic": "Oral Literature" },
+      { "id": "LIT046", "question": "A round character is one who:", "options": { "A": "Doesn't change throughout the story", "B": "Is complex and changes/develops throughout the story", "C": "Is always the villain", "D": "Appears only in drama" }, "answer": "B", "topic": "Characterization" },
+      { "id": "LIT047", "question": "Diction in literature refers to:", "options": { "A": "The rhythm of a poem", "B": "The choice of words used by the writer", "C": "The setting of the story", "D": "The length of the text" }, "answer": "B", "topic": "Style" },
+      { "id": "LIT048", "question": "An aside in drama is when a character:", "options": { "A": "Exits the stage", "B": "Speaks to the audience without other characters hearing", "C": "Sings a song", "D": "Argues with another character" }, "answer": "B", "topic": "Drama" },
+      { "id": "LIT049", "question": "Myth differs from legend in that myth:", "options": { "A": "Involves real historical figures", "B": "Explains natural phenomena and involves gods", "C": "Is always short", "D": "Has no supernatural elements" }, "answer": "B", "topic": "Oral Literature" },
+      { "id": "LIT050", "question": "Tone in a poem refers to the writer's:", "options": { "A": "Use of imagery", "B": "Attitude toward the subject", "C": "Rhyme scheme", "D": "Choice of setting" }, "answer": "B", "topic": "Poetry" }
+    ],
+    "Geography": [
+      { "id": "GEO001", "question": "The longest river in Africa is the:", "options": { "A": "Niger", "B": "Congo", "C": "Nile", "D": "Zambezi" }, "answer": "C", "topic": "Physical Geography of Africa" },
+      { "id": "GEO002", "question": "The process by which rocks are broken down into smaller pieces by weather is called:", "options": { "A": "Erosion", "B": "Weathering", "C": "Deposition", "D": "Transportation" }, "answer": "B", "topic": "Geomorphology" },
+      { "id": "GEO003", "question": "The imaginary line that divides the Earth into Northern and Southern hemispheres is the:", "options": { "A": "Prime Meridian", "B": "Tropic of Cancer", "C": "Equator", "D": "International Date Line" }, "answer": "C", "topic": "Map Reading" },
+      { "id": "GEO004", "question": "Which of these is a greenhouse gas?", "options": { "A": "Oxygen", "B": "Nitrogen", "C": "Carbon dioxide", "D": "Hydrogen" }, "answer": "C", "topic": "Climate Change" },
+      { "id": "GEO005", "question": "The capital city of Nigeria is:", "options": { "A": "Lagos", "B": "Kano", "C": "Abuja", "D": "Ibadan" }, "answer": "C", "topic": "Nigeria" },
+      { "id": "GEO006", "question": "A contour line on a map connects points of equal:", "options": { "A": "Rainfall", "B": "Temperature", "C": "Altitude", "D": "Population" }, "answer": "C", "topic": "Map Reading" },
+      { "id": "GEO007", "question": "The movement of people from rural areas to cities is called:", "options": { "A": "Immigration", "B": "Emigration", "C": "Rural-urban migration", "D": "Transhumance" }, "answer": "C", "topic": "Population" },
+      { "id": "GEO008", "question": "The type of climate near the equator is:", "options": { "A": "Desert", "B": "Temperate", "C": "Equatorial", "D": "Mediterranean" }, "answer": "C", "topic": "Climatology" },
+      { "id": "GEO009", "question": "The largest continent by area is:", "options": { "A": "Africa", "B": "North America", "C": "Asia", "D": "Europe" }, "answer": "C", "topic": "World Geography" },
+      { "id": "GEO010", "question": "Latitude is measured in degrees:", "options": { "A": "North and South of the Prime Meridian", "B": "East and West of the Equator", "C": "North and South of the Equator", "D": "East and West of the Prime Meridian" }, "answer": "C", "topic": "Map Reading" },
+      { "id": "GEO011", "question": "Which of these is a type of precipitation?", "options": { "A": "Evaporation", "B": "Condensation", "C": "Hail", "D": "Transpiration" }, "answer": "C", "topic": "Climatology" },
+      { "id": "GEO012", "question": "The Sahara Desert is located in:", "options": { "A": "Asia", "B": "South America", "C": "North Africa", "D": "Australia" }, "answer": "C", "topic": "World Geography" },
+      { "id": "GEO013", "question": "What is the most abundant gas in the atmosphere?", "options": { "A": "Oxygen", "B": "Carbon dioxide", "C": "Nitrogen", "D": "Argon" }, "answer": "C", "topic": "Atmosphere" },
+      { "id": "GEO014", "question": "The process by which water vapour cools and becomes liquid is:", "options": { "A": "Evaporation", "B": "Transpiration", "C": "Condensation", "D": "Precipitation" }, "answer": "C", "topic": "Hydrological Cycle" },
+      { "id": "GEO015", "question": "The layer of the atmosphere closest to the Earth's surface is the:", "options": { "A": "Stratosphere", "B": "Mesosphere", "C": "Troposphere", "D": "Thermosphere" }, "answer": "C", "topic": "Atmosphere" },
+      { "id": "GEO016", "question": "A delta is formed at the:", "options": { "A": "Source of a river", "B": "Mouth of a river", "C": "Middle course of a river", "D": "Junction of two rivers" }, "answer": "B", "topic": "Geomorphology" },
+      { "id": "GEO017", "question": "Which of these is an effect of deforestation?", "options": { "A": "Increased rainfall", "B": "Soil erosion", "C": "Reduced flooding", "D": "Better air quality" }, "answer": "B", "topic": "Environmental Issues" },
+      { "id": "GEO018", "question": "Population density is calculated as:", "options": { "A": "Population × Area", "B": "Population ÷ Area", "C": "Area ÷ Population", "D": "Population + Area" }, "answer": "B", "topic": "Population" },
+      { "id": "GEO019", "question": "The term 'watershed' refers to:", "options": { "A": "An area of water storage", "B": "The ridge that separates river basins", "C": "A type of rainfall", "D": "A water treatment facility" }, "answer": "B", "topic": "Drainage" },
+      { "id": "GEO020", "question": "Which planet is closest to the sun?", "options": { "A": "Venus", "B": "Earth", "C": "Mercury", "D": "Mars" }, "answer": "C", "topic": "Solar System" },
+      { "id": "GEO021", "question": "The Ring of Fire is associated with:", "options": { "A": "Tropical forest fires", "B": "Volcanic and earthquake activity around the Pacific", "C": "Desert sandstorms", "D": "Ocean currents" }, "answer": "B", "topic": "Volcanoes and Earthquakes" },
+      { "id": "GEO022", "question": "Subsistence farming is farming done mainly for:", "options": { "A": "Commercial sale", "B": "Export", "C": "Family consumption", "D": "Government supply" }, "answer": "C", "topic": "Agriculture" },
+      { "id": "GEO023", "question": "The study of the relationship between organisms and their environment is:", "options": { "A": "Geology", "B": "Ecology", "C": "Hydrology", "D": "Meteorology" }, "answer": "B", "topic": "Ecology" },
+      { "id": "GEO024", "question": "Lake Chad is located in:", "options": { "A": "West Africa only", "B": "The Lake Chad Basin shared by Nigeria, Niger, Chad, Cameroon", "C": "Central Africa", "D": "East Africa" }, "answer": "B", "topic": "Nigeria" },
+      { "id": "GEO025", "question": "Which of the following is a renewable resource?", "options": { "A": "Coal", "B": "Natural gas", "C": "Solar energy", "D": "Petroleum" }, "answer": "C", "topic": "Natural Resources" },
+      { "id": "GEO026", "question": "The harmattan is:", "options": { "A": "A type of vegetation", "B": "A dry, dusty wind from the Sahara", "C": "A type of soil", "D": "A warm ocean current" }, "answer": "B", "topic": "Climate of Nigeria" },
+      { "id": "GEO027", "question": "Longitude is measured in degrees:", "options": { "A": "North and South of the Equator", "B": "East and West of the Prime Meridian", "C": "East and West of the Equator", "D": "North and South of the Prime Meridian" }, "answer": "B", "topic": "Map Reading" },
+      { "id": "GEO028", "question": "The type of vegetation found between the equatorial forest and the savanna is:", "options": { "A": "Mangrove", "B": "Guinea savanna", "C": "Tropical rainforest", "D": "Montane vegetation" }, "answer": "B", "topic": "Vegetation" },
+      { "id": "GEO029", "question": "Urbanization refers to:", "options": { "A": "The decline of cities", "B": "The growth of cities and increase in urban population", "C": "Agricultural development", "D": "Industrial decline" }, "answer": "B", "topic": "Population" },
+      { "id": "GEO030", "question": "The Tropic of Cancer is located at:", "options": { "A": "23.5°S", "B": "23.5°N", "C": "66.5°N", "D": "0°" }, "answer": "B", "topic": "Map Reading" },
+      { "id": "GEO031", "question": "The ocean current that moderates the climate of Western Europe is the:", "options": { "A": "Labrador Current", "B": "Benguela Current", "C": "North Atlantic Drift", "D": "Canaries Current" }, "answer": "C", "topic": "Ocean Currents" },
+      { "id": "GEO032", "question": "Which Nigerian state is the largest by area?", "options": { "A": "Niger", "B": "Borno", "C": "Kaduna", "D": "Taraba" }, "answer": "A", "topic": "Nigeria" },
+      { "id": "GEO033", "question": "Igneous rocks are formed by:", "options": { "A": "Sediment deposition", "B": "Cooling and solidification of molten magma", "C": "Metamorphism", "D": "Erosion" }, "answer": "B", "topic": "Rocks and Minerals" },
+      { "id": "GEO034", "question": "The scale of a map 1:50,000 means that 1 cm on the map represents:", "options": { "A": "50 m on the ground", "B": "500 m on the ground", "C": "50,000 m on the ground", "D": "5 km on the ground" }, "answer": "B", "topic": "Map Reading" },
+      { "id": "GEO035", "question": "The primary cause of tides is:", "options": { "A": "Wind", "B": "The moon's gravitational pull", "C": "Earth's rotation", "D": "Ocean currents" }, "answer": "B", "topic": "Oceanography" },
+      { "id": "GEO036", "question": "Cash crops grown in Nigeria include:", "options": { "A": "Rice and maize", "B": "Cocoa, groundnuts, and cotton", "C": "Yam and cassava", "D": "Beans and millet" }, "answer": "B", "topic": "Agriculture" },
+      { "id": "GEO037", "question": "The Richter scale measures:", "options": { "A": "Wind speed", "B": "Earthquake magnitude", "C": "Ocean depth", "D": "Volcanic temperature" }, "answer": "B", "topic": "Earthquakes" },
+      { "id": "GEO038", "question": "A fjord is a:", "options": { "A": "Type of desert", "B": "Narrow sea inlet between steep cliffs", "C": "Mountain peak", "D": "Type of valley" }, "answer": "B", "topic": "Coastal Geography" },
+      { "id": "GEO039", "question": "Which of these industries processes raw materials into finished goods?", "options": { "A": "Primary", "B": "Secondary", "C": "Tertiary", "D": "Quaternary" }, "answer": "B", "topic": "Industry" },
+      { "id": "GEO040", "question": "The Amazon rainforest is located in:", "options": { "A": "Africa", "B": "South America", "C": "Southeast Asia", "D": "Central America" }, "answer": "B", "topic": "World Geography" },
+      { "id": "GEO041", "question": "What does GIS stand for in geography?", "options": { "A": "General Information System", "B": "Geographic Information System", "C": "Global Infrastructure Study", "D": "Geological Information Service" }, "answer": "B", "topic": "Remote Sensing" },
+      { "id": "GEO042", "question": "Leaching is the process by which:", "options": { "A": "Minerals are deposited in soil", "B": "Soluble minerals are washed down through the soil", "C": "Soil is formed from rock", "D": "Organic matter decomposes" }, "answer": "B", "topic": "Soils" },
+      { "id": "GEO043", "question": "The three main types of rocks are igneous, sedimentary, and:", "options": { "A": "Calcified", "B": "Mineral", "C": "Metamorphic", "D": "Volcanic" }, "answer": "C", "topic": "Rocks" },
+      { "id": "GEO044", "question": "Mangrove vegetation is typically found in:", "options": { "A": "Deserts", "B": "Swampy coastal areas", "C": "Highland regions", "D": "Savanna zones" }, "answer": "B", "topic": "Vegetation" },
+      { "id": "GEO045", "question": "The greenhouse effect causes:", "options": { "A": "Cooling of the Earth", "B": "Warming of the Earth's atmosphere", "C": "Ozone layer expansion", "D": "Reduced rainfall" }, "answer": "B", "topic": "Climate Change" },
+      { "id": "GEO046", "question": "A plateau is a:", "options": { "A": "Low-lying flat land", "B": "Elevated flat-topped landform", "C": "A steep cliff", "D": "A river valley" }, "answer": "B", "topic": "Landforms" },
+      { "id": "GEO047", "question": "Demography is the study of:", "options": { "A": "Land use", "B": "Human population statistics", "C": "Democracy", "D": "Economic development" }, "answer": "B", "topic": "Population" },
+      { "id": "GEO048", "question": "The process of wind carrying away loose materials is called:", "options": { "A": "Weathering", "B": "Deflation", "C": "Deposition", "D": "Abrasion" }, "answer": "B", "topic": "Wind Action" },
+      { "id": "GEO049", "question": "Which of these countries is landlocked?", "options": { "A": "Nigeria", "B": "Ghana", "C": "Mali", "D": "Senegal" }, "answer": "C", "topic": "World Geography" },
+      { "id": "GEO050", "question": "The main source of energy for the Earth is:", "options": { "A": "The Moon", "B": "Nuclear energy", "C": "The Sun", "D": "Geothermal energy" }, "answer": "C", "topic": "Energy" }
+    ],
+    "Commerce": [
+      { "id": "COM001", "question": "Commerce is defined as all activities involved in:", "options": { "A": "Production of goods", "B": "Distribution of goods and services", "C": "Agriculture", "D": "Manufacturing" }, "answer": "B", "topic": "Introduction to Commerce" },
+      { "id": "COM002", "question": "A sole proprietorship is owned by:", "options": { "A": "Two or more persons", "B": "The government", "C": "One person", "D": "Shareholders" }, "answer": "C", "topic": "Forms of Business Ownership" },
+      { "id": "COM003", "question": "The document sent by a seller to a buyer showing goods sent and amounts owed is a:", "options": { "A": "Receipt", "B": "Invoice", "C": "Credit note", "D": "Purchase order" }, "answer": "B", "topic": "Trade Documents" },
+      { "id": "COM004", "question": "Insurance is based on the principle of:", "options": { "A": "Profit maximization", "B": "Risk sharing", "C": "Tax avoidance", "D": "Capital formation" }, "answer": "B", "topic": "Insurance" },
+      { "id": "COM005", "question": "A cheque is an example of a:", "options": { "A": "Promissory note", "B": "Bill of exchange", "C": "Negotiable instrument", "D": "Bond" }, "answer": "C", "topic": "Banking" },
+      { "id": "COM006", "question": "A cooperative society is owned by its:", "options": { "A": "Directors", "B": "Government", "C": "Members", "D": "Shareholders" }, "answer": "C", "topic": "Forms of Business Ownership" },
+      { "id": "COM007", "question": "Warehousing in commerce provides the utility of:", "options": { "A": "Place", "B": "Form", "C": "Time", "D": "Possession" }, "answer": "C", "topic": "Warehousing" },
+      { "id": "COM008", "question": "Advertising is a form of:", "options": { "A": "Distribution", "B": "Production", "C": "Promotion", "D": "Storage" }, "answer": "C", "topic": "Marketing" },
+      { "id": "COM009", "question": "The full meaning of VAT is:", "options": { "A": "Value Added Transfer", "B": "Value Added Tax", "C": "Variable Added Tax", "D": "Value Annual Tax" }, "answer": "B", "topic": "Taxation" },
+      { "id": "COM010", "question": "A bill of lading is used in:", "options": { "A": "Air transport", "B": "Sea transport", "C": "Road transport", "D": "Rail transport" }, "answer": "B", "topic": "Transportation" },
+      { "id": "COM011", "question": "Entrepôt trade involves:", "options": { "A": "Domestic trade only", "B": "Import and re-export of goods", "C": "Agricultural trade", "D": "Industrial production" }, "answer": "B", "topic": "International Trade" },
+      { "id": "COM012", "question": "A debit note is issued when:", "options": { "A": "Goods are returned by the buyer", "B": "The buyer has been undercharged", "C": "Payment is made", "D": "Goods are dispatched" }, "answer": "B", "topic": "Trade Documents" },
+      { "id": "COM013", "question": "Trade by barter is limited by:", "options": { "A": "Availability of money", "B": "Double coincidence of wants", "C": "Lack of goods", "D": "Government control" }, "answer": "B", "topic": "Trade" },
+      { "id": "COM014", "question": "A public limited company (PLC) can raise capital by:", "options": { "A": "Borrowing from founders only", "B": "Selling shares to the public", "C": "Government grants only", "D": "Partner contributions" }, "answer": "B", "topic": "Companies" },
+      { "id": "COM015", "question": "The Stock Exchange is a market for trading:", "options": { "A": "Consumer goods", "B": "Agricultural products", "C": "Shares and securities", "D": "Raw materials" }, "answer": "C", "topic": "Capital Market" },
+      { "id": "COM016", "question": "Hire purchase differs from credit sale because in hire purchase:", "options": { "A": "Ownership passes immediately", "B": "Ownership passes only after all instalments are paid", "C": "No interest is charged", "D": "Payment is in one lump sum" }, "answer": "B", "topic": "Consumer Credit" },
+      { "id": "COM017", "question": "The function of a middleman in commerce is to:", "options": { "A": "Manufacture goods", "B": "Link producers with consumers", "C": "Store goods permanently", "D": "Set prices" }, "answer": "B", "topic": "Trade" },
+      { "id": "COM018", "question": "An agent who buys and sells goods in their own name is called:", "options": { "A": "Broker", "B": "Factor", "C": "Del credere agent", "D": "Auctioneer" }, "answer": "B", "topic": "Agents" },
+      { "id": "COM019", "question": "The most liquid asset of a business is:", "options": { "A": "Land", "B": "Machinery", "C": "Cash", "D": "Stock" }, "answer": "C", "topic": "Business Finance" },
+      { "id": "COM020", "question": "Turnover in business refers to:", "options": { "A": "Total profit", "B": "Total sales revenue", "C": "Capital invested", "D": "Total expenses" }, "answer": "B", "topic": "Business Calculations" },
+      { "id": "COM021", "question": "A franchise is an arrangement where:", "options": { "A": "Government controls business", "B": "A business grants another the right to use its brand and methods", "C": "Two businesses merge", "D": "A bank owns a business" }, "answer": "B", "topic": "Forms of Business" },
+      { "id": "COM022", "question": "Branding in commerce helps to:", "options": { "A": "Reduce production costs", "B": "Distinguish a product from competitors", "C": "Eliminate taxes", "D": "Increase import duties" }, "answer": "B", "topic": "Marketing" },
+      { "id": "COM023", "question": "A letter of credit is issued by:", "options": { "A": "The exporter", "B": "A bank on behalf of the importer", "C": "The government", "D": "An insurance company" }, "answer": "B", "topic": "International Trade" },
+      { "id": "COM024", "question": "Which of the following is NOT a function of the central bank?", "options": { "A": "Issuing currency", "B": "Lender of last resort", "C": "Accepting deposits from individuals", "D": "Controlling money supply" }, "answer": "C", "topic": "Banking" },
+      { "id": "COM025", "question": "The document that authorizes customs to release imported goods is:", "options": { "A": "Invoice", "B": "Bill of lading", "C": "Customs entry form", "D": "Certificate of origin" }, "answer": "C", "topic": "International Trade" },
+      { "id": "COM026", "question": "A supermarket is an example of:", "options": { "A": "Wholesale trade", "B": "Retail trade", "C": "International trade", "D": "Barter trade" }, "answer": "B", "topic": "Retail Trade" },
+      { "id": "COM027", "question": "Trade discount is given to:", "options": { "A": "Regular customers", "B": "Buyers purchasing in large quantities (wholesalers)", "C": "Government agencies", "D": "Employees" }, "answer": "B", "topic": "Trade" },
+      { "id": "COM028", "question": "E-commerce refers to:", "options": { "A": "Electronic manufacturing", "B": "Buying and selling of goods and services online", "C": "Economic policies", "D": "Electrical goods trade" }, "answer": "B", "topic": "Modern Commerce" },
+      { "id": "COM029", "question": "A sleeping partner in a business:", "options": { "A": "Manages daily operations", "B": "Contributes capital but does not participate in management", "C": "Only provides advice", "D": "Has unlimited liability" }, "answer": "B", "topic": "Partnership" },
+      { "id": "COM030", "question": "The document showing the balance owed between two firms after a period is the:", "options": { "A": "Invoice", "B": "Statement of account", "C": "Receipt", "D": "Order form" }, "answer": "B", "topic": "Trade Documents" },
+      { "id": "COM031", "question": "Gross profit is calculated as:", "options": { "A": "Net sales - Total expenses", "B": "Net sales - Cost of goods sold", "C": "Total revenue - Net profit", "D": "Sales + Purchases" }, "answer": "B", "topic": "Accounts" },
+      { "id": "COM032", "question": "Insurance premium is the amount paid by the:", "options": { "A": "Insurer to the insured", "B": "Insured to the insurer for coverage", "C": "Government to businesses", "D": "Bank to depositors" }, "answer": "B", "topic": "Insurance" },
+      { "id": "COM033", "question": "A proforma invoice is sent:", "options": { "A": "After payment is made", "B": "Before goods are dispatched as a quotation", "C": "After goods are received", "D": "With the goods" }, "answer": "B", "topic": "Trade Documents" },
+      { "id": "COM034", "question": "Retail trade involves selling goods to:", "options": { "A": "Other traders", "B": "The final consumer", "C": "Wholesalers", "D": "Manufacturers" }, "answer": "B", "topic": "Retail Trade" },
+      { "id": "COM035", "question": "A commodity exchange deals in:", "options": { "A": "Manufactured goods", "B": "Standardized raw materials like cocoa and oil", "C": "Shares and bonds", "D": "Foreign currency" }, "answer": "B", "topic": "Markets" },
+      { "id": "COM036", "question": "The principle of indemnity in insurance means:", "options": { "A": "The insured profits from insurance", "B": "The insured is restored to the same financial position as before the loss", "C": "Insurance covers all losses", "D": "Premium must match the claim" }, "answer": "B", "topic": "Insurance" },
+      { "id": "COM037", "question": "A crossing on a cheque means it can only be:", "options": { "A": "Cashed over the counter", "B": "Paid into a bank account", "C": "Used for purchase", "D": "Transferred to third parties" }, "answer": "B", "topic": "Banking" },
+      { "id": "COM038", "question": "The main advantage of a partnership over a sole proprietorship is:", "options": { "A": "Unlimited liability", "B": "More capital and shared skills", "C": "Easier to dissolve", "D": "Less paperwork" }, "answer": "B", "topic": "Business Ownership" },
+      { "id": "COM039", "question": "A home trade is trade that takes place:", "options": { "A": "In homes", "B": "Within the borders of a country", "C": "Between neighboring countries", "D": "Online" }, "answer": "B", "topic": "Trade" },
+      { "id": "COM040", "question": "An overdraft facility allows a customer to:", "options": { "A": "Earn interest on deposits", "B": "Withdraw more than their account balance", "C": "Transfer funds internationally", "D": "Invest in stocks" }, "answer": "B", "topic": "Banking" },
+      { "id": "COM041", "question": "A bonded warehouse is a store where:", "options": { "A": "Stolen goods are kept", "B": "Dutiable imported goods are kept before duty is paid", "C": "Perishable goods are stored", "D": "Government property is kept" }, "answer": "B", "topic": "Warehousing" },
+      { "id": "COM042", "question": "Net profit is calculated as:", "options": { "A": "Gross profit - Overhead expenses", "B": "Sales - Cost of goods", "C": "Revenue + Expenses", "D": "Capital + Liabilities" }, "answer": "A", "topic": "Accounts" },
+      { "id": "COM043", "question": "A multinational corporation operates in:", "options": { "A": "One country only", "B": "Two countries", "C": "Many countries", "D": "Developing countries only" }, "answer": "C", "topic": "Business Organisation" },
+      { "id": "COM044", "question": "Working capital is defined as:", "options": { "A": "Fixed assets - Current liabilities", "B": "Current assets - Current liabilities", "C": "Total assets - Total liabilities", "D": "Capital - Expenses" }, "answer": "B", "topic": "Business Finance" },
+      { "id": "COM045", "question": "Export promotion in commerce involves:", "options": { "A": "Increasing imports", "B": "Encouraging local industries to sell more abroad", "C": "Reducing taxation", "D": "Limiting foreign investment" }, "answer": "B", "topic": "International Trade" },
+      { "id": "COM046", "question": "The country of origin certificate is used to:", "options": { "A": "Pay import duties", "B": "Certify the country where goods were produced", "C": "Insure goods in transit", "D": "Authorise exports" }, "answer": "B", "topic": "Trade Documents" },
+      { "id": "COM047", "question": "Cash and carry wholesalers differ from other wholesalers because they:", "options": { "A": "Offer credit and delivery", "B": "Do not offer credit or delivery; buyers pay and carry goods", "C": "Only serve large businesses", "D": "Operate online" }, "answer": "B", "topic": "Wholesale Trade" },
+      { "id": "COM048", "question": "Which of the following is a long-term source of finance?", "options": { "A": "Bank overdraft", "B": "Trade credit", "C": "Debentures", "D": "Creditors" }, "answer": "C", "topic": "Business Finance" },
+      { "id": "COM049", "question": "The purpose of a memorandum of association is to:", "options": { "A": "Govern internal affairs of a company", "B": "Define the company's relationship with the outside world", "C": "Set employee salaries", "D": "Register trade marks" }, "answer": "B", "topic": "Companies" },
+      { "id": "COM050", "question": "Arbitrage in commerce refers to:", "options": { "A": "Settling disputes between businesses", "B": "Buying in a cheap market and selling in a more expensive one", "C": "Setting prices for commodities", "D": "Insurance of traded goods" }, "answer": "B", "topic": "Financial Markets" }
+    ]
+  }
+}

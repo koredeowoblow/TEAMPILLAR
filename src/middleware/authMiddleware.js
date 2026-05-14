@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { userRepository } from "../repository/UserRepository.js";
 import AuthRepository from "../repository/AuthRepository.js";
 import AuthService from "../services/AuthService.js";
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 import { logger } from "../core/logger.js";
 import {
   getCachedSessionUser,
@@ -10,7 +10,7 @@ import {
   shouldSkipSessionTouch,
   markSessionTouch,
   invalidateCachedSessionUser,
-} from "../utilis/authSessionCache.js";
+} from "../utils/authSessionCache.js";
 
 const authRepository = new AuthRepository();
 
