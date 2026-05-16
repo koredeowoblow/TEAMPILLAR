@@ -1,4 +1,5 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import SmartMockController from "../controllers/SmartMockController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
 import { tryCatch } from "../utils/try-catch.js";
@@ -10,6 +11,13 @@ import {
 
 const router = express.Router();
 
+const smartMockLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // limit each user/IP to 30 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 /**
  * @route POST /api/v1/practice/smart-mock/generate
  * @desc Generate an AI-powered smart mock session
@@ -18,6 +26,7 @@ const router = express.Router();
 router.post(
   "/generate",
   protectUser,
+  smartMockLimiter,
   validateStartSession,
   handleValidationErrors,
   tryCatch(SmartMockController.generateSmartMock)
@@ -31,6 +40,7 @@ router.post(
 router.post(
   "/submit",
   protectUser,
+  smartMockLimiter,
   validateSubmitSession,
   handleValidationErrors,
   tryCatch(SmartMockController.submitSmartMock)
