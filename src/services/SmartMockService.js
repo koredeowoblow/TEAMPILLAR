@@ -139,9 +139,16 @@ Select the best 10-15 questions that will most effectively target this student's
    * Orchestrates the full hybrid selection process.
    */
   static async generateSmartMock(userId, subjectId) {
-    const userPerformance = await TopicPerformance.find({ userId, subjectId });
-    const pool = await this.getFilteredPool(userId, subjectId, userPerformance);
-    const selected = await this.selectWithAI(userId, subjectId, pool, userPerformance);
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(subjectId)) {
+      throw new Error("Invalid userId or subjectId");
+    }
+
+    const safeUserId = new mongoose.Types.ObjectId(userId);
+    const safeSubjectId = new mongoose.Types.ObjectId(subjectId);
+
+    const userPerformance = await TopicPerformance.find({ userId: safeUserId, subjectId: safeSubjectId });
+    const pool = await this.getFilteredPool(safeUserId, safeSubjectId, userPerformance);
+    const selected = await this.selectWithAI(safeUserId, safeSubjectId, pool, userPerformance);
     return selected;
   }
 }
