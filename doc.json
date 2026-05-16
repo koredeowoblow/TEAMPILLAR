@@ -1,0 +1,6016 @@
+{
+  "title": "UTME Practice Questions - Batch 3",
+  "total_questions": 1000,
+  "subjects": {
+    "Mathematics": [
+      {
+        "id": "M101",
+        "question": "Simplify: (2³ × 2⁴) ÷ 2⁵",
+        "options": {
+          "A": "2²",
+          "B": "2⁶",
+          "C": "2¹²",
+          "D": "2"
+        },
+        "answer": "A",
+        "topic": "Indices"
+      },
+      {
+        "id": "M102",
+        "question": "Find the value of x: 3x - 7 = 14",
+        "options": {
+          "A": "5",
+          "B": "7",
+          "C": "9",
+          "D": "21"
+        },
+        "answer": "B",
+        "topic": "Linear Equations"
+      },
+      {
+        "id": "M103",
+        "question": "The gradient of the line 2y = 6x + 4 is:",
+        "options": {
+          "A": "2",
+          "B": "3",
+          "C": "6",
+          "D": "4"
+        },
+        "answer": "B",
+        "topic": "Linear Graphs"
+      },
+      {
+        "id": "M104",
+        "question": "Express 0.00045 in standard form:",
+        "options": {
+          "A": "4.5 × 10⁻³",
+          "B": "4.5 × 10⁻⁴",
+          "C": "45 × 10⁻⁵",
+          "D": "4.5 × 10⁴"
+        },
+        "answer": "B",
+        "topic": "Standard Form"
+      },
+      {
+        "id": "M105",
+        "question": "If A = {1,2,3} and B = {2,3,4}, find A ∩ B",
+        "options": {
+          "A": "{1,2,3,4}",
+          "B": "{2,3}",
+          "C": "{1,4}",
+          "D": "{1,2,3}"
+        },
+        "answer": "B",
+        "topic": "Sets"
+      },
+      {
+        "id": "M106",
+        "question": "Find the median of: 3, 7, 5, 1, 9, 4, 6",
+        "options": {
+          "A": "4",
+          "B": "5",
+          "C": "6",
+          "D": "7"
+        },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "M107",
+        "question": "The area of a circle with radius 7cm is: (π = 22/7)",
+        "options": {
+          "A": "44cm²",
+          "B": "154cm²",
+          "C": "196cm²",
+          "D": "22cm²"
+        },
+        "answer": "B",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "M108",
+        "question": "Solve: x² - 5x + 6 = 0",
+        "options": {
+          "A": "x=1 or x=6",
+          "B": "x=2 or x=3",
+          "C": "x=-2 or x=-3",
+          "D": "x=5 or x=6"
+        },
+        "answer": "B",
+        "topic": "Quadratic Equations"
+      },
+      {
+        "id": "M109",
+        "question": "Convert 0.375 to a fraction in lowest terms:",
+        "options": {
+          "A": "1/4",
+          "B": "3/8",
+          "C": "3/4",
+          "D": "5/8"
+        },
+        "answer": "B",
+        "topic": "Fractions"
+      },
+      {
+        "id": "M110",
+        "question": "If f(x) = 3x² - 2, find f(-2)",
+        "options": {
+          "A": "8",
+          "B": "10",
+          "C": "14",
+          "D": "-2"
+        },
+        "answer": "B",
+        "topic": "Functions"
+      },
+      {
+        "id": "M111",
+        "question": "The sum of angles in a pentagon is:",
+        "options": {
+          "A": "360°",
+          "B": "540°",
+          "C": "720°",
+          "D": "450°"
+        },
+        "answer": "B",
+        "topic": "Polygons"
+      },
+      {
+        "id": "M112",
+        "question": "Evaluate: ⁷C₃",
+        "options": {
+          "A": "21",
+          "B": "35",
+          "C": "42",
+          "D": "210"
+        },
+        "answer": "B",
+        "topic": "Combination"
+      },
+      {
+        "id": "M113",
+        "question": "The 10th term of AP: 2, 5, 8, ... is:",
+        "options": {
+          "A": "27",
+          "B": "29",
+          "C": "32",
+          "D": "20"
+        },
+        "answer": "B",
+        "topic": "Sequences"
+      },
+      {
+        "id": "M114",
+        "question": "The value of sin 30° + cos 60° is:",
+        "options": {
+          "A": "0",
+          "B": "1",
+          "C": "√2",
+          "D": "1/2"
+        },
+        "answer": "B",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "M115",
+        "question": "Find the LCM of 12, 18 and 24:",
+        "options": {
+          "A": "36",
+          "B": "72",
+          "C": "48",
+          "D": "144"
+        },
+        "answer": "B",
+        "topic": "Number Theory"
+      },
+      {
+        "id": "M116",
+        "question": "Expand (x + 3)²",
+        "options": {
+          "A": "x² + 6",
+          "B": "x² + 6x + 9",
+          "C": "x² + 9",
+          "D": "x² + 3x + 9"
+        },
+        "answer": "B",
+        "topic": "Algebra"
+      },
+      {
+        "id": "M117",
+        "question": "The volume of a cylinder of radius 3cm and height 7cm is: (π = 22/7)",
+        "options": {
+          "A": "66cm³",
+          "B": "198cm³",
+          "C": "396cm³",
+          "D": "99cm³"
+        },
+        "answer": "B",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "M118",
+        "question": "Differentiate y = 4x³ + 2x",
+        "options": {
+          "A": "4x² + 2",
+          "B": "12x² + 2",
+          "C": "12x³ + 2",
+          "D": "4x² + 1"
+        },
+        "answer": "B",
+        "topic": "Calculus"
+      },
+      {
+        "id": "M119",
+        "question": "A car travels 180km in 2.5 hours. Its average speed is:",
+        "options": {
+          "A": "45 km/h",
+          "B": "72 km/h",
+          "C": "90 km/h",
+          "D": "60 km/h"
+        },
+        "answer": "B",
+        "topic": "Rates"
+      },
+      {
+        "id": "M120",
+        "question": "Evaluate log₂ 32",
+        "options": {
+          "A": "4",
+          "B": "5",
+          "C": "6",
+          "D": "16"
+        },
+        "answer": "B",
+        "topic": "Logarithms"
+      },
+      {
+        "id": "M121",
+        "question": "The number of terms in the expansion of (1+x)⁸ is:",
+        "options": {
+          "A": "8",
+          "B": "9",
+          "C": "10",
+          "D": "7"
+        },
+        "answer": "B",
+        "topic": "Binomial Theorem"
+      },
+      {
+        "id": "M122",
+        "question": "Find the value of x if log₃ x = 4",
+        "options": {
+          "A": "64",
+          "B": "81",
+          "C": "27",
+          "D": "12"
+        },
+        "answer": "B",
+        "topic": "Logarithms"
+      },
+      {
+        "id": "M123",
+        "question": "If the mean of 5, 8, x, 12, 15 is 10, find x:",
+        "options": {
+          "A": "8",
+          "B": "10",
+          "C": "12",
+          "D": "5"
+        },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "M124",
+        "question": "Simplify: √75 + √27 - √48",
+        "options": {
+          "A": "4√3",
+          "B": "2√3",
+          "C": "6√3",
+          "D": "3√3"
+        },
+        "answer": "A",
+        "topic": "Surds"
+      },
+      {
+        "id": "M125",
+        "question": "The distance between (1,2) and (4,6) is:",
+        "options": {
+          "A": "3",
+          "B": "5",
+          "C": "7",
+          "D": "√7"
+        },
+        "answer": "B",
+        "topic": "Coordinate Geometry"
+      },
+      {
+        "id": "M126",
+        "question": "Find the value of x in 4^x = 64",
+        "options": {
+          "A": "2",
+          "B": "3",
+          "C": "4",
+          "D": "6"
+        },
+        "answer": "B",
+        "topic": "Indices"
+      },
+      {
+        "id": "M127",
+        "question": "A bag has 5 red and 3 blue balls. Probability of picking red is:",
+        "options": {
+          "A": "3/8",
+          "B": "5/8",
+          "C": "5/3",
+          "D": "1/2"
+        },
+        "answer": "B",
+        "topic": "Probability"
+      },
+      {
+        "id": "M128",
+        "question": "If a polygon has interior angle sum of 1080°, how many sides does it have?",
+        "options": {
+          "A": "7",
+          "B": "8",
+          "C": "9",
+          "D": "6"
+        },
+        "answer": "B",
+        "topic": "Polygons"
+      },
+      {
+        "id": "M129",
+        "question": "The equation of a line with gradient 3 passing through the origin is:",
+        "options": {
+          "A": "y = 3",
+          "B": "y = 3x",
+          "C": "x = 3y",
+          "D": "y = x + 3"
+        },
+        "answer": "B",
+        "topic": "Linear Equations"
+      },
+      {
+        "id": "M130",
+        "question": "∫sin x dx =",
+        "options": {
+          "A": "cos x + C",
+          "B": "-cos x + C",
+          "C": "sin x + C",
+          "D": "-sin x + C"
+        },
+        "answer": "B",
+        "topic": "Integration"
+      },
+      {
+        "id": "M131",
+        "question": "Which of these is irrational?",
+        "options": {
+          "A": "√4",
+          "B": "√5",
+          "C": "√9",
+          "D": "√16"
+        },
+        "answer": "B",
+        "topic": "Number Sets"
+      },
+      {
+        "id": "M132",
+        "question": "The mode of: 2,3,3,4,4,4,5,6,6 is:",
+        "options": {
+          "A": "3",
+          "B": "4",
+          "C": "5",
+          "D": "6"
+        },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "M133",
+        "question": "If p:q = 2:3 and q:r = 4:5, find p:r",
+        "options": {
+          "A": "2:5",
+          "B": "8:15",
+          "C": "2:3",
+          "D": "4:5"
+        },
+        "answer": "B",
+        "topic": "Ratio"
+      },
+      {
+        "id": "M134",
+        "question": "What is the range of the data: 4, 9, 2, 7, 14, 1?",
+        "options": {
+          "A": "12",
+          "B": "13",
+          "C": "14",
+          "D": "9"
+        },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "M135",
+        "question": "Evaluate: d/dx(eˣ)",
+        "options": {
+          "A": "xeˣ",
+          "B": "eˣ",
+          "C": "e^(x-1)",
+          "D": "1"
+        },
+        "answer": "B",
+        "topic": "Calculus"
+      },
+      {
+        "id": "M136",
+        "question": "An angle of 210° in standard position lies in quadrant:",
+        "options": {
+          "A": "II",
+          "B": "III",
+          "C": "IV",
+          "D": "I"
+        },
+        "answer": "B",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "M137",
+        "question": "The ratio 1.5:4.5 in simplest form is:",
+        "options": {
+          "A": "2:6",
+          "B": "1:3",
+          "C": "3:1",
+          "D": "1:4"
+        },
+        "answer": "B",
+        "topic": "Ratio"
+      },
+      {
+        "id": "M138",
+        "question": "Find x if 5/(x-2) = 2",
+        "options": {
+          "A": "3",
+          "B": "4.5",
+          "C": "7",
+          "D": "2.5"
+        },
+        "answer": "B",
+        "topic": "Equations"
+      },
+      {
+        "id": "M139",
+        "question": "A function f is one-to-one if:",
+        "options": {
+          "A": "f(a) = f(b) for all a,b",
+          "B": "f(a) = f(b) implies a = b",
+          "C": "f has two values for each x",
+          "D": "f is not defined everywhere"
+        },
+        "answer": "B",
+        "topic": "Functions"
+      },
+      {
+        "id": "M140",
+        "question": "The product of two numbers is 36 and their sum is 15. The numbers are:",
+        "options": {
+          "A": "4 and 9",
+          "B": "3 and 12",
+          "C": "6 and 6",
+          "D": "9 and 6"
+        },
+        "answer": "B",
+        "topic": "Algebra"
+      },
+      {
+        "id": "M141",
+        "question": "If matrix A = [[2,1],[3,4]], find det(A)",
+        "options": {
+          "A": "11",
+          "B": "5",
+          "C": "8",
+          "D": "14"
+        },
+        "answer": "B",
+        "topic": "Matrices"
+      },
+      {
+        "id": "M142",
+        "question": "Express 5/8 as a percentage:",
+        "options": {
+          "A": "58%",
+          "B": "62.5%",
+          "C": "50%",
+          "D": "80%"
+        },
+        "answer": "B",
+        "topic": "Percentages"
+      },
+      {
+        "id": "M143",
+        "question": "Simplify: (x² - 4)/(x + 2)",
+        "options": {
+          "A": "x + 2",
+          "B": "x - 2",
+          "C": "x²",
+          "D": "x + 4"
+        },
+        "answer": "B",
+        "topic": "Algebra"
+      },
+      {
+        "id": "M144",
+        "question": "The value of cos 90° is:",
+        "options": {
+          "A": "1",
+          "B": "0",
+          "C": "-1",
+          "D": "√2/2"
+        },
+        "answer": "B",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "M145",
+        "question": "What is the 5th term of the GP: 2, 6, 18, ...?",
+        "options": {
+          "A": "108",
+          "B": "162",
+          "C": "54",
+          "D": "324"
+        },
+        "answer": "B",
+        "topic": "Sequences"
+      },
+      {
+        "id": "M146",
+        "question": "A square has area 64cm². Its perimeter is:",
+        "options": {
+          "A": "16cm",
+          "B": "32cm",
+          "C": "8cm",
+          "D": "64cm"
+        },
+        "answer": "B",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "M147",
+        "question": "How many 3-digit numbers can be formed from digits 1,2,3,4,5 without repetition?",
+        "options": {
+          "A": "125",
+          "B": "60",
+          "C": "120",
+          "D": "24"
+        },
+        "answer": "B",
+        "topic": "Permutation"
+      },
+      {
+        "id": "M148",
+        "question": "If y = x³, find d²y/dx²",
+        "options": {
+          "A": "3x",
+          "B": "6x",
+          "C": "3x²",
+          "D": "x²"
+        },
+        "answer": "B",
+        "topic": "Calculus"
+      },
+      {
+        "id": "M149",
+        "question": "Two lines are perpendicular if the product of their gradients is:",
+        "options": {
+          "A": "0",
+          "B": "-1",
+          "C": "1",
+          "D": "undefined"
+        },
+        "answer": "B",
+        "topic": "Coordinate Geometry"
+      },
+      {
+        "id": "M150",
+        "question": "Solve: 2|x - 1| = 6",
+        "options": {
+          "A": "x = 4 only",
+          "B": "x = 4 or x = -2",
+          "C": "x = -4 or x = 2",
+          "D": "x = 2 only"
+        },
+        "answer": "B",
+        "topic": "Absolute Values"
+      },
+      {
+        "id": "M151",
+        "question": "The common difference of the AP: 1/2, 1, 3/2, 2, ... is:",
+        "options": {
+          "A": "1/4",
+          "B": "1/2",
+          "C": "3/2",
+          "D": "1"
+        },
+        "answer": "B",
+        "topic": "Sequences"
+      },
+      {
+        "id": "M152",
+        "question": "Evaluate ∫₁³ 2x dx",
+        "options": {
+          "A": "6",
+          "B": "8",
+          "C": "4",
+          "D": "12"
+        },
+        "answer": "B",
+        "topic": "Integration"
+      },
+      {
+        "id": "M153",
+        "question": "If tan θ = 1 and 0° < θ < 90°, then θ =",
+        "options": {
+          "A": "30°",
+          "B": "45°",
+          "C": "60°",
+          "D": "90°"
+        },
+        "answer": "B",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "M154",
+        "question": "Express 72 as a product of prime factors:",
+        "options": {
+          "A": "2³ × 3²",
+          "B": "2⁴ × 3",
+          "C": "2² × 3³",
+          "D": "2 × 36"
+        },
+        "answer": "A",
+        "topic": "Number Theory"
+      },
+      {
+        "id": "M155",
+        "question": "A number is increased by 20% to give 84. The original number is:",
+        "options": {
+          "A": "63",
+          "B": "70",
+          "C": "72",
+          "D": "80"
+        },
+        "answer": "B",
+        "topic": "Percentages"
+      },
+      {
+        "id": "M156",
+        "question": "Find the equation of the line perpendicular to y = 2x + 1 passing through (0,0):",
+        "options": {
+          "A": "y = 2x",
+          "B": "y = -x/2",
+          "C": "y = -2x",
+          "D": "y = x/2"
+        },
+        "answer": "B",
+        "topic": "Coordinate Geometry"
+      },
+      {
+        "id": "M157",
+        "question": "How many ways can 4 people be arranged in a row?",
+        "options": {
+          "A": "16",
+          "B": "24",
+          "C": "12",
+          "D": "8"
+        },
+        "answer": "B",
+        "topic": "Permutation"
+      },
+      {
+        "id": "M158",
+        "question": "Find the value of x: log₅(x + 1) = 2",
+        "options": {
+          "A": "4",
+          "B": "24",
+          "C": "26",
+          "D": "10"
+        },
+        "answer": "B",
+        "topic": "Logarithms"
+      },
+      {
+        "id": "M159",
+        "question": "If P(A) = 0.6, find P(A')",
+        "options": {
+          "A": "0.6",
+          "B": "0.4",
+          "C": "1.6",
+          "D": "0.3"
+        },
+        "answer": "B",
+        "topic": "Probability"
+      },
+      {
+        "id": "M160",
+        "question": "The sum of exterior angles of any convex polygon is:",
+        "options": {
+          "A": "180°",
+          "B": "360°",
+          "C": "540°",
+          "D": "720°"
+        },
+        "answer": "B",
+        "topic": "Polygons"
+      },
+      {
+        "id": "M161",
+        "question": "Evaluate: (0.2)³",
+        "options": {
+          "A": "0.06",
+          "B": "0.008",
+          "C": "0.6",
+          "D": "0.0008"
+        },
+        "answer": "B",
+        "topic": "Indices"
+      },
+      {
+        "id": "M162",
+        "question": "A triangle has vertices A(0,0), B(4,0), C(0,3). Its area is:",
+        "options": {
+          "A": "7",
+          "B": "6",
+          "C": "12",
+          "D": "5"
+        },
+        "answer": "B",
+        "topic": "Coordinate Geometry"
+      },
+      {
+        "id": "M163",
+        "question": "Which set is a subset of every set?",
+        "options": {
+          "A": "Universal set",
+          "B": "Empty set",
+          "C": "Power set",
+          "D": "Complement"
+        },
+        "answer": "B",
+        "topic": "Sets"
+      },
+      {
+        "id": "M164",
+        "question": "The 100th term of AP: 5, 10, 15, ... is:",
+        "options": {
+          "A": "995",
+          "B": "500",
+          "C": "505",
+          "D": "510"
+        },
+        "answer": "B",
+        "topic": "Sequences"
+      },
+      {
+        "id": "M165",
+        "question": "Rationalise: 1/√3",
+        "options": {
+          "A": "1/3",
+          "B": "√3/3",
+          "C": "√3",
+          "D": "3"
+        },
+        "answer": "B",
+        "topic": "Surds"
+      },
+      {
+        "id": "M166",
+        "question": "Find x: 2^(2x) = 16",
+        "options": {
+          "A": "1",
+          "B": "2",
+          "C": "4",
+          "D": "8"
+        },
+        "answer": "B",
+        "topic": "Indices"
+      },
+      {
+        "id": "M167",
+        "question": "If A ⊂ B, then A ∪ B =",
+        "options": {
+          "A": "A",
+          "B": "B",
+          "C": "A ∩ B",
+          "D": "empty set"
+        },
+        "answer": "B",
+        "topic": "Sets"
+      },
+      {
+        "id": "M168",
+        "question": "Find the geometric mean of 4 and 16:",
+        "options": {
+          "A": "10",
+          "B": "8",
+          "C": "6",
+          "D": "12"
+        },
+        "answer": "B",
+        "topic": "Sequences"
+      },
+      {
+        "id": "M169",
+        "question": "Simplify: (2a²b³)³",
+        "options": {
+          "A": "6a⁶b⁹",
+          "B": "8a⁶b⁹",
+          "C": "6a⁵b⁶",
+          "D": "8a⁵b⁶"
+        },
+        "answer": "B",
+        "topic": "Indices"
+      },
+      {
+        "id": "M170",
+        "question": "The roots of x² - 3x - 10 = 0 are:",
+        "options": {
+          "A": "5 and -2",
+          "B": "-5 and 2",
+          "C": "5 and 2",
+          "D": "-5 and -2"
+        },
+        "answer": "A",
+        "topic": "Quadratic"
+      },
+      {
+        "id": "M171",
+        "question": "A data set has variance 25. Its standard deviation is:",
+        "options": {
+          "A": "25",
+          "B": "5",
+          "C": "625",
+          "D": "12.5"
+        },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "M172",
+        "question": "What is the degree of the polynomial 3x⁴ + 2x² - x + 1?",
+        "options": {
+          "A": "3",
+          "B": "4",
+          "C": "2",
+          "D": "1"
+        },
+        "answer": "B",
+        "topic": "Algebra"
+      },
+      {
+        "id": "M173",
+        "question": "The image of point (2,3) under reflection in the x-axis is:",
+        "options": {
+          "A": "(-2,3)",
+          "B": "(2,-3)",
+          "C": "(-2,-3)",
+          "D": "(3,2)"
+        },
+        "answer": "B",
+        "topic": "Transformation"
+      },
+      {
+        "id": "M174",
+        "question": "The perpendicular bisector of a chord passes through the:",
+        "options": {
+          "A": "Tangent point",
+          "B": "Centre of the circle",
+          "C": "Circumference",
+          "D": "Arc midpoint"
+        },
+        "answer": "B",
+        "topic": "Circle Geometry"
+      },
+      {
+        "id": "M175",
+        "question": "Find ∫(4x³ - 2x) dx",
+        "options": {
+          "A": "12x² - 2",
+          "B": "x⁴ - x² + C",
+          "C": "4x² - 2 + C",
+          "D": "x³ - x + C"
+        },
+        "answer": "B",
+        "topic": "Integration"
+      },
+      {
+        "id": "M176",
+        "question": "The solution set of x² < 9 is:",
+        "options": {
+          "A": "x > 3",
+          "B": "-3 < x < 3",
+          "C": "x < -3 or x > 3",
+          "D": "x < 3"
+        },
+        "answer": "B",
+        "topic": "Inequalities"
+      },
+      {
+        "id": "M177",
+        "question": "A rhombus with diagonals 6cm and 8cm has area:",
+        "options": {
+          "A": "14cm²",
+          "B": "24cm²",
+          "C": "48cm²",
+          "D": "12cm²"
+        },
+        "answer": "B",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "M178",
+        "question": "Simplify: log 4 + log 25 (base 10)",
+        "options": {
+          "A": "1",
+          "B": "2",
+          "C": "3",
+          "D": "100"
+        },
+        "answer": "B",
+        "topic": "Logarithms"
+      },
+      {
+        "id": "M179",
+        "question": "The graph of y = x² is a:",
+        "options": {
+          "A": "Straight line",
+          "B": "Parabola",
+          "C": "Circle",
+          "D": "Hyperbola"
+        },
+        "answer": "B",
+        "topic": "Functions"
+      },
+      {
+        "id": "M180",
+        "question": "If f(x) = 2x + 3, find f⁻¹(x):",
+        "options": {
+          "A": "(x-3)/3",
+          "B": "(x-3)/2",
+          "C": "2x-3",
+          "D": "(x+3)/2"
+        },
+        "answer": "B",
+        "topic": "Functions"
+      },
+      {
+        "id": "M181",
+        "question": "In how many ways can the letters of NOON be arranged?",
+        "options": {
+          "A": "24",
+          "B": "6",
+          "C": "12",
+          "D": "4"
+        },
+        "answer": "B",
+        "topic": "Permutation"
+      },
+      {
+        "id": "M182",
+        "question": "If 5 workers complete a job in 12 days, 3 workers will take:",
+        "options": {
+          "A": "15 days",
+          "B": "20 days",
+          "C": "18 days",
+          "D": "25 days"
+        },
+        "answer": "B",
+        "topic": "Variation"
+      },
+      {
+        "id": "M183",
+        "question": "The value of 2 sin 45° × cos 45° is:",
+        "options": {
+          "A": "√2/2",
+          "B": "1",
+          "C": "√2",
+          "D": "1/2"
+        },
+        "answer": "B",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "M184",
+        "question": "Evaluate: 4! - 3!",
+        "options": {
+          "A": "1",
+          "B": "18",
+          "C": "20",
+          "D": "6"
+        },
+        "answer": "B",
+        "topic": "Permutation"
+      },
+      {
+        "id": "M185",
+        "question": "The curved surface area of a cone with slant height l and radius r is:",
+        "options": {
+          "A": "πr²",
+          "B": "πrl",
+          "C": "2πr",
+          "D": "πr²l"
+        },
+        "answer": "B",
+        "topic": "Mensuration"
+      },
+      {
+        "id": "M186",
+        "question": "Which of these is NOT a measure of central tendency?",
+        "options": {
+          "A": "Mean",
+          "B": "Variance",
+          "C": "Median",
+          "D": "Mode"
+        },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "M187",
+        "question": "A chord subtends 90° at the centre. If radius is 5cm, the chord length is:",
+        "options": {
+          "A": "5cm",
+          "B": "5√2 cm",
+          "C": "10cm",
+          "D": "5√3 cm"
+        },
+        "answer": "B",
+        "topic": "Circle Geometry"
+      },
+      {
+        "id": "M188",
+        "question": "The number of subsets of a set with 4 elements is:",
+        "options": {
+          "A": "8",
+          "B": "16",
+          "C": "4",
+          "D": "12"
+        },
+        "answer": "B",
+        "topic": "Sets"
+      },
+      {
+        "id": "M189",
+        "question": "The graph of y = |x| looks like:",
+        "options": {
+          "A": "A straight line",
+          "B": "A V-shape",
+          "C": "A U-shape",
+          "D": "A circle"
+        },
+        "answer": "B",
+        "topic": "Functions"
+      },
+      {
+        "id": "M190",
+        "question": "If the sum of n terms of an AP is Sn = 3n² + 2n, the common difference is:",
+        "options": {
+          "A": "3",
+          "B": "6",
+          "C": "5",
+          "D": "2"
+        },
+        "answer": "B",
+        "topic": "Sequences"
+      },
+      {
+        "id": "M191",
+        "question": "The 3rd quartile Q3 represents the value below which ___% of data falls:",
+        "options": {
+          "A": "50",
+          "B": "75",
+          "C": "25",
+          "D": "100"
+        },
+        "answer": "B",
+        "topic": "Statistics"
+      },
+      {
+        "id": "M192",
+        "question": "What is the HCF of 36 and 48?",
+        "options": {
+          "A": "6",
+          "B": "12",
+          "C": "18",
+          "D": "24"
+        },
+        "answer": "B",
+        "topic": "Number Theory"
+      },
+      {
+        "id": "M193",
+        "question": "Find the value of x: 2^x × 4^(x-1) = 32",
+        "options": {
+          "A": "2",
+          "B": "3",
+          "C": "4",
+          "D": "5"
+        },
+        "answer": "B",
+        "topic": "Indices"
+      },
+      {
+        "id": "M194",
+        "question": "The cosine rule for a triangle is: a² =",
+        "options": {
+          "A": "b² + c² + 2bc cos A",
+          "B": "b² + c² - 2bc cos A",
+          "C": "b² - c² + 2bc cos A",
+          "D": "b + c - 2 cos A"
+        },
+        "answer": "B",
+        "topic": "Trigonometry"
+      },
+      {
+        "id": "M195",
+        "question": "If y varies directly as x² and y = 12 when x = 2, find y when x = 3:",
+        "options": {
+          "A": "18",
+          "B": "27",
+          "C": "36",
+          "D": "48"
+        },
+        "answer": "B",
+        "topic": "Variation"
+      },
+      {
+        "id": "M196",
+        "question": "The remainder when 3x³ - 2x² + x - 5 is divided by (x - 1) is:",
+        "options": {
+          "A": "-2",
+          "B": "-3",
+          "C": "0",
+          "D": "3"
+        },
+        "answer": "B",
+        "topic": "Algebra"
+      },
+      {
+        "id": "M197",
+        "question": "Which of the following is the formula for the sum of a GP with first term a, ratio r and n terms?",
+        "options": {
+          "A": "a(rⁿ - 1)",
+          "B": "a(rⁿ - 1)/(r - 1)",
+          "C": "a/(1-r)",
+          "D": "na"
+        },
+        "answer": "B",
+        "topic": "Sequences"
+      },
+      {
+        "id": "M198",
+        "question": "If log x = 2 and log y = 3, find log(xy):",
+        "options": {
+          "A": "5",
+          "B": "6",
+          "C": "23",
+          "D": "1"
+        },
+        "answer": "A",
+        "topic": "Logarithms"
+      },
+      {
+        "id": "M199",
+        "question": "The probability that it rains on any given day is 0.3. The probability it does NOT rain is:",
+        "options": {
+          "A": "0.3",
+          "B": "0.7",
+          "C": "1.3",
+          "D": "0"
+        },
+        "answer": "B",
+        "topic": "Probability"
+      },
+      {
+        "id": "M200",
+        "question": "Find the area of a trapezium with parallel sides 6cm and 10cm and height 4cm:",
+        "options": {
+          "A": "24cm²",
+          "B": "32cm²",
+          "C": "40cm²",
+          "D": "64cm²"
+        },
+        "answer": "B",
+        "topic": "Mensuration"
+      }
+    ],
+    "English Language": [
+      {
+        "id": "E101",
+        "question": "Choose the correct form: 'Neither the teachers nor the principal ___ aware of it.'",
+        "options": {
+          "A": "were",
+          "B": "was",
+          "C": "are",
+          "D": "have been"
+        },
+        "answer": "B",
+        "topic": "Concord"
+      },
+      {
+        "id": "E102",
+        "question": "The word ENIGMATIC means:",
+        "options": {
+          "A": "Energetic",
+          "B": "Mysterious and difficult to understand",
+          "C": "Enthusiastic",
+          "D": "Powerful"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E103",
+        "question": "Identify the figure of speech: 'The stars danced in the night sky.'",
+        "options": {
+          "A": "Simile",
+          "B": "Personification",
+          "C": "Hyperbole",
+          "D": "Metaphor"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E104",
+        "question": "The antonym of BENEVOLENT is:",
+        "options": {
+          "A": "Kind",
+          "B": "Malevolent",
+          "C": "Generous",
+          "D": "Caring"
+        },
+        "answer": "B",
+        "topic": "Antonyms"
+      },
+      {
+        "id": "E105",
+        "question": "The word CAPITULATE means:",
+        "options": {
+          "A": "To fight back",
+          "B": "To surrender or give in",
+          "C": "To lead",
+          "D": "To escape"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E106",
+        "question": "An oxymoron is:",
+        "options": {
+          "A": "Repetition of consonants",
+          "B": "A phrase combining contradictory terms",
+          "C": "Exaggeration for effect",
+          "D": "A direct comparison"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E107",
+        "question": "The word MAGNANIMOUS means:",
+        "options": {
+          "A": "Large",
+          "B": "Very generous and forgiving",
+          "C": "Powerful",
+          "D": "Angry"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E108",
+        "question": "Choose the correctly punctuated sentence:",
+        "options": {
+          "A": "Its a lovely day, isnt it",
+          "B": "It's a lovely day, isn't it?",
+          "C": "Its' a lovely day isn't it?",
+          "D": "It's a lovely day isnt it?"
+        },
+        "answer": "B",
+        "topic": "Punctuation"
+      },
+      {
+        "id": "E109",
+        "question": "The word SOPORIFIC means:",
+        "options": {
+          "A": "Energising",
+          "B": "Tending to induce sleep",
+          "C": "Exciting",
+          "D": "Stimulating"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E110",
+        "question": "'The whole world is a stage' is an example of:",
+        "options": {
+          "A": "Simile",
+          "B": "Metaphor",
+          "C": "Hyperbole",
+          "D": "Alliteration"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E111",
+        "question": "The word PRECOCIOUS means:",
+        "options": {
+          "A": "Slow in development",
+          "B": "Unusually advanced or mature for age",
+          "C": "Very careful",
+          "D": "Highly creative"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E112",
+        "question": "Identify the subordinate clause: 'Although it was raining, they played football.'",
+        "options": {
+          "A": "they played football",
+          "B": "Although it was raining",
+          "C": "it was raining",
+          "D": "they played"
+        },
+        "answer": "B",
+        "topic": "Clauses"
+      },
+      {
+        "id": "E113",
+        "question": "The word EPHEMERAL means:",
+        "options": {
+          "A": "Lasting forever",
+          "B": "Lasting for a very short time",
+          "C": "Very large",
+          "D": "Very heavy"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E114",
+        "question": "Which of these is a compound sentence?",
+        "options": {
+          "A": "She sings well.",
+          "B": "She sings well and he dances well.",
+          "C": "Because she sings well, she won.",
+          "D": "She, a singer, won the award."
+        },
+        "answer": "B",
+        "topic": "Sentence Types"
+      },
+      {
+        "id": "E115",
+        "question": "The word TENACIOUS means:",
+        "options": {
+          "A": "Weak and yielding",
+          "B": "Persistent and determined",
+          "C": "Flexible",
+          "D": "Disorganised"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E116",
+        "question": "'I have told you a million times' uses the device of:",
+        "options": {
+          "A": "Metaphor",
+          "B": "Hyperbole",
+          "C": "Irony",
+          "D": "Litotes"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E117",
+        "question": "The word ACRIMONIOUS means:",
+        "options": {
+          "A": "Pleasant",
+          "B": "Bitter and sharp in tone",
+          "C": "Sweet",
+          "D": "Calm"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E118",
+        "question": "Select the sentence with correct subject-verb agreement:",
+        "options": {
+          "A": "The news are shocking.",
+          "B": "The news is shocking.",
+          "C": "The news have shocked us.",
+          "D": "The news were shocking."
+        },
+        "answer": "B",
+        "topic": "Concord"
+      },
+      {
+        "id": "E119",
+        "question": "The word PERSPICACIOUS means:",
+        "options": {
+          "A": "Having a sweet smell",
+          "B": "Having a clear, sharp understanding",
+          "C": "Being very slow",
+          "D": "Being overly cautious"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E120",
+        "question": "Identify the gerund: 'Swimming is my favourite hobby.'",
+        "options": {
+          "A": "favourite",
+          "B": "Swimming",
+          "C": "hobby",
+          "D": "my"
+        },
+        "answer": "B",
+        "topic": "Parts of Speech"
+      },
+      {
+        "id": "E121",
+        "question": "The plural of 'phenomenon' is:",
+        "options": {
+          "A": "Phenomenons",
+          "B": "Phenomena",
+          "C": "Phenomenas",
+          "D": "Phenomenon"
+        },
+        "answer": "B",
+        "topic": "Grammar"
+      },
+      {
+        "id": "E122",
+        "question": "'Every cloud has a silver lining' is a:",
+        "options": {
+          "A": "Metaphor",
+          "B": "Proverb",
+          "C": "Simile",
+          "D": "Hyperbole"
+        },
+        "answer": "B",
+        "topic": "Idioms"
+      },
+      {
+        "id": "E123",
+        "question": "The word DUPLICITOUS means:",
+        "options": {
+          "A": "Doubled in size",
+          "B": "Deceitful and dishonest",
+          "C": "Very precise",
+          "D": "Having two uses"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E124",
+        "question": "Which sentence uses reported speech correctly? Original: 'I am tired.'",
+        "options": {
+          "A": "She said that she is tired.",
+          "B": "She said that she was tired.",
+          "C": "She said she is tired now.",
+          "D": "She said she were tired."
+        },
+        "answer": "B",
+        "topic": "Reported Speech"
+      },
+      {
+        "id": "E125",
+        "question": "The word LACONIC means:",
+        "options": {
+          "A": "Using many words",
+          "B": "Using very few words",
+          "C": "Speaking loudly",
+          "D": "Speaking confusingly"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E126",
+        "question": "The word INIMICAL means:",
+        "options": {
+          "A": "Friendly",
+          "B": "Harmful or hostile",
+          "C": "Similar",
+          "D": "Unique"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E127",
+        "question": "The transitive verb in 'She kicked the ball hard' is:",
+        "options": {
+          "A": "She",
+          "B": "kicked",
+          "C": "ball",
+          "D": "hard"
+        },
+        "answer": "B",
+        "topic": "Verbs"
+      },
+      {
+        "id": "E128",
+        "question": "The word PEDANTIC means:",
+        "options": {
+          "A": "Informal and relaxed",
+          "B": "Excessively concerned with minor rules or details",
+          "C": "Very practical",
+          "D": "Open-minded"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E129",
+        "question": "Which is the correct form? 'He is one of the students who ___ come late.'",
+        "options": {
+          "A": "has",
+          "B": "have",
+          "C": "had",
+          "D": "having"
+        },
+        "answer": "B",
+        "topic": "Concord"
+      },
+      {
+        "id": "E130",
+        "question": "The word INVETERATE means:",
+        "options": {
+          "A": "New and recent",
+          "B": "Having a habit deeply established over time",
+          "C": "Short-lived",
+          "D": "Unknown"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E131",
+        "question": "The word TRUCULENT means:",
+        "options": {
+          "A": "Gentle and kind",
+          "B": "Eager to argue or fight",
+          "C": "Polite",
+          "D": "Reserved"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E132",
+        "question": "The word ALACRITY means:",
+        "options": {
+          "A": "Slowness",
+          "B": "Brisk and cheerful readiness",
+          "C": "Sadness",
+          "D": "Anger"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E133",
+        "question": "A malapropism is the mistaken use of a:",
+        "options": {
+          "A": "Punctuation mark",
+          "B": "Similar-sounding but wrong word",
+          "C": "Proper noun",
+          "D": "Plural form"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E134",
+        "question": "The word INNOCUOUS means:",
+        "options": {
+          "A": "Harmful",
+          "B": "Not harmful or offensive",
+          "C": "Very strong",
+          "D": "Poisonous"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E135",
+        "question": "The word SUPERCILIOUS means:",
+        "options": {
+          "A": "Humble and modest",
+          "B": "Behaving as if one is superior to others",
+          "C": "Very fast",
+          "D": "Friendly"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E136",
+        "question": "Which word best completes: 'The judge was known for his ___; no bribe could sway him.'",
+        "options": {
+          "A": "arrogance",
+          "B": "integrity",
+          "C": "wisdom",
+          "D": "humour"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E137",
+        "question": "The word IMPECCABLE means:",
+        "options": {
+          "A": "Very flawed",
+          "B": "Without fault or flaw",
+          "C": "Uncertain",
+          "D": "Inconsistent"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E138",
+        "question": "In 'The child who was crying stopped', the relative clause is:",
+        "options": {
+          "A": "The child stopped",
+          "B": "who was crying",
+          "C": "was crying stopped",
+          "D": "The child"
+        },
+        "answer": "B",
+        "topic": "Clauses"
+      },
+      {
+        "id": "E139",
+        "question": "The word INEXORABLE means:",
+        "options": {
+          "A": "Easily changed",
+          "B": "Impossible to stop or prevent",
+          "C": "Very weak",
+          "D": "Highly visible"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E140",
+        "question": "Which of these is a collective noun?",
+        "options": {
+          "A": "Running",
+          "B": "A flock (of birds)",
+          "C": "Quickly",
+          "D": "Beautiful"
+        },
+        "answer": "B",
+        "topic": "Nouns"
+      },
+      {
+        "id": "E141",
+        "question": "The word PENURIOUS means:",
+        "options": {
+          "A": "Very rich",
+          "B": "Extremely poor",
+          "C": "Very generous",
+          "D": "Luxurious"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E142",
+        "question": "Synecdoche is when a part represents the:",
+        "options": {
+          "A": "Emotion",
+          "B": "Whole, or vice versa",
+          "C": "Setting",
+          "D": "Theme"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E143",
+        "question": "The word VOLUBLE means:",
+        "options": {
+          "A": "Silent",
+          "B": "Speaking fluently and at length",
+          "C": "Hesitant",
+          "D": "Monotone"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E144",
+        "question": "Select the correct question tag: 'He doesn't like it, ___?'",
+        "options": {
+          "A": "doesn't he",
+          "B": "does he",
+          "C": "isn't he",
+          "D": "does not he"
+        },
+        "answer": "B",
+        "topic": "Grammar"
+      },
+      {
+        "id": "E145",
+        "question": "The word PUGNACIOUS means:",
+        "options": {
+          "A": "Peace-loving",
+          "B": "Eager to argue or fight",
+          "C": "Timid",
+          "D": "Generous"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E146",
+        "question": "An elegy is a poem that:",
+        "options": {
+          "A": "Celebrates victory",
+          "B": "Mourns the dead",
+          "C": "Tells a funny story",
+          "D": "Praises nature"
+        },
+        "answer": "B",
+        "topic": "Literature"
+      },
+      {
+        "id": "E147",
+        "question": "The word ERUDITE means:",
+        "options": {
+          "A": "Ignorant",
+          "B": "Having or showing great knowledge",
+          "C": "Very dull",
+          "D": "Careless"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E148",
+        "question": "Which is correct? 'The children enjoyed ___ at the beach.'",
+        "options": {
+          "A": "theirself",
+          "B": "themselves",
+          "C": "themselvs",
+          "D": "theirselves"
+        },
+        "answer": "B",
+        "topic": "Pronouns"
+      },
+      {
+        "id": "E149",
+        "question": "The word BELLICOSE means:",
+        "options": {
+          "A": "Beautiful",
+          "B": "Aggressive and warlike",
+          "C": "Peaceful",
+          "D": "Charming"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E150",
+        "question": "The term 'colloquialism' refers to:",
+        "options": {
+          "A": "Formal literary language",
+          "B": "Informal everyday language",
+          "C": "Technical jargon",
+          "D": "Written dialect"
+        },
+        "answer": "B",
+        "topic": "Register"
+      },
+      {
+        "id": "E151",
+        "question": "The word VERACIOUS means:",
+        "options": {
+          "A": "Telling lies",
+          "B": "Truthful",
+          "C": "Greedy",
+          "D": "Violent"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E152",
+        "question": "Assonance involves the repetition of:",
+        "options": {
+          "A": "Consonant sounds",
+          "B": "Vowel sounds in stressed syllables",
+          "C": "Whole words",
+          "D": "End rhymes"
+        },
+        "answer": "B",
+        "topic": "Sound Devices"
+      },
+      {
+        "id": "E153",
+        "question": "Choose the correct sentence:",
+        "options": {
+          "A": "Less students came today.",
+          "B": "Fewer students came today.",
+          "C": "Less of students came today.",
+          "D": "Few students is coming."
+        },
+        "answer": "B",
+        "topic": "Grammar"
+      },
+      {
+        "id": "E154",
+        "question": "The word FASTIDIOUS means:",
+        "options": {
+          "A": "Very fast",
+          "B": "Very attentive to detail; hard to please",
+          "C": "Very lazy",
+          "D": "Careless"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E155",
+        "question": "Which word has a silent consonant?",
+        "options": {
+          "A": "table",
+          "B": "knight",
+          "C": "large",
+          "D": "stone"
+        },
+        "answer": "B",
+        "topic": "Phonology"
+      },
+      {
+        "id": "E156",
+        "question": "The word PERNICIOUS means:",
+        "options": {
+          "A": "Beneficial",
+          "B": "Having a harmful effect",
+          "C": "Neutral",
+          "D": "Temporary"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E157",
+        "question": "The phrase 'kick the bucket' is an example of:",
+        "options": {
+          "A": "Simile",
+          "B": "Idiom",
+          "C": "Metaphor",
+          "D": "Proverb"
+        },
+        "answer": "B",
+        "topic": "Idioms"
+      },
+      {
+        "id": "E158",
+        "question": "The word CONTRITE means:",
+        "options": {
+          "A": "Unrepentant",
+          "B": "Feeling remorseful",
+          "C": "Proud",
+          "D": "Aggressive"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E159",
+        "question": "In phonetics, a phoneme is:",
+        "options": {
+          "A": "A written symbol",
+          "B": "The smallest unit of sound",
+          "C": "A syllable",
+          "D": "A vowel only"
+        },
+        "answer": "B",
+        "topic": "Phonology"
+      },
+      {
+        "id": "E160",
+        "question": "The word PROFLIGATE means:",
+        "options": {
+          "A": "Very careful with money",
+          "B": "Recklessly wasteful and extravagant",
+          "C": "Hard-working",
+          "D": "Honest"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E161",
+        "question": "A zeugma is a figure of speech where one word governs:",
+        "options": {
+          "A": "One clause only",
+          "B": "Two or more words in different ways",
+          "C": "A complete sentence",
+          "D": "An entire paragraph"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E162",
+        "question": "The word VACUOUS means:",
+        "options": {
+          "A": "Full of meaning",
+          "B": "Lacking thought or intelligence",
+          "C": "Very detailed",
+          "D": "Strong-willed"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E163",
+        "question": "'To be or not to be' — the rhetorical device here is:",
+        "options": {
+          "A": "Metaphor",
+          "B": "Antithesis",
+          "C": "Personification",
+          "D": "Simile"
+        },
+        "answer": "B",
+        "topic": "Rhetoric"
+      },
+      {
+        "id": "E164",
+        "question": "The word MYRIAD means:",
+        "options": {
+          "A": "A small number",
+          "B": "A very large number; countless",
+          "C": "Exactly ten thousand",
+          "D": "A single unit"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E165",
+        "question": "Which of the following is a linking verb?",
+        "options": {
+          "A": "run",
+          "B": "seem",
+          "C": "jump",
+          "D": "write"
+        },
+        "answer": "B",
+        "topic": "Verbs"
+      },
+      {
+        "id": "E166",
+        "question": "The word SERENDIPITY means:",
+        "options": {
+          "A": "Sadness",
+          "B": "Finding good things by accident",
+          "C": "Good planning",
+          "D": "Hard work"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E167",
+        "question": "The word QUIXOTIC means:",
+        "options": {
+          "A": "Very practical",
+          "B": "Idealistic and impractical",
+          "C": "Very cautious",
+          "D": "Realistic"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E168",
+        "question": "The word SOLILOQUY refers to:",
+        "options": {
+          "A": "A conversation between two people",
+          "B": "Speaking one's thoughts aloud alone on stage",
+          "C": "A group discussion",
+          "D": "A formal speech"
+        },
+        "answer": "B",
+        "topic": "Drama"
+      },
+      {
+        "id": "E169",
+        "question": "'Actions speak louder than words' is a:",
+        "options": {
+          "A": "Metaphor",
+          "B": "Proverb",
+          "C": "Idiom",
+          "D": "Simile"
+        },
+        "answer": "B",
+        "topic": "Idioms"
+      },
+      {
+        "id": "E170",
+        "question": "The word RECALCITRANT means:",
+        "options": {
+          "A": "Obedient",
+          "B": "Stubbornly resistant to authority",
+          "C": "Helpful",
+          "D": "Cautious"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E171",
+        "question": "Select the correct form: 'One of the boys ___ left his book.'",
+        "options": {
+          "A": "have",
+          "B": "has",
+          "C": "had been",
+          "D": "are"
+        },
+        "answer": "B",
+        "topic": "Concord"
+      },
+      {
+        "id": "E172",
+        "question": "The word VICARIOUS means:",
+        "options": {
+          "A": "Direct and personal",
+          "B": "Experienced through another person",
+          "C": "Very powerful",
+          "D": "Voluntary"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E173",
+        "question": "What type of noun is 'crowd'?",
+        "options": {
+          "A": "Abstract",
+          "B": "Collective",
+          "C": "Proper",
+          "D": "Compound"
+        },
+        "answer": "B",
+        "topic": "Nouns"
+      },
+      {
+        "id": "E174",
+        "question": "The word AMBIVALENT means:",
+        "options": {
+          "A": "Very certain",
+          "B": "Having mixed feelings",
+          "C": "Very happy",
+          "D": "Totally against"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E175",
+        "question": "The suffix '-ify' (as in magnify) means:",
+        "options": {
+          "A": "Without",
+          "B": "To make or become",
+          "C": "Full of",
+          "D": "Related to"
+        },
+        "answer": "B",
+        "topic": "Word Formation"
+      },
+      {
+        "id": "E176",
+        "question": "The word MENDACIOUS means:",
+        "options": {
+          "A": "Truthful",
+          "B": "Not telling the truth",
+          "C": "Generous",
+          "D": "Humble"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E177",
+        "question": "Which word is a homograph?",
+        "options": {
+          "A": "bear/bare",
+          "B": "lead (metal)/lead (guide)",
+          "C": "their/there",
+          "D": "to/too"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E178",
+        "question": "The word FORTUITOUS means:",
+        "options": {
+          "A": "Planned carefully",
+          "B": "Happening by chance, especially luckily",
+          "C": "Very strong",
+          "D": "Organised"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E179",
+        "question": "In the sentence 'She arrived before dawn', 'before dawn' is a:",
+        "options": {
+          "A": "Noun phrase",
+          "B": "Adverbial phrase",
+          "C": "Adjective phrase",
+          "D": "Prepositional object"
+        },
+        "answer": "B",
+        "topic": "Phrases"
+      },
+      {
+        "id": "E180",
+        "question": "The word INEXPLICABLE means:",
+        "options": {
+          "A": "Easy to explain",
+          "B": "Unable to be explained",
+          "C": "Very logical",
+          "D": "Very complex"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E181",
+        "question": "Which sentence is interrogative?",
+        "options": {
+          "A": "Close the door.",
+          "B": "Did you close the door?",
+          "C": "Please close the door.",
+          "D": "The door is closed."
+        },
+        "answer": "B",
+        "topic": "Sentence Types"
+      },
+      {
+        "id": "E182",
+        "question": "The word CANTANKEROUS means:",
+        "options": {
+          "A": "Easy-going",
+          "B": "Bad-tempered and argumentative",
+          "C": "Very joyful",
+          "D": "Flexible"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E183",
+        "question": "The prefix 'mal-' means:",
+        "options": {
+          "A": "Good",
+          "B": "Bad",
+          "C": "Before",
+          "D": "After"
+        },
+        "answer": "B",
+        "topic": "Word Formation"
+      },
+      {
+        "id": "E184",
+        "question": "The word OPAQUE means:",
+        "options": {
+          "A": "Transparent",
+          "B": "Not allowing light through; hard to understand",
+          "C": "Very bright",
+          "D": "Shiny"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E185",
+        "question": "'She was as cool as a cucumber' uses the device of:",
+        "options": {
+          "A": "Metaphor",
+          "B": "Simile",
+          "C": "Hyperbole",
+          "D": "Personification"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E186",
+        "question": "The word GARRULOUS means:",
+        "options": {
+          "A": "Silent",
+          "B": "Excessively talkative about trivial things",
+          "C": "Well-spoken",
+          "D": "Secretive"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E187",
+        "question": "Which type of sentence contains an independent and a dependent clause?",
+        "options": {
+          "A": "Simple",
+          "B": "Complex",
+          "C": "Compound",
+          "D": "Fragment"
+        },
+        "answer": "B",
+        "topic": "Sentence Types"
+      },
+      {
+        "id": "E188",
+        "question": "The word IMPETUOUS means:",
+        "options": {
+          "A": "Very slow and careful",
+          "B": "Acting quickly without thinking",
+          "C": "Calm and composed",
+          "D": "Wise and thoughtful"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E189",
+        "question": "Catharsis in literature refers to the emotional ___ experienced by the audience.",
+        "options": {
+          "A": "confusion",
+          "B": "release or purification",
+          "C": "excitement",
+          "D": "tension"
+        },
+        "answer": "B",
+        "topic": "Literary Terms"
+      },
+      {
+        "id": "E190",
+        "question": "The word OSTENTATIOUS means:",
+        "options": {
+          "A": "Modest and humble",
+          "B": "Showy, designed to impress",
+          "C": "Very quiet",
+          "D": "Secretive"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E191",
+        "question": "Which of these correctly uses a semicolon?",
+        "options": {
+          "A": "She likes tea; but not coffee.",
+          "B": "She likes tea; he prefers coffee.",
+          "C": "She; likes tea and coffee.",
+          "D": "She likes; tea and coffee."
+        },
+        "answer": "B",
+        "topic": "Punctuation"
+      },
+      {
+        "id": "E192",
+        "question": "The word OBFUSCATE means:",
+        "options": {
+          "A": "To clarify",
+          "B": "To make unclear or confusing",
+          "C": "To simplify",
+          "D": "To illuminate"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E193",
+        "question": "The word INSOLENT means:",
+        "options": {
+          "A": "Respectful",
+          "B": "Showing rude lack of respect",
+          "C": "Very quiet",
+          "D": "Obedient"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E194",
+        "question": "'He was not a little tired' is an example of:",
+        "options": {
+          "A": "Hyperbole",
+          "B": "Litotes (understatement via negation)",
+          "C": "Simile",
+          "D": "Metaphor"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E195",
+        "question": "The word PARAMOUNT means:",
+        "options": {
+          "A": "Of little importance",
+          "B": "Of supreme importance",
+          "C": "Beneath others",
+          "D": "Equal to others"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E196",
+        "question": "Which of these is an example of alliteration?",
+        "options": {
+          "A": "She sings beautifully",
+          "B": "Peter Piper picked pickled peppers",
+          "C": "The sun is hot",
+          "D": "Birds fly south"
+        },
+        "answer": "B",
+        "topic": "Sound Devices"
+      },
+      {
+        "id": "E197",
+        "question": "The word EQUANIMITY means:",
+        "options": {
+          "A": "Anger and frustration",
+          "B": "Mental calmness and composure",
+          "C": "Confusion",
+          "D": "Nervousness"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E198",
+        "question": "A paradox is a statement that:",
+        "options": {
+          "A": "Makes perfect sense",
+          "B": "Seems contradictory but may be true",
+          "C": "Is clearly false",
+          "D": "Uses exaggeration"
+        },
+        "answer": "B",
+        "topic": "Figures of Speech"
+      },
+      {
+        "id": "E199",
+        "question": "The word SYCOPHANT refers to a person who:",
+        "options": {
+          "A": "Works hard",
+          "B": "Uses excessive flattery to gain favour",
+          "C": "Tells the truth always",
+          "D": "Is very intelligent"
+        },
+        "answer": "B",
+        "topic": "Vocabulary"
+      },
+      {
+        "id": "E200",
+        "question": "Choose the correct sentence:",
+        "options": {
+          "A": "Each of the boys have a pen.",
+          "B": "Each of the boys has a pen.",
+          "C": "Each of the boys are having pens.",
+          "D": "Each of the boys had pens."
+        },
+        "answer": "B",
+        "topic": "Concord"
+      }
+    ],
+    "Physics": [
+      {
+        "id": "P101",
+        "question": "A body of mass 10kg is acted upon by a force of 50N. Its acceleration is:",
+        "options": {
+          "A": "500 m/s²",
+          "B": "5 m/s²",
+          "C": "0.2 m/s²",
+          "D": "10 m/s²"
+        },
+        "answer": "B",
+        "topic": "Mechanics"
+      },
+      {
+        "id": "P102",
+        "question": "The velocity of light in vacuum is approximately:",
+        "options": {
+          "A": "3 × 10⁶ m/s",
+          "B": "3 × 10⁸ m/s",
+          "C": "3 × 10⁸ km/s",
+          "D": "3 × 10¹⁰ m/s"
+        },
+        "answer": "B",
+        "topic": "Light"
+      },
+      {
+        "id": "P103",
+        "question": "Which law states that pressure × volume = constant at constant temperature?",
+        "options": {
+          "A": "Charles' Law",
+          "B": "Boyle's Law",
+          "C": "Gay-Lussac's Law",
+          "D": "Newton's Law"
+        },
+        "answer": "B",
+        "topic": "Gases"
+      },
+      {
+        "id": "P104",
+        "question": "The efficiency of a machine is expressed as:",
+        "options": {
+          "A": "Input/Output × 100%",
+          "B": "Output/Input × 100%",
+          "C": "Load × Effort",
+          "D": "MA × VR"
+        },
+        "answer": "B",
+        "topic": "Machines"
+      },
+      {
+        "id": "P105",
+        "question": "A converging lens is also known as a:",
+        "options": {
+          "A": "Concave lens",
+          "B": "Convex lens",
+          "C": "Plane lens",
+          "D": "Diverging lens"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P106",
+        "question": "In a series circuit, the current through each component is:",
+        "options": {
+          "A": "Different",
+          "B": "The same",
+          "C": "Zero",
+          "D": "Variable"
+        },
+        "answer": "B",
+        "topic": "Electricity"
+      },
+      {
+        "id": "P107",
+        "question": "The freezing point of water on the Kelvin scale is:",
+        "options": {
+          "A": "0 K",
+          "B": "273 K",
+          "C": "373 K",
+          "D": "100 K"
+        },
+        "answer": "B",
+        "topic": "Thermal Physics"
+      },
+      {
+        "id": "P108",
+        "question": "The property of a body to resist change in its state of motion is called:",
+        "options": {
+          "A": "Weight",
+          "B": "Inertia",
+          "C": "Momentum",
+          "D": "Friction"
+        },
+        "answer": "B",
+        "topic": "Mechanics"
+      },
+      {
+        "id": "P109",
+        "question": "Sound cannot travel through:",
+        "options": {
+          "A": "Water",
+          "B": "Vacuum",
+          "C": "Air",
+          "D": "Solids"
+        },
+        "answer": "B",
+        "topic": "Sound"
+      },
+      {
+        "id": "P110",
+        "question": "If an object moves in a circle, it experiences a force directed towards the:",
+        "options": {
+          "A": "Tangent",
+          "B": "Centre (centripetal force)",
+          "C": "Outside",
+          "D": "Upward"
+        },
+        "answer": "B",
+        "topic": "Circular Motion"
+      },
+      {
+        "id": "P111",
+        "question": "The SI unit of electric charge is the:",
+        "options": {
+          "A": "Ampere",
+          "B": "Coulomb",
+          "C": "Volt",
+          "D": "Ohm"
+        },
+        "answer": "B",
+        "topic": "Electricity"
+      },
+      {
+        "id": "P112",
+        "question": "Ohm's law states that voltage is proportional to current if ___ is constant:",
+        "options": {
+          "A": "Power",
+          "B": "Resistance",
+          "C": "Temperature",
+          "D": "Frequency"
+        },
+        "answer": "B",
+        "topic": "Electricity"
+      },
+      {
+        "id": "P113",
+        "question": "A step-up transformer:",
+        "options": {
+          "A": "Decreases voltage and increases current",
+          "B": "Increases voltage and decreases current",
+          "C": "Increases both voltage and current",
+          "D": "Changes AC to DC"
+        },
+        "answer": "B",
+        "topic": "Transformers"
+      },
+      {
+        "id": "P114",
+        "question": "The energy stored in a stretched spring is:",
+        "options": {
+          "A": "Kinetic energy",
+          "B": "Elastic potential energy",
+          "C": "Chemical energy",
+          "D": "Thermal energy"
+        },
+        "answer": "B",
+        "topic": "Energy"
+      },
+      {
+        "id": "P115",
+        "question": "When a ray of light passes from glass to air, it is refracted:",
+        "options": {
+          "A": "Towards the normal",
+          "B": "Away from the normal",
+          "C": "Along the normal",
+          "D": "Parallel to the surface"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P116",
+        "question": "The loudness of sound depends on its:",
+        "options": {
+          "A": "Frequency",
+          "B": "Amplitude",
+          "C": "Speed",
+          "D": "Wavelength"
+        },
+        "answer": "B",
+        "topic": "Sound"
+      },
+      {
+        "id": "P117",
+        "question": "Alpha particles are:",
+        "options": {
+          "A": "Electrons",
+          "B": "Helium nuclei",
+          "C": "Protons",
+          "D": "Photons"
+        },
+        "answer": "B",
+        "topic": "Radioactivity"
+      },
+      {
+        "id": "P118",
+        "question": "The power dissipated in a resistor is given by:",
+        "options": {
+          "A": "P = V/I",
+          "B": "P = I²R",
+          "C": "P = IR",
+          "D": "P = V/R"
+        },
+        "answer": "B",
+        "topic": "Electricity"
+      },
+      {
+        "id": "P119",
+        "question": "Which type of mirror is used in car headlights?",
+        "options": {
+          "A": "Plane",
+          "B": "Concave (parabolic)",
+          "C": "Convex",
+          "D": "Diverging"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P120",
+        "question": "The acceleration due to gravity near Earth's surface is approximately:",
+        "options": {
+          "A": "9.0 m/s²",
+          "B": "9.8 m/s²",
+          "C": "10.2 m/s²",
+          "D": "8.9 m/s²"
+        },
+        "answer": "B",
+        "topic": "Gravity"
+      },
+      {
+        "id": "P121",
+        "question": "Pressure in a fluid increases with:",
+        "options": {
+          "A": "Decrease in area",
+          "B": "Increase in depth",
+          "C": "Increase in temperature",
+          "D": "Decrease in volume"
+        },
+        "answer": "B",
+        "topic": "Fluid Mechanics"
+      },
+      {
+        "id": "P122",
+        "question": "An object is weighed as 60N on Earth. Its mass is approximately: (g=10 m/s²)",
+        "options": {
+          "A": "600 kg",
+          "B": "6 kg",
+          "C": "60 kg",
+          "D": "0.6 kg"
+        },
+        "answer": "B",
+        "topic": "Weight and Mass"
+      },
+      {
+        "id": "P123",
+        "question": "Beta particles are:",
+        "options": {
+          "A": "Alpha particles",
+          "B": "Fast-moving electrons",
+          "C": "Neutrons",
+          "D": "Photons"
+        },
+        "answer": "B",
+        "topic": "Radioactivity"
+      },
+      {
+        "id": "P124",
+        "question": "Which property of light is demonstrated by a rainbow?",
+        "options": {
+          "A": "Reflection",
+          "B": "Dispersion",
+          "C": "Diffraction",
+          "D": "Polarisation"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P125",
+        "question": "The period of a pendulum depends mainly on its:",
+        "options": {
+          "A": "Mass",
+          "B": "Length",
+          "C": "Amplitude",
+          "D": "Material"
+        },
+        "answer": "B",
+        "topic": "Oscillations"
+      },
+      {
+        "id": "P126",
+        "question": "Electromagnetic waves travel at the speed of light because they are:",
+        "options": {
+          "A": "Mechanical",
+          "B": "Transverse waves that do not need a medium",
+          "C": "Longitudinal",
+          "D": "Ultrasonic"
+        },
+        "answer": "B",
+        "topic": "Waves"
+      },
+      {
+        "id": "P127",
+        "question": "A wire of resistance R is folded in half. The new resistance is:",
+        "options": {
+          "A": "2R",
+          "B": "R/4",
+          "C": "R/2",
+          "D": "R"
+        },
+        "answer": "B",
+        "topic": "Resistance"
+      },
+      {
+        "id": "P128",
+        "question": "The unit of power is:",
+        "options": {
+          "A": "Joule",
+          "B": "Watt",
+          "C": "Newton",
+          "D": "Pascal"
+        },
+        "answer": "B",
+        "topic": "Energy"
+      },
+      {
+        "id": "P129",
+        "question": "A capacitor stores energy in the form of:",
+        "options": {
+          "A": "Magnetic field",
+          "B": "Electric field",
+          "C": "Chemical energy",
+          "D": "Thermal energy"
+        },
+        "answer": "B",
+        "topic": "Capacitance"
+      },
+      {
+        "id": "P130",
+        "question": "The critical angle is smaller when the refractive index is:",
+        "options": {
+          "A": "Smaller",
+          "B": "Larger",
+          "C": "Zero",
+          "D": "Equal to 1"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P131",
+        "question": "The instrument used to measure potential difference is a:",
+        "options": {
+          "A": "Ammeter",
+          "B": "Voltmeter",
+          "C": "Galvanometer",
+          "D": "Ohmmeter"
+        },
+        "answer": "B",
+        "topic": "Electricity"
+      },
+      {
+        "id": "P132",
+        "question": "Convection requires a:",
+        "options": {
+          "A": "Vacuum",
+          "B": "Medium (fluid)",
+          "C": "Metallic conductor only",
+          "D": "Magnetic field"
+        },
+        "answer": "B",
+        "topic": "Heat Transfer"
+      },
+      {
+        "id": "P133",
+        "question": "If the distance between two charges doubles, the Coulomb force becomes:",
+        "options": {
+          "A": "Double",
+          "B": "Quarter of original",
+          "C": "Half",
+          "D": "Four times"
+        },
+        "answer": "B",
+        "topic": "Electrostatics"
+      },
+      {
+        "id": "P134",
+        "question": "The change of state from solid to gas directly is called:",
+        "options": {
+          "A": "Evaporation",
+          "B": "Sublimation",
+          "C": "Condensation",
+          "D": "Fusion"
+        },
+        "answer": "B",
+        "topic": "Change of State"
+      },
+      {
+        "id": "P135",
+        "question": "Work done is calculated as:",
+        "options": {
+          "A": "Force ÷ Distance",
+          "B": "Force × Distance × cos θ",
+          "C": "Mass × Velocity",
+          "D": "Power × Distance"
+        },
+        "answer": "B",
+        "topic": "Work"
+      },
+      {
+        "id": "P136",
+        "question": "Which colour has the highest frequency in visible light?",
+        "options": {
+          "A": "Red",
+          "B": "Violet",
+          "C": "Blue",
+          "D": "Green"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P137",
+        "question": "A body thrown vertically upward decelerates at:",
+        "options": {
+          "A": "Zero",
+          "B": "g = 9.8 m/s²",
+          "C": "2g",
+          "D": "Variable rate"
+        },
+        "answer": "B",
+        "topic": "Motion"
+      },
+      {
+        "id": "P138",
+        "question": "The magnetic force on a current-carrying conductor is given by F =",
+        "options": {
+          "A": "BIR",
+          "B": "BIL",
+          "C": "BIV",
+          "D": "BIQ"
+        },
+        "answer": "B",
+        "topic": "Electromagnetism"
+      },
+      {
+        "id": "P139",
+        "question": "Nuclear fusion is the process of:",
+        "options": {
+          "A": "Splitting a heavy nucleus",
+          "B": "Combining light nuclei to release energy",
+          "C": "Radioactive decay",
+          "D": "Beta emission"
+        },
+        "answer": "B",
+        "topic": "Nuclear Physics"
+      },
+      {
+        "id": "P140",
+        "question": "An astronaut in space is weightless because:",
+        "options": {
+          "A": "Gravity disappears",
+          "B": "They are in free fall (no normal reaction)",
+          "C": "They have no mass",
+          "D": "Air resistance is zero"
+        },
+        "answer": "B",
+        "topic": "Gravity"
+      },
+      {
+        "id": "P141",
+        "question": "Which type of radioactive decay changes the atomic number by +1?",
+        "options": {
+          "A": "Alpha decay",
+          "B": "Beta⁻ decay",
+          "C": "Gamma decay",
+          "D": "Neutron emission"
+        },
+        "answer": "B",
+        "topic": "Radioactivity"
+      },
+      {
+        "id": "P142",
+        "question": "The magnification of a lens is positive when the image is:",
+        "options": {
+          "A": "Inverted",
+          "B": "Upright (virtual)",
+          "C": "Real",
+          "D": "At infinity"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P143",
+        "question": "Two identical resistors in parallel have total resistance:",
+        "options": {
+          "A": "2R",
+          "B": "R/2",
+          "C": "R",
+          "D": "R²"
+        },
+        "answer": "B",
+        "topic": "Resistance"
+      },
+      {
+        "id": "P144",
+        "question": "A solenoid is used to create a:",
+        "options": {
+          "A": "High voltage",
+          "B": "Uniform magnetic field",
+          "C": "Varying electric field",
+          "D": "Direct current"
+        },
+        "answer": "B",
+        "topic": "Magnetism"
+      },
+      {
+        "id": "P145",
+        "question": "The distance covered by a falling object from rest in 2 seconds is: (g=10 m/s²)",
+        "options": {
+          "A": "10m",
+          "B": "20m",
+          "C": "40m",
+          "D": "5m"
+        },
+        "answer": "B",
+        "topic": "Motion"
+      },
+      {
+        "id": "P146",
+        "question": "Which instrument measures atmospheric pressure?",
+        "options": {
+          "A": "Hygrometer",
+          "B": "Barometer",
+          "C": "Anemometer",
+          "D": "Manometer"
+        },
+        "answer": "B",
+        "topic": "Pressure"
+      },
+      {
+        "id": "P147",
+        "question": "Potential energy at height h is:",
+        "options": {
+          "A": "½mv²",
+          "B": "mgh",
+          "C": "mhg²",
+          "D": "½mh²"
+        },
+        "answer": "B",
+        "topic": "Energy"
+      },
+      {
+        "id": "P148",
+        "question": "Which of these is a vector quantity?",
+        "options": {
+          "A": "Speed",
+          "B": "Velocity",
+          "C": "Distance",
+          "D": "Time"
+        },
+        "answer": "B",
+        "topic": "Vectors"
+      },
+      {
+        "id": "P149",
+        "question": "When current flows through a wire, it produces a:",
+        "options": {
+          "A": "Gravitational field",
+          "B": "Magnetic field",
+          "C": "Electric field",
+          "D": "Nuclear field"
+        },
+        "answer": "B",
+        "topic": "Magnetism"
+      },
+      {
+        "id": "P150",
+        "question": "Light from the Sun takes approximately ___ minutes to reach Earth:",
+        "options": {
+          "A": "1",
+          "B": "8",
+          "C": "15",
+          "D": "24"
+        },
+        "answer": "B",
+        "topic": "Light"
+      },
+      {
+        "id": "P151",
+        "question": "Lenz's law is a consequence of conservation of:",
+        "options": {
+          "A": "Charge",
+          "B": "Energy",
+          "C": "Mass",
+          "D": "Momentum"
+        },
+        "answer": "B",
+        "topic": "Electromagnetic Induction"
+      },
+      {
+        "id": "P152",
+        "question": "A perfectly black body absorbs all radiation and has emissivity:",
+        "options": {
+          "A": "0",
+          "B": "1",
+          "C": "0.5",
+          "D": "Infinity"
+        },
+        "answer": "B",
+        "topic": "Thermal Radiation"
+      },
+      {
+        "id": "P153",
+        "question": "Which device converts mechanical energy to electrical energy?",
+        "options": {
+          "A": "Motor",
+          "B": "Generator (dynamo)",
+          "C": "Transformer",
+          "D": "Capacitor"
+        },
+        "answer": "B",
+        "topic": "Energy Conversion"
+      },
+      {
+        "id": "P154",
+        "question": "The unit of frequency is:",
+        "options": {
+          "A": "Metre",
+          "B": "Hertz",
+          "C": "Second",
+          "D": "Watt"
+        },
+        "answer": "B",
+        "topic": "Waves"
+      },
+      {
+        "id": "P155",
+        "question": "When white light passes through a prism, colours split because different colours have different:",
+        "options": {
+          "A": "Amplitudes",
+          "B": "Speeds in glass (refractive indices)",
+          "C": "Intensities",
+          "D": "Wavelengths in air"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P156",
+        "question": "The specific latent heat of fusion is the energy needed to:",
+        "options": {
+          "A": "Raise temperature by 1°C",
+          "B": "Change 1 kg from solid to liquid at constant temperature",
+          "C": "Vaporise 1 kg of liquid",
+          "D": "Cool 1 kg by 1°C"
+        },
+        "answer": "B",
+        "topic": "Thermal Physics"
+      },
+      {
+        "id": "P157",
+        "question": "A node in a stationary wave is a point of:",
+        "options": {
+          "A": "Maximum displacement",
+          "B": "Zero displacement",
+          "C": "Maximum energy",
+          "D": "Maximum pressure"
+        },
+        "answer": "B",
+        "topic": "Waves"
+      },
+      {
+        "id": "P158",
+        "question": "If a body's momentum doubles and its mass stays constant, its velocity:",
+        "options": {
+          "A": "Stays the same",
+          "B": "Doubles",
+          "C": "Halves",
+          "D": "Quadruples"
+        },
+        "answer": "B",
+        "topic": "Mechanics"
+      },
+      {
+        "id": "P159",
+        "question": "The Pascal principle states that pressure applied to a fluid is transmitted:",
+        "options": {
+          "A": "Only upward",
+          "B": "Equally in all directions",
+          "C": "Only downward",
+          "D": "In the direction of force"
+        },
+        "answer": "B",
+        "topic": "Fluid Mechanics"
+      },
+      {
+        "id": "P160",
+        "question": "Which of the following is a non-contact force?",
+        "options": {
+          "A": "Friction",
+          "B": "Gravity",
+          "C": "Normal reaction",
+          "D": "Air resistance"
+        },
+        "answer": "B",
+        "topic": "Forces"
+      },
+      {
+        "id": "P161",
+        "question": "Ferromagnetic materials are those that:",
+        "options": {
+          "A": "Repel magnets",
+          "B": "Are strongly attracted to magnets",
+          "C": "Are unaffected by magnets",
+          "D": "Become magnets temporarily"
+        },
+        "answer": "B",
+        "topic": "Magnetism"
+      },
+      {
+        "id": "P162",
+        "question": "The boiling point of a liquid decreases when atmospheric pressure:",
+        "options": {
+          "A": "Increases",
+          "B": "Decreases",
+          "C": "Remains constant",
+          "D": "Fluctuates"
+        },
+        "answer": "B",
+        "topic": "Change of State"
+      },
+      {
+        "id": "P163",
+        "question": "In Young's double-slit experiment, the pattern formed is:",
+        "options": {
+          "A": "Single bright spot",
+          "B": "Alternating bright and dark fringes",
+          "C": "A circular ring",
+          "D": "A continuous spectrum"
+        },
+        "answer": "B",
+        "topic": "Interference"
+      },
+      {
+        "id": "P164",
+        "question": "In a motor, the split-ring commutator ensures:",
+        "options": {
+          "A": "AC output",
+          "B": "Continuous rotation in one direction",
+          "C": "Higher voltage",
+          "D": "Increased resistance"
+        },
+        "answer": "B",
+        "topic": "Motors"
+      },
+      {
+        "id": "P165",
+        "question": "The Geiger-Muller tube is used to detect:",
+        "options": {
+          "A": "Temperature",
+          "B": "Radioactive radiation",
+          "C": "Pressure",
+          "D": "Magnetic fields"
+        },
+        "answer": "B",
+        "topic": "Radioactivity"
+      },
+      {
+        "id": "P166",
+        "question": "Power in a circuit can be expressed as:",
+        "options": {
+          "A": "V² × R",
+          "B": "V²/R",
+          "C": "I × R",
+          "D": "V/I²"
+        },
+        "answer": "B",
+        "topic": "Electricity"
+      },
+      {
+        "id": "P167",
+        "question": "A mirage is caused by:",
+        "options": {
+          "A": "Reflection",
+          "B": "Total internal reflection in hot air layers",
+          "C": "Diffraction",
+          "D": "Interference"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P168",
+        "question": "A freely suspended magnet points in the ___-___ direction:",
+        "options": {
+          "A": "East-West",
+          "B": "North-South",
+          "C": "Northeast-Southwest",
+          "D": "Random"
+        },
+        "answer": "B",
+        "topic": "Magnetism"
+      },
+      {
+        "id": "P169",
+        "question": "The human ear can detect sounds from approximately 20 Hz to:",
+        "options": {
+          "A": "1,000 Hz",
+          "B": "20,000 Hz",
+          "C": "200 Hz",
+          "D": "100,000 Hz"
+        },
+        "answer": "B",
+        "topic": "Sound"
+      },
+      {
+        "id": "P170",
+        "question": "The energy equivalent of 1 atomic mass unit (u) is approximately:",
+        "options": {
+          "A": "1 MeV",
+          "B": "931.5 MeV",
+          "C": "9.31 MeV",
+          "D": "93.1 MeV"
+        },
+        "answer": "B",
+        "topic": "Nuclear Physics"
+      },
+      {
+        "id": "P171",
+        "question": "A parachutist reaches terminal velocity when air resistance equals:",
+        "options": {
+          "A": "Zero",
+          "B": "Weight",
+          "C": "Mass",
+          "D": "Momentum"
+        },
+        "answer": "B",
+        "topic": "Forces"
+      },
+      {
+        "id": "P172",
+        "question": "Charles' Law states that at constant pressure, volume is _____ proportional to temperature:",
+        "options": {
+          "A": "Inversely",
+          "B": "Directly",
+          "C": "Not",
+          "D": "Exponentially"
+        },
+        "answer": "B",
+        "topic": "Gases"
+      },
+      {
+        "id": "P173",
+        "question": "A convex mirror always forms an image that is:",
+        "options": {
+          "A": "Real and inverted",
+          "B": "Virtual, upright, and diminished",
+          "C": "Virtual and inverted",
+          "D": "Real and upright"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P174",
+        "question": "When two waves meet and their crests align, the result is:",
+        "options": {
+          "A": "Destructive interference",
+          "B": "Constructive interference",
+          "C": "Diffraction",
+          "D": "Refraction"
+        },
+        "answer": "B",
+        "topic": "Waves"
+      },
+      {
+        "id": "P175",
+        "question": "A good conductor of electricity has:",
+        "options": {
+          "A": "High resistivity",
+          "B": "Low resistivity",
+          "C": "No free electrons",
+          "D": "High resistance"
+        },
+        "answer": "B",
+        "topic": "Electricity"
+      },
+      {
+        "id": "P176",
+        "question": "In simple harmonic motion, restoring force is proportional to:",
+        "options": {
+          "A": "Velocity",
+          "B": "Displacement from equilibrium",
+          "C": "Acceleration only",
+          "D": "Time"
+        },
+        "answer": "B",
+        "topic": "Oscillations"
+      },
+      {
+        "id": "P177",
+        "question": "The first law of thermodynamics states that energy is:",
+        "options": {
+          "A": "Created from nothing",
+          "B": "Conserved (cannot be created or destroyed)",
+          "C": "Always lost as heat",
+          "D": "Constant only in gases"
+        },
+        "answer": "B",
+        "topic": "Thermodynamics"
+      },
+      {
+        "id": "P178",
+        "question": "The photoelectric effect shows that light behaves as:",
+        "options": {
+          "A": "A wave only",
+          "B": "Particles (photons)",
+          "C": "Sound waves",
+          "D": "Magnetic waves"
+        },
+        "answer": "B",
+        "topic": "Quantum Physics"
+      },
+      {
+        "id": "P179",
+        "question": "Which quantity remains conserved in an elastic collision?",
+        "options": {
+          "A": "Velocity only",
+          "B": "Both kinetic energy and momentum",
+          "C": "Kinetic energy only",
+          "D": "Momentum only"
+        },
+        "answer": "B",
+        "topic": "Collisions"
+      },
+      {
+        "id": "P180",
+        "question": "The unit of magnetic flux is the:",
+        "options": {
+          "A": "Tesla",
+          "B": "Weber",
+          "C": "Henry",
+          "D": "Farad"
+        },
+        "answer": "B",
+        "topic": "Electromagnetism"
+      },
+      {
+        "id": "P181",
+        "question": "Snell's law relates the angles of incidence and refraction to the:",
+        "options": {
+          "A": "Speed of light only",
+          "B": "Refractive indices of the media",
+          "C": "Wavelength",
+          "D": "Frequency"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P182",
+        "question": "The phenomenon of beats occurs when two sources produce sounds of:",
+        "options": {
+          "A": "Equal frequencies",
+          "B": "Slightly different frequencies",
+          "C": "Very different frequencies",
+          "D": "Different amplitudes"
+        },
+        "answer": "B",
+        "topic": "Sound"
+      },
+      {
+        "id": "P183",
+        "question": "Bernoulli's principle states that as fluid speed increases, pressure:",
+        "options": {
+          "A": "Increases",
+          "B": "Decreases",
+          "C": "Stays the same",
+          "D": "Fluctuates"
+        },
+        "answer": "B",
+        "topic": "Fluid Mechanics"
+      },
+      {
+        "id": "P184",
+        "question": "The half-life of a radioactive substance is the time for:",
+        "options": {
+          "A": "All atoms to decay",
+          "B": "Half the atoms to decay",
+          "C": "One atom to decay",
+          "D": "The activity to double"
+        },
+        "answer": "B",
+        "topic": "Radioactivity"
+      },
+      {
+        "id": "P185",
+        "question": "Which of these cannot be deflected by a magnetic field?",
+        "options": {
+          "A": "Alpha particles",
+          "B": "Gamma rays",
+          "C": "Beta particles",
+          "D": "Electrons"
+        },
+        "answer": "B",
+        "topic": "Radioactivity"
+      },
+      {
+        "id": "P186",
+        "question": "The hydraulic press works on the principle that pressure is:",
+        "options": {
+          "A": "Lost in fluids",
+          "B": "Transmitted equally in all directions in a fluid",
+          "C": "Reduced with depth",
+          "D": "Only applicable to gases"
+        },
+        "answer": "B",
+        "topic": "Fluid Mechanics"
+      },
+      {
+        "id": "P187",
+        "question": "The ratio of the speed of light in vacuum to its speed in a medium is called:",
+        "options": {
+          "A": "Critical angle",
+          "B": "Refractive index",
+          "C": "Wavelength",
+          "D": "Refraction angle"
+        },
+        "answer": "B",
+        "topic": "Optics"
+      },
+      {
+        "id": "P188",
+        "question": "Which effect proves that light is a transverse wave?",
+        "options": {
+          "A": "Interference",
+          "B": "Polarisation",
+          "C": "Diffraction",
+          "D": "Refraction"
+        },
+        "answer": "B",
+        "topic": "Waves"
+      },
+      {
+        "id": "P189",
+        "question": "In a diode, current flows easily only in the:",
+        "options": {
+          "A": "Reverse direction",
+          "B": "Forward direction",
+          "C": "Both directions",
+          "D": "Neither direction"
+        },
+        "answer": "B",
+        "topic": "Electronics"
+      },
+      {
+        "id": "P190",
+        "question": "The work function of a metal is the minimum energy needed to:",
+        "options": {
+          "A": "Heat the metal",
+          "B": "Eject an electron from its surface",
+          "C": "Magnetise the metal",
+          "D": "Melt the metal"
+        },
+        "answer": "B",
+        "topic": "Quantum Physics"
+      },
+      {
+        "id": "P191",
+        "question": "In which medium does sound travel fastest?",
+        "options": {
+          "A": "Air",
+          "B": "Steel",
+          "C": "Water",
+          "D": "Vacuum"
+        },
+        "answer": "B",
+        "topic": "Sound"
+      },
+      {
+        "id": "P192",
+        "question": "An object at rest on a table experiences a normal reaction equal to its:",
+        "options": {
+          "A": "Mass",
+          "B": "Weight",
+          "C": "Volume",
+          "D": "Momentum"
+        },
+        "answer": "B",
+        "topic": "Forces"
+      },
+      {
+        "id": "P193",
+        "question": "The SI unit of inductance is the:",
+        "options": {
+          "A": "Farad",
+          "B": "Henry",
+          "C": "Tesla",
+          "D": "Weber"
+        },
+        "answer": "B",
+        "topic": "Electromagnetism"
+      },
+      {
+        "id": "P194",
+        "question": "Which thermometric property is used in a mercury thermometer?",
+        "options": {
+          "A": "Electrical resistance",
+          "B": "Thermal expansion of liquid",
+          "C": "Thermoelectric effect",
+          "D": "Pressure change"
+        },
+        "answer": "B",
+        "topic": "Temperature"
+      },
+      {
+        "id": "P195",
+        "question": "The energy of a photon is given by E =",
+        "options": {
+          "A": "mc²",
+          "B": "hf",
+          "C": "½mv²",
+          "D": "mgh"
+        },
+        "answer": "B",
+        "topic": "Quantum Physics"
+      },
+      {
+        "id": "P196",
+        "question": "During an adiabatic process:",
+        "options": {
+          "A": "Temperature remains constant",
+          "B": "No heat is exchanged with the surroundings",
+          "C": "Pressure remains constant",
+          "D": "Volume remains constant"
+        },
+        "answer": "B",
+        "topic": "Thermodynamics"
+      },
+      {
+        "id": "P197",
+        "question": "The device that converts sound to electrical signals is a:",
+        "options": {
+          "A": "Loudspeaker",
+          "B": "Microphone",
+          "C": "Amplifier",
+          "D": "Oscilloscope"
+        },
+        "answer": "B",
+        "topic": "Waves"
+      },
+      {
+        "id": "P198",
+        "question": "Friction can be reduced by:",
+        "options": {
+          "A": "Increasing the surface area",
+          "B": "Lubrication and smooth surfaces",
+          "C": "Increasing the load",
+          "D": "Using rough materials"
+        },
+        "answer": "B",
+        "topic": "Forces"
+      },
+      {
+        "id": "P199",
+        "question": "The frequency of the mains electricity supply in Nigeria is:",
+        "options": {
+          "A": "60 Hz",
+          "B": "50 Hz",
+          "C": "100 Hz",
+          "D": "25 Hz"
+        },
+        "answer": "B",
+        "topic": "Alternating Current"
+      },
+      {
+        "id": "P200",
+        "question": "Newton's third law states that:",
+        "options": {
+          "A": "F = ma",
+          "B": "Action and reaction are equal and opposite",
+          "C": "Objects at rest remain at rest",
+          "D": "Momentum is conserved"
+        },
+        "answer": "B",
+        "topic": "Mechanics"
+      }
+    ],
+    "Chemistry": [
+      {
+        "id": "C101",
+        "question": "The atomic number of carbon is:",
+        "options": {
+          "A": "8",
+          "B": "6",
+          "C": "12",
+          "D": "14"
+        },
+        "answer": "B",
+        "topic": "Atomic Structure"
+      },
+      {
+        "id": "C102",
+        "question": "Which of the following is a mixture?",
+        "options": {
+          "A": "Water",
+          "B": "Air",
+          "C": "Carbon dioxide",
+          "D": "Sodium chloride"
+        },
+        "answer": "B",
+        "topic": "Matter"
+      },
+      {
+        "id": "C103",
+        "question": "The ion formed when sodium loses one electron is:",
+        "options": {
+          "A": "Na⁻",
+          "B": "Na⁺",
+          "C": "Na²⁺",
+          "D": "Na²⁻"
+        },
+        "answer": "B",
+        "topic": "Ions"
+      },
+      {
+        "id": "C104",
+        "question": "Which of these is a property of covalent compounds?",
+        "options": {
+          "A": "Conduct electricity when solid",
+          "B": "Generally low melting and boiling points",
+          "C": "Form crystal lattices",
+          "D": "Consist of ions"
+        },
+        "answer": "B",
+        "topic": "Bonding"
+      },
+      {
+        "id": "C105",
+        "question": "The molecular formula of ethene is:",
+        "options": {
+          "A": "C₂H₆",
+          "B": "C₂H₄",
+          "C": "C₃H₆",
+          "D": "CH₄"
+        },
+        "answer": "B",
+        "topic": "Organic Chemistry"
+      },
+      {
+        "id": "C106",
+        "question": "In the reaction Zn + H₂SO₄ → ZnSO₄ + H₂, zinc is:",
+        "options": {
+          "A": "Reduced",
+          "B": "Oxidised",
+          "C": "A catalyst",
+          "D": "A product only"
+        },
+        "answer": "B",
+        "topic": "Redox"
+      },
+      {
+        "id": "C107",
+        "question": "The formula for ammonium sulphate is:",
+        "options": {
+          "A": "NH₄SO₄",
+          "B": "(NH₄)₂SO₄",
+          "C": "NH₄(SO₄)₂",
+          "D": "N₂H₄SO₄"
+        },
+        "answer": "B",
+        "topic": "Formulae"
+      },
+      {
+        "id": "C108",
+        "question": "Which of these metals is extracted by electrolysis?",
+        "options": {
+          "A": "Iron",
+          "B": "Aluminium",
+          "C": "Copper",
+          "D": "Zinc"
+        },
+        "answer": "B",
+        "topic": "Extraction of Metals"
+      },
+      {
+        "id": "C109",
+        "question": "The solubility of most solids in water increases with:",
+        "options": {
+          "A": "Decrease in temperature",
+          "B": "Increase in temperature",
+          "C": "Decrease in pressure",
+          "D": "Increase in pressure"
+        },
+        "answer": "B",
+        "topic": "Solutions"
+      },
+      {
+        "id": "C110",
+        "question": "Which gas is produced at the cathode during electrolysis of dilute sulphuric acid?",
+        "options": {
+          "A": "Oxygen",
+          "B": "Hydrogen",
+          "C": "Sulphur dioxide",
+          "D": "Chlorine"
+        },
+        "answer": "B",
+        "topic": "Electrolysis"
+      },
+      {
+        "id": "C111",
+        "question": "An exothermic reaction is one that:",
+        "options": {
+          "A": "Absorbs heat from surroundings",
+          "B": "Releases heat to surroundings",
+          "C": "Has no energy change",
+          "D": "Requires a catalyst"
+        },
+        "answer": "B",
+        "topic": "Energetics"
+      },
+      {
+        "id": "C112",
+        "question": "The functional group in alcohols is:",
+        "options": {
+          "A": "-COOH",
+          "B": "-OH",
+          "C": "-CHO",
+          "D": "-NH₂"
+        },
+        "answer": "B",
+        "topic": "Organic Chemistry"
+      },
+      {
+        "id": "C113",
+        "question": "Rust is formed when iron reacts with water and:",
+        "options": {
+          "A": "Carbon dioxide",
+          "B": "Oxygen",
+          "C": "Nitrogen",
+          "D": "Hydrogen"
+        },
+        "answer": "B",
+        "topic": "Corrosion"
+      },
+      {
+        "id": "C114",
+        "question": "Which of these is a basic oxide?",
+        "options": {
+          "A": "SO₂",
+          "B": "CaO",
+          "C": "CO₂",
+          "D": "NO₂"
+        },
+        "answer": "B",
+        "topic": "Oxides"
+      },
+      {
+        "id": "C115",
+        "question": "The law of conservation of mass states that mass is:",
+        "options": {
+          "A": "Created during reactions",
+          "B": "Neither created nor destroyed in a chemical reaction",
+          "C": "Destroyed in exothermic reactions",
+          "D": "Constant only in physical changes"
+        },
+        "answer": "B",
+        "topic": "Stoichiometry"
+      },
+      {
+        "id": "C116",
+        "question": "Hydrogenation of vegetable oil produces:",
+        "options": {
+          "A": "Soap",
+          "B": "Margarine",
+          "C": "Glycerol",
+          "D": "Fatty acid"
+        },
+        "answer": "B",
+        "topic": "Fats and Oils"
+      },
+      {
+        "id": "C117",
+        "question": "The IUPAC name of CH₃CHO is:",
+        "options": {
+          "A": "Methanoic acid",
+          "B": "Ethanal",
+          "C": "Propanal",
+          "D": "Methanol"
+        },
+        "answer": "B",
+        "topic": "Nomenclature"
+      },
+      {
+        "id": "C118",
+        "question": "Which halogen is a liquid at room temperature?",
+        "options": {
+          "A": "Chlorine",
+          "B": "Bromine",
+          "C": "Iodine",
+          "D": "Fluorine"
+        },
+        "answer": "B",
+        "topic": "Halogens"
+      },
+      {
+        "id": "C119",
+        "question": "The reaction between an acid and a base to form salt and water is called:",
+        "options": {
+          "A": "Oxidation",
+          "B": "Neutralisation",
+          "C": "Hydrolysis",
+          "D": "Decomposition"
+        },
+        "answer": "B",
+        "topic": "Acid-Base"
+      },
+      {
+        "id": "C120",
+        "question": "Which gas has the smell of rotten eggs?",
+        "options": {
+          "A": "Ammonia",
+          "B": "Hydrogen sulphide",
+          "C": "Chlorine",
+          "D": "Sulphur dioxide"
+        },
+        "answer": "B",
+        "topic": "Gases"
+      },
+      {
+        "id": "C121",
+        "question": "The number of electrons in the outermost shell of chlorine (atomic number 17) is:",
+        "options": {
+          "A": "5",
+          "B": "7",
+          "C": "2",
+          "D": "8"
+        },
+        "answer": "B",
+        "topic": "Electron Configuration"
+      },
+      {
+        "id": "C122",
+        "question": "Fractional distillation separates liquids based on differences in their:",
+        "options": {
+          "A": "Density",
+          "B": "Boiling points",
+          "C": "Colour",
+          "D": "Solubility"
+        },
+        "answer": "B",
+        "topic": "Separation"
+      },
+      {
+        "id": "C123",
+        "question": "Which of these is produced during the thermal cracking of petroleum?",
+        "options": {
+          "A": "Propane only",
+          "B": "Alkenes (unsaturated hydrocarbons)",
+          "C": "Alcohols",
+          "D": "Carboxylic acids"
+        },
+        "answer": "B",
+        "topic": "Petroleum"
+      },
+      {
+        "id": "C124",
+        "question": "A catalyst speeds up a reaction by:",
+        "options": {
+          "A": "Increasing the activation energy",
+          "B": "Providing an alternative pathway with lower activation energy",
+          "C": "Increasing temperature",
+          "D": "Providing extra reactants"
+        },
+        "answer": "B",
+        "topic": "Kinetics"
+      },
+      {
+        "id": "C125",
+        "question": "The electronic configuration of argon (Z=18) is:",
+        "options": {
+          "A": "2,8,6",
+          "B": "2,8,8",
+          "C": "2,8,10",
+          "D": "8,8,2"
+        },
+        "answer": "B",
+        "topic": "Electron Configuration"
+      },
+      {
+        "id": "C126",
+        "question": "Which type of isomerism involves different positions of a functional group?",
+        "options": {
+          "A": "Chain isomerism",
+          "B": "Position isomerism",
+          "C": "Functional group isomerism",
+          "D": "Geometric isomerism"
+        },
+        "answer": "B",
+        "topic": "Isomerism"
+      },
+      {
+        "id": "C127",
+        "question": "The molecular formula of benzene is:",
+        "options": {
+          "A": "C₆H₁₂",
+          "B": "C₆H₆",
+          "C": "C₆H₄",
+          "D": "C₆H₈"
+        },
+        "answer": "B",
+        "topic": "Aromatic Chemistry"
+      },
+      {
+        "id": "C128",
+        "question": "The formula for calcium phosphate is:",
+        "options": {
+          "A": "CaPO₄",
+          "B": "Ca₃(PO₄)₂",
+          "C": "Ca₂PO₄",
+          "D": "Ca(PO₄)₂"
+        },
+        "answer": "B",
+        "topic": "Formulae"
+      },
+      {
+        "id": "C129",
+        "question": "Which of these is the test for unsaturation in organic compounds?",
+        "options": {
+          "A": "Limewater test",
+          "B": "Bromine water (decolourisation)",
+          "C": "Litmus paper",
+          "D": "Burning splint"
+        },
+        "answer": "B",
+        "topic": "Organic Tests"
+      },
+      {
+        "id": "C130",
+        "question": "The process of making alcohol by fermentation uses:",
+        "options": {
+          "A": "High temperature and pressure",
+          "B": "Yeast (enzymes) at moderate temperature",
+          "C": "Acid catalyst",
+          "D": "Electrolysis"
+        },
+        "answer": "B",
+        "topic": "Fermentation"
+      },
+      {
+        "id": "C131",
+        "question": "Hard water contains dissolved salts of:",
+        "options": {
+          "A": "Sodium",
+          "B": "Calcium and magnesium",
+          "C": "Potassium",
+          "D": "Iron"
+        },
+        "answer": "B",
+        "topic": "Water Chemistry"
+      },
+      {
+        "id": "C132",
+        "question": "Which of these is an amphoteric oxide?",
+        "options": {
+          "A": "CaO",
+          "B": "Al₂O₃",
+          "C": "SO₂",
+          "D": "MgO"
+        },
+        "answer": "B",
+        "topic": "Oxides"
+      },
+      {
+        "id": "C133",
+        "question": "Which type of organic reaction involves adding atoms across a double bond?",
+        "options": {
+          "A": "Substitution",
+          "B": "Addition",
+          "C": "Elimination",
+          "D": "Condensation"
+        },
+        "answer": "B",
+        "topic": "Organic Reactions"
+      },
+      {
+        "id": "C134",
+        "question": "The mass number of an atom is the total number of:",
+        "options": {
+          "A": "Electrons and protons",
+          "B": "Protons and neutrons",
+          "C": "Neutrons and electrons",
+          "D": "Protons only"
+        },
+        "answer": "B",
+        "topic": "Atomic Structure"
+      },
+      {
+        "id": "C135",
+        "question": "Which of these represents a strong base?",
+        "options": {
+          "A": "NH₃",
+          "B": "NaOH",
+          "C": "Al(OH)₃",
+          "D": "Mg(OH)₂"
+        },
+        "answer": "B",
+        "topic": "Acids and Bases"
+      },
+      {
+        "id": "C136",
+        "question": "Esterification is the reaction between an alcohol and:",
+        "options": {
+          "A": "An alkene",
+          "B": "A carboxylic acid",
+          "C": "A base",
+          "D": "An aldehyde"
+        },
+        "answer": "B",
+        "topic": "Organic Reactions"
+      },
+      {
+        "id": "C137",
+        "question": "In the blast furnace, iron ore is reduced by:",
+        "options": {
+          "A": "Oxygen",
+          "B": "Carbon monoxide",
+          "C": "Limestone",
+          "D": "Coke directly"
+        },
+        "answer": "B",
+        "topic": "Metallurgy"
+      },
+      {
+        "id": "C138",
+        "question": "The shape of the ammonia molecule is:",
+        "options": {
+          "A": "Linear",
+          "B": "Trigonal pyramidal",
+          "C": "Tetrahedral",
+          "D": "Planar triangular"
+        },
+        "answer": "B",
+        "topic": "Molecular Geometry"
+      },
+      {
+        "id": "C139",
+        "question": "The reaction rate generally doubles for every ___°C rise in temperature:",
+        "options": {
+          "A": "5",
+          "B": "10",
+          "C": "20",
+          "D": "2"
+        },
+        "answer": "B",
+        "topic": "Kinetics"
+      },
+      {
+        "id": "C140",
+        "question": "Isotopes of an element have the same number of:",
+        "options": {
+          "A": "Neutrons",
+          "B": "Protons",
+          "C": "Mass numbers",
+          "D": "Electrons in outer shell only"
+        },
+        "answer": "B",
+        "topic": "Atomic Structure"
+      },
+      {
+        "id": "C141",
+        "question": "Which gas is produced when sodium reacts with water?",
+        "options": {
+          "A": "Oxygen",
+          "B": "Hydrogen",
+          "C": "Nitrogen",
+          "D": "Chlorine"
+        },
+        "answer": "B",
+        "topic": "Reactions of Metals"
+      },
+      {
+        "id": "C142",
+        "question": "The common name for sodium hydroxide is:",
+        "options": {
+          "A": "Washing soda",
+          "B": "Caustic soda",
+          "C": "Baking soda",
+          "D": "Soda ash"
+        },
+        "answer": "B",
+        "topic": "Common Names"
+      },
+      {
+        "id": "C143",
+        "question": "Which of these gases turns limewater milky?",
+        "options": {
+          "A": "SO₂",
+          "B": "CO₂",
+          "C": "HCl",
+          "D": "H₂S"
+        },
+        "answer": "B",
+        "topic": "Gas Tests"
+      },
+      {
+        "id": "C144",
+        "question": "The formula of baking soda is:",
+        "options": {
+          "A": "Na₂CO₃",
+          "B": "NaHCO₃",
+          "C": "NaOH",
+          "D": "Na₂SO₄"
+        },
+        "answer": "B",
+        "topic": "Compounds"
+      },
+      {
+        "id": "C145",
+        "question": "Which of the following undergoes addition polymerisation?",
+        "options": {
+          "A": "Amino acids",
+          "B": "Ethene (to form polythene)",
+          "C": "Glucose",
+          "D": "Fatty acids"
+        },
+        "answer": "B",
+        "topic": "Polymers"
+      },
+      {
+        "id": "C146",
+        "question": "The pH of a solution with [H⁺] = 0.001 mol/dm³ is:",
+        "options": {
+          "A": "1",
+          "B": "3",
+          "C": "7",
+          "D": "11"
+        },
+        "answer": "B",
+        "topic": "pH"
+      },
+      {
+        "id": "C147",
+        "question": "Stainless steel is an alloy of iron with:",
+        "options": {
+          "A": "Tin and lead",
+          "B": "Chromium and nickel",
+          "C": "Carbon and zinc",
+          "D": "Copper and manganese"
+        },
+        "answer": "B",
+        "topic": "Alloys"
+      },
+      {
+        "id": "C148",
+        "question": "In electroplating, the article to be plated is the:",
+        "options": {
+          "A": "Anode",
+          "B": "Cathode",
+          "C": "Electrolyte",
+          "D": "Salt bridge"
+        },
+        "answer": "B",
+        "topic": "Electrolysis"
+      },
+      {
+        "id": "C149",
+        "question": "Which of these is a test for chloride ions?",
+        "options": {
+          "A": "Adding NaOH solution",
+          "B": "Adding silver nitrate solution (white precipitate)",
+          "C": "Adding limewater",
+          "D": "Adding bromine water"
+        },
+        "answer": "B",
+        "topic": "Qualitative Analysis"
+      },
+      {
+        "id": "C150",
+        "question": "The oxidation state of manganese in KMnO₄ is:",
+        "options": {
+          "A": "+4",
+          "B": "+7",
+          "C": "+6",
+          "D": "+3"
+        },
+        "answer": "B",
+        "topic": "Oxidation States"
+      },
+      {
+        "id": "C151",
+        "question": "Which gas is used in fire extinguishers?",
+        "options": {
+          "A": "Oxygen",
+          "B": "Carbon dioxide",
+          "C": "Nitrogen",
+          "D": "Hydrogen"
+        },
+        "answer": "B",
+        "topic": "Uses of Gases"
+      },
+      {
+        "id": "C152",
+        "question": "The IUPAC name of CH₃COOH is:",
+        "options": {
+          "A": "Methanoic acid",
+          "B": "Ethanoic acid",
+          "C": "Propanoic acid",
+          "D": "Butanoic acid"
+        },
+        "answer": "B",
+        "topic": "Nomenclature"
+      },
+      {
+        "id": "C153",
+        "question": "Which of these is produced when proteins are hydrolysed?",
+        "options": {
+          "A": "Glucose",
+          "B": "Amino acids",
+          "C": "Fatty acids",
+          "D": "Nucleotides"
+        },
+        "answer": "B",
+        "topic": "Biochemistry"
+      },
+      {
+        "id": "C154",
+        "question": "An acid that donates protons is defined by:",
+        "options": {
+          "A": "Lewis theory",
+          "B": "Brønsted-Lowry theory",
+          "C": "Arrhenius theory",
+          "D": "Dalton's theory"
+        },
+        "answer": "B",
+        "topic": "Acid-Base Theories"
+      },
+      {
+        "id": "C155",
+        "question": "Galvanising protects iron by coating it with:",
+        "options": {
+          "A": "Tin",
+          "B": "Zinc",
+          "C": "Copper",
+          "D": "Aluminium"
+        },
+        "answer": "B",
+        "topic": "Corrosion Prevention"
+      },
+      {
+        "id": "C156",
+        "question": "The product formed when ethanol is oxidised is:",
+        "options": {
+          "A": "Methanoic acid",
+          "B": "Ethanoic acid",
+          "C": "Propanoic acid",
+          "D": "Ethene"
+        },
+        "answer": "B",
+        "topic": "Organic Reactions"
+      },
+      {
+        "id": "C157",
+        "question": "Which of these is a diatomic molecule?",
+        "options": {
+          "A": "Ozone",
+          "B": "Nitrogen (N₂)",
+          "C": "Phosphorus (P₄)",
+          "D": "Sulphur (S₈)"
+        },
+        "answer": "B",
+        "topic": "Molecules"
+      },
+      {
+        "id": "C158",
+        "question": "Graham's law of diffusion states that rate of diffusion is inversely proportional to the square root of:",
+        "options": {
+          "A": "Temperature",
+          "B": "Molar mass",
+          "C": "Pressure",
+          "D": "Volume"
+        },
+        "answer": "B",
+        "topic": "Gases"
+      },
+      {
+        "id": "C159",
+        "question": "The allotrope of carbon that conducts electricity is:",
+        "options": {
+          "A": "Diamond",
+          "B": "Graphite",
+          "C": "Buckminsterfullerene",
+          "D": "Coal"
+        },
+        "answer": "B",
+        "topic": "Allotropes"
+      },
+      {
+        "id": "C160",
+        "question": "When NaOH solution is added to copper sulphate, the precipitate formed is:",
+        "options": {
+          "A": "White",
+          "B": "Blue",
+          "C": "Green",
+          "D": "Brown"
+        },
+        "answer": "B",
+        "topic": "Qualitative Analysis"
+      },
+      {
+        "id": "C161",
+        "question": "The principal ore of aluminium is:",
+        "options": {
+          "A": "Haematite",
+          "B": "Bauxite",
+          "C": "Galena",
+          "D": "Cinnabar"
+        },
+        "answer": "B",
+        "topic": "Metallurgy"
+      },
+      {
+        "id": "C162",
+        "question": "Reversible reactions at equilibrium have a constant ratio of products to reactants called the:",
+        "options": {
+          "A": "Rate constant",
+          "B": "Equilibrium constant K",
+          "C": "Mole fraction",
+          "D": "Solubility product"
+        },
+        "answer": "B",
+        "topic": "Equilibrium"
+      },
+      {
+        "id": "C163",
+        "question": "Permanent hardness in water is removed by:",
+        "options": {
+          "A": "Boiling",
+          "B": "Adding sodium carbonate or ion exchange",
+          "C": "Filtering",
+          "D": "Cooling"
+        },
+        "answer": "B",
+        "topic": "Water Chemistry"
+      },
+      {
+        "id": "C164",
+        "question": "The functional group -NH₂ indicates the compound is:",
+        "options": {
+          "A": "An alcohol",
+          "B": "An amine",
+          "C": "An acid",
+          "D": "An ester"
+        },
+        "answer": "B",
+        "topic": "Organic Chemistry"
+      },
+      {
+        "id": "C165",
+        "question": "In an endothermic reaction, the energy of products is _____ than reactants:",
+        "options": {
+          "A": "Lower",
+          "B": "Higher",
+          "C": "Equal",
+          "D": "Unmeasurable"
+        },
+        "answer": "B",
+        "topic": "Energetics"
+      },
+      {
+        "id": "C166",
+        "question": "The gas evolved when dilute HCl reacts with Na₂CO₃ is:",
+        "options": {
+          "A": "HCl gas",
+          "B": "CO₂",
+          "C": "H₂",
+          "D": "Cl₂"
+        },
+        "answer": "B",
+        "topic": "Reactions"
+      },
+      {
+        "id": "C167",
+        "question": "The most reactive metal in the reactivity series is:",
+        "options": {
+          "A": "Sodium",
+          "B": "Potassium",
+          "C": "Calcium",
+          "D": "Lithium"
+        },
+        "answer": "B",
+        "topic": "Reactivity Series"
+      },
+      {
+        "id": "C168",
+        "question": "The reagent used to test for starch is:",
+        "options": {
+          "A": "Biuret solution",
+          "B": "Iodine solution",
+          "C": "Benedict's solution",
+          "D": "Fehling's solution"
+        },
+        "answer": "B",
+        "topic": "Food Tests"
+      },
+      {
+        "id": "C169",
+        "question": "Which type of bonding occurs in metals?",
+        "options": {
+          "A": "Covalent bonding",
+          "B": "Metallic bonding",
+          "C": "Ionic bonding",
+          "D": "Hydrogen bonding"
+        },
+        "answer": "B",
+        "topic": "Bonding"
+      },
+      {
+        "id": "C170",
+        "question": "When calcium carbonate is heated strongly, it decomposes to give CaO and:",
+        "options": {
+          "A": "H₂O",
+          "B": "CO₂",
+          "C": "SO₂",
+          "D": "O₂"
+        },
+        "answer": "B",
+        "topic": "Thermal Decomposition"
+      },
+      {
+        "id": "C171",
+        "question": "The indicator that turns pink in alkaline solution is:",
+        "options": {
+          "A": "Methyl orange",
+          "B": "Phenolphthalein",
+          "C": "Litmus",
+          "D": "Universal indicator"
+        },
+        "answer": "B",
+        "topic": "Indicators"
+      },
+      {
+        "id": "C172",
+        "question": "The lightest noble gas is:",
+        "options": {
+          "A": "Neon",
+          "B": "Helium",
+          "C": "Argon",
+          "D": "Krypton"
+        },
+        "answer": "B",
+        "topic": "Noble Gases"
+      },
+      {
+        "id": "C173",
+        "question": "The chemical formula for washing soda is:",
+        "options": {
+          "A": "Na₂CO₃",
+          "B": "Na₂CO₃·10H₂O",
+          "C": "NaHCO₃",
+          "D": "Na₂SO₄"
+        },
+        "answer": "B",
+        "topic": "Compounds"
+      },
+      {
+        "id": "C174",
+        "question": "A reaction is spontaneous if the change in Gibbs free energy (ΔG) is:",
+        "options": {
+          "A": "Positive",
+          "B": "Negative",
+          "C": "Zero",
+          "D": "Undefined"
+        },
+        "answer": "B",
+        "topic": "Thermodynamics"
+      },
+      {
+        "id": "C175",
+        "question": "The process of separating a mixture of sand and iron filings uses:",
+        "options": {
+          "A": "Filtration",
+          "B": "A magnet",
+          "C": "Distillation",
+          "D": "Evaporation"
+        },
+        "answer": "B",
+        "topic": "Separation"
+      },
+      {
+        "id": "C176",
+        "question": "The IUPAC name of CH₃CH₂Cl is:",
+        "options": {
+          "A": "Chloromethane",
+          "B": "Chloroethane",
+          "C": "Ethylchloride",
+          "D": "Dichloromethane"
+        },
+        "answer": "B",
+        "topic": "Nomenclature"
+      },
+      {
+        "id": "C177",
+        "question": "The process by which nitrogen in the air is converted to ammonia by bacteria is:",
+        "options": {
+          "A": "Denitrification",
+          "B": "Nitrogen fixation",
+          "C": "Nitrification",
+          "D": "Assimilation"
+        },
+        "answer": "B",
+        "topic": "Nitrogen Cycle"
+      },
+      {
+        "id": "C178",
+        "question": "Which of the following has the highest electronegativity?",
+        "options": {
+          "A": "Oxygen",
+          "B": "Fluorine",
+          "C": "Chlorine",
+          "D": "Nitrogen"
+        },
+        "answer": "B",
+        "topic": "Periodic Trends"
+      },
+      {
+        "id": "C179",
+        "question": "The principal product when ethene reacts with HBr is:",
+        "options": {
+          "A": "Dibromoethane",
+          "B": "Bromoethane",
+          "C": "Ethane",
+          "D": "Butane"
+        },
+        "answer": "B",
+        "topic": "Organic Reactions"
+      },
+      {
+        "id": "C180",
+        "question": "The chemical test used to distinguish between aldehydes and ketones is:",
+        "options": {
+          "A": "Bromine water",
+          "B": "Fehling's solution (or Tollens' reagent)",
+          "C": "Litmus paper",
+          "D": "Limewater"
+        },
+        "answer": "B",
+        "topic": "Organic Tests"
+      },
+      {
+        "id": "C181",
+        "question": "Ozone (O₃) is an allotrope of:",
+        "options": {
+          "A": "Carbon",
+          "B": "Oxygen",
+          "C": "Sulphur",
+          "D": "Phosphorus"
+        },
+        "answer": "B",
+        "topic": "Allotropes"
+      },
+      {
+        "id": "C182",
+        "question": "In a voltaic cell, the negative terminal is the:",
+        "options": {
+          "A": "Cathode",
+          "B": "Anode",
+          "C": "Electrolyte",
+          "D": "Salt bridge"
+        },
+        "answer": "B",
+        "topic": "Electrochemistry"
+      },
+      {
+        "id": "C183",
+        "question": "The type of reaction that converts a ketone to an alcohol using LiAlH₄ is:",
+        "options": {
+          "A": "Oxidation",
+          "B": "Reduction",
+          "C": "Addition",
+          "D": "Substitution"
+        },
+        "answer": "B",
+        "topic": "Organic Reactions"
+      },
+      {
+        "id": "C184",
+        "question": "The equilibrium position shifts left when:",
+        "options": {
+          "A": "Temperature decreases for endothermic reaction",
+          "B": "Concentration of products is increased",
+          "C": "Pressure is reduced",
+          "D": "Catalyst is added"
+        },
+        "answer": "B",
+        "topic": "Equilibrium"
+      },
+      {
+        "id": "C185",
+        "question": "Deliquescent substances:",
+        "options": {
+          "A": "Lose water to the atmosphere",
+          "B": "Absorb water from the atmosphere until they dissolve",
+          "C": "Do not interact with water",
+          "D": "React with acid"
+        },
+        "answer": "B",
+        "topic": "Water of Crystallisation"
+      },
+      {
+        "id": "C186",
+        "question": "A homologous series is a group of compounds that:",
+        "options": {
+          "A": "Have the same physical properties",
+          "B": "Differ by a CH₂ unit and have similar chemical properties",
+          "C": "Are all gases",
+          "D": "Have the same molecular formula"
+        },
+        "answer": "B",
+        "topic": "Organic Chemistry"
+      },
+      {
+        "id": "C187",
+        "question": "The ore of iron is:",
+        "options": {
+          "A": "Bauxite",
+          "B": "Haematite",
+          "C": "Galena",
+          "D": "Malachite"
+        },
+        "answer": "B",
+        "topic": "Metallurgy"
+      },
+      {
+        "id": "C188",
+        "question": "The formula for potassium permanganate is:",
+        "options": {
+          "A": "KMnO₃",
+          "B": "KMnO₄",
+          "C": "K₂MnO₄",
+          "D": "KMn₂O₄"
+        },
+        "answer": "B",
+        "topic": "Inorganic Chemistry"
+      },
+      {
+        "id": "C189",
+        "question": "Efflorescent substances:",
+        "options": {
+          "A": "Absorb moisture",
+          "B": "Lose water of crystallisation to the atmosphere",
+          "C": "Dissolve in water",
+          "D": "React with acids"
+        },
+        "answer": "B",
+        "topic": "Water of Crystallisation"
+      },
+      {
+        "id": "C190",
+        "question": "A saturated solution is one that:",
+        "options": {
+          "A": "Contains excess solvent",
+          "B": "Cannot dissolve any more solute at that temperature",
+          "C": "Is always hot",
+          "D": "Contains no solute"
+        },
+        "answer": "B",
+        "topic": "Solutions"
+      },
+      {
+        "id": "C191",
+        "question": "Which gas is produced during the electrolysis of brine at the anode?",
+        "options": {
+          "A": "Oxygen",
+          "B": "Chlorine",
+          "C": "Hydrogen",
+          "D": "Sodium"
+        },
+        "answer": "B",
+        "topic": "Electrolysis"
+      },
+      {
+        "id": "C192",
+        "question": "The main component of natural gas is:",
+        "options": {
+          "A": "Ethane",
+          "B": "Methane",
+          "C": "Propane",
+          "D": "Butane"
+        },
+        "answer": "B",
+        "topic": "Fossil Fuels"
+      },
+      {
+        "id": "C193",
+        "question": "Reduction involves:",
+        "options": {
+          "A": "Gain of oxygen",
+          "B": "Gain of electrons or loss of oxygen",
+          "C": "Loss of electrons",
+          "D": "Loss of hydrogen"
+        },
+        "answer": "B",
+        "topic": "Redox"
+      },
+      {
+        "id": "C194",
+        "question": "The IUPAC name of HCOOH is:",
+        "options": {
+          "A": "Ethanoic acid",
+          "B": "Methanoic acid",
+          "C": "Propanoic acid",
+          "D": "Formic acid"
+        },
+        "answer": "B",
+        "topic": "Nomenclature"
+      },
+      {
+        "id": "C195",
+        "question": "Which of the following is NOT a colligative property?",
+        "options": {
+          "A": "Osmotic pressure",
+          "B": "Colour change",
+          "C": "Boiling point elevation",
+          "D": "Freezing point depression"
+        },
+        "answer": "B",
+        "topic": "Solutions"
+      },
+      {
+        "id": "C196",
+        "question": "Contact process is used to manufacture:",
+        "options": {
+          "A": "Ammonia",
+          "B": "Sulphuric acid",
+          "C": "Hydrochloric acid",
+          "D": "Nitric acid"
+        },
+        "answer": "B",
+        "topic": "Industrial Chemistry"
+      },
+      {
+        "id": "C197",
+        "question": "A buffer resists pH change because it contains:",
+        "options": {
+          "A": "A strong acid and its salt",
+          "B": "A weak acid and its conjugate base",
+          "C": "Only water",
+          "D": "A strong base and its salt"
+        },
+        "answer": "B",
+        "topic": "Buffer Solutions"
+      },
+      {
+        "id": "C198",
+        "question": "The Haber process is used to manufacture:",
+        "options": {
+          "A": "Sulphuric acid",
+          "B": "Ammonia",
+          "C": "Nitric acid",
+          "D": "Sodium hydroxide"
+        },
+        "answer": "B",
+        "topic": "Industrial Chemistry"
+      },
+      {
+        "id": "C199",
+        "question": "Which of the following has the highest first ionisation energy in Period 2?",
+        "options": {
+          "A": "Lithium",
+          "B": "Neon",
+          "C": "Carbon",
+          "D": "Fluorine"
+        },
+        "answer": "B",
+        "topic": "Periodic Trends"
+      },
+      {
+        "id": "C200",
+        "question": "The empirical formula of a compound with 40% C, 6.7% H, 53.3% O by mass is:",
+        "options": {
+          "A": "C₂H₄O₂",
+          "B": "CH₂O",
+          "C": "C₃H₆O₃",
+          "D": "CHO"
+        },
+        "answer": "B",
+        "topic": "Chemical Formulae"
+      }
+    ],
+    "Biology": [
+      {
+        "id": "B101",
+        "question": "The process by which cells divide to form two identical daughter cells is:",
+        "options": {
+          "A": "Meiosis",
+          "B": "Mitosis",
+          "C": "Fertilisation",
+          "D": "Budding"
+        },
+        "answer": "B",
+        "topic": "Cell Division"
+      },
+      {
+        "id": "B102",
+        "question": "The organ responsible for producing urine is the:",
+        "options": {
+          "A": "Liver",
+          "B": "Kidney",
+          "C": "Bladder",
+          "D": "Ureter"
+        },
+        "answer": "B",
+        "topic": "Excretion"
+      },
+      {
+        "id": "B103",
+        "question": "Which of the following is a monocotyledonous plant?",
+        "options": {
+          "A": "Bean",
+          "B": "Maize",
+          "C": "Mango",
+          "D": "Pea"
+        },
+        "answer": "B",
+        "topic": "Plant Classification"
+      },
+      {
+        "id": "B104",
+        "question": "The main gas required for photosynthesis is:",
+        "options": {
+          "A": "Oxygen",
+          "B": "Carbon dioxide",
+          "C": "Nitrogen",
+          "D": "Hydrogen"
+        },
+        "answer": "B",
+        "topic": "Photosynthesis"
+      },
+      {
+        "id": "B105",
+        "question": "The type of muscle found in the heart is:",
+        "options": {
+          "A": "Skeletal",
+          "B": "Cardiac",
+          "C": "Smooth",
+          "D": "Voluntary"
+        },
+        "answer": "B",
+        "topic": "Muscles"
+      },
+      {
+        "id": "B106",
+        "question": "The process by which water moves through a semi-permeable membrane is:",
+        "options": {
+          "A": "Diffusion",
+          "B": "Osmosis",
+          "C": "Active transport",
+          "D": "Filtration"
+        },
+        "answer": "B",
+        "topic": "Transport"
+      },
+      {
+        "id": "B107",
+        "question": "Which vitamin is produced by the skin when exposed to sunlight?",
+        "options": {
+          "A": "Vitamin A",
+          "B": "Vitamin D",
+          "C": "Vitamin C",
+          "D": "Vitamin K"
+        },
+        "answer": "B",
+        "topic": "Vitamins"
+      },
+      {
+        "id": "B108",
+        "question": "The organelle that controls cell activities is the:",
+        "options": {
+          "A": "Ribosome",
+          "B": "Nucleus",
+          "C": "Mitochondria",
+          "D": "Vacuole"
+        },
+        "answer": "B",
+        "topic": "Cell Organelles"
+      },
+      {
+        "id": "B109",
+        "question": "Haemoglobin is found in:",
+        "options": {
+          "A": "White blood cells",
+          "B": "Red blood cells",
+          "C": "Platelets",
+          "D": "Plasma"
+        },
+        "answer": "B",
+        "topic": "Blood"
+      },
+      {
+        "id": "B110",
+        "question": "The scientific name of man is:",
+        "options": {
+          "A": "Homo neanderthalensis",
+          "B": "Homo sapiens",
+          "C": "Homo erectus",
+          "D": "Pan troglodytes"
+        },
+        "answer": "B",
+        "topic": "Taxonomy"
+      },
+      {
+        "id": "B111",
+        "question": "The part of the flower that produces pollen is the:",
+        "options": {
+          "A": "Pistil",
+          "B": "Anther",
+          "C": "Stigma",
+          "D": "Ovary"
+        },
+        "answer": "B",
+        "topic": "Flowers"
+      },
+      {
+        "id": "B112",
+        "question": "Enzymes are biological catalysts made of:",
+        "options": {
+          "A": "Lipids",
+          "B": "Proteins",
+          "C": "Carbohydrates",
+          "D": "Nucleic acids"
+        },
+        "answer": "B",
+        "topic": "Enzymes"
+      },
+      {
+        "id": "B113",
+        "question": "The green pigment in plants used for photosynthesis is:",
+        "options": {
+          "A": "Carotenoid",
+          "B": "Chlorophyll",
+          "C": "Xanthophyll",
+          "D": "Phycobilin"
+        },
+        "answer": "B",
+        "topic": "Photosynthesis"
+      },
+      {
+        "id": "B114",
+        "question": "Which of these is a vestigial structure in humans?",
+        "options": {
+          "A": "Ear",
+          "B": "Coccyx (tailbone)",
+          "C": "Thumb",
+          "D": "Knee"
+        },
+        "answer": "B",
+        "topic": "Evolution"
+      },
+      {
+        "id": "B115",
+        "question": "The type of immunity acquired through vaccination is:",
+        "options": {
+          "A": "Natural active immunity",
+          "B": "Artificial active immunity",
+          "C": "Natural passive immunity",
+          "D": "Artificial passive immunity"
+        },
+        "answer": "B",
+        "topic": "Immunity"
+      },
+      {
+        "id": "B116",
+        "question": "Which of these is NOT a nucleotide base in DNA?",
+        "options": {
+          "A": "Adenine",
+          "B": "Uracil",
+          "C": "Cytosine",
+          "D": "Thymine"
+        },
+        "answer": "B",
+        "topic": "Molecular Biology"
+      },
+      {
+        "id": "B117",
+        "question": "The process of producing milk in mammals is called:",
+        "options": {
+          "A": "Gestation",
+          "B": "Lactation",
+          "C": "Ovulation",
+          "D": "Parturition"
+        },
+        "answer": "B",
+        "topic": "Reproduction"
+      },
+      {
+        "id": "B118",
+        "question": "In the human eye, the photoreceptors for colour vision are:",
+        "options": {
+          "A": "Rods",
+          "B": "Cones",
+          "C": "Pupils",
+          "D": "Irises"
+        },
+        "answer": "B",
+        "topic": "Sense Organs"
+      },
+      {
+        "id": "B119",
+        "question": "The part of the brain responsible for balance and coordination is the:",
+        "options": {
+          "A": "Cerebrum",
+          "B": "Cerebellum",
+          "C": "Medulla oblongata",
+          "D": "Hypothalamus"
+        },
+        "answer": "B",
+        "topic": "Nervous System"
+      },
+      {
+        "id": "B120",
+        "question": "The energy currency of cells is:",
+        "options": {
+          "A": "DNA",
+          "B": "ATP",
+          "C": "ADP",
+          "D": "RNA"
+        },
+        "answer": "B",
+        "topic": "Metabolism"
+      },
+      {
+        "id": "B121",
+        "question": "Mendel's law of segregation states that alleles:",
+        "options": {
+          "A": "Always express together",
+          "B": "Separate during gamete formation",
+          "C": "Never mix",
+          "D": "Remain joined in pairs"
+        },
+        "answer": "B",
+        "topic": "Genetics"
+      },
+      {
+        "id": "B122",
+        "question": "The enzyme that breaks down starch in the mouth is:",
+        "options": {
+          "A": "Pepsin",
+          "B": "Salivary amylase",
+          "C": "Lipase",
+          "D": "Trypsin"
+        },
+        "answer": "B",
+        "topic": "Digestion"
+      },
+      {
+        "id": "B123",
+        "question": "The term 'diploid' means a cell has:",
+        "options": {
+          "A": "One set of chromosomes",
+          "B": "Two sets of chromosomes",
+          "C": "Four sets of chromosomes",
+          "D": "No chromosomes"
+        },
+        "answer": "B",
+        "topic": "Cell Division"
+      },
+      {
+        "id": "B124",
+        "question": "Blood clotting requires the protein:",
+        "options": {
+          "A": "Albumin",
+          "B": "Fibrinogen (converted to fibrin)",
+          "C": "Globulin",
+          "D": "Haemoglobin"
+        },
+        "answer": "B",
+        "topic": "Blood"
+      },
+      {
+        "id": "B125",
+        "question": "Decomposers in an ecosystem are mainly:",
+        "options": {
+          "A": "Plants",
+          "B": "Bacteria and fungi",
+          "C": "Herbivores",
+          "D": "Top carnivores"
+        },
+        "answer": "B",
+        "topic": "Ecology"
+      },
+      {
+        "id": "B126",
+        "question": "The function of the spleen includes:",
+        "options": {
+          "A": "Producing digestive enzymes",
+          "B": "Filtering blood and storing platelets",
+          "C": "Producing hormones",
+          "D": "Regulating breathing"
+        },
+        "answer": "B",
+        "topic": "Organ Systems"
+      },
+      {
+        "id": "B127",
+        "question": "The gene responsible for a trait expressed only in the absence of the dominant allele is:",
+        "options": {
+          "A": "Dominant",
+          "B": "Recessive",
+          "C": "Codominant",
+          "D": "Heterozygous"
+        },
+        "answer": "B",
+        "topic": "Genetics"
+      },
+      {
+        "id": "B128",
+        "question": "The stomata in leaves mainly control the movement of:",
+        "options": {
+          "A": "Minerals only",
+          "B": "Water vapour and carbon dioxide",
+          "C": "Oxygen only",
+          "D": "Sugars"
+        },
+        "answer": "B",
+        "topic": "Plant Biology"
+      },
+      {
+        "id": "B129",
+        "question": "The mitotic division that produces gametes is called:",
+        "options": {
+          "A": "Mitosis",
+          "B": "Meiosis",
+          "C": "Binary fission",
+          "D": "Fragmentation"
+        },
+        "answer": "B",
+        "topic": "Cell Division"
+      },
+      {
+        "id": "B130",
+        "question": "Which of these is an advantage of sexual reproduction?",
+        "options": {
+          "A": "Rapid population growth",
+          "B": "Genetic variation in offspring",
+          "C": "Only one parent needed",
+          "D": "Offspring identical to parent"
+        },
+        "answer": "B",
+        "topic": "Reproduction"
+      },
+      {
+        "id": "B131",
+        "question": "In blood typing, a person with type O blood can donate to:",
+        "options": {
+          "A": "Type O only",
+          "B": "All blood types (universal donor)",
+          "C": "Type AB only",
+          "D": "Type A and B"
+        },
+        "answer": "B",
+        "topic": "Blood"
+      },
+      {
+        "id": "B132",
+        "question": "The layer of cells responsible for plant growth in thickness is the:",
+        "options": {
+          "A": "Epidermis",
+          "B": "Vascular cambium",
+          "C": "Cortex",
+          "D": "Endodermis"
+        },
+        "answer": "B",
+        "topic": "Plant Growth"
+      },
+      {
+        "id": "B133",
+        "question": "Acquired Immune Deficiency Syndrome (AIDS) is caused by:",
+        "options": {
+          "A": "Bacteria",
+          "B": "HIV (Human Immunodeficiency Virus)",
+          "C": "A fungus",
+          "D": "A parasite"
+        },
+        "answer": "B",
+        "topic": "Disease"
+      },
+      {
+        "id": "B134",
+        "question": "Which of these is an example of mutualism?",
+        "options": {
+          "A": "Tapeworm in human gut",
+          "B": "Nitrogen-fixing bacteria in legume roots",
+          "C": "Mistletoe on a tree",
+          "D": "A lion eating a zebra"
+        },
+        "answer": "B",
+        "topic": "Ecology"
+      },
+      {
+        "id": "B135",
+        "question": "The type of cell division that maintains the chromosome number is:",
+        "options": {
+          "A": "Meiosis",
+          "B": "Mitosis",
+          "C": "Budding",
+          "D": "Spore formation"
+        },
+        "answer": "B",
+        "topic": "Cell Division"
+      },
+      {
+        "id": "B136",
+        "question": "Which hormone stimulates the release of an egg from the ovary?",
+        "options": {
+          "A": "Oestrogen",
+          "B": "LH (Luteinising hormone)",
+          "C": "Progesterone",
+          "D": "FSH"
+        },
+        "answer": "B",
+        "topic": "Reproduction"
+      },
+      {
+        "id": "B137",
+        "question": "The lymph nodes filter:",
+        "options": {
+          "A": "Blood directly",
+          "B": "Lymph fluid, removing pathogens",
+          "C": "Urine",
+          "D": "Air"
+        },
+        "answer": "B",
+        "topic": "Lymphatic System"
+      },
+      {
+        "id": "B138",
+        "question": "The part of the chloroplast where the Calvin cycle occurs is the:",
+        "options": {
+          "A": "Thylakoid membrane",
+          "B": "Stroma",
+          "C": "Grana",
+          "D": "Outer membrane"
+        },
+        "answer": "B",
+        "topic": "Photosynthesis"
+      },
+      {
+        "id": "B139",
+        "question": "The protein that forms the basis of hair and nails is:",
+        "options": {
+          "A": "Collagen",
+          "B": "Keratin",
+          "C": "Elastin",
+          "D": "Actin"
+        },
+        "answer": "B",
+        "topic": "Biochemistry"
+      },
+      {
+        "id": "B140",
+        "question": "An endemic disease is one that:",
+        "options": {
+          "A": "Spreads worldwide",
+          "B": "Is constantly present in a particular region",
+          "C": "Appears suddenly",
+          "D": "Has no cure"
+        },
+        "answer": "B",
+        "topic": "Epidemiology"
+      },
+      {
+        "id": "B141",
+        "question": "The process by which plants respond to the touch stimulus is called:",
+        "options": {
+          "A": "Phototropism",
+          "B": "Thigmotropism",
+          "C": "Geotropism",
+          "D": "Chemotropism"
+        },
+        "answer": "B",
+        "topic": "Plant Responses"
+      },
+      {
+        "id": "B142",
+        "question": "Which blood group is the universal recipient?",
+        "options": {
+          "A": "O",
+          "B": "AB",
+          "C": "A",
+          "D": "B"
+        },
+        "answer": "B",
+        "topic": "Blood Groups"
+      },
+      {
+        "id": "B143",
+        "question": "The type of feeding that involves filter feeding is:",
+        "options": {
+          "A": "Carnivory",
+          "B": "Suspension feeding",
+          "C": "Grazing",
+          "D": "Scavenging"
+        },
+        "answer": "B",
+        "topic": "Feeding"
+      },
+      {
+        "id": "B144",
+        "question": "The first product of the dark reaction (Calvin cycle) is:",
+        "options": {
+          "A": "Glucose",
+          "B": "3-phosphoglycerate (3-PGA)",
+          "C": "Oxygen",
+          "D": "ADP"
+        },
+        "answer": "B",
+        "topic": "Photosynthesis"
+      },
+      {
+        "id": "B145",
+        "question": "Bacteria reproduce mainly by:",
+        "options": {
+          "A": "Budding",
+          "B": "Binary fission",
+          "C": "Spore formation",
+          "D": "Sexual reproduction"
+        },
+        "answer": "B",
+        "topic": "Microbiology"
+      },
+      {
+        "id": "B146",
+        "question": "The enzyme that unzips the DNA double helix during replication is:",
+        "options": {
+          "A": "DNA polymerase",
+          "B": "Helicase",
+          "C": "Ligase",
+          "D": "Primase"
+        },
+        "answer": "B",
+        "topic": "Molecular Biology"
+      },
+      {
+        "id": "B147",
+        "question": "In a DNA molecule, adenine always pairs with:",
+        "options": {
+          "A": "Guanine",
+          "B": "Thymine",
+          "C": "Cytosine",
+          "D": "Uracil"
+        },
+        "answer": "B",
+        "topic": "Molecular Biology"
+      },
+      {
+        "id": "B148",
+        "question": "The law of independent assortment states that genes on different chromosomes:",
+        "options": {
+          "A": "Are always linked",
+          "B": "Are inherited independently of each other",
+          "C": "Never separate",
+          "D": "Always appear together"
+        },
+        "answer": "B",
+        "topic": "Genetics"
+      },
+      {
+        "id": "B149",
+        "question": "The type of evolution where unrelated species develop similar features is called:",
+        "options": {
+          "A": "Divergent evolution",
+          "B": "Convergent evolution",
+          "C": "Co-evolution",
+          "D": "Adaptive radiation"
+        },
+        "answer": "B",
+        "topic": "Evolution"
+      },
+      {
+        "id": "B150",
+        "question": "Myopia (short-sightedness) is corrected by:",
+        "options": {
+          "A": "Convex lens",
+          "B": "Concave lens",
+          "C": "Plane mirror",
+          "D": "Concave mirror"
+        },
+        "answer": "B",
+        "topic": "Vision"
+      },
+      {
+        "id": "B151",
+        "question": "The cell organelle that packages and secretes proteins is the:",
+        "options": {
+          "A": "Ribosome",
+          "B": "Golgi apparatus",
+          "C": "Endoplasmic reticulum",
+          "D": "Lysosome"
+        },
+        "answer": "B",
+        "topic": "Cell Biology"
+      },
+      {
+        "id": "B152",
+        "question": "In genetics, the ratio of dominant to recessive in F2 of a monohybrid cross is:",
+        "options": {
+          "A": "1:1",
+          "B": "3:1",
+          "C": "1:2:1",
+          "D": "1:3"
+        },
+        "answer": "B",
+        "topic": "Genetics"
+      },
+      {
+        "id": "B153",
+        "question": "Lichens are formed by the symbiotic relationship between fungi and:",
+        "options": {
+          "A": "Bacteria",
+          "B": "Algae",
+          "C": "Mosses",
+          "D": "Plants"
+        },
+        "answer": "B",
+        "topic": "Ecology"
+      },
+      {
+        "id": "B154",
+        "question": "Bone is a form of:",
+        "options": {
+          "A": "Epithelial tissue",
+          "B": "Connective tissue",
+          "C": "Muscle tissue",
+          "D": "Nerve tissue"
+        },
+        "answer": "B",
+        "topic": "Tissues"
+      },
+      {
+        "id": "B155",
+        "question": "The function of the collecting duct in the kidney is:",
+        "options": {
+          "A": "Filtering blood",
+          "B": "Reabsorbing water under ADH control",
+          "C": "Producing urine from scratch",
+          "D": "Excreting urea"
+        },
+        "answer": "B",
+        "topic": "Excretion"
+      },
+      {
+        "id": "B156",
+        "question": "The main site of absorption of water in the large intestine is the:",
+        "options": {
+          "A": "Caecum",
+          "B": "Colon",
+          "C": "Rectum",
+          "D": "Appendix"
+        },
+        "answer": "B",
+        "topic": "Digestion"
+      },
+      {
+        "id": "B157",
+        "question": "Sexual reproduction promotes survival of species because it produces:",
+        "options": {
+          "A": "Identical offspring",
+          "B": "Genetic variation for natural selection",
+          "C": "More offspring",
+          "D": "Faster reproduction"
+        },
+        "answer": "B",
+        "topic": "Evolution"
+      },
+      {
+        "id": "B158",
+        "question": "Which process removes excess nitrogen from the body in humans?",
+        "options": {
+          "A": "Sweating",
+          "B": "Excretion of urea in urine",
+          "C": "Breathing",
+          "D": "Defecation"
+        },
+        "answer": "B",
+        "topic": "Excretion"
+      },
+      {
+        "id": "B159",
+        "question": "The term 'phylogeny' refers to the:",
+        "options": {
+          "A": "Study of plant growth",
+          "B": "Evolutionary history of organisms",
+          "C": "Study of animal behaviour",
+          "D": "Classification of bacteria"
+        },
+        "answer": "B",
+        "topic": "Taxonomy"
+      },
+      {
+        "id": "B160",
+        "question": "Which of these animals has a three-chambered heart?",
+        "options": {
+          "A": "Fish",
+          "B": "Reptiles (most)",
+          "C": "Birds",
+          "D": "Mammals"
+        },
+        "answer": "B",
+        "topic": "Comparative Anatomy"
+      },
+      {
+        "id": "B161",
+        "question": "Meiosis is important because it:",
+        "options": {
+          "A": "Maintains chromosome number",
+          "B": "Halves the chromosome number for sexual reproduction",
+          "C": "Produces body cells",
+          "D": "Replaces damaged tissue"
+        },
+        "answer": "B",
+        "topic": "Cell Division"
+      },
+      {
+        "id": "B162",
+        "question": "In active transport, energy is obtained from:",
+        "options": {
+          "A": "Light",
+          "B": "ATP hydrolysis",
+          "C": "Osmosis",
+          "D": "Diffusion gradient"
+        },
+        "answer": "B",
+        "topic": "Transport"
+      },
+      {
+        "id": "B163",
+        "question": "Insulin lowers blood glucose by stimulating its conversion to:",
+        "options": {
+          "A": "Fatty acids",
+          "B": "Glycogen",
+          "C": "Amino acids",
+          "D": "Urea"
+        },
+        "answer": "B",
+        "topic": "Homeostasis"
+      },
+      {
+        "id": "B164",
+        "question": "Which of these is a biotic factor in an ecosystem?",
+        "options": {
+          "A": "Temperature",
+          "B": "Predation",
+          "C": "Rainfall",
+          "D": "pH of soil"
+        },
+        "answer": "B",
+        "topic": "Ecology"
+      },
+      {
+        "id": "B165",
+        "question": "The condition in which the body attacks its own tissues is called:",
+        "options": {
+          "A": "Allergy",
+          "B": "Autoimmune disease",
+          "C": "Deficiency disease",
+          "D": "Infection"
+        },
+        "answer": "B",
+        "topic": "Immunity"
+      },
+      {
+        "id": "B166",
+        "question": "Plant cell walls are made primarily of:",
+        "options": {
+          "A": "Chitin",
+          "B": "Cellulose",
+          "C": "Protein",
+          "D": "Lignin"
+        },
+        "answer": "B",
+        "topic": "Cell Biology"
+      },
+      {
+        "id": "B167",
+        "question": "Which of these is a primary producer in an aquatic ecosystem?",
+        "options": {
+          "A": "Fish",
+          "B": "Phytoplankton",
+          "C": "Crabs",
+          "D": "Zooplankton"
+        },
+        "answer": "B",
+        "topic": "Ecology"
+      },
+      {
+        "id": "B168",
+        "question": "The first successful antibiotic discovered was:",
+        "options": {
+          "A": "Streptomycin",
+          "B": "Penicillin",
+          "C": "Tetracycline",
+          "D": "Ampicillin"
+        },
+        "answer": "B",
+        "topic": "Medicine"
+      },
+      {
+        "id": "B169",
+        "question": "Which cell organelle is responsible for intracellular digestion?",
+        "options": {
+          "A": "Vacuole",
+          "B": "Lysosome",
+          "C": "Ribosome",
+          "D": "Mitochondria"
+        },
+        "answer": "B",
+        "topic": "Cell Biology"
+      },
+      {
+        "id": "B170",
+        "question": "The type of nutrition in plants is described as:",
+        "options": {
+          "A": "Heterotrophic",
+          "B": "Autotrophic (holophytic)",
+          "C": "Saprotrophic",
+          "D": "Parasitic"
+        },
+        "answer": "B",
+        "topic": "Nutrition"
+      },
+      {
+        "id": "B171",
+        "question": "The immune cells that produce antibodies are:",
+        "options": {
+          "A": "T-lymphocytes",
+          "B": "B-lymphocytes (plasma cells)",
+          "C": "Natural killer cells",
+          "D": "Neutrophils"
+        },
+        "answer": "B",
+        "topic": "Immunity"
+      },
+      {
+        "id": "B172",
+        "question": "Which of these is an example of an open circulatory system?",
+        "options": {
+          "A": "Fish",
+          "B": "Insects",
+          "C": "Mammals",
+          "D": "Birds"
+        },
+        "answer": "B",
+        "topic": "Circulatory Systems"
+      },
+      {
+        "id": "B173",
+        "question": "The term 'homeostasis' refers to the maintenance of:",
+        "options": {
+          "A": "Population size",
+          "B": "A stable internal environment",
+          "C": "External temperature",
+          "D": "Food supply"
+        },
+        "answer": "B",
+        "topic": "Homeostasis"
+      },
+      {
+        "id": "B174",
+        "question": "Antibiotics work by:",
+        "options": {
+          "A": "Killing viruses",
+          "B": "Killing or inhibiting bacteria",
+          "C": "Boosting immune system",
+          "D": "Destroying fungi only"
+        },
+        "answer": "B",
+        "topic": "Medicine"
+      },
+      {
+        "id": "B175",
+        "question": "In the nitrogen cycle, nitrification converts:",
+        "options": {
+          "A": "N₂ to NH₃",
+          "B": "NH₃/NH₄⁺ to NO₂⁻ then NO₃⁻",
+          "C": "NO₃⁻ to N₂",
+          "D": "Organic N to NH₃"
+        },
+        "answer": "B",
+        "topic": "Nutrient Cycles"
+      },
+      {
+        "id": "B176",
+        "question": "Which structure in a cell synthesises lipids?",
+        "options": {
+          "A": "Rough ER",
+          "B": "Smooth endoplasmic reticulum",
+          "C": "Golgi body",
+          "D": "Mitochondria"
+        },
+        "answer": "B",
+        "topic": "Cell Biology"
+      },
+      {
+        "id": "B177",
+        "question": "The part of the brain controlling hunger is the:",
+        "options": {
+          "A": "Cerebellum",
+          "B": "Hypothalamus",
+          "C": "Cerebrum",
+          "D": "Medulla"
+        },
+        "answer": "B",
+        "topic": "Nervous System"
+      },
+      {
+        "id": "B178",
+        "question": "Companion cells in plants are associated with:",
+        "options": {
+          "A": "Xylem",
+          "B": "Phloem",
+          "C": "Epidermis",
+          "D": "Cortex"
+        },
+        "answer": "B",
+        "topic": "Plant Transport"
+      },
+      {
+        "id": "B179",
+        "question": "The hormone secreted by the thyroid gland is:",
+        "options": {
+          "A": "Insulin",
+          "B": "Thyroxine",
+          "C": "Glucagon",
+          "D": "Cortisol"
+        },
+        "answer": "B",
+        "topic": "Hormones"
+      },
+      {
+        "id": "B180",
+        "question": "Excretion in plants mainly occurs through:",
+        "options": {
+          "A": "Roots",
+          "B": "Stomata and bark",
+          "C": "Flowers",
+          "D": "Seeds"
+        },
+        "answer": "B",
+        "topic": "Excretion in Plants"
+      },
+      {
+        "id": "B181",
+        "question": "Which of these is NOT an adaptation of the small intestine for absorption?",
+        "options": {
+          "A": "Villi",
+          "B": "Thick walls with no folds",
+          "C": "Microvilli",
+          "D": "Rich blood supply"
+        },
+        "answer": "B",
+        "topic": "Digestion"
+      },
+      {
+        "id": "B182",
+        "question": "Which of these best describes an ecological pyramid?",
+        "options": {
+          "A": "A chart showing rainfall patterns",
+          "B": "A graphical model showing numbers/biomass/energy at each trophic level",
+          "C": "A map of an ecosystem",
+          "D": "A diagram of food chains only"
+        },
+        "answer": "B",
+        "topic": "Ecology"
+      },
+      {
+        "id": "B183",
+        "question": "The term 'biodiversity' refers to:",
+        "options": {
+          "A": "Variety of habitats only",
+          "B": "Variety of life forms in an area",
+          "C": "Number of ecosystems",
+          "D": "Plant species only"
+        },
+        "answer": "B",
+        "topic": "Ecology"
+      },
+      {
+        "id": "B184",
+        "question": "Which of these is a sign of eutrophication?",
+        "options": {
+          "A": "Crystal clear water",
+          "B": "Excessive algae growth depleting oxygen",
+          "C": "Increase in fish population",
+          "D": "Higher pH of water"
+        },
+        "answer": "B",
+        "topic": "Environmental Biology"
+      },
+      {
+        "id": "B185",
+        "question": "Plasmids are found in:",
+        "options": {
+          "A": "Animal cells",
+          "B": "Bacterial cells",
+          "C": "Plant cells only",
+          "D": "Viruses"
+        },
+        "answer": "B",
+        "topic": "Microbiology"
+      },
+      {
+        "id": "B186",
+        "question": "The biological magnification of DDT in a food chain means DDT:",
+        "options": {
+          "A": "Decreases at higher levels",
+          "B": "Increases in concentration at higher trophic levels",
+          "C": "Is neutral",
+          "D": "Disappears"
+        },
+        "answer": "B",
+        "topic": "Ecology"
+      },
+      {
+        "id": "B187",
+        "question": "The process of breaking down glycogen to glucose is called:",
+        "options": {
+          "A": "Glycogenesis",
+          "B": "Glycogenolysis",
+          "C": "Gluconeogenesis",
+          "D": "Glycolysis"
+        },
+        "answer": "B",
+        "topic": "Metabolism"
+      },
+      {
+        "id": "B188",
+        "question": "Which of the following is a C4 plant?",
+        "options": {
+          "A": "Rice",
+          "B": "Maize",
+          "C": "Wheat",
+          "D": "Barley"
+        },
+        "answer": "B",
+        "topic": "Photosynthesis"
+      },
+      {
+        "id": "B189",
+        "question": "Parthenogenesis is reproduction:",
+        "options": {
+          "A": "By spore formation",
+          "B": "From unfertilised eggs",
+          "C": "By binary fission",
+          "D": "By budding"
+        },
+        "answer": "B",
+        "topic": "Reproduction"
+      },
+      {
+        "id": "B190",
+        "question": "Emulsification of fats is carried out by:",
+        "options": {
+          "A": "Pepsin",
+          "B": "Bile salts",
+          "C": "Lipase",
+          "D": "Amylase"
+        },
+        "answer": "B",
+        "topic": "Digestion"
+      },
+      {
+        "id": "B191",
+        "question": "The human genome contains approximately:",
+        "options": {
+          "A": "2,000 genes",
+          "B": "20,000-25,000 genes",
+          "C": "200,000 genes",
+          "D": "2 million genes"
+        },
+        "answer": "B",
+        "topic": "Molecular Biology"
+      },
+      {
+        "id": "B192",
+        "question": "Fertilisation in humans takes place in the:",
+        "options": {
+          "A": "Uterus",
+          "B": "Fallopian tube",
+          "C": "Ovary",
+          "D": "Vagina"
+        },
+        "answer": "B",
+        "topic": "Reproduction"
+      },
+      {
+        "id": "B193",
+        "question": "The sex of offspring in humans is determined by:",
+        "options": {
+          "A": "The egg cell",
+          "B": "The sperm cell",
+          "C": "Both equally",
+          "D": "Environmental factors"
+        },
+        "answer": "B",
+        "topic": "Genetics"
+      },
+      {
+        "id": "B194",
+        "question": "Tropism in plants is growth in response to:",
+        "options": {
+          "A": "Temperature only",
+          "B": "Directional external stimuli",
+          "C": "Internal hormones only",
+          "D": "Water availability"
+        },
+        "answer": "B",
+        "topic": "Plant Growth"
+      },
+      {
+        "id": "B195",
+        "question": "The plant hormone responsible for cell elongation and tropism is:",
+        "options": {
+          "A": "Cytokinin",
+          "B": "Auxin",
+          "C": "Gibberellin",
+          "D": "Abscisic acid"
+        },
+        "answer": "B",
+        "topic": "Plant Hormones"
+      },
+      {
+        "id": "B196",
+        "question": "The appendix is a vestigial organ found in the:",
+        "options": {
+          "A": "Stomach",
+          "B": "Large intestine",
+          "C": "Small intestine",
+          "D": "Liver"
+        },
+        "answer": "B",
+        "topic": "Digestive System"
+      },
+      {
+        "id": "B197",
+        "question": "The theory of evolution by natural selection was proposed by:",
+        "options": {
+          "A": "Gregor Mendel",
+          "B": "Charles Darwin",
+          "C": "Louis Pasteur",
+          "D": "Jean-Baptiste Lamarck"
+        },
+        "answer": "B",
+        "topic": "Evolution"
+      },
+      {
+        "id": "B198",
+        "question": "Which mineral is essential for the formation of haemoglobin?",
+        "options": {
+          "A": "Calcium",
+          "B": "Iron",
+          "C": "Sodium",
+          "D": "Potassium"
+        },
+        "answer": "B",
+        "topic": "Nutrition"
+      },
+      {
+        "id": "B199",
+        "question": "Which vitamin is important for blood clotting?",
+        "options": {
+          "A": "Vitamin A",
+          "B": "Vitamin K",
+          "C": "Vitamin C",
+          "D": "Vitamin D"
+        },
+        "answer": "B",
+        "topic": "Nutrition"
+      },
+      {
+        "id": "B200",
+        "question": "The Krebs cycle occurs in the:",
+        "options": {
+          "A": "Cytoplasm",
+          "B": "Mitochondrial matrix",
+          "C": "Nucleus",
+          "D": "Ribosome"
+        },
+        "answer": "B",
+        "topic": "Respiration"
+      }
+    ]
+  }
+}
