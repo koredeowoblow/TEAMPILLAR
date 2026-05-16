@@ -25,8 +25,8 @@ const smartMockLimiter = rateLimit({
  */
 router.post(
   "/generate",
-  protectUser,
   smartMockLimiter,
+  protectUser,
   validateStartSession,
   handleValidationErrors,
   tryCatch(SmartMockController.generateSmartMock)
@@ -39,8 +39,8 @@ router.post(
  */
 router.post(
   "/submit",
-  protectUser,
   smartMockLimiter,
+  protectUser,
   validateSubmitSession,
   handleValidationErrors,
   tryCatch(SmartMockController.submitSmartMock)
