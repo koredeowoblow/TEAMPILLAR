@@ -1,6 +1,6 @@
 import rateLimit from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
-import { getRedisClient, isRedisAvailable } from "../Config/redis.js";
+import { getRedisClient, isRedisAvailable } from "../config/redis.js";
 import { logger } from "../core/logger.js";
 
 // Build a Redis store if Redis is available
@@ -72,6 +72,13 @@ const attachStoresWhenRedisReady = async () => {
   await attachStoresWhenRedisReady();
 })();
 
+const handler = (req, res, _next, options) => {
+  res.status(options.statusCode).json({
+    success: false,
+    message: options.message,
+  });
+};
+
 // Strict rate limiter for authentication endpoints
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -80,6 +87,7 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: false,
+  handler,
   get store() {
     if (!authStore) warnFallbackOnce();
     return authStore;
@@ -94,6 +102,7 @@ export const otpLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: false,
+  handler,
   get store() {
     if (!otpStore) warnFallbackOnce();
     return otpStore;
@@ -107,6 +116,7 @@ export const apiLimiter = rateLimit({
   message: "Too many requests from this IP, please slow down",
   standardHeaders: true,
   legacyHeaders: false,
+  handler,
   get store() {
     if (!apiStore) warnFallbackOnce();
     return apiStore;
@@ -120,6 +130,7 @@ export const passwordResetLimiter = rateLimit({
   message: "Too many password reset requests, please try again later",
   standardHeaders: true,
   legacyHeaders: false,
+  handler,
   get store() {
     if (!passwordResetStore) warnFallbackOnce();
     return passwordResetStore;

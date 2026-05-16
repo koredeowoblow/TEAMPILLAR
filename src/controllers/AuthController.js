@@ -1,7 +1,7 @@
 import AuthService from "../services/AuthService.js";
 import CloudinaryService from "../services/CloudinaryService.js";
 import { sendSuccess, sendError } from "../core/response.js";
-import { AppError } from "../utilis/AppError.js";
+import { AppError } from "../utils/AppError.js";
 
 class AuthController {
   // Register
@@ -26,6 +26,15 @@ class AuthController {
       password,
       meta,
     );
+
+    // Set HttpOnly cookie for refreshToken
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     return sendSuccess(res, {
       message: "Login successful",
       data: { user, token, refreshToken, expiresAt },
@@ -35,15 +44,36 @@ class AuthController {
 
   // Refresh Token
   static async refreshToken(req, res) {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
+    // Parse cookies manually or from req.cookies if middleware exists
+    const cookies = req.headers.cookie
+      ?.split(";")
+      .reduce((acc, cookie) => {
+        const [key, value] = cookie.split("=").map((c) => c.trim());
+        acc[key] = value;
+        return acc;
+      }, {}) || {};
+
+    const refreshTokenValue = cookies.refreshToken || req.body.refreshToken;
+
+    if (!refreshTokenValue) {
       return sendError(res, {
         message: "Refresh token is required",
-        statusCode: 400,
+        statusCode: 401,
       });
     }
 
-    const result = await AuthService.refreshToken(refreshToken);
+    const result = await AuthService.refreshToken(refreshTokenValue);
+    
+    // If a new refresh token was generated, update the cookie
+    if (result.refreshToken) {
+      res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+    }
+
     return sendSuccess(res, {
       message: "Token refreshed successfully",
       data: result,
@@ -57,6 +87,10 @@ class AuthController {
     if (token) {
       await AuthService.logout(token);
     }
+    
+    // Clear HttpOnly cookie
+    res.clearCookie("refreshToken");
+    
     return sendSuccess(res, {
       message: "Logged out successfully",
       data: {},
@@ -258,10 +292,17 @@ class AuthController {
   // UPDATE User (Admin Only)
   static async adminUpdateUser(req, res) {
     const { userId } = req.params;
-    const updateData = req.body;
-    // Remove password from body if present, just to be double safe at controller level too
-    delete updateData.password;
-    const result = await AuthService.updateUserByAdmin(userId, updateData);
+    const allowedUpdates = {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      isActive: req.body.isActive,
+    };
+    // Strip undefined keys
+    Object.keys(allowedUpdates).forEach(
+      (key) => allowedUpdates[key] === undefined && delete allowedUpdates[key]
+    );
+    const result = await AuthService.updateUserByAdmin(userId, allowedUpdates);
     return sendSuccess(res, {
       message: "User updated successfully (Admin)",
       data: result,
