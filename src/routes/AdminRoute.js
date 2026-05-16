@@ -1,4 +1,5 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import AdminController from "../controllers/AdminController.js";
 import PracticeController from "../controllers/PracticeController.js";
 import { protectUser, protectAdmin } from "../middleware/authMiddleware.js";
@@ -13,6 +14,15 @@ import { handleValidationErrors } from "../middleware/Validation/handleValidatio
 
 
 const router = express.Router();
+
+const adminRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.use(adminRateLimiter);
 
 router.get(
   "/students",
