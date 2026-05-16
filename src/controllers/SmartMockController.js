@@ -1,0 +1,75 @@
+import SmartMockService from "../services/SmartMockService.js";
+import PracticeService from "../services/PracticeService.js";
+import { practiceRepository } from "../repository/PracticeRepository.js";
+import { sendSuccess } from "../core/response.js";
+import { AppError } from "../utils/AppError.js";
+
+class SmartMockController {
+  /**
+   * Generates a smart mock session and returns the questions.
+   */
+  static async generateSmartMock(req, res) {
+    const userId = req.user?.id;
+    const { subjectId } = req.body;
+
+    if (!userId) throw new AppError("Unauthorized", 401);
+    if (!subjectId) throw new AppError("subjectId is required", 400);
+
+    // 1. Generate questions using hybrid system
+    const questions = await SmartMockService.generateSmartMock(userId, subjectId);
+
+    // 2. Format questions for response (strip correct answers and explanations)
+    const formattedQuestions = questions.map(q => ({
+      _id: q._id,
+      content: q.content,
+      options: q.options.map(o => ({ id: o.id, text: o.text })),
+      metadata: q.metadata
+    }));
+
+    // 3. Create an active session
+    const session = await practiceRepository.create({
+      userId,
+      subjectId,
+      sessionStatus: "ACTIVE",
+      sessionType: "smart-mock",
+      questionIds: formattedQuestions.map(q => q._id),
+      startTime: new Date(),
+    });
+
+    return sendSuccess(res, {
+      message: "Smart Mock generated successfully",
+      data: {
+        sessionId: session._id,
+        questions: formattedQuestions,
+      },
+      statusCode: 201,
+    });
+  }
+
+  /**
+   * Submits a smart mock session.
+   */
+  static async submitSmartMock(req, res) {
+    const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
+    
+    if (!sessionId || !responses) {
+      throw new AppError("sessionId and responses are required", 400);
+    }
+
+    // Re-use existing submission logic from PracticeService
+    const result = await PracticeService.submitSession(sessionId, {
+      responses,
+      tabSwitches,
+      endTime,
+      ipAddress,
+    });
+
+    return sendSuccess(res, {
+      message: "Smart Mock graded successfully",
+      data: result,
+      statusCode: 200,
+    });
+  }
+}
+
+export default SmartMockController;

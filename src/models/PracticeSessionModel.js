@@ -40,6 +40,12 @@ const PracticeSessionSchema = new mongoose.Schema(
       enum: ["ACTIVE", "COMPLETED", "EXPIRED"],
       default: "ACTIVE",
     },
+    sessionType: {
+      type: String,
+      enum: ["standard", "smart-mock"],
+      default: "standard",
+    },
+    questionIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
     responses: { type: [ResponseSchema], default: [] },
     analytics: { type: AnalyticsSchema, default: {} },
     security: { type: SecuritySchema, default: {} },

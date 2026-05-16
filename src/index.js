@@ -19,6 +19,7 @@ import billing from "./routes/BillingRoute.js";
 import classes from "./routes/ClassesRoute.js";
 import ai from "./routes/AIRoute.js";
 import exams from "./routes/ExamRoute.js";
+import smartMock from "./routes/SmartMockRoute.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";
@@ -138,6 +139,7 @@ apiRouter.use("/billing", billing);
 apiRouter.use("/classes", classes);
 apiRouter.use("/ai", ai);
 apiRouter.use("/exams", exams);
+apiRouter.use("/practice/smart-mock", smartMock);
 
 // Admin & Student Registry routes
 apiRouter.use("/", admin); // Exposes /students, /tutors, etc. at /api/v1/

@@ -80,6 +80,18 @@ router.get(
   protectAdmin,
   tryCatch(AdminController.dashboardStats),
 );
+router.get(
+  "/questions",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.listQuestions),
+);
+router.get(
+  "/questions/stats",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.questionStats),
+);
 router.post(
   "/questions",
   protectUser,
