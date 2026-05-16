@@ -19,117 +19,117 @@ class PracticeService {
       } else if (!isAdmin) {
         throw new AppError("subjectId is required", 400);
       }
-    
-    let matchStage = { ...filters };
-    if (resolvedSubjectId) matchStage.subjectId = resolvedSubjectId;
-    if (topicId) matchStage["metadata.topic"] = topicId;
-    if (difficulty) matchStage["metadata.difficulty"] = difficulty.toLowerCase();
 
-    // Exclude seen and recently correct questions
-    const excludedIds = new Set();
-    if (sessionId) {
-      const session = await practiceRepository.findById(sessionId);
-      if (session && session.responses) {
-        session.responses.forEach(r => excludedIds.add(r.questionId.toString()));
-      }
-    }
+      let matchStage = { ...filters };
+      if (resolvedSubjectId) matchStage.subjectId = resolvedSubjectId;
+      if (topicId) matchStage["metadata.topic"] = topicId;
+      if (difficulty) matchStage["metadata.difficulty"] = difficulty.toLowerCase();
 
-    if (userId) {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      
-      const recentSessions = await practiceRepository.find({
-        userId,
-        createdAt: { $gte: sevenDaysAgo },
-        sessionStatus: "COMPLETED"
-      });
-      
-      // Ideally we only exclude correct ones, but since we don't store isCorrect in responses array directly,
-      // we'll exclude all recently answered for now, or assume this serves the purpose of not repeating.
-      recentSessions.forEach(session => {
-        if (session.responses) {
+      // Exclude seen and recently correct questions
+      const excludedIds = new Set();
+      if (sessionId) {
+        const session = await practiceRepository.findById(sessionId);
+        if (session && session.responses) {
           session.responses.forEach(r => excludedIds.add(r.questionId.toString()));
         }
-      });
-    }
-
-    if (excludedIds.size > 0) {
-      matchStage._id = { $nin: Array.from(excludedIds).map(id => new mongoose.Types.ObjectId(id)) }; 
-    }
-
-    // Use AdaptiveEngineService to get the weighted pool match stage if not already provided in filters
-    if (!filters["metadata.topic"] && !filters["metadata.difficulty"]) {
-      const adaptiveMatch = await AdaptiveEngineService.buildWeightedPool(userId, resolvedSubjectId, filters);
-      if (adaptiveMatch["metadata.topic"]) matchStage["metadata.topic"] = adaptiveMatch["metadata.topic"];
-      if (adaptiveMatch["metadata.difficulty"]) matchStage["metadata.difficulty"] = adaptiveMatch["metadata.difficulty"];
-    }
-
-    // Override with explicit query params if provided
-    if (topicId) matchStage["metadata.topic"] = topicId;
-    if (difficulty) matchStage["metadata.difficulty"] = difficulty.toLowerCase();
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log("Adaptive Weight Breakdown Match Stage:", JSON.stringify(matchStage, null, 2));
-    }
-
-    const pipeline = [
-      { $match: matchStage },
-      { $sample: { size: Number(limit) } }
-    ];
-
-    let questions = await questionRepository.aggregate(pipeline);
-
-    // Fallback if weighted pool yields fewer questions than requested
-    if (!deterministic && questions.length < limit) {
-      const fallbackLimit = limit - questions.length;
-      const foundIds = questions.map(q => q._id);
-      const fallbackMatchStage = { subjectId: resolvedSubjectId };
-      
-      const allExcluded = [
-        ...Array.from(excludedIds).map(id => new mongoose.Types.ObjectId(id)), 
-        ...foundIds
-      ];
-      if (allExcluded.length > 0) {
-        fallbackMatchStage._id = { $nin: allExcluded };
       }
 
-      const fallbackPipeline = [
-        { $match: fallbackMatchStage },
-        { $sample: { size: fallbackLimit } }
+      if (userId) {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        const recentSessions = await practiceRepository.find({
+          userId,
+          createdAt: { $gte: sevenDaysAgo },
+          sessionStatus: "COMPLETED"
+        });
+
+        // Ideally we only exclude correct ones, but since we don't store isCorrect in responses array directly,
+        // we'll exclude all recently answered for now, or assume this serves the purpose of not repeating.
+        recentSessions.forEach(session => {
+          if (session.responses) {
+            session.responses.forEach(r => excludedIds.add(r.questionId.toString()));
+          }
+        });
+      }
+
+      if (excludedIds.size > 0) {
+        matchStage._id = { $nin: Array.from(excludedIds).map(id => new mongoose.Types.ObjectId(id)) };
+      }
+
+      // Use AdaptiveEngineService to get the weighted pool match stage if not already provided in filters
+      if (!filters["metadata.topic"] && !filters["metadata.difficulty"]) {
+        const adaptiveMatch = await AdaptiveEngineService.buildWeightedPool(userId, resolvedSubjectId, filters);
+        if (adaptiveMatch["metadata.topic"]) matchStage["metadata.topic"] = adaptiveMatch["metadata.topic"];
+        if (adaptiveMatch["metadata.difficulty"]) matchStage["metadata.difficulty"] = adaptiveMatch["metadata.difficulty"];
+      }
+
+      // Override with explicit query params if provided
+      if (topicId) matchStage["metadata.topic"] = topicId;
+      if (difficulty) matchStage["metadata.difficulty"] = difficulty.toLowerCase();
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Adaptive Weight Breakdown Match Stage:", JSON.stringify(matchStage, null, 2));
+      }
+
+      const pipeline = [
+        { $match: matchStage },
+        { $sample: { size: Number(limit) } }
       ];
-      const fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
-      questions = questions.concat(fallbackQuestions);
-    }
 
-    // Strip correct answers or add metadata for admins, and slim down response
-    const safe = questions.map((q) => {
-      const correctOpt = q.options?.find((o) => o.isCorrect);
+      let questions = await questionRepository.aggregate(pipeline);
 
-      const slim = {
-        _id: q._id,
-        subjectId: q.subjectId,
-        content: { text: q.content?.text },
-        metadata: q.metadata,
-      };
+      // Fallback if weighted pool yields fewer questions than requested
+      if (!deterministic && questions.length < limit) {
+        const fallbackLimit = limit - questions.length;
+        const foundIds = questions.map(q => q._id);
+        const fallbackMatchStage = { subjectId: resolvedSubjectId };
 
-      if (isAdmin) {
-        slim.correctAnswer = correctOpt ? correctOpt.id : null;
-        slim.options = q.options.map((o) => ({
-          id: o.id,
-          text: o.text,
-          isCorrect: o.isCorrect,
-        }));
-      } else {
-        if (q.options) {
+        const allExcluded = [
+          ...Array.from(excludedIds).map(id => new mongoose.Types.ObjectId(id)),
+          ...foundIds
+        ];
+        if (allExcluded.length > 0) {
+          fallbackMatchStage._id = { $nin: allExcluded };
+        }
+
+        const fallbackPipeline = [
+          { $match: fallbackMatchStage },
+          { $sample: { size: fallbackLimit } }
+        ];
+        const fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
+        questions = questions.concat(fallbackQuestions);
+      }
+
+      // Strip correct answers or add metadata for admins, and slim down response
+      const safe = questions.map((q) => {
+        const correctOpt = q.options?.find((o) => o.isCorrect);
+
+        const slim = {
+          _id: q._id,
+          subjectId: q.subjectId,
+          content: { text: q.content?.text },
+          metadata: q.metadata,
+        };
+
+        if (isAdmin) {
+          slim.correctAnswer = correctOpt ? correctOpt.id : null;
           slim.options = q.options.map((o) => ({
             id: o.id,
             text: o.text,
+            isCorrect: o.isCorrect,
           }));
+        } else {
+          if (q.options) {
+            slim.options = q.options.map((o) => ({
+              id: o.id,
+              text: o.text,
+            }));
+          }
         }
-      }
-      return slim;
-    });
-    return safe;
+        return slim;
+      });
+      return safe;
     } catch (error) {
       throw new Error(`Failed to get questions for subject: ${error.message}`);
     }
@@ -316,31 +316,31 @@ class PracticeService {
     // Adaptive Engine: compute and store predicted UTME score
     const user = await userRepository.findById(session.userId);
     if (user) {
-       const userPerformance = await TopicPerformance.find({ userId: session.userId });
-       
-       if (userPerformance && userPerformance.length > 0) {
-          const subjectMastery = {};
-          userPerformance.forEach(t => {
-             if (!t.subjectId) return;
-             const sid = String(t.subjectId);
-             if (!subjectMastery[sid]) subjectMastery[sid] = { total: 0, count: 0 };
-             subjectMastery[sid].total += t.masteryScore || 0;
-             subjectMastery[sid].count += 1;
-          });
-          
-          const userSubjectScores = {};
-          const userSubjects = await Subject.find({ _id: { $in: Object.keys(subjectMastery) } });
-          userSubjects.forEach(s => {
-             const sid = String(s._id);
-             if (subjectMastery[sid]) {
-                userSubjectScores[s.name] = subjectMastery[sid].total / subjectMastery[sid].count;
-             }
-          });
-   
-          const predictedScore = this.computeUTMEScoreFromMap(userSubjectScores);
-          user.stats = { ...(user.stats || {}), predictedScore };
-          await user.save();
-       }
+      const userPerformance = await TopicPerformance.find({ userId: session.userId });
+
+      if (userPerformance && userPerformance.length > 0) {
+        const subjectMastery = {};
+        userPerformance.forEach(t => {
+          if (!t.subjectId) return;
+          const sid = String(t.subjectId);
+          if (!subjectMastery[sid]) subjectMastery[sid] = { total: 0, count: 0 };
+          subjectMastery[sid].total += t.masteryScore || 0;
+          subjectMastery[sid].count += 1;
+        });
+
+        const userSubjectScores = {};
+        const userSubjects = await Subject.find({ _id: { $in: Object.keys(subjectMastery) } });
+        userSubjects.forEach(s => {
+          const sid = String(s._id);
+          if (subjectMastery[sid]) {
+            userSubjectScores[s.name] = subjectMastery[sid].total / subjectMastery[sid].count;
+          }
+        });
+
+        const predictedScore = this.computeUTMEScoreFromMap(userSubjectScores);
+        user.stats = { ...(user.stats || {}), predictedScore };
+        await user.save();
+      }
     }
 
     return { session: updated, utmeScore, flagged: flagged || timeDriftFlag };
@@ -349,7 +349,7 @@ class PracticeService {
   static async getSessionResult(sessionId, userId) {
     const session = await practiceRepository.findById(sessionId, ["subjectId"]);
     if (!session) throw new AppError("Not found", 404);
-    
+
     // Authorization Check: Ensure user owns the session
     if (userId && String(session.userId) !== String(userId)) {
       throw new AppError("Access denied: You do not own this session.", 403);
