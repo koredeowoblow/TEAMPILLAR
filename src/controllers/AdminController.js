@@ -212,6 +212,60 @@ class AdminController {
     return sendSuccess(res, { message: "Question deleted", data: { id }, statusCode: 200 });
   }
 
+  static async listQuestions(req, res) {
+    const { page = 1, limit = 50, search, subjectId, difficulty, status } = req.query;
+    const skip = (page - 1) * limit;
+
+    const filter = {};
+    if (search) {
+      filter.$or = [
+        { "content.text": { $regex: search, $options: "i" } },
+        { "metadata.questionCode": { $regex: search, $options: "i" } }
+      ];
+    }
+    if (subjectId) filter.subjectId = subjectId;
+    if (difficulty) filter["metadata.difficulty"] = difficulty.toLowerCase();
+    if (status) filter["metadata.status"] = status;
+
+    const questions = await questionRepository.find(filter, { skip, limit, sort: { createdAt: -1 } });
+    
+    // Transform to match frontend Question interface
+    const data = questions.map(q => ({
+      id: String(q._id),
+      code: q.metadata?.questionCode || `Q-${String(q._id).slice(-6).toUpperCase()}`,
+      subject: q.metadata?.subjectName || "Unknown",
+      topic: q.metadata?.topic || "General",
+      snippet: q.content?.text?.slice(0, 100) + (q.content?.text?.length > 100 ? "..." : ""),
+      difficulty: q.metadata?.difficulty ? q.metadata.difficulty.charAt(0).toUpperCase() + q.metadata.difficulty.slice(1) : "Medium",
+      status: q.metadata?.status || "Live"
+    }));
+
+    return sendSuccess(res, { message: "Questions retrieved", data, statusCode: 200 });
+  }
+
+  static async questionStats(req, res) {
+    const total = await questionRepository.count({});
+    const newToday = await questionRepository.count({
+      createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) }
+    });
+    
+    // Mock values for now for specific statuses if they don't exist in model
+    const pendingAI = await questionRepository.count({ "metadata.status": "Pending AI Review" });
+    const flaggedErrors = await questionRepository.count({ "metadata.status": "Flagged" });
+
+    return sendSuccess(res, {
+      message: "Question stats",
+      data: {
+        total,
+        newToday,
+        growth: 12, // Mock growth
+        pendingAI,
+        flaggedErrors
+      },
+      statusCode: 200
+    });
+  }
+
   /* ─────────────────── TUTORS ─────────────────── */
 
   static async getTutors(req, res) {

@@ -116,9 +116,12 @@ class AdminService {
 
       return {
         id: String(user._id),
+        code: `PLR-${new Date(user.createdAt || Date.now()).getFullYear()}-${String(user._id).slice(-4).toUpperCase()}`,
         name: user.name || "",
+        initials: (user.name || "??").split(" ").map(n => n[0]).join("").toUpperCase(),
         subjects: subjectsList,
         avgScore,
+        lastSession: recent.length > 0 ? "Just now" : "No sessions", // Simple mock for now
         trend,
         progress,
       };

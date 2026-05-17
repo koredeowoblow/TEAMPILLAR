@@ -235,11 +235,19 @@ class PracticeService {
   }
 
   static async submitSession(sessionId, submission) {
+    const { responses } = submission;
     // submission: { responses: [{questionId, selectedOption, timeTaken}], tabSwitches, endTime }
     const session = await practiceRepository.findById(sessionId);
     if (!session) throw new AppError("Session not found", 404);
     if (session.sessionStatus !== "ACTIVE")
       throw new AppError("Session not active", 400);
+
+    // Validate submitted questionIds against session
+    if (session.questionIds && session.questionIds.length > 0) {
+      const validIds = new Set(session.questionIds.map(String));
+      const invalidResponse = responses.find(r => !validIds.has(String(r.questionId)));
+      if (invalidResponse) throw new AppError("Invalid question in submission", 400);
+    }
 
     const questions = await questionRepository.find({
       _id: { $in: submission.responses.map((r) => r.questionId) },
