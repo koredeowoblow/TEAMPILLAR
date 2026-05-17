@@ -7,6 +7,7 @@ import ClassModel from "../models/ClassModel.js";
 import AdminService from "../services/AdminService.js";
 import { sanitizeQuestion } from "../utils/sanitizers.js";
 import mongoose from "mongoose";
+import { toAdminUserDTO, toAdminQuestionDTO, toAdminClassDTO } from "../dto/index.js";
 
 /* ── Inline CSV serialiser (zero external deps) ── */
 function toCSV(rows, headers) {
@@ -37,7 +38,7 @@ class AdminController {
     const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 50, 1), 100);
     const search = req.query.search || req.query.q;
     const data = await AdminService.listStudents({ page, limit, search });
-    return sendSuccess(res, { message: "Students retrieved", data, statusCode: 200 });
+    return sendSuccess(res, { message: "Students retrieved", data: { ...data, items: data.items?.map(toAdminUserDTO) }, statusCode: 200 });
   }
 
   static async getStudent(req, res) {
@@ -51,16 +52,7 @@ class AdminController {
 
     return sendSuccess(res, {
       message: "Student retrieved",
-      data: {
-        id: String(user._id),
-        name: user.name || "",
-        email: user.email || "",
-        targetScore: user.onboarding?.targetScore || 280,
-        subjects: user.onboarding?.subjects || [],
-        emailVerified: user.emailVerified || false,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
+      data: toAdminUserDTO(user),
       statusCode: 200,
     });
   }
@@ -205,7 +197,7 @@ class AdminController {
     if (!updated)
       return sendSuccess(res, { message: "Question not found", data: null, statusCode: 404 });
 
-    return sendSuccess(res, { message: "Question updated", data: updated, statusCode: 200 });
+    return sendSuccess(res, { message: "Question updated", data: toAdminQuestionDTO(updated), statusCode: 200 });
   }
 
   static async deleteQuestion(req, res) {

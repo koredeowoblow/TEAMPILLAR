@@ -1,5 +1,6 @@
 import { sendSuccess } from "../core/response.js";
 import { classRepository } from "../repository/ClassRepository.js";
+import { toClassDTO, toAdminClassDTO } from "../dto/index.js";
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));

@@ -2,6 +2,8 @@ import AuthService from "../services/AuthService.js";
 import CloudinaryService from "../services/CloudinaryService.js";
 import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
+import { toUserDTO, toAdminUserDTO, toSessionDTO } from "../dto/index.js";
+
 
 class AuthController {
   // Register
@@ -9,7 +11,7 @@ class AuthController {
     const user = await AuthService.register(req.body);
     return sendSuccess(res, {
       message: "User registered successfully",
-      data: user,
+      data: toUserDTO(user),
       statusCode: 201,
     });
   }
@@ -37,7 +39,7 @@ class AuthController {
 
     return sendSuccess(res, {
       message: "Login successful",
-      data: { user, token, refreshToken, expiresAt },
+      data: toSessionDTO({ user, token, refreshToken, expiresAt }),
       statusCode: 200,
     });
   }
@@ -179,7 +181,7 @@ class AuthController {
     }
     return sendSuccess(res, {
       message: "Profile retrieved successfully",
-      data: profile,
+      data: toUserDTO(profile),
       statusCode: 200,
     });
   }
@@ -253,7 +255,7 @@ class AuthController {
     });
     return sendSuccess(res, {
       message: "Users retrieved successfully",
-      data: users,
+      data: { ...users, items: users.items.map(toAdminUserDTO) },// map added
       statusCode: 200,
     });
   }
@@ -273,7 +275,7 @@ class AuthController {
     }
     return sendSuccess(res, {
       message: "User retrieved successfully",
-      data: user,
+      data: toAdminUserDTO(user),
       statusCode: 200,
     });
   }
@@ -305,7 +307,7 @@ class AuthController {
     const result = await AuthService.updateUserByAdmin(userId, allowedUpdates);
     return sendSuccess(res, {
       message: "User updated successfully (Admin)",
-      data: result,
+      data: toAdminUserDTO(result),
       statusCode: 200,
     });
   }
