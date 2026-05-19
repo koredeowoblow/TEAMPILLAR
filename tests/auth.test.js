@@ -59,7 +59,6 @@ describe("Auth Flow & Protection", () => {
         .post("/api/v1/auth/login")
         .send({ email: "test@test.com", password: "password123" });
 
-      console.log("LOGIN BODY:", res.body);
       expect(res.status).toBe(200);
       expect(res.body.data.token).toBe("mocked-jwt-token");
     });
