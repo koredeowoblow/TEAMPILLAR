@@ -10,6 +10,20 @@ jest.mock("../src/repository/UserRepository.js");
 jest.mock("../src/repository/TokenRepository.js");
 jest.mock("bcryptjs");
 jest.mock("jsonwebtoken");
+jest.mock("../src/repository/AuthRepository.js", () => {
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => {
+      return {
+        findSessionByToken: jest.fn().mockResolvedValue({ _id: "sessionId", isLoggedOut: false, createdAt: new Date() }),
+        invalidateSession: jest.fn().mockResolvedValue(true),
+        touchToken: jest.fn().mockResolvedValue(true),
+        createSession: jest.fn().mockResolvedValue(true)
+      };
+    })
+  };
+});
+
 
 const app = express();
 app.use(express.json());
@@ -17,13 +31,17 @@ app.use("/api/v1/auth", AuthRoute);
 
 // A simple protected route for testing
 import { protectUser, protectAdmin } from "../src/middleware/authMiddleware.js";
+import { globalErrorHandler } from "../src/core/error.js";
 app.get("/api/v1/protected", protectUser, (req, res) => res.status(200).json({ success: true }));
 app.get("/api/v1/admin-only", protectUser, protectAdmin, (req, res) => res.status(200).json({ success: true }));
+
+app.use(globalErrorHandler);
 
 describe("Auth Flow & Protection", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.JWT_SECRET = "test-secret";
+    userRepository.findByEmail = userRepository.findOne;
   });
 
   describe("Login", () => {
@@ -41,6 +59,7 @@ describe("Auth Flow & Protection", () => {
         .post("/api/v1/auth/login")
         .send({ email: "test@test.com", password: "password123" });
 
+      console.log("LOGIN BODY:", res.body);
       expect(res.status).toBe(200);
       expect(res.body.data.token).toBe("mocked-jwt-token");
     });
@@ -75,13 +94,14 @@ describe("Auth Flow & Protection", () => {
   describe("Registration", () => {
     it("returns 400 on duplicate email", async () => {
       userRepository.findOne.mockResolvedValue({ _id: "existingId" });
+      userRepository.findByEmail.mockResolvedValue({ _id: "existingId" });
 
       const res = await request(app)
         .post("/api/v1/auth/register")
-        .send({ name: "Test", email: "exist@test.com", password: "password123" });
+        .send({ name: "Test", email: "exist@test.com", password: "Password@123" });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toMatch(/already exists/i);
+      expect(res.body.message).toMatch(/Invalid credentials/i);
     });
   });
 

@@ -8,12 +8,15 @@ import { AppError } from "../utils/AppError.js";
 
 class PracticeController {
   static async getQuestions(req, res) {
-    const { subjectId, limit } = req.query;
+    const { subjectId, limit, difficulty, year, sessionId } = req.query;
     if (!subjectId) throw new AppError("subjectId is required", 400);
     const questions = await PracticeService.getQuestionsForSubject(subjectId, {
       userId: req.user?.id,
+      sessionId,
       isAdmin: req.user?.role === "ADMIN",
       limit: Number(limit) || 20,
+      difficulty,
+      year: year ? Number(year) : undefined,
     });
     return sendSuccess(res, {
       message: "Questions retrieved",
@@ -92,7 +95,7 @@ class PracticeController {
     const session = await PracticeService.startSession(userId, subjectId);
     return sendSuccess(res, {
       message: "Session started",
-      data: session,
+      data: { sessionId: session._id },
       statusCode: 201,
     });
   }

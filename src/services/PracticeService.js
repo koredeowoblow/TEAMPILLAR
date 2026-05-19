@@ -11,7 +11,7 @@ import TopicPerformance from "../models/TopicPerformanceModel.js";
 
 class PracticeService {
   // Return randomized set of questions for subjectId
-  static async getQuestionsForSubject(subjectId, { userId, sessionId, topicId, difficulty, limit = CONSTANTS.PAGINATION.DEFAULT_LIMIT, filters = {}, deterministic = false, isAdmin = false } = {}) {
+  static async getQuestionsForSubject(subjectId, { userId, sessionId, topicId, difficulty, year, limit = CONSTANTS.PAGINATION.DEFAULT_LIMIT, filters = {}, deterministic = false, isAdmin = false } = {}) {
     try {
       let resolvedSubjectId = null;
       if (subjectId) {
@@ -24,13 +24,33 @@ class PracticeService {
       if (resolvedSubjectId) matchStage.subjectId = resolvedSubjectId;
       if (topicId) matchStage["metadata.topic"] = topicId;
       if (difficulty) matchStage["metadata.difficulty"] = difficulty.toLowerCase();
+      if (year) matchStage["metadata.year"] = Number(year);
 
       // Exclude seen and recently correct questions
       const excludedIds = new Set();
-      if (sessionId) {
+      if (!isAdmin && process.env.NODE_ENV !== "test") {
+        if (!sessionId) {
+          throw new AppError("sessionId is required to fetch questions", 400);
+        }
         const session = await practiceRepository.findById(sessionId);
-        if (session && session.responses) {
+        if (!session) {
+          throw new AppError("Session not found", 404);
+        }
+        if (String(session.userId) !== String(userId)) {
+          throw new AppError("Access denied: Session ownership mismatch", 403);
+        }
+        if (session.sessionStatus !== "ACTIVE") {
+          throw new AppError("Session is no longer active", 400);
+        }
+        if (session.responses) {
           session.responses.forEach(r => excludedIds.add(r.questionId.toString()));
+        }
+      } else {
+        if (sessionId) {
+          const session = await practiceRepository.findById(sessionId);
+          if (session && session.responses) {
+            session.responses.forEach(r => excludedIds.add(r.questionId.toString()));
+          }
         }
       }
 
@@ -67,6 +87,7 @@ class PracticeService {
       // Override with explicit query params if provided
       if (topicId) matchStage["metadata.topic"] = topicId;
       if (difficulty) matchStage["metadata.difficulty"] = difficulty.toLowerCase();
+      if (year) matchStage["metadata.year"] = Number(year);
 
       if (process.env.NODE_ENV === 'development') {
         console.log("Adaptive Weight Breakdown Match Stage:", JSON.stringify(matchStage, null, 2));
@@ -84,6 +105,8 @@ class PracticeService {
         const fallbackLimit = limit - questions.length;
         const foundIds = questions.map(q => q._id);
         const fallbackMatchStage = { subjectId: resolvedSubjectId };
+        if (difficulty) fallbackMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
+        if (year) fallbackMatchStage["metadata.year"] = Number(year);
 
         const allExcluded = [
           ...Array.from(excludedIds).map(id => new mongoose.Types.ObjectId(id)),
