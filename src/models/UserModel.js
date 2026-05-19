@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema(
     password: { type: String, select: false }, // Optional - social auth users don't have passwords
     language: { type: String, enum: ["EN", "FR", "DE"], default: "EN" },
     photo: { type: String },
+    photoUrl: { type: String },
     googleId: { type: String, unique: true, sparse: true }, // Google OAuth ID
     appleId: { type: String, unique: true, sparse: true }, // Apple Sign-In ID
     emailVerified: { type: Boolean, default: false },

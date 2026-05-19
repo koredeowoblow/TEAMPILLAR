@@ -284,6 +284,13 @@ class AuthService {
     return await this.getUserById(userId);
   }
 
+  static async createOrUpdateProfile(userId, profileData) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new AppError("Not found", 404);
+
+    return await userRepository.updateUser(userId, profileData);
+  }
+
   static async toggleAdminStatus(userId) {
     const user = await userRepository.findById(userId);
     if (!user) throw new AppError("Not found", 404);

@@ -19,7 +19,7 @@ export function toUserDTO(user) {
     id:            String(u._id),
     name:          u.name ?? null,
     email:         u.email,
-    photo:         u.photo ?? null,
+    photo:         u.photoUrl ?? u.photo ?? null,
     language:      u.language,
     role:          u.role,
     isPro:         u.isPro ?? false,

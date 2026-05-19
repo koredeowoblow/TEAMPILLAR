@@ -12,3 +12,4 @@ export { toQuestionDTO, toQuestionReviewDTO, toAdminQuestionDTO } from "./questi
 export { toPracticeSessionSummaryDTO, toPracticeSessionResultDTO } from "./practice.dto.js";
 export { toExamDTO }                                          from "./exam.dto.js";
 export { toSubjectDTO, toAdminSubjectDTO }                    from "./subject.dto.js";
+export { toAchievementDTO, toStreakDTO, toLeaderboardDTO }    from "./achievement.dto.js";
