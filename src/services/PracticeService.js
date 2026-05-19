@@ -102,34 +102,36 @@ class PracticeService {
     }
 
     // Strip correct answers or add metadata for admins, and slim down response
-    const safe = questions.map((q) => {
-      const correctOpt = q.options?.find((o) => o.isCorrect);
+    // const safe = questions.map((q) => {
+    //   const correctOpt = q.options?.find((o) => o.isCorrect);
 
-      const slim = {
-        _id: q._id,
-        subjectId: q.subjectId,
-        content: { text: q.content?.text },
-        metadata: q.metadata,
-      };
+    //   const slim = {
+    //     _id: q._id,
+    //     subjectId: q.subjectId,
+    //     content: { text: q.content?.text },
+    //     metadata: q.metadata,
+    //   };
 
-      if (isAdmin) {
-        slim.correctAnswer = correctOpt ? correctOpt.id : null;
-        slim.options = q.options.map((o) => ({
-          id: o.id,
-          text: o.text,
-          isCorrect: o.isCorrect,
-        }));
-      } else {
-        if (q.options) {
-          slim.options = q.options.map((o) => ({
-            id: o.id,
-            text: o.text,
-          }));
-        }
-      }
-      return slim;
-    });
-    return safe;
+    //   if (isAdmin) {
+    //     slim.correctAnswer = correctOpt ? correctOpt.id : null;
+    //     slim.options = q.options.map((o) => ({
+    //       id: o.id,
+    //       text: o.text,
+    //       isCorrect: o.isCorrect,
+    //     }));
+    //   } else {
+    //     if (q.options) {
+    //       slim.options = q.options.map((o) => ({
+    //         id: o.id,
+    //         text: o.text,
+    //       }));
+    //     }
+    //   }
+    //   return slim;
+    // });
+    //return safe;
+
+    return questions; // map does same job as toQuestiondto hence it receives incomplete data, so its been commented out 
     } catch (error) {
       throw new Error(`Failed to get questions for subject: ${error.message}`);
     }
@@ -364,31 +366,37 @@ class PracticeService {
       const questions = await questionRepository.find({ _id: { $in: questionIds } });
       const qMap = new Map(questions.map(q => [String(q._id), q]));
 
-      result.questions = result.responses.map(r => {
-        const q = qMap.get(String(r.questionId));
-        if (!q) return null;
+      // result.questions = result.responses.map(r => {
+      //   const q = qMap.get(String(r.questionId));
+      //   if (!q) return null;
 
-        const correctOpt = q.options?.find(o => o.isCorrect);
-        const correctIndex = q.options?.findIndex(o => o.isCorrect) ?? -1;
-        const selectedOpt = q.options?.find(o => o.id === r.selectedOption);
-        const userIndex = q.options?.findIndex(o => o.id === r.selectedOption) ?? -1;
-        const isCorrect = selectedOpt?.isCorrect === true;
+      //   const correctOpt = q.options?.find(o => o.isCorrect);
+      //   const correctIndex = q.options?.findIndex(o => o.isCorrect) ?? -1;
+      //   const selectedOpt = q.options?.find(o => o.id === r.selectedOption);
+      //   const userIndex = q.options?.findIndex(o => o.id === r.selectedOption) ?? -1;
+      //   const isCorrect = selectedOpt?.isCorrect === true;
 
-        return {
-          id: String(q._id),
-          _id: String(q._id),
-          question: q.content?.text || q.content,
-          text: q.content?.text || q.content,
-          options: q.options?.map(o => o.text) || [],
-          correctAnswer: correctOpt?.text || null,
-          correctIndex,
-          userAnswer: selectedOpt?.text || r.selectedOption,
-          userIndex,
-          isCorrect,
-          metadata: q.metadata || {},
-          explanation: q.explanation || null,
-        };
-      }).filter(Boolean);
+      //   return {
+      //     id: String(q._id),
+      //     _id: String(q._id),
+      //     question: q.content?.text || q.content,
+      //     text: q.content?.text || q.content,
+      //     options: q.options?.map(o => o.text) || [],
+      //     correctAnswer: correctOpt?.text || null,
+      //     correctIndex,
+      //     userAnswer: selectedOpt?.text || r.selectedOption,
+      //     userIndex,
+      //     isCorrect,
+      //     metadata: q.metadata || {},
+      //     explanation: q.explanation || null,
+      //   };
+      // }).filter(Boolean);
+
+
+  // ADDED TO ENABLE PASSAGE VIA DTO, DTO DOES THE ENRICHING. CAN BE REVERTED BACK TO FORMER IF IT FAILS
+      result.questions = result.responses
+  .map(r => qMap.get(String(r.questionId)) ?? null)
+  .filter(Boolean);
     } else {
       result.questions = [];
     }

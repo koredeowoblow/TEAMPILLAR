@@ -1,12 +1,13 @@
 import { questionRepository } from "../repository/QuestionRepository.js";
 import AnalyticsService from "../services/AnalyticsService.js";
-import { sendSuccess } from "../core/response.js";
+import { sendSuccess, sendError } from "../core/response.js";
 import { userRepository } from "../repository/UserRepository.js";
 import Subject from "../models/SubjectModel.js";
 import ClassModel from "../models/ClassModel.js";
 import AdminService from "../services/AdminService.js";
 import { sanitizeQuestion } from "../utils/sanitizers.js";
 import mongoose from "mongoose";
+import { toAdminUserDTO, toAdminQuestionDTO, toAdminClassDTO } from "../dto/index.js";
 
 /* ── Inline CSV serialiser (zero external deps) ── */
 function toCSV(rows, headers) {
@@ -37,30 +38,21 @@ class AdminController {
     const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 50, 1), 100);
     const search = req.query.search || req.query.q;
     const data = await AdminService.listStudents({ page, limit, search });
-    return sendSuccess(res, { message: "Students retrieved", data, statusCode: 200 });
+    return sendSuccess(res, { message: "Students retrieved", data: { ...data, items: data.items?.map(toAdminUserDTO) }, statusCode: 200 });
   }
 
   static async getStudent(req, res) {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id))
-      return sendSuccess(res, { message: "Invalid student ID", data: null, statusCode: 400 });
+      return sendError(res, { message: "Invalid student ID", data: null, statusCode: 400 });
 
     const user = await userRepository.findById(id);
     if (!user || user.role !== "STUDENT")
-      return sendSuccess(res, { message: "Student not found", data: null, statusCode: 404 });
+      return sendError(res, { message: "Student not found", data: null, statusCode: 404 });
 
     return sendSuccess(res, {
       message: "Student retrieved",
-      data: {
-        id: String(user._id),
-        name: user.name || "",
-        email: user.email || "",
-        targetScore: user.onboarding?.targetScore || 280,
-        subjects: user.onboarding?.subjects || [],
-        emailVerified: user.emailVerified || false,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
+      data: toAdminUserDTO(user),
       statusCode: 200,
     });
   }
@@ -68,7 +60,7 @@ class AdminController {
   static async updateStudent(req, res) {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id))
-      return sendSuccess(res, { message: "Invalid student ID", data: null, statusCode: 400 });
+      return sendError(res, { message: "Invalid student ID", data: null, statusCode: 400 });
 
     // Whitelist — admins cannot touch password or role via this endpoint
     const ALLOWED = ["name", "onboarding", "emailVerified", "status"];
@@ -79,11 +71,12 @@ class AdminController {
 
     const updated = await userRepository.updateUser(id, updateData);
     if (!updated || updated.role !== "STUDENT")
-      return sendSuccess(res, { message: "Student not found", data: null, statusCode: 404 });
+      return sendError(res, { message: "Student not found", data: null, statusCode: 404 });
 
     return sendSuccess(res, {
       message: "Student updated",
-      data: { id: String(updated._id), name: updated.name, email: updated.email },
+      // data: { id: String(updated._id), name: updated.name, email: updated.email },
+      data: toAdminUserDTO(updated), // could be reverted back to the former if inconsistent
       statusCode: 200,
     });
   }
@@ -91,11 +84,11 @@ class AdminController {
   static async deleteStudent(req, res) {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id))
-      return sendSuccess(res, { message: "Invalid student ID", data: null, statusCode: 400 });
+      return sendError(res, { message: "Invalid student ID", data: null, statusCode: 400 });
 
     const user = await userRepository.findById(id);
     if (!user || user.role !== "STUDENT")
-      return sendSuccess(res, { message: "Student not found", data: null, statusCode: 404 });
+      return sendError(res, { message: "Student not found", data: null, statusCode: 404 });
 
     await userRepository.deleteUser(id);
     return sendSuccess(res, { message: "Student deleted", data: { id }, statusCode: 200 });
@@ -142,11 +135,11 @@ class AdminController {
   static async sendReminder(req, res) {
     const { studentIds, message } = req.body;
     if (!Array.isArray(studentIds) || studentIds.length === 0)
-      return sendSuccess(res, { message: "Provide at least one student ID", data: null, statusCode: 400 });
+      return sendError(res, { message: "Provide at least one student ID", data: null, statusCode: 400 });
 
     const validIds = studentIds.filter((id) => mongoose.Types.ObjectId.isValid(id));
     if (validIds.length === 0)
-      return sendSuccess(res, { message: "No valid student IDs", data: null, statusCode: 400 });
+      return sendError(res, { message: "No valid student IDs", data: null, statusCode: 400 });
 
     const reminderNote = {
       sentAt: new Date(),
@@ -191,7 +184,7 @@ class AdminController {
   static async updateQuestion(req, res) {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id))
-      return sendSuccess(res, { message: "Invalid question ID", data: null, statusCode: 400 });
+      return sendError(res, { message: "Invalid question ID", data: null, statusCode: 400 });
 
     const sanitized = sanitizeQuestion(req.body);
     // Map correctAnswer string (A,B,C,D) to isCorrect flag in options array
@@ -203,19 +196,19 @@ class AdminController {
     }
     const updated = await questionRepository.findByIdAndUpdate(id, sanitized, { new: true });
     if (!updated)
-      return sendSuccess(res, { message: "Question not found", data: null, statusCode: 404 });
+      return sendError(res, { message: "Question not found", data: null, statusCode: 404 });
 
-    return sendSuccess(res, { message: "Question updated", data: updated, statusCode: 200 });
+    return sendSuccess(res, { message: "Question updated", data: toAdminQuestionDTO(updated), statusCode: 200 });
   }
 
   static async deleteQuestion(req, res) {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id))
-      return sendSuccess(res, { message: "Invalid question ID", data: null, statusCode: 400 });
+      return sendError(res, { message: "Invalid question ID", data: null, statusCode: 400 });
 
     const deleted = await questionRepository.findByIdAndDelete(id);
     if (!deleted)
-      return sendSuccess(res, { message: "Question not found", data: null, statusCode: 404 });
+      return sendError(res, { message: "Question not found", data: null, statusCode: 404 });
 
     return sendSuccess(res, { message: "Question deleted", data: { id }, statusCode: 200 });
   }
@@ -238,6 +231,8 @@ class AdminController {
     const questions = await questionRepository.find(filter, { skip, limit, sort: { createdAt: -1 } });
     
     // Transform to match frontend Question interface
+
+    // by passes DTO keep note of for future cleanup
     const data = questions.map(q => ({
       id: String(q._id),
       code: q.metadata?.questionCode || `Q-${String(q._id).slice(-6).toUpperCase()}`,
@@ -349,7 +344,7 @@ class AdminController {
   static async scheduleReport(req, res) {
     const { email, frequency } = req.body;
     if (!email || !frequency) {
-      return sendSuccess(res, { message: "Email and frequency are required", data: null, statusCode: 400 });
+      return sendError(res, { message: "Email and frequency are required", data: null, statusCode: 400 });
     }
     console.log(`[STUB] Scheduled ${frequency} report for ${email}`);
     return sendSuccess(res, { message: "Report schedule saved", data: { email, frequency }, statusCode: 200 });

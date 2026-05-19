@@ -3,6 +3,7 @@ import { userRepository } from "../repository/UserRepository.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utils/AppError.js";
+import { toUserDTO } from "../dto/index.js";
 
 /* ── UTME exam date: set UTME_DATE in .env as YYYY-MM-DD ── */
 function getDaysToExam() {
@@ -46,7 +47,7 @@ class StudentController {
     });
     return sendSuccess(res, {
       message: "Onboarding saved",
-      data: updated,
+      data: toUserDTO(updated),
       statusCode: 200,
     });
   }
