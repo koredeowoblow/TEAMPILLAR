@@ -21,7 +21,9 @@ class PracticeRepository {
   }
 
   async update(id, updateData) {
-    return await PracticeSession.findByIdAndUpdate(id, updateData, {
+    if (!mongoose.Types.ObjectId.isValid(id)) return null;
+    const safeId = new mongoose.Types.ObjectId(id);
+    return await PracticeSession.findByIdAndUpdate(safeId, updateData, {
       new: true,
     }).exec();
   }
