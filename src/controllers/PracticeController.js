@@ -30,7 +30,7 @@ class PracticeController {
     const result = await PracticeService.getSubjects({ page, limit });
     return sendSuccess(res, {
       message: "Subjects retrieved",
-      data: { ...result, items: result.items?.map(toSubjectDTO) },
+      data: { ...result, data: result.data.map(toSubjectDTO) },
       statusCode: 200,
     });
   }
@@ -102,6 +102,12 @@ class PracticeController {
     const { id } = req.params;
     const userId = req.user?.id;
     const session = await PracticeService.getSessionResult(id, userId);
+
+    const questionsMap = new Map(
+    (session.questions ?? []).map((q) => [String(q._id ?? q.id), q])
+  );
+  // added to fetch question map and prevent runtime crash
+
     return sendSuccess(res, {
       message: "Session retrieved",
       data: toPracticeSessionResultDTO(session, questionsMap),
@@ -117,7 +123,7 @@ class PracticeController {
     const session = await PracticeService.startSession(userId, subjectId);
     return sendSuccess(res, {
       message: "Session started",
-      data: session,
+      data: toPracticeSessionSummaryDTO(session),
       statusCode: 201,
     });
   }

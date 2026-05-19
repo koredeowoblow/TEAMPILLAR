@@ -133,7 +133,7 @@ class AuthController {
     const result = await AuthService.verifyEmail(email, otp);
     return sendSuccess(res, {
       message: result.message,
-      data: result.user,
+      data: toUserDTO(result.user),
       statusCode: 200,
     });
   }
@@ -206,7 +206,7 @@ class AuthController {
     const profile = await AuthService.createOrUpdateProfile(userId, data);
     return sendSuccess(res, {
       message: "Profile saved successfully",
-      data: profile,
+      data: toUserDTO(profile),
       statusCode: 200,
     });
   }
@@ -286,7 +286,7 @@ class AuthController {
     const result = await AuthService.toggleAdminStatus(userId);
     return sendSuccess(res, {
       message: `Admin status toggled successfully`,
-      data: result,
+      data: toAdminUserDTO(result),
       statusCode: 200,
     });
   }
@@ -335,7 +335,7 @@ class AuthController {
 
     return sendSuccess(res, {
       message: "Google authentication successful",
-      data: result,
+      data: toSessionDTO(result), // this could be changed back after inspecting what result on its own returns, same applicable to apple auth
       statusCode: 200,
     });
   }
@@ -353,7 +353,7 @@ class AuthController {
     );
     return sendSuccess(res, {
       message: "Apple authentication successful",
-      data: result,
+      data: toSessionDTO(result),
       statusCode: 200,
     });
   }
@@ -362,7 +362,7 @@ class AuthController {
     const admin = await AuthService.createAdmin(req.body);
     return sendSuccess(res, {
       message: "Admin created successfully",
-      data: admin,
+      data: toAdminUserDTO(admin),
       statusCode: 201,
     });
   }

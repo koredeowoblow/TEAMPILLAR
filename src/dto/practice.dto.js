@@ -50,10 +50,22 @@ export function toPracticeSessionResultDTO(session, questionsMap = new Map()) {
 
   const enrichedResponses = (s.responses ?? []).map((r) => {
     const q = questionsMap.get(String(r.questionId));
+
+     // Cross response + question to compute derived fields
+    const selectedOpt = q?.options?.find(o => o.id === r.selectedOption);
+    const correctOpt  = q?.options?.find(o => o.isCorrect);
+    const isCorrect   = selectedOpt?.isCorrect === true;
+
     return {
       questionId:     String(r.questionId),
       selectedOption: r.selectedOption ?? null,
       timeTaken:      r.timeTaken      ?? 0,
+
+      // Derived from crossing response + question
+      isCorrect,
+      userAnswer:    selectedOpt?.text ?? null,
+      correctAnswer: correctOpt?.text  ?? null,
+      
       // Attach full review question if available
       question: q ? toQuestionReviewDTO(q) : null,
     };
