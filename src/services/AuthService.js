@@ -31,7 +31,7 @@ class AuthService {
 
   // ================= TOKENS =================
   static generateToken(id) {
-    const expiresIn = process.env.JWT_EXPIRES_IN || "1d";
+    const expiresIn = process.env.JWT_EXPIRES_IN || "15m";
 
     const token = jwt.sign({ id }, process.env.JWT_SECRET, {
       expiresIn,
@@ -74,7 +74,7 @@ class AuthService {
 
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) {
-      throw new AppError("Unable to register with provided details", 400);
+      throw new AppError("Invalid credentials", 400);
     }
 
     const newUser = await userRepository.createUser({
@@ -100,7 +100,7 @@ class AuthService {
       }
     });
 
-    const user = newUser.toObject();
+    const user = typeof newUser.toObject === "function" ? newUser.toObject() : { ...newUser };
     delete user.password;
 
     return {
@@ -140,7 +140,7 @@ class AuthService {
       deviceInfo: meta.userAgent,
     });
 
-    const safeUser = user.toObject();
+    const safeUser = typeof user.toObject === "function" ? user.toObject() : { ...user };
     delete safeUser.password;
 
     return { user: safeUser, token, refreshToken, expiresAt };

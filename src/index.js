@@ -3,6 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
+import mongoSanitize from "express-mongo-sanitize";
+import { apiLimiter } from "./middleware/rateLimiter.js";
 import cron from "node-cron";
 import { logger } from "./core/logger.js";
 import "./config/env.js";
@@ -71,28 +73,24 @@ app.use(
 );
 
 // CORS
-const rawAllowedOrigins = process.env.ALLOWED_ORIGINS || "";
-const allowedOrigins = rawAllowedOrigins
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim()).filter(Boolean)
+  : [];
 
 const corsOptions = {
-  origin: true,
+  origin: (origin, callback) => {
+    // Allow server-to-server or requests without Origin (like standard mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || (process.env.NODE_ENV !== "production" && origin.includes("localhost"))) {
+      return callback(null, true);
+    }
+    return callback(new Error("CORS policy violation: Origin not allowed"));
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   maxAge: 86400,
 };
-
-if (allowedOrigins.length > 0) {
-  corsOptions.origin = (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error("CORS origin not allowed"));
-  };
-}
 
 app.use(cors(corsOptions));
 
@@ -125,10 +123,12 @@ app.get("/health", healthCheckHandler);
 // Parsers
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(mongoSanitize());
 app.use(attachRequestMeta);
 
 // API Router
 const apiRouter = express.Router();
+apiRouter.use(apiLimiter);
 app.use("/api/v1", apiRouter);
 
 apiRouter.use("/auth", auth);

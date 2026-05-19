@@ -13,6 +13,7 @@ import { handleValidationErrors } from "../middleware/Validation/handleValidatio
 import { protectUser, protectAdmin } from "../middleware/authMiddleware.js";
 import {
   authLimiter,
+  registrationLimiter,
   otpLimiter,
   passwordResetLimiter,
 } from "../middleware/rateLimiter.js";
@@ -35,7 +36,7 @@ const logLoginRequest = (req, _res, next) => {
 
 auth.post(
   "/register",
-  authLimiter,
+  registrationLimiter,
   validateUserRegistration,
   handleValidationErrors,
   tryCatch(AuthController.register),
