@@ -4,7 +4,6 @@ import { practiceRepository } from "../repository/PracticeRepository.js";
 import { CONSTANTS } from "../config/constants.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
 import TopicPerformance from "../models/TopicPerformanceModel.js";
-import mongoose from "mongoose";
 import AIService from "./AIService.js";
 
 class AdaptiveEngineService {
@@ -72,16 +71,16 @@ class AdaptiveEngineService {
       // Fetch questions to calculate mid-session correctness
       const questionIds = session.responses.map(r => r.questionId);
       const questions = await questionRepository.find({ _id: { $in: questionIds } });
-      const qMap = new Map(questions.map(q => [String(q._id), q]));
+      const questionMap = new Map(questions.map(q => [String(q._id), q]));
 
       // Live mid-session recalculation of mastery
       for (const r of session.responses) {
-        const q = qMap.get(String(r.questionId));
-        if (!q) continue;
+        const question = questionMap.get(String(r.questionId));
+        if (!question) continue;
 
-        const opt = q.options.find(o => o.id === r.selectedOption);
+        const opt = question.options.find(o => o.id === r.selectedOption);
         const isCorrect = opt ? opt.isCorrect : false;
-        const topicStr = q.metadata?.topic;
+        const topicStr = question.metadata?.topic;
         if (!topicStr) continue;
 
         let topicEntry = topicPerf.find(t => String(t.topicId) === topicStr);

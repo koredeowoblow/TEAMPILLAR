@@ -5,17 +5,24 @@ import Subject from "../models/SubjectModel.js";
 import mongoose from "mongoose";
 import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
-import { toQuestionDTO, toPracticeSessionResultDTO, toSubjectDTO, toPracticeSessionSummaryDTO } from "../dto/index.js";
-
+import {
+  toQuestionDTO,
+  toPracticeSessionResultDTO,
+  toSubjectDTO,
+  toPracticeSessionSummaryDTO,
+} from "../dto/index.js";
 
 class PracticeController {
   static async getQuestions(req, res) {
-    const { subjectId, limit } = req.query;
+    const { subjectId, limit, difficulty, year, sessionId } = req.query;
     if (!subjectId) throw new AppError("subjectId is required", 400);
     const questions = await PracticeService.getQuestionsForSubject(subjectId, {
       userId: req.user?.id,
+      sessionId,
       isAdmin: req.user?.role === "ADMIN",
       limit: Number(limit) || 20,
+      difficulty,
+      year: year ? Number(year) : undefined,
     });
     return sendSuccess(res, {
       message: "Questions retrieved",
@@ -38,17 +45,23 @@ class PracticeController {
   static async getNextQuestions(req, res) {
     const userId = req.user?.id;
     const { sessionId, subjectId, filters } = req.body;
-    
-    if (!userId) throw new AppError("Unauthorized", 401);
-    if (!sessionId || !subjectId) throw new AppError("sessionId and subjectId are required", 400);
 
-    const midSessionMatch = await AdaptiveEngineService.recalculateMidSession(sessionId, userId, subjectId, filters || {});
-    
+    if (!userId) throw new AppError("Unauthorized", 401);
+    if (!sessionId || !subjectId)
+      throw new AppError("sessionId and subjectId are required", 400);
+
+    const midSessionMatch = await AdaptiveEngineService.recalculateMidSession(
+      sessionId,
+      userId,
+      subjectId,
+      filters || {},
+    );
+
     const questions = await PracticeService.getQuestionsForSubject(subjectId, {
       userId,
       sessionId,
       limit: 10,
-      filters: midSessionMatch
+      filters: midSessionMatch,
     });
 
     return sendSuccess(res, {
@@ -76,27 +89,27 @@ class PracticeController {
   //}
 
   static async submit(req, res) {
-  const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
-  if (!sessionId || !responses)
-    throw new AppError("sessionId and responses are required", 400);
+    const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
+    if (!sessionId || !responses)
+      throw new AppError("sessionId and responses are required", 400);
 
-  const result = await PracticeService.submitSession(sessionId, {
-    responses,
-    tabSwitches,
-    endTime,
-    ipAddress,
-  });
+    const result = await PracticeService.submitSession(sessionId, {
+      responses,
+      tabSwitches,
+      endTime,
+      ipAddress,
+    });
 
-  return sendSuccess(res, {
-    message: "Session graded",
-    data: {
-      session: toPracticeSessionSummaryDTO(result.session),
-      utmeScore: result.utmeScore,
-      flagged: result.flagged,
-    },
-    statusCode: 200,
-  });
-}
+    return sendSuccess(res, {
+      message: "Session graded",
+      data: {
+        session: toPracticeSessionSummaryDTO(result.session),
+        utmeScore: result.utmeScore,
+        flagged: result.flagged,
+      },
+      statusCode: 200,
+    });
+  }
 
   static async getResult(req, res) {
     const { id } = req.params;
@@ -104,9 +117,9 @@ class PracticeController {
     const session = await PracticeService.getSessionResult(id, userId);
 
     const questionsMap = new Map(
-    (session.questions ?? []).map((q) => [String(q._id ?? q.id), q])
-  );
-  // added to fetch question map and prevent runtime crash
+      (session.questions ?? []).map((q) => [String(q._id ?? q.id), q]),
+    );
+    // added to fetch question map and prevent runtime crash
 
     return sendSuccess(res, {
       message: "Session retrieved",
@@ -198,7 +211,7 @@ class PracticeController {
 
       // Cascade delete questions
       await questionRepository.deleteMany({ subjectId: id }, { session });
-      
+
       // Delete the subject
       await Subject.findByIdAndDelete(id).session(session);
 

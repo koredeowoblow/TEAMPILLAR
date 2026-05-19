@@ -37,11 +37,7 @@ export const validateUserLogin = [
   body("email")
     .trim()
     .isEmail()
-    .withMessage("Valid email is required")
-    .custom(async (email) => {
-      const user = await userRepository.findByEmail(email);
-      if (!user) throw new Error("Invalid credentials");
-    }),
+    .withMessage("Valid email is required"),
 
   body("password").notEmpty().withMessage("Password is required"),
 ];
