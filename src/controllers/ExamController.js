@@ -1,6 +1,7 @@
 import ExamService from "../services/ExamService.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
+import { toExamDTO } from "../dto/index.js";
 
 class ExamController {
   static async create(req, res) {
@@ -28,16 +29,7 @@ class ExamController {
 
     return sendSuccess(res, {
       message: "Exam scheduled",
-      data: {
-        id: String(exam._id),
-        subject: String(exam.subject),
-        classGroup: exam.classGroup,
-        examDate: exam.examDate,
-        duration: exam.duration,
-        questionCount: exam.questionCount,
-        instructions: exam.instructions,
-        status: exam.status,
-      },
+      data: toExamDTO(exam),
       statusCode: 201,
     });
   }

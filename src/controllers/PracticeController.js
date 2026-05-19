@@ -5,6 +5,12 @@ import Subject from "../models/SubjectModel.js";
 import mongoose from "mongoose";
 import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
+import {
+  toQuestionDTO,
+  toPracticeSessionResultDTO,
+  toSubjectDTO,
+  toPracticeSessionSummaryDTO,
+} from "../dto/index.js";
 
 class PracticeController {
   static async getQuestions(req, res) {
@@ -20,7 +26,7 @@ class PracticeController {
     });
     return sendSuccess(res, {
       message: "Questions retrieved",
-      data: questions,
+      data: questions.map(toQuestionDTO),
       statusCode: 200,
     });
   }
@@ -31,7 +37,7 @@ class PracticeController {
     const result = await PracticeService.getSubjects({ page, limit });
     return sendSuccess(res, {
       message: "Subjects retrieved",
-      data: result,
+      data: { ...result, data: result.data.map(toSubjectDTO) },
       statusCode: 200,
     });
   }
@@ -39,39 +45,68 @@ class PracticeController {
   static async getNextQuestions(req, res) {
     const userId = req.user?.id;
     const { sessionId, subjectId, filters } = req.body;
-    
-    if (!userId) throw new AppError("Unauthorized", 401);
-    if (!sessionId || !subjectId) throw new AppError("sessionId and subjectId are required", 400);
 
-    const midSessionMatch = await AdaptiveEngineService.recalculateMidSession(sessionId, userId, subjectId, filters || {});
-    
+    if (!userId) throw new AppError("Unauthorized", 401);
+    if (!sessionId || !subjectId)
+      throw new AppError("sessionId and subjectId are required", 400);
+
+    const midSessionMatch = await AdaptiveEngineService.recalculateMidSession(
+      sessionId,
+      userId,
+      subjectId,
+      filters || {},
+    );
+
     const questions = await PracticeService.getQuestionsForSubject(subjectId, {
       userId,
       sessionId,
       limit: 10,
-      filters: midSessionMatch
+      filters: midSessionMatch,
     });
 
     return sendSuccess(res, {
       message: "Next questions retrieved",
-      data: questions,
+      data: questions.map(toQuestionDTO),
       statusCode: 200,
     });
   }
+
+  // static async submit(req, res) {
+  //   const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
+  //   if (!sessionId || !responses)
+  //     throw new AppError("sessionId and responses are required", 400);
+  //   const result = await PracticeService.submitSession(sessionId, {
+  //     responses,
+  //     tabSwitches,
+  //     endTime,
+  //     ipAddress,
+  //   });
+  //   return sendSuccess(res, {
+  //     message: "Session graded",
+  //     data: toPracticeSessionResultDTO(session, questionsMap),
+  //     statusCode: 200,
+  //   });
+  //}
 
   static async submit(req, res) {
     const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
     if (!sessionId || !responses)
       throw new AppError("sessionId and responses are required", 400);
+
     const result = await PracticeService.submitSession(sessionId, {
       responses,
       tabSwitches,
       endTime,
       ipAddress,
     });
+
     return sendSuccess(res, {
       message: "Session graded",
-      data: result,
+      data: {
+        session: toPracticeSessionSummaryDTO(result.session),
+        utmeScore: result.utmeScore,
+        flagged: result.flagged,
+      },
       statusCode: 200,
     });
   }
@@ -80,9 +115,15 @@ class PracticeController {
     const { id } = req.params;
     const userId = req.user?.id;
     const session = await PracticeService.getSessionResult(id, userId);
+
+    const questionsMap = new Map(
+      (session.questions ?? []).map((q) => [String(q._id ?? q.id), q]),
+    );
+    // added to fetch question map and prevent runtime crash
+
     return sendSuccess(res, {
       message: "Session retrieved",
-      data: session,
+      data: toPracticeSessionResultDTO(session, questionsMap),
       statusCode: 200,
     });
   }
@@ -95,7 +136,7 @@ class PracticeController {
     const session = await PracticeService.startSession(userId, subjectId);
     return sendSuccess(res, {
       message: "Session started",
-      data: { sessionId: session._id },
+      data: toPracticeSessionSummaryDTO(session),
       statusCode: 201,
     });
   }
@@ -130,13 +171,7 @@ class PracticeController {
     });
     return sendSuccess(res, {
       message: "Subject created",
-      data: {
-        id: String(subj._id),
-        name: subj.name,
-        code: subj.code,
-        description: subj.description,
-        questionCount: subj.questionCount,
-      },
+      data: toSubjectDTO(subj),
       statusCode: 201,
     });
   }
@@ -153,13 +188,7 @@ class PracticeController {
     await subj.save();
     return sendSuccess(res, {
       message: "Subject updated",
-      data: {
-        id: String(subj._id),
-        name: subj.name,
-        code: subj.code,
-        description: subj.description,
-        questionCount: subj.questionCount,
-      },
+      data: toSubjectDTO(subj),
       statusCode: 200,
     });
   }
@@ -182,7 +211,7 @@ class PracticeController {
 
       // Cascade delete questions
       await questionRepository.deleteMany({ subjectId: id }, { session });
-      
+
       // Delete the subject
       await Subject.findByIdAndDelete(id).session(session);
 

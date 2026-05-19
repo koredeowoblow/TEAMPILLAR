@@ -1,5 +1,6 @@
 import { sendSuccess } from "../core/response.js";
 import { classRepository } from "../repository/ClassRepository.js";
+import { toClassDTO, toAdminClassDTO } from "../dto/index.js";
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -17,22 +18,7 @@ class ClassesController {
       sort: { createdAt: -1 },
     });
 
-    const data = classes.map((classDoc) => {
-      const meta = classDoc.metadata || {};
-      const subjects = Array.isArray(meta.subjects) ? meta.subjects : [];
-      const studentCount = Array.isArray(meta.studentIds)
-        ? meta.studentIds.length
-        : Number(meta.studentCount || 0);
-      const performance = clamp(Number(meta.performance || 0), 0, 100);
-
-      return {
-        id: String(classDoc._id),
-        name: classDoc.name || "",
-        studentCount,
-        performance,
-        subjects,
-      };
-    });
+    const data = classes.map(toClassDTO);
 
     return sendSuccess(res, {
       message: "Classes retrieved",
@@ -46,7 +32,7 @@ class ClassesController {
     const created = await classRepository.create(payload);
     return sendSuccess(res, {
       message: "Class created",
-      data: created,
+      data: toAdminClassDTO(created),
       statusCode: 201,
     });
   }
@@ -56,7 +42,7 @@ class ClassesController {
     const found = await classRepository.findById(id);
     return sendSuccess(res, {
       message: "Class retrieved",
-      data: found,
+      data: toClassDTO(found),
       statusCode: 200,
     });
   }
@@ -66,7 +52,7 @@ class ClassesController {
     const updated = await classRepository.update(id, req.body);
     return sendSuccess(res, {
       message: "Class updated",
-      data: updated,
+      data: toAdminClassDTO(updated),
       statusCode: 200,
     });
   }
