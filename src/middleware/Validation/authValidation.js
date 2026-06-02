@@ -34,10 +34,7 @@ export const validateUserRegistration = [
 
 // ✅ Express-validator rules for login
 export const validateUserLogin = [
-  body("email")
-    .trim()
-    .isEmail()
-    .withMessage("Valid email is required"),
+  body("email").trim().isEmail().withMessage("Valid email is required"),
 
   body("password").notEmpty().withMessage("Password is required"),
 ];

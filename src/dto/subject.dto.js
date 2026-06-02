@@ -13,9 +13,10 @@
 export function toSubjectDTO(subject) {
   if (!subject) return null;
   const s = subject.toObject ? subject.toObject() : subject;
+  const rawId = s._id || s.id;
 
   return {
-    id:            String(s._id),
+    id:            rawId ? String(rawId) : undefined,
     name:          s.name,
     code:          s.code,
     description:   s.description ?? null,
