@@ -22,6 +22,8 @@ import classes from "./routes/ClassesRoute.js";
 import ai from "./routes/AIRoute.js";
 import exams from "./routes/ExamRoute.js";
 import smartMock from "./routes/SmartMockRoute.js";
+import achievements from "./routes/AchievementRoute.js";
+import notifications from "./routes/NotificationRoute.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";
@@ -74,14 +76,19 @@ app.use(
 
 // CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim()).filter(Boolean)
+  ? process.env.ALLOWED_ORIGINS.split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean)
   : [];
 
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow server-to-server or requests without Origin (like standard mobile apps)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || (process.env.NODE_ENV !== "production" && origin.includes("localhost"))) {
+    if (
+      allowedOrigins.includes(origin) ||
+      (process.env.NODE_ENV !== "production" && origin.includes("localhost"))
+    ) {
       return callback(null, true);
     }
     return callback(new Error("CORS policy violation: Origin not allowed"));
@@ -99,6 +106,17 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(compression());
+
+// Replace the existing mongoSanitize middleware with a custom wrapper
+app.use((req, res, next) => {
+  if (req.body) {
+    mongoSanitize.sanitize(req.body, {
+      allowDots: true, // Allow dot-notation in keys
+      replaceWith: "_", // Replace prohibited characters with '_'
+    });
+  }
+  next();
+});
 
 // Health check
 const healthCheckHandler = measurePerformance(async (_req, res) => {
@@ -123,8 +141,6 @@ app.get("/health", healthCheckHandler);
 // Parsers
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
-app.use(mongoSanitize());
-app.use(attachRequestMeta);
 
 // API Router
 const apiRouter = express.Router();
@@ -140,6 +156,8 @@ apiRouter.use("/classes", classes);
 apiRouter.use("/ai", ai);
 apiRouter.use("/exams", exams);
 apiRouter.use("/practice/smart-mock", smartMock);
+apiRouter.use("/", achievements); // registers /achievements, /streaks, /leaderboard under /api/v1/
+apiRouter.use("/notifications", notifications);
 
 // Admin & Student Registry routes
 apiRouter.use("/", admin); // Exposes /students, /tutors, etc. at /api/v1/
@@ -237,24 +255,33 @@ async function bootstrap() {
               logger.info("Redis connection closed");
             }
           } catch (rErr) {
-            logger.warn("Error closing Redis during shutdown", { message: rErr.message });
+            logger.warn("Error closing Redis during shutdown", {
+              message: rErr.message,
+            });
           }
 
           // Wait for pending AI requests
           try {
-            const { default: AIService } = await import("./services/AIService.js");
+            const { default: AIService } =
+              await import("./services/AIService.js");
             const cleanShutdown = await AIService.waitForRequests(10000);
             if (!cleanShutdown) {
-              logger.warn("Some AI requests did not complete in time during shutdown");
+              logger.warn(
+                "Some AI requests did not complete in time during shutdown",
+              );
             }
           } catch (aiErr) {
-            logger.error("Error during AI shutdown", { message: aiErr.message });
+            logger.error("Error during AI shutdown", {
+              message: aiErr.message,
+            });
           }
 
           logger.info("Graceful shutdown complete");
           process.exit(0);
         } catch (error) {
-          logger.error("Error during overall shutdown", { message: error.message });
+          logger.error("Error during overall shutdown", {
+            message: error.message,
+          });
           process.exit(1);
         }
       });

@@ -6,7 +6,7 @@ export const validateGetQuestions = [
     .optional()
     .isInt({ min: 1, max: 200 })
     .withMessage("limit must be an integer between 1 and 200"),
-  query("difficulty").optional().isIn(["EASY", "MEDIUM", "HARD"]),
+  query("difficulty").optional().isIn(["EASY", "MEDIUM", "HARD", "ADAPTIVE"]),
   query("year")
     .optional()
     .isInt({ min: 1900 })
