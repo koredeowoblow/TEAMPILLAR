@@ -358,6 +358,12 @@ class AnalyticsService {
         frequency: topicCounts[topic],
       }));
 
+    const completedSessions = sessions.filter((s) => s.sessionStatus === "COMPLETED" && s.analytics?.speedPerQuestion);
+    const avgSpeedVal = completedSessions.length
+      ? Math.round(completedSessions.reduce((sum, s) => sum + (s.analytics.speedPerQuestion || 0), 0) / completedSessions.length)
+      : 0;
+    const averageTimePerQuestion = `${avgSpeedVal}s`;
+
     const aiRecommendations = await AIService.generateStudentInsights({
       userId,
       averageScore: avgScore,
@@ -373,6 +379,7 @@ class AnalyticsService {
       subjectPerformance,
       weakTopics: weakTopicsList,
       totalSessions: total,
+      averageTimePerQuestion,
       aiRecommendations,
     };
   }
