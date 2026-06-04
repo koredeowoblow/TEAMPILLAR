@@ -50,6 +50,23 @@ class AIController {
       statusCode: 200,
     });
   }
+
+  static async chat(req, res) {
+    const { message, subject, sessionId, history } = req.body;
+    const userId = req.user?.id;
+    const response = await AIService.generateTutorChatReply({
+      userId,
+      message,
+      subject: subject || "General",
+      sessionId,
+      history: history || [],
+    });
+    return sendSuccess(res, {
+      message: "Chat reply generated",
+      data: response,
+      statusCode: 200,
+    });
+  }
 }
 
 export default AIController;

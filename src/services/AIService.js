@@ -415,6 +415,133 @@ Produce a comprehensive 4-point diagnostic report following the structure above.
     await cache.set(cacheKey, result, opts.ttl || 3600);
     return result;
   }
+
+  /**
+   * Generates a conversational AI Tutor reply customized for the Nigerian UTME context.
+   */
+  static async generateTutorChatReply({ userId, message, subject, sessionId, history }) {
+    const activeSubject = subject || "General";
+    
+    // Rich subject-based fallback config if AI fails or Groq is not available
+    const fallbacksBySubject = {
+      English: {
+        reply: "Welcome to English UTME prep! In JAMB English, Lexis and Structure, Concord, and Comprehension are heavily tested. For instance, did you know that when singular subjects are connected by 'or' or 'nor', they take a singular verb? E.g., 'Neither the teacher nor the student is here.' How can I help you excel in English today?",
+        suggestedFollowUps: [
+          "Explain the rules of Concord.",
+          "Give me a practice question on synonyms.",
+          "Explain the difference between active and passive voice."
+        ],
+        topicsReferenced: ["Concord", "Grammar"]
+      },
+      Mathematics: {
+        reply: "Let's master Mathematics! From algebra and trigonometry to calculus, we can break down any formula step-by-step. For example, to find the roots of a quadratic equation $ax^2 + bx + c = 0$, we use the formula:\n\n$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$\n\nWhat concept or formula should we tackle first?",
+        suggestedFollowUps: [
+          "Show me how to solve a quadratic equation.",
+          "Explain differentiation from first principles.",
+          "Solve a probability question."
+        ],
+        topicsReferenced: ["Quadratic Equations", "Algebra"]
+      },
+      Physics: {
+        reply: "Physics is all about understanding the physical laws of nature. Whether it's mechanics, waves, electricity, or modern physics, we can make it simple. For instance, the equations of linear motion are:\n\n1. $v = u + at$\n2. $s = ut + \\frac{1}{2}at^2$\n3. $v^2 = u^2 + 2as$\n\nWhere $u$ is initial velocity, $v$ is final velocity, $a$ is acceleration, and $t$ is time. What topic are you working on?",
+        suggestedFollowUps: [
+          "Derive the equations of motion.",
+          "Explain Newton's laws of motion.",
+          "How does electromagnetic induction work?"
+        ],
+        topicsReferenced: ["Equations of Motion", "Mechanics"]
+      },
+      Chemistry: {
+        reply: "Let's explore Chemistry! Understanding the periodic table, chemical bonding, stoichiometry, and organic chemistry is key to scoring 90+ in Chemistry. For example, to calculate the number of moles ($n$), we use:\n\n$$n = \\frac{\\text{mass (g)}}{\\text{molar mass (g/mol)}}$$\n\nWhat chemical reactions or formulas are puzzling you today?",
+        suggestedFollowUps: [
+          "Explain balancing chemical equations.",
+          "What is Faraday's first law of electrolysis?",
+          "Explain the difference between alkanes and alkenes."
+        ],
+        topicsReferenced: ["Stoichiometry", "Basic Concepts"]
+      },
+      General: {
+        reply: "Hello! I am your Pillar AI Tutor. I can help you prepare for all your UTME core subjects. We can solve equations, analyze texts, study chemical reactions, or go through physics derivations. What subject are we focusing on today?",
+        suggestedFollowUps: [
+          "Give me study tips for UTME.",
+          "How do I manage my time during the exam?",
+          "Create a study schedule for my 4 subjects."
+        ],
+        topicsReferenced: ["UTME Strategy", "General Study"]
+      }
+    };
+
+    const staticFallback = fallbacksBySubject[activeSubject] || fallbacksBySubject.General;
+
+    if (!groq) {
+      logger.info(`Groq API Key not found. Using static fallback for subject: ${activeSubject}`);
+      return staticFallback;
+    }
+
+    const systemPrompt = `### ROLE: SENIOR NIGERIAN UTME (JAMB) EDUCATIONAL EXPERT & TUTOR
+### MISSION:
+Help the student prepare for the UTME exam for the subject: ${activeSubject}.
+Explain complex topics simply, from first principles.
+Support standard markdown formatting (including bullet points, bolding) and LaTeX math expressions (like $x = y$ or $$a^2 + b^2 = c^2$$).
+Provide encouraging, clear guidance like a top-tier subject master.
+
+### RESPONSE FORMAT:
+You MUST reply ONLY with a valid JSON object matching the schema below. Do NOT add any surrounding markdown block (like \`\`\`json) or text.
+{
+  "reply": "string (the tutor's actual response in markdown/LaTeX)",
+  "suggestedFollowUps": ["string", "string", "string"],
+  "topicsReferenced": ["string"]
+}`;
+
+    const messages = [
+      { role: "system", content: systemPrompt }
+    ];
+
+    // Append history context for continuity
+    if (Array.isArray(history)) {
+      history.slice(-8).forEach(msg => {
+        if (msg.role && msg.content) {
+          messages.push({ role: msg.role === "user" ? "user" : "assistant", content: msg.content });
+        }
+      });
+    }
+
+    // Append the latest user query
+    messages.push({ role: "user", content: message });
+
+    const aiResponse = await this._callAIWithFallback(messages, {
+      max_tokens: 800,
+      temperature: 0.5
+    });
+
+    if (aiResponse.content) {
+      try {
+        const jsonMatch = aiResponse.content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed.reply) {
+            return {
+              reply: parsed.reply,
+              suggestedFollowUps: Array.isArray(parsed.suggestedFollowUps) ? parsed.suggestedFollowUps : staticFallback.suggestedFollowUps,
+              topicsReferenced: Array.isArray(parsed.topicsReferenced) ? parsed.topicsReferenced : [activeSubject]
+            };
+          }
+        }
+      } catch (err) {
+        logger.warn("JSON Parse Error in AI Tutor Chat Response, falling back to plaintext parsing", { raw: aiResponse.content });
+      }
+      
+      // Fallback parser if LLM output isn't strict JSON
+      return {
+        reply: aiResponse.content,
+        suggestedFollowUps: staticFallback.suggestedFollowUps,
+        topicsReferenced: [activeSubject]
+      };
+    }
+
+    logger.warn(`AI Chat model failed. Returning subject fallback.`);
+    return staticFallback;
+  }
 }
 
 export default AIService;

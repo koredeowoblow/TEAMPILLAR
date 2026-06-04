@@ -27,6 +27,7 @@ import exams from "./routes/ExamRoute.js";
 import smartMock from "./routes/SmartMockRoute.js";
 import achievements from "./routes/AchievementRoute.js";
 import notifications from "./routes/NotificationRoute.js";
+import planner from "./routes/PlannerRoute.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";
@@ -149,10 +150,12 @@ apiRouter.use("/analytics", analytics);
 apiRouter.use("/billing", billing);
 apiRouter.use("/classes", classes);
 apiRouter.use("/ai", ai);
+apiRouter.use("/ai-tutor", ai);
 apiRouter.use("/exams", exams);
 apiRouter.use("/practice/smart-mock", smartMock);
 apiRouter.use("/", achievements); // registers /achievements, /streaks, /leaderboard under /api/v1/
 apiRouter.use("/notifications", notifications);
+apiRouter.use("/planner", planner);
 
 // Admin & Student Registry routes
 apiRouter.use("/", admin); // Exposes /students, /tutors, etc. at /api/v1/

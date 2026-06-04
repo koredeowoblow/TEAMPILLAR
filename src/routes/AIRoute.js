@@ -43,4 +43,15 @@ router.post(
   tryCatch(AIController.generateQuestionInsight),
 );
 
+router.post(
+  "/chat",
+  protectUser,
+  body("message").notEmpty().withMessage("message is required"),
+  body("subject").optional().isString(),
+  body("sessionId").optional().isString(),
+  body("history").optional().isArray(),
+  handleValidationErrors,
+  tryCatch(AIController.chat),
+);
+
 export default router;
