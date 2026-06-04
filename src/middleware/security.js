@@ -1,10 +1,8 @@
 import helmet from "helmet";
 import { logger } from "../core/logger.js";
 
-const HSTS_MAX_AGE_SECONDS = Number.parseInt(
-  process.env.HSTS_MAX_AGE_SECONDS || "63072000",
-  10,
-);
+const HSTS_MAX_AGE_SECONDS =
+  Number.parseInt(process.env.HSTS_MAX_AGE_SECONDS ?? "", 10) || 63072000;
 
 const EXPECT_CT_MAX_AGE_SECONDS = Number.parseInt(
   process.env.EXPECT_CT_MAX_AGE_SECONDS || "86400",
