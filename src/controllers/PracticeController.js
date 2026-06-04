@@ -111,6 +111,35 @@ class PracticeController {
     });
   }
 
+  /**
+   * GET /practice/sessions
+   * Returns the current user's completed practice sessions, newest first.
+   */
+  static async getSessions(req, res) {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError("Unauthorized", 401);
+
+    const page  = Math.max(Number.parseInt(req.query.page,  10) || 1, 1);
+    const limit = Math.max(Number.parseInt(req.query.limit, 10) || 20, 1);
+    const skip  = (page - 1) * limit;
+
+    const sessions = await practiceRepository.find(
+      { userId, sessionStatus: "COMPLETED" },
+      { sort: { createdAt: -1 }, skip, limit },
+    );
+
+    const total = await practiceRepository.count({ userId, sessionStatus: "COMPLETED" });
+
+    return sendSuccess(res, {
+      message: "Sessions retrieved",
+      data: {
+        sessions: sessions.map(toPracticeSessionSummaryDTO),
+        pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+      },
+      statusCode: 200,
+    });
+  }
+
   static async getResult(req, res) {
     const { id } = req.params;
     const userId = req.user?.id;

@@ -37,7 +37,9 @@ router.post(
   handleValidationErrors,
   tryCatch(PracticeController.submit),
 );
+router.get("/sessions", protectUser, tryCatch(PracticeController.getSessions));
 router.get("/results/:id", protectUser, tryCatch(PracticeController.getResult));
+
 
 // Subjects
 router.get("/subjects", protectUser, tryCatch(PracticeController.getSubjects));
