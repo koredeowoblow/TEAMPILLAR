@@ -15,8 +15,10 @@ jest.mock("../src/core/logger.js", () => ({
 
 describe("HTTPS enforcement and security headers", () => {
   let app;
+  let originalNodeEnv;
 
   beforeEach(() => {
+    originalNodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = "production";
 
     app = express();
@@ -24,6 +26,11 @@ describe("HTTPS enforcement and security headers", () => {
     app.use(enforceSecureTransport);
     app.use(applySecurityHeaders);
     app.get("/ping", (_req, res) => res.status(200).json({ ok: true }));
+  });
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
+    jest.clearAllMocks();
   });
 
   it("redirects insecure requests to HTTPS", async () => {
