@@ -357,7 +357,7 @@ class PracticeService {
       speedPerQuestion:
         totalQuestions > 0 ? Math.round(totalTime / totalQuestions) : 0,
       topMistakeTopic:
-        Object.keys(topics).sort((a, b) => topics[b] - topics[a])[0] || null,
+        Object.keys(topics).sort((a, b) => topics[a] - topics[b])[0] || null,
     };
 
     const updated = await practiceRepository.update(sessionId, {

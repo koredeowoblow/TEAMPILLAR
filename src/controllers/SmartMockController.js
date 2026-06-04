@@ -3,6 +3,7 @@ import PracticeService from "../services/PracticeService.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
+import { toPracticeSessionSummaryDTO } from "../dto/index.js";
 
 class SmartMockController {
   /**
@@ -66,7 +67,11 @@ class SmartMockController {
 
     return sendSuccess(res, {
       message: "Smart Mock graded successfully",
-      data: result,
+      data: {
+        session: toPracticeSessionSummaryDTO(result.session),
+        utmeScore: result.utmeScore,
+        flagged: result.flagged,
+      },
       statusCode: 200,
     });
   }
