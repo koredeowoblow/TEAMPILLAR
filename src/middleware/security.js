@@ -4,10 +4,8 @@ import { logger } from "../core/logger.js";
 const HSTS_MAX_AGE_SECONDS =
   Number.parseInt(process.env.HSTS_MAX_AGE_SECONDS ?? "", 10) || 63072000;
 
-const EXPECT_CT_MAX_AGE_SECONDS = Number.parseInt(
-  process.env.EXPECT_CT_MAX_AGE_SECONDS || "86400",
-  10,
-);
+const EXPECT_CT_MAX_AGE_SECONDS =
+  Number.parseInt(process.env.EXPECT_CT_MAX_AGE_SECONDS ?? "", 10) || 86400;
 
 const EXPECT_CT_REPORT_URI = process.env.EXPECT_CT_REPORT_URI?.trim();
 
