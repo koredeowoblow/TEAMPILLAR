@@ -40,7 +40,8 @@ function isSecureRequest(req) {
 }
 
 function buildHttpsUrl(req) {
-  const host = req.get("x-forwarded-host") || req.get("host");
+  const hostHeader = req.get("x-forwarded-host") || req.get("host");
+  const host = hostHeader?.split(",")[0]?.trim();
 
   if (!host) {
     return null;
