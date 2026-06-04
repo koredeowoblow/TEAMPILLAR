@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
 import mongoSanitize from "express-mongo-sanitize";
@@ -12,6 +11,10 @@ import { connectMongoDB } from "./config/mongodb.js";
 import { initializeRedis, isRedisAvailable } from "./config/redis.js";
 import { attachRequestMeta } from "./middleware/requestMeta.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import {
+  applySecurityHeaders,
+  enforceSecureTransport,
+} from "./middleware/security.js";
 import auth from "./routes/AuthRoute.js";
 import practice from "./routes/PracticeRoute.js";
 import student from "./routes/StudentRoute.js";
@@ -60,19 +63,11 @@ if (process.env.NODE_ENV === "production") {
 
 const app = express();
 
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
-        imgSrc: ["'self'", "data:", "https:"],
-      },
-    },
-    crossOriginEmbedderPolicy: false,
-  }),
-);
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+app.use(enforceSecureTransport);
+app.use(applySecurityHeaders);
 
 // CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS
