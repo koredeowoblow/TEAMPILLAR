@@ -94,19 +94,27 @@ class StudentController {
     }
 
     const subjectIds = Object.keys(subjectScoreMap).filter((id) => id !== "unknown");
-    const subjectDocs = subjectIds.length
-      ? await Subject.find({ _id: { $in: subjectIds } }).lean()
+    const onboardingSubjectIds = Array.isArray(user.onboarding?.subjects)
+      ? user.onboarding.subjects.map(String)
+      : [];
+    const allSubjectIds = Array.from(new Set([...subjectIds, ...onboardingSubjectIds])).filter(Boolean);
+
+    const subjectDocs = allSubjectIds.length
+      ? await Subject.find({ _id: { $in: allSubjectIds } }).lean()
       : [];
     const subjectNameMap = {};
     subjectDocs.forEach((d) => {
       subjectNameMap[String(d._id)] = d.name;
     });
 
-    const subjectMastery = Object.entries(subjectScoreMap).map(([sId, { scores }]) => ({
-      subject: subjectNameMap[sId] || (user.onboarding?.subjects?.[0] || "General"),
-      score: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
-      fullMark: 100,
-    }));
+    const subjectMastery = allSubjectIds.map((sId) => {
+      const scores = subjectScoreMap[sId]?.scores || [];
+      return {
+        subject: subjectNameMap[sId] || "General",
+        score: scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0,
+        fullMark: 100,
+      };
+    });
 
     // ── Daily tasks from study plan ──────────────────────────
     // The study plan is saved during onboarding. Each item: { id, topic, subject, duration, completed }
@@ -134,6 +142,19 @@ class StudentController {
 
     // ── Next badge ───────────────────────────────────────────
     const nextBadge = deriveNextBadge(streak, total);
+
+    const recentMockTests = sessions.slice(0, 5).map((s) => {
+      const subjectName = subjectNameMap[String(s.subjectId)] || "General";
+      return {
+        id: String(s._id),
+        score: s.score || 0,
+        subject: subjectName,
+        createdAt: s.createdAt,
+        sessionType: s.sessionType || "Practice Sprint",
+        durationMinutes: Math.round((s.responses?.reduce((acc, r) => acc + Number(r.timeTaken || 0), 0) || 0) / 60) || 15,
+        questionsCount: s.responses?.length || 20,
+      };
+    });
 
     // ── Build response ───────────────────────────────────────
     const dashboard = {
@@ -164,8 +185,14 @@ class StudentController {
       // Achievement
       nextBadge,
 
+      // Recent practice
+      recentMockTests,
+
       // Global rank (from analytics if available)
       globalRank: user.analytics?.globalRank ?? user.analytics?.global_rank ?? null,
+      avgAccuracy: avgPercent,
+      mockTestsCount: sessions.filter((s) => s.sessionType === "smart-mock").length,
+      weakTopicsCount: subjectMastery.filter((m) => m.score < 60).length,
     };
 
     return sendSuccess(res, {
