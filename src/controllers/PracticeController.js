@@ -1,6 +1,7 @@
 import PracticeService from "../services/PracticeService.js";
 import AdaptiveEngineService from "../services/AdaptiveEngineService.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
+import { practiceRepository } from "../repository/PracticeRepository.js";
 import Subject from "../models/SubjectModel.js";
 import mongoose from "mongoose";
 import { sendSuccess, sendError } from "../core/response.js";

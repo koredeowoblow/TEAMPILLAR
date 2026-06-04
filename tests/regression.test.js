@@ -44,4 +44,46 @@ describe("Regression Tests", () => {
     
     (await import("../src/models/UserModel.js")).default.aggregate = origAggregate;
   });
+
+  it("PracticeController.getSessions returns user's completed sessions", async () => {
+    const req = {
+      user: { id: "6a028262ec07526b47f1b6ea" },
+      query: { page: "1", limit: "10" }
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+
+    const PracticeController = (await import("../src/controllers/PracticeController.js")).default;
+    const { practiceRepository } = await import("../src/repository/PracticeRepository.js");
+
+    const origFind = practiceRepository.find;
+    const origCount = practiceRepository.count;
+
+    practiceRepository.find = jest.fn().mockResolvedValue([
+      {
+        _id: "6a028262ec07526b47f1b6eb",
+        subjectId: "5f8d0a92d2b5880017a8e5f2",
+        sessionStatus: "COMPLETED",
+        score: 85,
+        analytics: { accuracy: 85, speedPerQuestion: 12, topMistakeTopic: "Calculus" },
+        startTime: new Date(),
+        endTime: new Date(),
+        createdAt: new Date()
+      }
+    ]);
+    practiceRepository.count = jest.fn().mockResolvedValue(1);
+
+    await PracticeController.getSessions(req, res);
+
+    expect(practiceRepository.find).toHaveBeenCalledWith(
+      { userId: "6a028262ec07526b47f1b6ea", sessionStatus: "COMPLETED" },
+      { sort: { createdAt: -1 }, skip: 0, limit: 10 }
+    );
+    expect(res.json).toHaveBeenCalled();
+
+    practiceRepository.find = origFind;
+    practiceRepository.count = origCount;
+  });
 });
