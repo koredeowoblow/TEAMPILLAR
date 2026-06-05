@@ -25,7 +25,7 @@ class FreemiumGuard {
    * @returns {Promise<void>}
    */
   static async checkAIExplanation(user) {
-    if (user.subscription === "pro") return;
+    if (user.subscription === "pro" || user.isPro === true || user.subscriptionStatus === "active") return;
 
     const limit = this.LIMITS.free.dailyAIExplanations;
     const now = new Date();
@@ -63,7 +63,7 @@ class FreemiumGuard {
    * @returns {Promise<void>}
    */
   static async checkMockTest(user) {
-    if (user.subscription === "pro") return;
+    if (user.subscription === "pro" || user.isPro === true || user.subscriptionStatus === "active") return;
 
     const limit = this.LIMITS.free.mockTests;
     const totalTests = user.limits.totalMockTests || 0;
@@ -87,8 +87,8 @@ class FreemiumGuard {
    * @param {string} subscription - User subscription tier
    * @returns {void}
    */
-  static checkSubjectLimit(count, subscription) {
-    if (subscription === "pro") return;
+  static checkSubjectLimit(count, user) {
+    if (user?.subscription === "pro" || user?.isPro === true || user?.subscriptionStatus === "active") return;
 
     const limit = this.LIMITS.free.subjects;
     if (count > limit) {

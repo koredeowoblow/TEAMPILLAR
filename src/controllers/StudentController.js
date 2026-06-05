@@ -53,7 +53,7 @@ class StudentController {
     const subjects = req.body.subjects;
     if (subjects && Array.isArray(subjects)) {
       // Freemium Guard: Subject limit
-      FreemiumGuard.checkSubjectLimit(subjects.length, req.user.subscription);
+      FreemiumGuard.checkSubjectLimit(subjects.length, req.user);
 
       if (subjects.length > 6) {
         throw new AppError("You can select a maximum of 6 subjects", 400);
@@ -87,7 +87,7 @@ class StudentController {
     }
 
     // Freemium Guard: Subject limit
-    FreemiumGuard.checkSubjectLimit(subjects.length, req.user.subscription);
+    FreemiumGuard.checkSubjectLimit(subjects.length, req.user);
 
     if (subjects.length > 6) {
       throw new AppError("You can select a maximum of 6 subjects", 400);

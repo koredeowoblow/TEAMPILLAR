@@ -32,7 +32,14 @@ class SmartMockController {
     );
 
     // Enforce question count restriction for free-tier users
-    const isPro = req.user?.isPro === true;
+    const isPro = req.user?.isPro === true || req.user?.subscription === "pro" || req.user?.subscriptionStatus === "active";
+    
+    // Check subject limit for free users
+    const requestedSubjects = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
+    if (!isPro && requestedSubjects.length > 2) {
+      throw new AppError("Free plan users can select up to 2 subjects only. Upgrade to Pro to unlock all subjects!", 403);
+    }
+
     if (!isPro && questionLimit > FREE_QUESTION_LIMIT) {
       throw new AppError(
         `Free plan users can practice up to ${FREE_QUESTION_LIMIT} questions per session. Upgrade to Pro to unlock higher volumes.`,
