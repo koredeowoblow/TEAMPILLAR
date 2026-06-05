@@ -26,38 +26,34 @@ try {
   console.log(`[EmailConfig] Attempting SMTP init with host: ${host}, port: ${port}, user: ${user}`);
 
   if (host && port && user && pass) {
-    // FORCE IPv4 and PORT 587 for maximum Render compatibility
+    // Force IPv4-only DNS resolution, switch port to 465, and set secure: true for SSL
     smtpTransporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // false for 587 (STARTTLS)
+      port: 465,
+      secure: true, // true for 465, false for other ports
       auth: {
         user,
         pass,
       },
       tls: {
         rejectUnauthorized: false,
-        minVersion: "TLSv1.2",
       },
-      family: 4, // FORCE IPv4 to eliminate ENETUNREACH permanently
-      connectionTimeout: 30000, 
-      greetingTimeout: 30000,
-      socketTimeout: 30000,
+      family: 4, // force IPv4-only DNS resolution
+      connectionTimeout: 5000,
+      greetingTimeout: 5000,
+      socketTimeout: 10000,
       debug: true,
       logger: true,
     });
 
-    console.log("[EmailConfig] SMTP Transporter initialized (Forced IPv4, Port 587)");
+    console.log("[EmailConfig] SMTP Transporter initialized (IPv4 Forced, Port 465)");
 
+    // Best-effort only: verification failure logs a warning but does NOT block startup
     smtpTransporter.verify((error) => {
       if (error) {
-        console.error("❌ [EmailConfig] SMTP Verification Failed:", {
-          message: error.message,
-          code: error.code,
-          stack: error.stack
-        });
+        console.warn("⚠️ [EmailConfig] SMTP Verification Warning (Non-blocking):", error.message);
       } else {
-        console.log(`✅ [EmailConfig] SMTP Server is ready (${host}:${port})`);
+        console.log(`✅ [EmailConfig] SMTP Server is ready (smtp.gmail.com:465)`);
       }
     });
   } else {
