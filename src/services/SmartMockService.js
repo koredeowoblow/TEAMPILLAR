@@ -14,7 +14,7 @@ class SmartMockService {
   /**
    * PURE LOGIC LAYER: Filters the question pool based on student performance.
    */
-  static async getFilteredPool(userId, subjectId, userPerformance) {
+  static async getFilteredPool(userId, subjectId, userPerformance, limit = 20) {
     try {
       // 1. Identify weak topics (accuracy < 60%)
       const weakTopics = userPerformance
@@ -36,8 +36,9 @@ class SmartMockService {
       }
 
       // 3. Build match stage
+      const safeSubjectId = new mongoose.Types.ObjectId(subjectId);
       const matchStage = {
-        subjectId: new mongoose.Types.ObjectId(subjectId),
+        subjectId: safeSubjectId,
       };
 
       if (weakTopics.length > 0) {
@@ -61,19 +62,26 @@ class SmartMockService {
         matchStage._id = { $nin: seenIdSet };
       }
 
-      // 5. Retrieve up to 30 candidate questions
+      // 5. Retrieve candidate questions: get enough candidates (at least 2x limit, min 30) to re-rank
+      const totalAvailable = await questionRepository.count({ subjectId: safeSubjectId });
+      const poolSize = Math.min(
+        Math.max(Number(limit) * 2, 30),
+        totalAvailable
+      );
+
       const pipeline = [
         { $match: matchStage },
-        { $sample: { size: 30 } }
+        { $sample: { size: poolSize } }
       ];
 
       const pool = await questionRepository.aggregate(pipeline);
       
-      if (pool.length < 10) {
+      const targetMin = Math.max(Math.round(Number(limit) / 2), 10);
+      if (pool.length < targetMin) {
         delete matchStage["metadata.topic"];
         const fallbackPipeline = [
           { $match: matchStage },
-          { $sample: { size: 30 } }
+          { $sample: { size: poolSize } }
         ];
         return await questionRepository.aggregate(fallbackPipeline);
       }
@@ -86,10 +94,11 @@ class SmartMockService {
   }
 
   /**
-   * GROQ AI LAYER: Re-ranks and selects the best 10-15 questions.
+   * GROQ AI LAYER: Re-ranks and selects the best questions.
    */
-  static async selectWithAI(userId, subjectId, pool, userPerformance) {
-    if (!groq || pool.length === 0) return pool.slice(0, 15);
+  static async selectWithAI(userId, subjectId, pool, userPerformance, limit = 20) {
+    const targetLimit = Number(limit) || 20;
+    if (!groq || pool.length === 0) return pool.slice(0, targetLimit);
 
     try {
       const weakTopicsData = userPerformance
@@ -104,7 +113,7 @@ ${subjectId}: weak topics are ${weakTopicsData.map(t => t.topic).join(", ")} wit
 Filtered question pool:
 ${JSON.stringify(pool.map(q => ({ _id: q._id, topic: q.metadata?.topic, difficulty: q.metadata?.difficulty })))}
 
-Select the best 10-15 questions that will most effectively target this student's gaps. Return only the array of _id values.`;
+Select the best ${targetLimit} questions that will most effectively target this student's gaps. Return only the array of _id values.`;
 
       const response = await groq.chat.completions.create({
         model: AI_MODELS.PRIMARY,
@@ -121,24 +130,32 @@ Select the best 10-15 questions that will most effectively target this student's
       
       const selectedIds = parsed.questionIds;
       
-      if (!Array.isArray(selectedIds)) throw new Error("Invalid AI response format");
+      let finalQuestions = [];
+      if (Array.isArray(selectedIds)) {
+        finalQuestions = selectedIds
+          .map(id => pool.find(q => String(q._id) === String(id)))
+          .filter(Boolean)
+          .slice(0, targetLimit);
+      }
 
-      const finalQuestions = selectedIds
-        .map(id => pool.find(q => String(q._id) === String(id)))
-        .filter(Boolean)
-        .slice(0, 15);
+      // Bulletproof fallback: If AI didn't select enough questions, fill from the filtered pool
+      if (finalQuestions.length < targetLimit) {
+        const selectedSet = new Set(finalQuestions.map(q => String(q._id)));
+        const additional = pool.filter(q => !selectedSet.has(String(q._id)));
+        finalQuestions = finalQuestions.concat(additional).slice(0, targetLimit);
+      }
 
-      return finalQuestions.length > 0 ? finalQuestions : pool.slice(0, 15);
+      return finalQuestions;
     } catch (error) {
       logger.warn("SmartMock AI Re-ranking Failed, falling back to logic results", { error: error.message });
-      return pool.slice(0, 15);
+      return pool.slice(0, targetLimit);
     }
   }
 
   /**
    * Orchestrates the full hybrid selection process.
    */
-  static async generateSmartMock(userId, subjectId) {
+  static async generateSmartMock(userId, subjectId, limit = 20) {
     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(subjectId)) {
       throw new Error("Invalid userId or subjectId");
     }
@@ -146,9 +163,12 @@ Select the best 10-15 questions that will most effectively target this student's
     const safeUserId = new mongoose.Types.ObjectId(userId);
     const safeSubjectId = new mongoose.Types.ObjectId(subjectId);
 
+    const totalAvailableQuestions = await questionRepository.count({ subjectId: safeSubjectId });
+    const actualLimit = Math.min(Number(limit) || 20, totalAvailableQuestions);
+
     const userPerformance = await TopicPerformance.find({ userId: safeUserId, subjectId: safeSubjectId });
-    const pool = await this.getFilteredPool(safeUserId, safeSubjectId, userPerformance);
-    const selected = await this.selectWithAI(safeUserId, safeSubjectId, pool, userPerformance);
+    const pool = await this.getFilteredPool(safeUserId, safeSubjectId, userPerformance, actualLimit);
+    const selected = await this.selectWithAI(safeUserId, safeSubjectId, pool, userPerformance, actualLimit);
     return selected;
   }
 }

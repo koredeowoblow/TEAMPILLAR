@@ -4,6 +4,7 @@ import { practiceRepository } from "../repository/PracticeRepository.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
 import { toPracticeSessionSummaryDTO } from "../dto/index.js";
+import { CONSTANTS } from "../config/constants.js";
 
 class SmartMockController {
   /**
@@ -11,13 +12,18 @@ class SmartMockController {
    */
   static async generateSmartMock(req, res) {
     const userId = req.user?.id;
-    const { subjectId } = req.body;
+    const { subjectId, limit, duration } = req.body;
 
     if (!userId) throw new AppError("Unauthorized", 401);
     if (!subjectId) throw new AppError("subjectId is required", 400);
 
+    const questionLimit = Math.min(
+      Math.max(Number(limit || duration || 20), 1),
+      CONSTANTS.PAGINATION.MAX_LIMIT,
+    );
+
     // 1. Generate questions using hybrid system
-    const questions = await SmartMockService.generateSmartMock(userId, subjectId);
+    const questions = await SmartMockService.generateSmartMock(userId, subjectId, questionLimit);
 
     // 2. Format questions for response (strip correct answers and explanations)
     const formattedQuestions = questions.map(q => ({
@@ -34,6 +40,7 @@ class SmartMockController {
       sessionStatus: "ACTIVE",
       sessionType: "smart-mock",
       questionIds: formattedQuestions.map(q => q._id),
+      questionLimit,
       startTime: new Date(),
     });
 
