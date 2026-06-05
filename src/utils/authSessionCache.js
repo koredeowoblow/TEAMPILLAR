@@ -1,13 +1,13 @@
 import { LRUCache } from "lru-cache";
 
 const sessionCache = new LRUCache({
-  max: 5000,
-  ttl: 60 * 1000,
+  max: 2000,
+  ttl: 5 * 1000, // Reduced from 60s to 5s for near-instant revocation
   updateAgeOnGet: false,
 });
 
 const touchThrottleCache = new LRUCache({
-  max: 10000,
+  max: 5000,
   ttl: 30 * 1000,
   updateAgeOnGet: false,
 });

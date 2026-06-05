@@ -536,7 +536,10 @@ class PracticeService {
   }
 
   static async getSessionResult(sessionId, userId) {
-    const session = await practiceRepository.findById(sessionId, ["subjectId"]);
+    const session = await (await import("../models/PracticeSessionModel.js")).default.findById(sessionId)
+      .populate("subjectId")
+      .populate("responses.questionId");
+
     if (!session) throw new AppError("Not found", 404);
 
     // Authorization Check: Ensure user owns the session
@@ -547,47 +550,10 @@ class PracticeService {
     // Convert to plain JS object so we can attach computed fields
     const result = session.toObject ? session.toObject() : { ...session };
 
-    // Enrich responses with full question data for the review UI
-    if (result.responses && result.responses.length > 0) {
-      const questionIds = result.responses.map((r) => r.questionId);
-      const questions = await questionRepository.find({
-        _id: { $in: questionIds },
-      });
-      const qMap = new Map(questions.map((q) => [String(q._id), q]));
-
-      // result.questions = result.responses.map(r => {
-      //   const q = qMap.get(String(r.questionId));
-      //   if (!q) return null;
-
-      //   const correctOpt = q.options?.find(o => o.isCorrect);
-      //   const correctIndex = q.options?.findIndex(o => o.isCorrect) ?? -1;
-      //   const selectedOpt = q.options?.find(o => o.id === r.selectedOption);
-      //   const userIndex = q.options?.findIndex(o => o.id === r.selectedOption) ?? -1;
-      //   const isCorrect = selectedOpt?.isCorrect === true;
-
-      //   return {
-      //     id: String(q._id),
-      //     _id: String(q._id),
-      //     question: q.content?.text || q.content,
-      //     text: q.content?.text || q.content,
-      //     options: q.options?.map(o => o.text) || [],
-      //     correctAnswer: correctOpt?.text || null,
-      //     correctIndex,
-      //     userAnswer: selectedOpt?.text || r.selectedOption,
-      //     userIndex,
-      //     isCorrect,
-      //     metadata: q.metadata || {},
-      //     explanation: q.explanation || null,
-      //   };
-      // }).filter(Boolean);
-
-      // ADDED TO ENABLE PASSAGE VIA DTO, DTO DOES THE ENRICHING. CAN BE REVERTED BACK TO FORMER IF IT FAILS
-      result.questions = result.responses
-        .map((r) => qMap.get(String(r.questionId)) ?? null)
-        .filter(Boolean);
-    } else {
-      result.questions = [];
-    }
+    // Map populated questionId back to questions array for DTO compatibility
+    result.questions = (result.responses ?? [])
+      .map(r => r.questionId)
+      .filter(Boolean);
 
     return result;
   }

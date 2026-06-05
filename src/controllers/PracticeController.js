@@ -134,14 +134,9 @@ class PracticeController {
     const userId = req.user?.id;
     const session = await PracticeService.getSessionResult(id, userId);
 
-    const questionsMap = new Map(
-      (session.questions ?? []).map((q) => [String(q._id ?? q.id), q]),
-    );
-    // added to fetch question map and prevent runtime crash
-
     return sendSuccess(res, {
       message: "Session retrieved",
-      data: toPracticeSessionResultDTO(session, questionsMap),
+      data: toPracticeSessionResultDTO(session),
       statusCode: 200,
     });
   }

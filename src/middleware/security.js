@@ -16,6 +16,7 @@ const securityHeaders = helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https:"]
     },
   },
   crossOriginEmbedderPolicy: false,
@@ -25,6 +26,7 @@ const securityHeaders = helmet({
     preload: true,
   },
   xContentTypeOptions: true,
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
 });
 
 function isProductionEnvironment() {

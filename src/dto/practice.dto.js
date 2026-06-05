@@ -45,9 +45,14 @@ export function toPracticeSessionSummaryDTO(session) {
  *
  * Use in: PracticeController.submit, PracticeController.getResult
  */
-export function toPracticeSessionResultDTO(session, questionsMap = new Map()) {
+export function toPracticeSessionResultDTO(session) {
   if (!session) return null;
   const s = session.toObject ? session.toObject() : session;
+
+  // Use session.questions if they were populated/attached, otherwise fallback to empty map
+  const questionsMap = new Map(
+    (s.questions ?? []).map((q) => [String(q._id ?? q.id), q])
+  );
 
   const enrichedResponses = (s.responses ?? []).map((r) => {
     const q = questionsMap.get(String(r.questionId));

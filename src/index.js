@@ -79,11 +79,14 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow server-to-server or requests without Origin (like standard mobile apps)
+    // Allow server-to-server or requests without Origin
     if (!origin) return callback(null, true);
+    
+    const isLocalhost = /^http:\/\/localhost(:\d+)?$/.test(origin);
+    
     if (
       allowedOrigins.includes(origin) ||
-      (process.env.NODE_ENV !== "production" && origin.includes("localhost"))
+      (process.env.NODE_ENV !== "production" && isLocalhost)
     ) {
       return callback(null, true);
     }
