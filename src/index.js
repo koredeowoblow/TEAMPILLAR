@@ -166,7 +166,17 @@ apiRouter.use("/admin", admin); // Exposes /admin/settings, etc.
 
 // Root
 const rootHandler = measurePerformance(async (_req, res) => {
-  res.status(200).json({ message: "Pillar API is running" });
+  const { getEmailServiceHealth } = await import("./config/email.js");
+  const emailHealth = getEmailServiceHealth();
+
+  res.status(200).json({
+    message: "Pillar API is running",
+    health: {
+      mongodb: mongoConnectionReady ? "healthy" : "unavailable",
+      redis: redisConnectionReady ? "healthy" : "unavailable",
+      email: emailHealth,
+    },
+  });
 }, "GET /");
 
 app.get("/", rootHandler);
