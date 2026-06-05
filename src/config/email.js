@@ -37,13 +37,15 @@ try {
         pass,
       },
       tls: {
-        rejectUnauthorized: false, 
+        // Essential for STARTTLS (port 587) and cloud providers
+        rejectUnauthorized: false,
+        minVersion: "TLSv1.2"
       },
-      connectionTimeout: 15000,
-      greetingTimeout: 15000,
-      socketTimeout: 15000,
-      debug: true, // Enable debug output
-      logger: true, // Log to console
+      connectionTimeout: 20000, // Increased for cloud latency
+      greetingTimeout: 20000,
+      socketTimeout: 20000,
+      debug: true, 
+      logger: true,
     });
 
     console.log("[EmailConfig] SMTP Transporter created. Verifying connection...");
