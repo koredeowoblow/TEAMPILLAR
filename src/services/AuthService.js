@@ -367,12 +367,29 @@ class AuthService {
   }
 
   // ================= SESSIONS =================
-  static async getActiveSessions(userId) {
+  static async getActiveSessions(userId, { page = 1, limit = 10 } = {}) {
     const Auth = (await import("../models/AuthModel.js")).default;
-    return Auth.find({ userId, isLoggedOut: false })
+    const skip = (page - 1) * limit;
+
+    const filter = { userId, isLoggedOut: false };
+    const sessions = await Auth.find(filter)
       .select("deviceInfo ipAddress lastLogin createdAt")
       .sort({ lastLogin: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
+
+    const total = await Auth.countDocuments(filter);
+
+    return {
+      data: sessions,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   static async logoutAllDevices(userId, exceptTokenHash = null) {

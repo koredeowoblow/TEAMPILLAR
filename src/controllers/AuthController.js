@@ -411,7 +411,13 @@ class AuthController {
 
   // ─── GET /auth/sessions ────────────────────────────────────────────────────
   static async getActiveSessions(req, res) {
-    const sessions = await AuthService.getActiveSessions(req.user.id);
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.max(Number.parseInt(req.query.limit, 10) || 10, 1);
+
+    const sessions = await AuthService.getActiveSessions(req.user.id, {
+      page,
+      limit,
+    });
     return sendSuccess(res, {
       message: "Active sessions retrieved",
       data: sessions,
