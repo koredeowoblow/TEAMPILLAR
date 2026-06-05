@@ -1,4 +1,4 @@
-import resend from "../config/email.js";
+import { resend, smtpTransporter } from "../config/email.js";
 import { logger } from "../core/logger.js";
 import EmailLog from "../models/EmailLogModel.js";
 
@@ -135,7 +135,7 @@ class EmailService {
   }
 
   /**
-   * Send a generic email using Resend API
+   * Send a generic email using either SMTP (Nodemailer) or Resend
    * @param {string} to - Recipient email address
    * @param {string} subject - Email subject
    * @param {string} html - HTML content
@@ -144,71 +144,71 @@ class EmailService {
    * @returns {Promise<boolean>}
    */
   static async sendEmail(to, subject, html, textContent = null, template = "generic") {
+    const provider = process.env.EMAIL_PROVIDER || "smtp";
+    const senderEmail = process.env.SMTP_USER || process.env.RESEND_SENDER_EMAIL || "onboarding@resend.dev";
+    const senderName = process.env.RESEND_SENDER_NAME || "Team Pillar";
+
     try {
-      if (!resend) {
-        logger.warn("⚠️ Resend client not initialized. Email skipped.", { to, subject });
-        return false;
+      let result;
+
+      if (provider === "resend") {
+        if (!resend) {
+          logger.warn("⚠️ Resend client not initialized. Falling back to SMTP if available.");
+          if (!smtpTransporter) return false;
+        } else {
+          const { data, error } = await resend.emails.send({
+            from: `${senderName} <${senderEmail}>`,
+            to: [to],
+            subject: subject,
+            html: html,
+            text: textContent,
+          });
+
+          if (error) throw error;
+          result = { messageId: data.id };
+        }
       }
 
-      const senderEmail = process.env.RESEND_SENDER_EMAIL || "onboarding@resend.dev";
-      const senderName = process.env.RESEND_SENDER_NAME || "Team Pillar";
+      // Default or Fallback: SMTP
+      if (!result) {
+        if (!smtpTransporter) {
+          logger.error("❌ No email provider available (SMTP/Resend).");
+          return false;
+        }
 
-      const payload = {
-        from: `${senderName} <${senderEmail}>`,
-        to: [to],
-        subject: subject,
-        html: html,
-      };
-
-      if (textContent) {
-        payload.text = textContent;
-      }
-
-      const { data, error } = await resend.emails.send(payload);
-
-      if (error) {
-        logger.error(`❌ Resend API Error sending to ${to}:`, error);
-        
-        // Log failure to DB
-        await EmailLog.create({
+        const info = await smtpTransporter.sendMail({
+          from: `"${senderName}" <${senderEmail}>`,
           to,
           subject,
-          template,
-          status: "failed",
-          error: error,
-        }).catch(err => logger.error("Failed to create email log", err));
-
-        return false;
+          text: textContent,
+          html,
+        });
+        result = { messageId: info.messageId };
       }
 
-      logger.info(`✅ Email sent to ${to} - Subject: ${subject} - ID: ${data.id}`);
+      logger.info(`✅ Email sent via ${provider} to ${to} - ID: ${result.messageId}`);
 
-      // Log success to DB
       await EmailLog.create({
         to,
         subject,
         template,
         status: "sent",
-        resendId: data.id,
-      }).catch(err => logger.error("Failed to create email log", err));
+        resendId: result.messageId,
+        metadata: { provider },
+      }).catch((err) => logger.error("Failed to create success email log", err));
 
       return true;
     } catch (error) {
-      logger.error(`❌ Failed to send email to ${to}:`, {
-        message: error.message,
-        stack: error.stack,
-      });
+      logger.error(`❌ Failed to send email to ${to} via ${provider}:`, error.message);
 
-      // Log failure to DB
       await EmailLog.create({
         to,
         subject,
         template,
         status: "failed",
-        error: { message: error.message },
-      }).catch(err => logger.error("Failed to create email log", err));
+        error: { message: error.message, provider },
+      }).catch((err) => logger.error("Failed to create failure email log", err));
 
-      // Never crash on email failure
       return false;
     }
   }
