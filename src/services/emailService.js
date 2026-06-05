@@ -12,20 +12,16 @@ class EmailService {
    */
   static async sendEmail(to, subject, html, textContent = null) {
     try {
-      const sendSmtpEmail = new brevo.SendSmtpEmail();
-
-      // Sender information from environment
-      sendSmtpEmail.sender = {
-        name: process.env.BREVO_SENDER_NAME || "Team Pillar",
-        email: process.env.BREVO_SENDER_EMAIL || "team@pillarenergycom",
+      // Use simple object structure for Brevo instead of constructor
+      const sendSmtpEmail = {
+        sender: {
+          name: process.env.BREVO_SENDER_NAME || "Team Pillar",
+          email: process.env.BREVO_SENDER_EMAIL || "team@pillarenergy.com",
+        },
+        to: [{ email: to }],
+        subject: subject,
+        htmlContent: html,
       };
-
-      // Recipient
-      sendSmtpEmail.to = [{ email: to }];
-
-      // Email content
-      sendSmtpEmail.subject = subject;
-      sendSmtpEmail.htmlContent = html;
 
       // Add plain text version if provided
       if (textContent) {
