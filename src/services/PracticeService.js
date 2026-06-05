@@ -337,10 +337,19 @@ class PracticeService {
     return Math.round(Math.min(400, total));
   }
 
-  static async getSubjects({ page = 1, limit = 50 } = {}) {
+  static async getSubjects({ page = 1, limit = 50, userId = null } = {}) {
     const skip = (page - 1) * limit;
-    const total = await Subject.countDocuments({});
-    const subjects = await Subject.find({}).skip(skip).limit(limit).lean();
+    let query = {};
+
+    if (userId) {
+      const user = await userRepository.findById(userId);
+      if (user && user.selectedSubjects && user.selectedSubjects.length > 0) {
+        query = { _id: { $in: user.selectedSubjects } };
+      }
+    }
+
+    const total = await Subject.countDocuments(query);
+    const subjects = await Subject.find(query).skip(skip).limit(limit).lean();
     const mapped = subjects.map((s) => ({
       id: String(s._id),
       name: s.name,

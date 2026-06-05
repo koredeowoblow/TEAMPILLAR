@@ -10,6 +10,11 @@ router.post(
   protectUser,
   tryCatch(StudentController.updateOnboarding),
 );
+router.post(
+  "/me/subjects",
+  protectUser,
+  tryCatch(StudentController.updateSelectedSubjects),
+);
 router.get(
   "/me/dashboard",
   protectUser,

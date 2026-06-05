@@ -39,7 +39,9 @@ class PracticeController {
   static async getSubjects(req, res) {
     const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
     const limit = Math.max(Number.parseInt(req.query.limit, 10) || 50, 1);
-    const result = await PracticeService.getSubjects({ page, limit });
+    const userId = req.user?.id;
+
+    const result = await PracticeService.getSubjects({ page, limit, userId });
     return sendSuccess(res, {
       message: "Subjects retrieved",
       data: { ...result, data: result.data.map(toSubjectDTO) },

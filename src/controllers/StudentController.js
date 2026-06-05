@@ -49,18 +49,67 @@ class StudentController {
     const currentOnboarding =
       existing.onboarding?.toObject?.() ?? existing.onboarding ?? {};
 
+    const subjects = req.body.subjects;
+    if (subjects && Array.isArray(subjects)) {
+      if (subjects.length > 6) {
+        throw new AppError("You can select a maximum of 6 subjects", 400);
+      }
+    }
+
     const updated = await userRepository.updateUser(userId, {
       onboarding: {
         ...currentOnboarding,
         ...req.body,
         completedAt: req.body.studyIntensity ? new Date().toISOString() : currentOnboarding.completedAt,
       },
+      ...(subjects ? { selectedSubjects: subjects, lastSubjectUpdate: new Date() } : {}),
       ...(req.body.targetScore
         ? { stats: { ...(existing.stats?.toObject?.() ?? existing.stats ?? {}), predictedScore: req.body.targetScore } }
         : {}),
     });
     return sendSuccess(res, {
       message: "Onboarding saved",
+      data: toUserDTO(updated),
+      statusCode: 200,
+    });
+  }
+
+  static async updateSelectedSubjects(req, res) {
+    const userId = req.user?.id;
+    const { subjects } = req.body;
+
+    if (!subjects || !Array.isArray(subjects)) {
+      throw new AppError("Subjects array is required", 400);
+    }
+
+    if (subjects.length > 6) {
+      throw new AppError("You can select a maximum of 6 subjects", 400);
+    }
+
+    const user = await userRepository.findById(userId);
+    if (!user) throw new AppError("User not found", 404);
+
+    // Check if the user has updated subjects in the last week
+    if (user.lastSubjectUpdate) {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      if (user.lastSubjectUpdate > oneWeekAgo) {
+        const nextAllowedDate = new Date(user.lastSubjectUpdate);
+        nextAllowedDate.setDate(nextAllowedDate.getDate() + 7);
+        throw new AppError(
+          `You can only change your subjects once a week. Next change allowed after ${nextAllowedDate.toLocaleDateString()}`,
+          403,
+        );
+      }
+    }
+
+    const updated = await userRepository.updateUser(userId, {
+      selectedSubjects: subjects,
+      lastSubjectUpdate: new Date(),
+    });
+
+    return sendSuccess(res, {
+      message: "Subjects updated successfully",
       data: toUserDTO(updated),
       statusCode: 200,
     });

@@ -31,6 +31,8 @@ const UserSchema = new mongoose.Schema(
     proExpiresAt: { type: Date, default: null },
     isActive: { type: Boolean, default: true },
     deactivatedAt: { type: Date, default: null },
+    selectedSubjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subject" }],
+    lastSubjectUpdate: { type: Date, default: null },
     onboarding: { type: Object, default: {} },
     notificationPreferences: {
       emailNotifications: { type: Boolean, default: true },
