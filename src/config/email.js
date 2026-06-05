@@ -17,4 +17,14 @@ try {
   resend = null;
 }
 
+export const getEmailServiceHealth = () => {
+  if (!resend) {
+    return {
+      status: "unavailable",
+      reason: "RESEND_API_KEY missing or initialization failed",
+    };
+  }
+  return { status: "healthy", provider: "resend" };
+};
+
 export default resend;
