@@ -146,7 +146,7 @@ class EmailService {
   static async sendEmail(to, subject, html, textContent = null, template = "generic") {
     const provider = process.env.EMAIL_PROVIDER || "smtp";
     const senderEmail = process.env.SMTP_USER || process.env.RESEND_SENDER_EMAIL || "onboarding@resend.dev";
-    const senderName = process.env.RESEND_SENDER_NAME || "Team Pillar";
+    const senderName = process.env.RESEND_SENDER_NAME || "Pillar";
 
     try {
       let result;
