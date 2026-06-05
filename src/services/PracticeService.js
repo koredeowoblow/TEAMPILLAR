@@ -104,7 +104,7 @@ class PracticeService {
             ),
           };
         }
-        const availableCount = await questionRepository.count(candidateMatchStage);
+        const availableCount = (await questionRepository.count(candidateMatchStage)) || 0;
 
         // Only apply the cross-session exclusion if enough questions remain
         if (availableCount >= Number(limit)) {
@@ -157,14 +157,14 @@ class PracticeService {
 
       // Fallback if weighted pool yields fewer questions than requested
       if (!deterministic && questions.length < limit) {
-        const fallbackLimit = limit - questions.length;
-        const foundIds = questions.map((q) => q._id);
-        const fallbackMatchStage = { subjectId: resolvedSubjectId };
+        let fallbackLimit = limit - questions.length;
+        let foundIds = questions.map((q) => q._id);
+        let fallbackMatchStage = { subjectId: resolvedSubjectId };
         if (difficulty)
           fallbackMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
         if (year) fallbackMatchStage["metadata.year"] = Number(year);
 
-        const allExcluded = [
+        let allExcluded = [
           ...Array.from(excludedIds).map(
             (id) => new mongoose.Types.ObjectId(id),
           ),
@@ -174,13 +174,32 @@ class PracticeService {
           fallbackMatchStage._id = { $nin: allExcluded };
         }
 
-        const fallbackPipeline = [
+        let fallbackPipeline = [
           { $match: fallbackMatchStage },
           { $sample: { size: fallbackLimit } },
         ];
-        const fallbackQuestions =
+        let fallbackQuestions =
           await questionRepository.aggregate(fallbackPipeline);
         questions = questions.concat(fallbackQuestions);
+
+        // Final absolute fallback: Drop ALL filters (difficulty, year, and cross-session excludedIds) 
+        // to guarantee we meet the requested limit if the DB has enough questions.
+        if (questions.length < limit) {
+          fallbackLimit = limit - questions.length;
+          foundIds = questions.map((q) => q._id);
+          fallbackMatchStage = { subjectId: resolvedSubjectId };
+          
+          if (foundIds.length > 0) {
+            fallbackMatchStage._id = { $nin: foundIds };
+          }
+
+          fallbackPipeline = [
+            { $match: fallbackMatchStage },
+            { $sample: { size: fallbackLimit } },
+          ];
+          fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
+          questions = questions.concat(fallbackQuestions);
+        }
       }
 
       // Strip correct answers or add metadata for admins, and slim down response

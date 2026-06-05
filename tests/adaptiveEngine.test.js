@@ -84,6 +84,7 @@ describe("Adaptive Engine & Question Randomization", () => {
 
     userRepository.findById.mockResolvedValue({});
     questionRepository.aggregate.mockResolvedValue([]);
+    questionRepository.count.mockResolvedValue(100);
 
     await PracticeService.getQuestionsForSubject("5f8d0a92d2b5880017a8e5f2", { userId, sessionId, limit: 10 });
 
