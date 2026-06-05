@@ -72,6 +72,9 @@ class PracticeService {
         }
       }
 
+      // Only exclude questions answered in other sessions in the last 7 days
+      // if the available pool would still be >= the requested limit after exclusion.
+      // This prevents the pool from being starved when the question bank is small.
       if (userId) {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -82,15 +85,32 @@ class PracticeService {
           sessionStatus: "COMPLETED",
         });
 
-        // Ideally we only exclude correct ones, but since we don't store isCorrect in responses array directly,
-        // we'll exclude all recently answered for now, or assume this serves the purpose of not repeating.
+        const recentlyAnsweredIds = new Set();
         recentSessions.forEach((session) => {
           if (session.responses) {
             session.responses.forEach((r) =>
-              excludedIds.add(r.questionId.toString()),
+              recentlyAnsweredIds.add(r.questionId.toString()),
             );
           }
         });
+
+        // Check how many questions would still be available after applying the cross-session exclusion
+        const potentialExcluded = new Set([...excludedIds, ...recentlyAnsweredIds]);
+        const candidateMatchStage = { ...matchStage };
+        if (potentialExcluded.size > 0) {
+          candidateMatchStage._id = {
+            $nin: Array.from(potentialExcluded).map(
+              (id) => new mongoose.Types.ObjectId(id),
+            ),
+          };
+        }
+        const availableCount = await questionRepository.count(candidateMatchStage);
+
+        // Only apply the cross-session exclusion if enough questions remain
+        if (availableCount >= Number(limit)) {
+          recentlyAnsweredIds.forEach((id) => excludedIds.add(id));
+        }
+        // else: skip 7-day exclusion — within-session exclusion (excludedIds) still applies
       }
 
       if (excludedIds.size > 0) {
@@ -245,7 +265,7 @@ class PracticeService {
     };
   }
 
-  static async startSession(userId, subjectId) {
+  static async startSession(userId, subjectId, questionLimit = 20) {
     const user = await userRepository.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
@@ -259,6 +279,7 @@ class PracticeService {
       subjectId: resolvedSubjectId,
       sessionStatus: "ACTIVE",
       startTime: new Date(),
+      questionLimit: Math.max(1, Number(questionLimit) || 20),
     });
     return session;
   }

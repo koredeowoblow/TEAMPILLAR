@@ -25,6 +25,7 @@ export function toPracticeSessionSummaryDTO(session) {
     subjectId:     String(s.subjectId),
     sessionStatus: s.sessionStatus,
     score:         s.score ?? 0,
+    questionLimit: s.questionLimit ?? 20,
     analytics: {
       accuracy:         s.analytics?.accuracy         ?? 0,
       speedPerQuestion: s.analytics?.speedPerQuestion ?? 0,

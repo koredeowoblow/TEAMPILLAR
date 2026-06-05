@@ -37,6 +37,10 @@ class QuestionRepository {
   async aggregate(pipeline = []) {
     return await Question.aggregate(pipeline).exec();
   }
+
+  async count(filter = {}) {
+    return await Question.countDocuments(filter).exec();
+  }
 }
 
 export const questionRepository = new QuestionRepository();

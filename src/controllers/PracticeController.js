@@ -6,6 +6,7 @@ import Subject from "../models/SubjectModel.js";
 import mongoose from "mongoose";
 import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
+import { CONSTANTS } from "../config/constants.js";
 import {
   toQuestionDTO,
   toPracticeSessionResultDTO,
@@ -72,22 +73,6 @@ class PracticeController {
     });
   }
 
-  // static async submit(req, res) {
-  //   const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
-  //   if (!sessionId || !responses)
-  //     throw new AppError("sessionId and responses are required", 400);
-  //   const result = await PracticeService.submitSession(sessionId, {
-  //     responses,
-  //     tabSwitches,
-  //     endTime,
-  //     ipAddress,
-  //   });
-  //   return sendSuccess(res, {
-  //     message: "Session graded",
-  //     data: toPracticeSessionResultDTO(session, questionsMap),
-  //     statusCode: 200,
-  //   });
-  //}
 
   static async submit(req, res) {
     const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
@@ -120,9 +105,9 @@ class PracticeController {
     const userId = req.user?.id;
     if (!userId) throw new AppError("Unauthorized", 401);
 
-    const page  = Math.max(Number.parseInt(req.query.page,  10) || 1, 1);
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
     const limit = Math.max(Number.parseInt(req.query.limit, 10) || 20, 1);
-    const skip  = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
     const sessions = await practiceRepository.find(
       { userId, sessionStatus: "COMPLETED" },
@@ -160,10 +145,15 @@ class PracticeController {
 
   static async startSession(req, res) {
     const userId = req.user?.id;
-    const { subjectId } = req.body;
+    const { subjectId, limit, duration } = req.body;
     if (!userId) throw new AppError("Unauthorized", 401);
     if (!subjectId) throw new AppError("subjectId is required", 400);
-    const session = await PracticeService.startSession(userId, subjectId);
+    // Accept either `limit` or `duration` from the frontend payload
+    const questionLimit = Math.min(
+      Math.max(Number(limit || duration || 20), 1),
+      CONSTANTS.PAGINATION.MAX_LIMIT,
+    );
+    const session = await PracticeService.startSession(userId, subjectId, questionLimit);
     return sendSuccess(res, {
       message: "Session started",
       data: toPracticeSessionSummaryDTO(session),
