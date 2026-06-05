@@ -26,29 +26,25 @@ try {
   console.log(`[EmailConfig] Attempting SMTP init with host: ${host}, port: ${port}, user: ${user}`);
 
   if (host && port && user && pass) {
-    const isSecure = port === "465";
-    
+    // Optimized Gmail Configuration for Render/Cloud
     smtpTransporter = nodemailer.createTransport({
-      host,
-      port: Number.parseInt(port),
-      secure: isSecure, 
+      service: "gmail",
       auth: {
         user,
         pass,
       },
       tls: {
-        // Essential for STARTTLS (port 587) and cloud providers
         rejectUnauthorized: false,
-        minVersion: "TLSv1.2"
       },
-      connectionTimeout: 20000, // Increased for cloud latency
+      // Force IPv4 to avoid ENETUNREACH issues with IPv6 on Render
+      connectionTimeout: 20000,
       greetingTimeout: 20000,
       socketTimeout: 20000,
-      debug: true, 
+      debug: true,
       logger: true,
     });
 
-    console.log("[EmailConfig] SMTP Transporter created. Verifying connection...");
+    console.log("[EmailConfig] SMTP Transporter initialized using Gmail Service (Preferred IPv4)");
 
     smtpTransporter.verify((error) => {
       if (error) {
