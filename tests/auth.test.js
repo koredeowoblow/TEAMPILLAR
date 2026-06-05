@@ -100,7 +100,7 @@ describe("Auth Flow & Protection", () => {
         .send({ name: "Test", email: "exist@test.com", password: "Password@123" });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toMatch(/Invalid credentials/i);
+      expect(res.body.message).toMatch(/Email already registered/i);
     });
   });
 

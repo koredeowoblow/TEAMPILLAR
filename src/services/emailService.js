@@ -1,61 +1,215 @@
-import brevoClient from "../config/email.js";
+import resend from "../config/email.js";
+import { logger } from "../core/logger.js";
+import EmailLog from "../models/EmailLogModel.js";
 
 class EmailService {
   /**
-   * Send a generic email using Brevo API
+   * Internal helper to generate a consistent HTML wrapper for emails
+   * @param {string} content - Inner HTML content
+   * @param {string} title - Page title
+   * @param {string} preheader - Optional text seen in email preview
+   * @returns {string}
+   */
+  static _getBaseTemplate(content, title, preheader = "") {
+    const colors = {
+      deep: "#002452",
+      blue: "#1B3A6B",
+      amber: "#F5A623",
+      amberBright: "#FEAE2C",
+      surface: "#f8f9ff",
+      text: "#0b1c30",
+      muted: "#44474f",
+      white: "#ffffff",
+    };
+
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${title}</title>
+          <!--[if mso]>
+          <noscript>
+              <xml>
+                  <o:OfficeDocumentSettings>
+                      <o:PixelsPerInch>96</o:PixelsPerInch>
+                  </o:OfficeDocumentSettings>
+              </xml>
+          </noscript>
+          <![endif]-->
+          <style>
+              body { 
+                  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+                  background-color: ${colors.surface}; 
+                  margin: 0; 
+                  padding: 0; 
+                  -webkit-font-smoothing: antialiased;
+              }
+              .container { 
+                  max-width: 600px; 
+                  margin: 40px auto; 
+                  background-color: ${colors.white}; 
+                  border-radius: 24px; 
+                  overflow: hidden; 
+                  box-shadow: 0 4px 20px rgba(0, 36, 82, 0.05);
+              }
+              .header { 
+                  background-color: ${colors.deep}; 
+                  padding: 40px 20px; 
+                  text-align: center;
+                  background-image: linear-gradient(135deg, ${colors.deep} 0%, ${colors.blue} 100%);
+              }
+              .logo-text { 
+                  color: ${colors.white}; 
+                  font-size: 28px; 
+                  font-weight: 800; 
+                  letter-spacing: -0.5px;
+                  margin: 0;
+              }
+              .logo-accent { color: ${colors.amberBright}; }
+              .content { 
+                  padding: 40px; 
+                  color: ${colors.text}; 
+                  line-height: 1.6;
+              }
+              .button { 
+                  display: inline-block; 
+                  background-color: ${colors.amberBright}; 
+                  color: ${colors.deep} !important; 
+                  padding: 16px 32px; 
+                  border-radius: 14px; 
+                  text-decoration: none; 
+                  font-weight: 800; 
+                  font-size: 16px; 
+                  margin: 24px 0;
+                  box-shadow: 0 4px 12px rgba(254, 174, 44, 0.2);
+              }
+              .footer { 
+                  padding: 30px; 
+                  text-align: center; 
+                  color: ${colors.muted}; 
+                  font-size: 13px; 
+                  background-color: #f1f4f9;
+              }
+              .otp-box {
+                  background-color: #f1f4f9;
+                  border: 2px dashed ${colors.amberBright};
+                  border-radius: 16px;
+                  padding: 24px;
+                  text-align: center;
+                  margin: 24px 0;
+              }
+              .otp-code {
+                  font-size: 42px;
+                  font-weight: 800;
+                  letter-spacing: 8px;
+                  color: ${colors.deep};
+                  margin: 0;
+              }
+              h1 { font-size: 24px; font-weight: 800; margin-top: 0; color: ${colors.deep}; }
+              p { margin-bottom: 20px; font-size: 16px; }
+          </style>
+      </head>
+      <body>
+          <div style="display: none; max-height: 0px; overflow: hidden;">${preheader}</div>
+          <div class="container">
+              <div class="header">
+                  <h1 class="logo-text">Pillar<span class="logo-accent">.</span></h1>
+              </div>
+              <div class="content">
+                  ${content}
+              </div>
+              <div class="footer">
+                  <p style="margin: 0 0 10px 0;">&copy; ${new Date().getFullYear()} Team Pillar. All rights reserved.</p>
+                  <p style="margin: 0;">Empowering your academic journey with AI.</p>
+                  <div style="margin-top: 20px;">
+                      <a href="#" style="color: ${colors.deep}; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+                      <a href="#" style="color: ${colors.deep}; text-decoration: none; margin: 0 10px;">Help Center</a>
+                  </div>
+              </div>
+          </div>
+      </body>
+      </html>
+    `;
+  }
+
+  /**
+   * Send a generic email using Resend API
    * @param {string} to - Recipient email address
    * @param {string} subject - Email subject
    * @param {string} html - HTML content
    * @param {string} textContent - Plain text content (optional)
+   * @param {string} template - Template name for logging
    * @returns {Promise<boolean>}
    */
-  static async sendEmail(to, subject, html, textContent = null) {
+  static async sendEmail(to, subject, html, textContent = null, template = "generic") {
     try {
-      // Use simple object structure for Brevo instead of constructor
-      const sendSmtpEmail = {
-        sender: {
-          name: process.env.BREVO_SENDER_NAME || "Team Pillar",
-          email: process.env.BREVO_SENDER_EMAIL || "team@pillarenergy.com",
-        },
-        to: [{ email: to }],
+      if (!resend) {
+        logger.warn("⚠️ Resend client not initialized. Email skipped.", { to, subject });
+        return false;
+      }
+
+      const senderEmail = process.env.RESEND_SENDER_EMAIL || "onboarding@resend.dev";
+      const senderName = process.env.RESEND_SENDER_NAME || "Team Pillar";
+
+      const payload = {
+        from: `${senderName} <${senderEmail}>`,
+        to: [to],
         subject: subject,
-        htmlContent: html,
+        html: html,
       };
 
-      // Add plain text version if provided
       if (textContent) {
-        sendSmtpEmail.textContent = textContent;
+        payload.text = textContent;
       }
 
-      // Send email via Brevo API
-      if (!brevoClient) {
-        throw new Error("Brevo client not initialized. Check BREVO_API_KEY.");
-      }
-      const response = await brevoClient.sendTransacEmail(sendSmtpEmail);
+      const { data, error } = await resend.emails.send(payload);
 
-      console.log(
-        `✅ Email sent to ${to} - Subject: ${subject} - Message ID: ${response.messageId}`,
-      );
+      if (error) {
+        logger.error(`❌ Resend API Error sending to ${to}:`, error);
+        
+        // Log failure to DB
+        await EmailLog.create({
+          to,
+          subject,
+          template,
+          status: "failed",
+          error: error,
+        }).catch(err => logger.error("Failed to create email log", err));
+
+        return false;
+      }
+
+      logger.info(`✅ Email sent to ${to} - Subject: ${subject} - ID: ${data.id}`);
+
+      // Log success to DB
+      await EmailLog.create({
+        to,
+        subject,
+        template,
+        status: "sent",
+        resendId: data.id,
+      }).catch(err => logger.error("Failed to create email log", err));
+
       return true;
     } catch (error) {
-      const status = error?.response?.status;
-      console.error(`❌ Failed to send email to ${to}:`, error.message);
-      if (status) {
-        console.error("Brevo HTTP Status:", status);
-      }
+      logger.error(`❌ Failed to send email to ${to}:`, {
+        message: error.message,
+        stack: error.stack,
+      });
 
-      const brevoBody =
-        error?.response?.data ?? error?.response?.body ?? error?.body;
-      if (brevoBody) {
-        console.error("Brevo API Error:", brevoBody);
-      }
+      // Log failure to DB
+      await EmailLog.create({
+        to,
+        subject,
+        template,
+        status: "failed",
+        error: { message: error.message },
+      }).catch(err => logger.error("Failed to create email log", err));
 
-      if (status === 401) {
-        console.error(
-          "Brevo auth failed (401). Check that BREVO_API_KEY is a valid Brevo API key and has Transactional Email permissions.",
-        );
-      }
-      throw new Error(`Email sending failed: ${error.message}`);
+      // Never crash on email failure
+      return false;
     }
   }
 
@@ -67,202 +221,181 @@ class EmailService {
    * @returns {Promise<boolean>}
    */
   static async sendEmailVerificationOTP(to, otp, name = "User") {
-    const html = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Verify Your Email - Team Pillar</title>
-                <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
-                    .content { background: #ffffff; padding: 40px 30px; border: 1px solid #e1e5e9; border-top: none; }
-                    .otp-container { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; margin: 25px 0; border-radius: 12px; text-align: center; }
-                    .otp-code { font-size: 36px; font-weight: bold; letter-spacing: 8px; margin: 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
-                    .verification-note { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745; }
-                    .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; border-top: 1px solid #e1e5e9; padding-top: 20px; }
-                    .btn { background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 15px 0; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>🎉 Welcome to Team Pillar!</h1>
-                    <p>We're excited to have you join our community</p>
-                </div>
-                <div class="content">
-                    <p>Hello <strong>${name}</strong>,</p>
-                    <p>Thank you for registering with Team Pillar App! To complete your registration and verify your email address, please use the verification code below:</p>
-                    
-                    <div class="otp-container">
-                        <p style="margin: 0; font-size: 16px;">Your verification code is:</p>
-                        <div class="otp-code">${otp}</div>
-                        <p style="margin: 0; font-size: 14px; opacity: 0.9;">Enter this code in the app to verify your email</p>
-                    </div>
-                    
-                    <div class="verification-note">
-                        <h3 style="margin-top: 0; color: #28a745;">⏰ Important Information:</h3>
-                        <ul style="margin: 0; padding-left: 20px;">
-                            <li>This verification code will expire in <strong>10 minutes</strong></li>
-                            <li>For your security, don't share this code with anyone</li>
-                            <li>If you didn't register for Team Pillar, please ignore this email</li>
-                        </ul>
-                    </div>
-                    
-                    <p>Once verified, you'll have full access to all Team Pillar features including:</p>
-                 
-                    
-                    <p>Need help? Contact our support team - we're here to help!</p>
-                    
-                    <div class="footer">
-                        <p><strong>Team Pillar App Team</strong></p>                                                                            
-                        <p style="margin-top: 15px; font-size: 12px;">This is an automated message, please do not reply to this email.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-        `;
+    const content = `
+      <h1>Verify your email</h1>
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>Welcome to Team Pillar! We're excited to have you on board. To complete your registration and start your academic journey, please use the verification code below:</p>
+      
+      <div class="otp-box">
+          <p style="margin: 0 0 10px 0; font-weight: 600; color: #44474f; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
+          <h2 class="otp-code">${otp}</h2>
+      </div>
+      
+      <p>This code is valid for <strong>10 minutes</strong>. For your security, please do not share this code with anyone.</p>
+      
+      <p>If you didn't create an account with Team Pillar, you can safely ignore this email.</p>
+    `;
+
+    const html = this._getBaseTemplate(
+      content,
+      "Verify Your Email - Team Pillar",
+      `Your verification code is ${otp}`,
+    );
 
     const textContent = `
-            Welcome to Team Pillar, ${name}!
-            
-            Your email verification code is: ${otp}
-            
-            This code will expire in 10 minutes.
-            
-            Enter this code in the app to verify your email address and complete your registration.
-            
-            Thank you for joining our community!
-            
-            Team Pillar App Team
-        `;
+      Welcome to Team Pillar, ${name}!
+      Your email verification code is: ${otp}
+      This code will expire in 10 minutes.
+    `;
 
     return this.sendEmail(
       to,
-      "Verify Your Email - Team Pillar App",
+      "Verify Your Email - Team Pillar",
       html,
       textContent,
+      "otp",
     );
   }
 
   /**
-   * Send a token email (e.g., password reset, verification)
+   * Send a password reset email
+   * @param {string} to - Recipient email
+   * @param {string} token - Reset token/OTP
+   * @returns {Promise<boolean>}
+   */
+  static async sendPasswordResetEmail(to, token) {
+    const content = `
+      <h1>Reset your password</h1>
+      <p>Hello,</p>
+      <p>We received a request to reset your password for your Team Pillar account. Use the code below to proceed with the reset:</p>
+      
+      <div class="otp-box">
+          <p style="margin: 0 0 10px 0; font-weight: 600; color: #44474f; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Your Reset Code</p>
+          <h2 class="otp-code">${token}</h2>
+      </div>
+      
+      <p>This code will expire in <strong>15 minutes</strong>. If you didn't request a password reset, you can safely ignore this email — your account is still secure.</p>
+    `;
+
+    const html = this._getBaseTemplate(
+      content,
+      "Password Reset - Team Pillar",
+      `Your password reset code is ${token}`,
+    );
+
+    const textContent = `
+      Hello,
+      Your password reset code is: ${token}
+      This code will expire in 15 minutes.
+      Thank you for using Team Pillar!
+    `;
+
+    return this.sendEmail(to, "Password Reset - Team Pillar", html, textContent, "password_reset");
+  }
+
+  /**
+   * Send a token email (deprecated - use sendPasswordResetEmail or specific methods)
    * @param {string} to - Recipient email
    * @param {string} token - Token/code to send
    * @param {string} purpose - Optional purpose description
    * @returns {Promise<boolean>}
    */
   static async sendTokenEmail(to, token, purpose = "Password Reset") {
-    const html = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>${purpose} - Team Pillar </title>
-                <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background: #4F46E5; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-                    .token { background: #4F46E5; color: white; padding: 15px 20px; font-size: 24px; font-weight: bold; text-align: center; border-radius: 6px; margin: 20px 0; letter-spacing: 2px; }
-                    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>Team Pillar App</h1>
-                </div>
-                <div class="content">
-                    <p>Hello,</p>
-                    <p>Your ${purpose.toLowerCase()} code is:</p>
-                    <div class="token">${token}</div>
-                    <p><strong>Important:</strong> This code will expire in 10 minutes for security reasons.</p>
-                    <p>If you didn't request this ${purpose.toLowerCase()}, please ignore this email or contact our support team.</p>
-                    <div class="footer">
-                        <p>Thank you for using Team Pillar App!</p>
-                        <p>This is an automated message, please do not reply to this email.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-        `;
-
-    const textContent = `
-            Hello,
-            
-            Your ${purpose} code is: ${token}
-            
-            This code will expire in 10 minutes.
-            
-            Thank you for using Team Pillar App!
-        `;
-
-    return this.sendEmail(to, `${purpose} - Team Pillar`, html, textContent);
+    if (purpose === "Password Reset") {
+      return this.sendPasswordResetEmail(to, token);
+    }
+    return this.sendEmail(to, `${purpose} - Team Pillar`, `<p>Your ${purpose} code is: <b>${token}</b></p>`, `Your ${purpose} code is: ${token}`, "token");
   }
 
   /**
-   * Send a welcome/onboarding email
+   * Send a welcome email
    * @param {string} to - Recipient email
    * @param {string} name - User name
    * @returns {Promise<boolean>}
    */
   static async sendWelcomeEmail(to, name) {
-    const html = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Welcome to Team Pillar</title>
-                <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background: #4F46E5; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-                    .welcome-message { background: white; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #4F46E5; }
-                    .cta-button { display: inline-block; background: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-                    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>Welcome to Team Pillar!</h1>
-                </div>
-                <div class="content">
-                    <p>Hello <strong>${name}</strong>,</p>
-                    <div class="welcome-message">
-                        <p>🎉 <strong>Welcome to Team Pillar!</strong> We're absolutely thrilled to have you join our community.</p>
-                        <p>Your account has been successfully created</p>
-                    </div>
-                    <p><strong>What's next?</strong></p>
-                    <div class="footer">
-                        <p>Thank you for joining us on this spiritual journey!</p>
-                        <p><strong>The Team Pillar Team</strong></p>
-                        <p>This is an automated message, please do not reply to this email.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-        `;
+    const content = `
+      <h1>Welcome to the Pillar Family! 🎉</h1>
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>We're absolutely thrilled to have you join our community of ambitious students. Team Pillar is designed to give you the ultimate edge in your academic preparations.</p>
+      
+      <p><strong>What can you do now?</strong></p>
+      <ul style="padding-left: 20px; margin-bottom: 24px;">
+          <li style="margin-bottom: 12px;"><strong>Practice Smart:</strong> Take JAMB/UTME mock tests with our adaptive engine.</li>
+          <li style="margin-bottom: 12px;"><strong>AI Tutor:</strong> Get instant explanations for complex topics.</li>
+          <li style="margin-bottom: 12px;"><strong>Study Planner:</strong> Let us organize your schedule based on your target score.</li>
+      </ul>
+
+      <div style="text-align: center;">
+          <a href="${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard" class="button">Go to Dashboard</a>
+      </div>
+      
+      <p>We're here to support you every step of the way. If you have any questions, just reply to this email.</p>
+    `;
+
+    const html = this._getBaseTemplate(
+      content,
+      "Welcome to Team Pillar!",
+      "🎉 We're absolutely thrilled to have you join our community!",
+    );
 
     const textContent = `
-            Hello ${name},
-            
-            Welcome to Team Pillar! We're excited to have you on board.
-            
-            Your account has been successfully created, and you're now part of our growing community.
-            
-            
-            Thank you for joining us!
-            
-            The Team Pillar Team
-        `;
+      Hello ${name},
+      Welcome to Team Pillar! We're excited to have you on board.
+      Your account has been successfully created. You can now start using all our features to boost your academic performance.
+      Visit your dashboard at: ${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard
+      The Team Pillar Team
+    `;
 
-    return this.sendEmail(
-      to,
-      "Welcome to Team Pillar    - Let's Get Started!",
-      html,
-      textContent,
+    return this.sendEmail(to, "Welcome to Team Pillar!", html, textContent, "welcome");
+  }
+
+  /**
+   * Send payment confirmation email
+   * @param {string} to - Recipient email
+   * @param {string} name - User name
+   * @param {object} paymentDetails - Payment info
+   * @returns {Promise<boolean>}
+   */
+  static async sendPaymentConfirmation(to, name, paymentDetails) {
+    const { planName, amount, currency = "NGN" } = paymentDetails;
+    const content = `
+      <h1>Payment Confirmed! 🚀</h1>
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>Great news! Your payment for the <strong>${planName}</strong> has been successfully processed. You now have full access to all premium features.</p>
+      
+      <div style="background-color: #f8f9ff; border-radius: 16px; padding: 24px; margin: 24px 0;">
+          <h3 style="margin: 0 0 16px 0; color: #002452; font-size: 18px;">Transaction Summary</h3>
+          <table width="100%" style="border-collapse: collapse;">
+              <tr>
+                  <td style="padding: 8px 0; color: #44474f;">Plan:</td>
+                  <td style="padding: 8px 0; text-align: right; font-weight: 700;">${planName}</td>
+              </tr>
+              <tr>
+                  <td style="padding: 8px 0; color: #44474f;">Amount:</td>
+                  <td style="padding: 8px 0; text-align: right; font-weight: 700;">${currency} ${amount.toLocaleString()}</td>
+              </tr>
+              <tr>
+                  <td style="padding: 8px 0; color: #44474f;">Status:</td>
+                  <td style="padding: 8px 0; text-align: right; font-weight: 700; color: #27AE60;">Successful</td>
+              </tr>
+          </table>
+      </div>
+
+      <div style="text-align: center;">
+          <a href="${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard" class="button">Start Learning Now</a>
+      </div>
+      
+      <p>Thank you for choosing Team Pillar to help you reach your academic goals!</p>
+    `;
+
+    const html = this._getBaseTemplate(
+      content,
+      "Payment Confirmation - Team Pillar",
+      `Your payment for ${planName} was successful!`,
     );
+
+    return this.sendEmail(to, "Payment Confirmation - Team Pillar", html, null, "payment");
   }
 }
 

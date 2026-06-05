@@ -2,6 +2,9 @@ import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
 import fetch from "node-fetch";
 import crypto from "crypto";
+import EmailService from "../services/emailService.js";
+import { logger } from "../core/logger.js";
+import User from "../models/UserModel.js";
 
 const PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
 
@@ -105,6 +108,28 @@ class BillingController {
     }
 
     const event = req.body;
+
+    if (event.event === "charge.success") {
+      const { customer, amount, currency } = event.data;
+      const email = customer.email;
+
+      setImmediate(async () => {
+        try {
+          const user = await User.findOne({ email });
+          await EmailService.sendPaymentConfirmation(email, user?.name || "Customer", {
+            planName: "Pro Plan", // This should ideally be derived from metadata
+            amount: amount / 100,
+            currency,
+          });
+        } catch (err) {
+          logger.error("Failed to send payment confirmation email", {
+            email,
+            message: err.message,
+          });
+        }
+      });
+    }
+
     return sendSuccess(res, {
       message: "Webhook received",
       data: event,

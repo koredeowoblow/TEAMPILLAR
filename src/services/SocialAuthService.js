@@ -4,6 +4,8 @@ import { AppError } from "../utils/AppError.js";
 import { userRepository } from "../repository/UserRepository.js";
 import AuthRepository from "../repository/AuthRepository.js";
 import AuthService from "./AuthService.js";
+import EmailService from "./emailService.js";
+import { logger } from "../core/logger.js";
 
 const authRepository = new AuthRepository();
 
@@ -62,6 +64,15 @@ class SocialAuthService {
             : null,
         photoUrl: payload.picture || undefined,
       });
+
+      // Send welcome email for new social users
+      setImmediate(async () => {
+        try {
+          await EmailService.sendWelcomeEmail(user.email, user.name);
+        } catch (err) {
+          logger.error("Welcome email failed for social user", { message: err.message });
+        }
+      });
     } else if (!user.googleId) {
       user = await userRepository.updateUser(user._id, {
         googleId: payload.sub,
@@ -106,6 +117,15 @@ class SocialAuthService {
         appleId,
         emailVerified: true,
         emailVerifiedAt: new Date(),
+      });
+
+      // Send welcome email for new social users
+      setImmediate(async () => {
+        try {
+          await EmailService.sendWelcomeEmail(user.email, user.name);
+        } catch (err) {
+          logger.error("Welcome email failed for social user", { message: err.message });
+        }
       });
     } else if (!user.appleId) {
       user = await userRepository.updateUser(user._id, { appleId });

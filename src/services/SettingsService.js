@@ -1,6 +1,9 @@
 import { AppError } from "../utils/AppError.js";
 import { userRepository } from "../repository/UserRepository.js";
 import CloudinaryService from "./CloudinaryService.js";
+import EmailService from "./emailService.js";
+import OTPService from "./OTPService.js";
+import { logger } from "../core/logger.js";
 
 const ALLOWED_PROFILE_FIELDS = ["name", "username", "email", "language"];
 const NOTIFICATION_FIELDS = [
@@ -95,6 +98,19 @@ class SettingsService {
       if (email !== user.email) {
         payload.emailVerified = false;
         payload.emailVerifiedAt = null;
+
+        // Trigger verification email for new email address
+        setImmediate(async () => {
+          try {
+            const otp = await OTPService.storeOTP(email, "email_verification", 10);
+            await EmailService.sendEmailVerificationOTP(email, otp, user.name || "User");
+          } catch (err) {
+            logger.error("Failed to send verification email for email change", {
+              email,
+              message: err.message,
+            });
+          }
+        });
       }
     }
 
