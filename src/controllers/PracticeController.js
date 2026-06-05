@@ -14,6 +14,9 @@ import {
   toPracticeSessionSummaryDTO,
 } from "../dto/index.js";
 
+// Maximum question count allowed for free-tier users
+const FREE_QUESTION_LIMIT = 20;
+
 class PracticeController {
   static async getQuestions(req, res) {
     const { subjectId, limit, difficulty, year, sessionId } = req.query;
@@ -153,6 +156,16 @@ class PracticeController {
       Math.max(Number(limit || duration || 20), 1),
       CONSTANTS.PAGINATION.MAX_LIMIT,
     );
+
+    // Enforce question count restriction for free-tier users
+    const isPro = req.user?.isPro === true;
+    if (!isPro && questionLimit > FREE_QUESTION_LIMIT) {
+      throw new AppError(
+        `Free plan users can practice up to ${FREE_QUESTION_LIMIT} questions per session. Upgrade to Pro to unlock higher volumes.`,
+        403,
+      );
+    }
+
     const session = await PracticeService.startSession(userId, subjectId, questionLimit);
     return sendSuccess(res, {
       message: "Session started",

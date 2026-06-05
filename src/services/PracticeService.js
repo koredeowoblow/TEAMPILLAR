@@ -165,11 +165,15 @@ class PracticeService {
         if (year) fallbackMatchStage["metadata.year"] = Number(year);
 
         let allExcluded = [
-          ...Array.from(excludedIds).map(
-            (id) => new mongoose.Types.ObjectId(id),
-          ),
-          ...foundIds,
-        ];
+          ...Array.from(excludedIds),
+          ...foundIds.map(id => String(id)),
+        ]
+          // Deduplicate by string value, guard with isValid before converting
+          // so test mocks with short IDs ("1", "2") don't throw
+          .filter((id, idx, arr) => arr.indexOf(id) === idx)
+          .filter(id => mongoose.Types.ObjectId.isValid(id))
+          .map(id => new mongoose.Types.ObjectId(id));
+
         if (allExcluded.length > 0) {
           fallbackMatchStage._id = { $nin: allExcluded };
         }
@@ -190,7 +194,13 @@ class PracticeService {
           fallbackMatchStage = { subjectId: resolvedSubjectId };
           
           if (foundIds.length > 0) {
-            fallbackMatchStage._id = { $nin: foundIds };
+            fallbackMatchStage._id = {
+              $nin: foundIds
+                .map(id => String(id))
+                .filter((id, idx, arr) => arr.indexOf(id) === idx)
+                .filter(id => mongoose.Types.ObjectId.isValid(id))
+                .map(id => new mongoose.Types.ObjectId(id)),
+            };
           }
 
           fallbackPipeline = [
@@ -200,6 +210,7 @@ class PracticeService {
           fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
           questions = questions.concat(fallbackQuestions);
         }
+
       }
 
       // Strip correct answers or add metadata for admins, and slim down response

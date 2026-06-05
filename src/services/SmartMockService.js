@@ -132,7 +132,9 @@ Select the best ${targetLimit} questions that will most effectively target this 
       
       let finalQuestions = [];
       if (Array.isArray(selectedIds)) {
-        finalQuestions = selectedIds
+        // Deduplicate IDs the AI may have repeated before mapping to pool questions
+        const uniqueIds = Array.from(new Set(selectedIds.map(String)));
+        finalQuestions = uniqueIds
           .map(id => pool.find(q => String(q._id) === String(id)))
           .filter(Boolean)
           .slice(0, targetLimit);

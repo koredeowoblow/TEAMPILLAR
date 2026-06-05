@@ -6,6 +6,9 @@ import { AppError } from "../utils/AppError.js";
 import { toPracticeSessionSummaryDTO } from "../dto/index.js";
 import { CONSTANTS } from "../config/constants.js";
 
+// Maximum question count allowed for free-tier users
+const FREE_QUESTION_LIMIT = 20;
+
 class SmartMockController {
   /**
    * Generates a smart mock session and returns the questions.
@@ -21,6 +24,15 @@ class SmartMockController {
       Math.max(Number(limit || duration || 20), 1),
       CONSTANTS.PAGINATION.MAX_LIMIT,
     );
+
+    // Enforce question count restriction for free-tier users
+    const isPro = req.user?.isPro === true;
+    if (!isPro && questionLimit > FREE_QUESTION_LIMIT) {
+      throw new AppError(
+        `Free plan users can practice up to ${FREE_QUESTION_LIMIT} questions per session. Upgrade to Pro to unlock higher volumes.`,
+        403,
+      );
+    }
 
     // 1. Generate questions using hybrid system
     const questions = await SmartMockService.generateSmartMock(userId, subjectId, questionLimit);
