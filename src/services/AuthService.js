@@ -77,6 +77,7 @@ class AuthService {
       phone,
       targetUniversity,
       courseOfStudy,
+      username,
     } = userData;
     const email = String(userData.email || "").trim().toLowerCase();
     const displayName = (userData.name || userData.fullName || "").trim();
@@ -88,10 +89,20 @@ class AuthService {
       throw new AppError("Email already registered", 400);
     }
 
+    if (username) {
+      const existingUsername = await (
+        await import("../models/UserModel.js")
+      ).default.findOne({ username: username.toLowerCase() });
+      if (existingUsername) {
+        throw new AppError("Username already taken", 400);
+      }
+    }
+
     const newUser = await userRepository.createUser({
       email,
       password,
       name: displayName,
+      username: username ? username.toLowerCase() : undefined,
       language,
       emailVerified: false,
       onboarding: {
