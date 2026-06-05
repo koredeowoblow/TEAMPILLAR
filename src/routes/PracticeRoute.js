@@ -30,16 +30,7 @@ router.post(
   handleValidationErrors,
   tryCatch(PracticeController.getNextQuestions),
 );
-router.post(
-  "/submit",
-  protectUser,
-  validateSubmitSession,
-  handleValidationErrors,
-  tryCatch(PracticeController.submit),
-);
 router.get("/sessions", protectUser, tryCatch(PracticeController.getSessions));
-router.get("/results/:id", protectUser, tryCatch(PracticeController.getResult));
-
 
 // Subjects
 router.get("/subjects", protectUser, tryCatch(PracticeController.getSubjects));
@@ -69,6 +60,6 @@ router.post(
   tryCatch(PracticeController.recordVisibility),
 );
 
-router.get("/results/:id", protectUser, tryCatch(PracticeController.getResult));
+router.get("/session/result/:id", protectUser, tryCatch(PracticeController.getResult));
 
 export default router;
