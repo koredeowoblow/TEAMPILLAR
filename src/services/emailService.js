@@ -1,5 +1,4 @@
 import brevoClient from "../config/email.js";
-import * as brevo from "@getbrevo/brevo";
 
 class EmailService {
   /**
