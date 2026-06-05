@@ -28,7 +28,7 @@ export const validateUserRegistration = [
     return true;
   }),
 
-  body("email").trim().isEmail().withMessage("Invalid email format").normalizeEmail(),
+  body("email").trim().isEmail().withMessage("Invalid email format"),
 
   body("password")
     .isLength({ min: 8 })

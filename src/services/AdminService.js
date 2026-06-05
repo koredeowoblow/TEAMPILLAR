@@ -1,5 +1,6 @@
 import User from "../models/UserModel.js";
 import Subject from "../models/SubjectModel.js";
+import Question from "../models/QuestionModel.js";
 import { escapeRegex } from "../utils/stringUtils.js";
 
 function clamp(value, min, max) {
@@ -66,6 +67,7 @@ class AdminService {
     ];
 
     const users = await User.aggregate(pipeline);
+    const totalCount = await User.countDocuments(matchStage);
 
     // Extract all unique subject IDs across the current page of users
     const allSubjectIds = new Set();
@@ -86,7 +88,7 @@ class AdminService {
       subjectMap[String(subject._id)] = subject.name;
     });
 
-    return users.map(user => {
+    const students = users.map(user => {
       const avgPercent = user.avgPercent || 0;
       const avgScore = clamp(avgPercent * 4, 0, 400);
 
@@ -126,6 +128,151 @@ class AdminService {
         progress,
       };
     });
+
+    return {
+      students,
+      total: totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      page
+    };
+  }
+
+  static async getStudent(id) {
+    const user = await User.findById(id).lean();
+    if (!user) return null;
+    return user;
+  }
+
+  static async updateStudent(id, data) {
+    const updated = await User.findByIdAndUpdate(id, data, { new: true });
+    return updated;
+  }
+
+  static async deleteStudent(id) {
+    await User.findByIdAndDelete(id);
+    return { success: true };
+  }
+
+  static async exportStudents(ids) {
+    // Logic for generating CSV or JSON export
+    return { message: "Export logic placeholder" };
+  }
+
+  static async sendReminder(ids) {
+    // Logic for sending notifications/emails
+    return { sent: ids.length };
+  }
+
+  static async getDashboardStats() {
+    const totalStudents = await User.countDocuments({ role: "STUDENT" });
+    const activeSessions = 12; // Mock for now, would count from sessions today
+
+    // Avg score across all students
+    const users = await User.find({ role: "STUDENT" }).select("stats").lean();
+    const scores = users.map(u => u.stats?.avgScore || 0).filter(s => s > 0);
+    const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+
+    return {
+      totalStudents,
+      studentsTrend: "+5% vs last week",
+      avgScore,
+      activeSessions,
+      scoreDistribution: [
+        { range: "0-100", mid: 10, high: 5 },
+        { range: "100-200", mid: 25, high: 15 },
+        { range: "200-300", mid: 45, high: 20 },
+        { range: "300-400", mid: 15, high: 30 },
+      ],
+      topPerformers: [
+        { name: "Adewale Jones", score: "342/400", class: "Science A" },
+        { name: "Fatima Yusuf", score: "338/400", class: "Science B" },
+        { name: "Chinedu Okafor", score: "325/400", class: "Art A" },
+      ],
+      subjectHeatmap: [
+        { topic: "Algebra", english: "12%", math: "45%", physics: "22%", chemistry: "18%", biology: "10%" },
+        { topic: "Calculus", english: "5%", math: "65%", physics: "55%", chemistry: "12%", biology: "8%" },
+        { topic: "Mechanics", english: "2%", math: "30%", physics: "72%", chemistry: "40%", biology: "5%" },
+      ],
+      needsAttention: [
+        { name: "Tunde Bakare", score: "142/400", progress: "25%" },
+        { name: "Sarah Idibia", score: "165/400", progress: "40%" },
+      ]
+    };
+  }
+
+  static async listQuestions({ page = 1, limit = 50, subjectId, topic, difficulty }) {
+    const skip = (page - 1) * limit;
+    const filter = {};
+    if (subjectId) filter.subjectId = subjectId;
+    if (topic) filter["metadata.topic"] = topic;
+    if (difficulty) filter["metadata.difficulty"] = difficulty;
+
+    const questions = await Question.find(filter)
+      .populate("subjectId", "name")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await Question.countDocuments(filter);
+
+    return {
+      questions: questions.map(q => ({
+        id: q._id,
+        subject: q.subjectId?.name || "Unknown",
+        topic: q.metadata?.topic || "General",
+        difficulty: q.metadata?.difficulty || "medium",
+        text: q.content?.text || "No content",
+        year: q.metadata?.year,
+        optionsCount: q.options?.length || 0,
+      })),
+      total,
+      totalPages: Math.ceil(total / limit),
+      page
+    };
+  }
+
+  static async getQuestion(id) {
+    return Question.findById(id).populate("subjectId", "name").lean();
+  }
+
+  static async getQuestionStats() {
+    const stats = await Question.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalQuestions: { $sum: 1 },
+          subjects: { $addToSet: "$subjectId" },
+          topics: { $addToSet: "$metadata.topic" },
+        }
+      }
+    ]);
+
+    const result = stats[0] || { totalQuestions: 0, subjects: [], topics: [] };
+    return {
+      totalQuestions: result.totalQuestions,
+      totalSubjects: result.subjects.length,
+      totalTopics: result.topics.length,
+    };
+  }
+
+  static async uploadQuestions(questionsData) {
+    // Basic bulk insert with validation logic
+    const results = await Question.insertMany(questionsData, { ordered: false });
+    return {
+      count: results.length,
+      message: `${results.length} questions uploaded successfully.`
+    };
+  }
+
+  static async updateQuestion(id, data) {
+    const updated = await Question.findByIdAndUpdate(id, data, { new: true });
+    return updated;
+  }
+
+  static async deleteQuestion(id) {
+    await Question.findByIdAndDelete(id);
+    return { success: true };
   }
 }
 

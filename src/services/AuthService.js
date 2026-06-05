@@ -103,7 +103,7 @@ class AuthService {
       password,
       name: displayName,
       username: username ? username.toLowerCase() : undefined,
-      language,
+      language: language || "EN",
       emailVerified: false,
       onboarding: {
         ...(phone && { phone }),

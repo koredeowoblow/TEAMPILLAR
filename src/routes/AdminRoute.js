@@ -102,6 +102,12 @@ router.get(
   protectAdmin,
   tryCatch(AdminController.questionStats),
 );
+router.get(
+  "/questions/:id",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getQuestion),
+);
 router.post(
   "/questions",
   protectUser,
