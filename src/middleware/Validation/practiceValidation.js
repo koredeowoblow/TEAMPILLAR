@@ -14,7 +14,13 @@ export const validateGetQuestions = [
 ];
 
 export const validateStartSession = [
-  body("subjectId").notEmpty().withMessage("subjectId is required"),
+  body().custom((value, { req }) => {
+    const { subjectId, subjectIds } = req.body;
+    if (!subjectId && (!Array.isArray(subjectIds) || subjectIds.length === 0)) {
+      throw new Error("Either subjectId or subjectIds (array) must be provided");
+    }
+    return true;
+  }),
 ];
 
 export const validateSubmitSession = [
