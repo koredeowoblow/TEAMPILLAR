@@ -7,10 +7,26 @@ import { toUserDTO, toAdminUserDTO, toSessionDTO } from "../dto/index.js";
 class AuthController {
   // Register
   static async register(req, res) {
-    const user = await AuthService.register(req.body);
+    const result = await AuthService.register(req.body);
+
+    // Set HttpOnly cookie for refreshToken (same as login)
+    if (result.refreshToken) {
+      res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+    }
+
     return sendSuccess(res, {
-      message: "User registered successfully",
-      data: toUserDTO(user),
+      message: result.message || "User registered successfully",
+      data: toSessionDTO({
+        user: result.user,
+        token: result.token,
+        refreshToken: result.refreshToken,
+        expiresAt: result.expiresAt,
+      }),
       statusCode: 201,
     });
   }
@@ -36,9 +52,7 @@ class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     console.log("Login successful, token generated:", {
-      token,
-      refreshToken,
-      expiresAt,
+      token: "[redacted]",
     });
     return sendSuccess(res, {
       message: "Login successful",
@@ -366,6 +380,40 @@ class AuthController {
       message: "Admin created successfully",
       data: toAdminUserDTO(admin),
       statusCode: 201,
+    });
+  }
+
+  // ─── GET /auth/sessions ────────────────────────────────────────────────────
+  static async getActiveSessions(req, res) {
+    const sessions = await AuthService.getActiveSessions(req.user.id);
+    return sendSuccess(res, {
+      message: "Active sessions retrieved",
+      data: sessions,
+      statusCode: 200,
+    });
+  }
+
+  // ─── POST /auth/logout-all ─────────────────────────────────────────────────
+  static async logoutAllDevices(req, res) {
+    const token = req.headers.authorization?.split(" ")[1];
+    const exceptTokenHash = token ? AuthService.hashToken(token) : null;
+    await AuthService.logoutAllDevices(req.user.id, exceptTokenHash);
+    return sendSuccess(res, {
+      message: "All other devices logged out",
+      data: {},
+      statusCode: 200,
+    });
+  }
+
+  // ─── DELETE /auth/account ──────────────────────────────────────────────────
+  static async deleteAccount(req, res) {
+    const { password } = req.body;
+    await AuthService.deleteAccount(req.user.id, password);
+    res.clearCookie("refreshToken");
+    return sendSuccess(res, {
+      message: "Account deleted successfully",
+      data: {},
+      statusCode: 200,
     });
   }
 }

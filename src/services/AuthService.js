@@ -68,26 +68,32 @@ class AuthService {
 
   // ================= REGISTER =================
   static async register(userData) {
-    const { email, password, name, language } = userData;
+    const { email, password, language, phone, targetUniversity, courseOfStudy } = userData;
+    const displayName = (userData.name || userData.fullName || "").trim();
 
     this.validatePassword(password);
 
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) {
-      throw new AppError("Invalid credentials", 400);
+      throw new AppError("Email already registered", 400);
     }
 
     const newUser = await userRepository.createUser({
       email,
       password,
-      name,
+      name: displayName,
       language,
       emailVerified: false,
+      onboarding: {
+        ...(phone && { phone }),
+        ...(targetUniversity && { targetUniversity }),
+        ...(courseOfStudy && { courseOfStudy }),
+      },
     });
 
     try {
       const otp = await OTPService.storeOTP(email, "email_verification", 10);
-      await EmailService.sendEmailVerificationOTP(email, otp, name);
+      await EmailService.sendEmailVerificationOTP(email, otp, displayName);
     } catch (err) {
       logger.error("OTP send failed", { message: err.message });
     }
@@ -100,13 +106,26 @@ class AuthService {
       }
     });
 
+    // Generate tokens immediately so user can proceed through onboarding
+    const { token, expiresAt } = this.generateToken(newUser._id);
+    const { refreshToken, expiresAt: refreshExpiresAt } = this.generateRefreshToken(newUser._id);
+
+    await authRepository.createSession({
+      userId: newUser._id,
+      tokenHash: this.hashToken(token),
+      refreshTokenHash: this.hashToken(refreshToken),
+      refreshTokenExpiresAt: refreshExpiresAt,
+    });
+
     const user = typeof newUser.toObject === "function" ? newUser.toObject() : { ...newUser };
     delete user.password;
 
     return {
       user,
-      token: null,
-      message: "Check your email for verification code",
+      token,
+      refreshToken,
+      expiresAt,
+      message: "Account created! Check your email for a verification code.",
     };
   }
 
@@ -298,6 +317,76 @@ class AuthService {
     return await userRepository.updateUser(userId, {
       isAdmin: !user.isAdmin,
     });
+  }
+
+  // ================= CHANGE PASSWORD =================
+  static async changePassword(email, currentPassword, newPassword) {
+    this.validatePassword(newPassword);
+
+    const user = await userRepository.findByEmail(email, { includePassword: true });
+    if (!user) throw new AppError("User not found", 404);
+
+    if (!user.password) {
+      throw new AppError("This account uses social login and has no password to change", 400);
+    }
+
+    const isValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isValid) throw new AppError("Current password is incorrect", 400);
+
+    // The pre-save hook will hash the new password
+    user.password = newPassword;
+    await user.save();
+
+    return { message: "Password changed successfully" };
+  }
+
+  // ================= SESSIONS =================
+  static async getActiveSessions(userId) {
+    const Auth = (await import("../models/AuthModel.js")).default;
+    return Auth.find({ userId, isLoggedOut: false })
+      .select("deviceInfo ipAddress lastLogin createdAt")
+      .sort({ lastLogin: -1 })
+      .lean();
+  }
+
+  static async logoutAllDevices(userId, exceptTokenHash = null) {
+    const Auth = (await import("../models/AuthModel.js")).default;
+    const query = { userId, isLoggedOut: false };
+    if (exceptTokenHash) query.tokenHash = { $ne: exceptTokenHash };
+    await Auth.updateMany(query, {
+      $set: { isLoggedOut: true, loggedOutAt: new Date() },
+    });
+    invalidateCachedSessionUser(userId.toString());
+    return { message: "All other devices logged out" };
+  }
+
+  // ================= DELETE ACCOUNT =================
+  static async deleteAccount(userId, password) {
+    const User = (await import("../models/UserModel.js")).default;
+    const user = await User.findById(userId).select("+password");
+    if (!user) throw new AppError("User not found", 404);
+
+    if (user.password) {
+      if (!password) throw new AppError("Password is required to delete your account", 400);
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) throw new AppError("Incorrect password", 401);
+    }
+
+    // Delete photo from Cloudinary
+    try {
+      const CloudinaryService = (await import("./CloudinaryService.js")).default;
+      const photo = user.photoUrl || user.photo;
+      if (photo) await CloudinaryService.deleteIfCloudinary(photo);
+    } catch (err) {
+      logger.warn("Could not remove user photo during account deletion", { message: err.message });
+    }
+
+    const Auth = (await import("../models/AuthModel.js")).default;
+    await Auth.updateMany({ userId }, { $set: { isLoggedOut: true, loggedOutAt: new Date() } });
+    invalidateCachedSessionUser(userId.toString());
+    await User.findByIdAndDelete(userId);
+
+    return { message: "Account deleted successfully" };
   }
 }
 

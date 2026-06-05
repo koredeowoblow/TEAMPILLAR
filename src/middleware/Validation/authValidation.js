@@ -54,7 +54,7 @@ export const validateResetPassword = [
     .isEmail()
     .withMessage("Invalid email")
     .custom(async (email) => {
-      const user = await UserRepository.findByEmail(email);
+      const user = await userRepository.findByEmail(email);
       if (!user) throw new Error("Invalid request");
     }),
   body("otp")
@@ -80,21 +80,14 @@ export const validateResetPassword = [
   }),
 ];
 
-// ✅ Change password validation
+// ✅ Change password validation (user is already authenticated — email comes from req.user)
 export const validateChangePassword = [
-  body("email")
-    .isEmail()
-    .withMessage("Invalid email")
-    .custom(async (email) => {
-      const user = await UserRepository.findByEmail(email);
-      if (!user) throw new Error("Invalid request");
-    }),
   body("currentPassword")
     .notEmpty()
     .withMessage("Current password is required"),
   body("newPassword")
-    .isLength({ min: 6 })
-    .withMessage("New password must be at least 6 characters long")
+    .isLength({ min: 8 })
+    .withMessage("New password must be at least 8 characters long")
     .custom((value) => {
       if (!validatePassword(value)) {
         throw new Error(
@@ -111,9 +104,8 @@ export const validateEmailVerification = [
     .isEmail()
     .withMessage("Invalid email")
     .custom(async (email) => {
-      const user = await UserRepository.findByEmail(email);
+      const user = await userRepository.findByEmail(email);
       if (!user) throw new Error("Invalid request");
-      if (user.emailVerified) throw new Error("Invalid request");
     }),
   body("otp")
     .isLength({ min: 4, max: 4 })
@@ -127,9 +119,8 @@ export const validateResendVerification = [
     .isEmail()
     .withMessage("Invalid email")
     .custom(async (email) => {
-      const user = await UserRepository.findByEmail(email);
+      const user = await userRepository.findByEmail(email);
       if (!user) throw new Error("Invalid request");
-      if (user.emailVerified) throw new Error("Invalid request");
     }),
 ];
 // middleware to check validation errors

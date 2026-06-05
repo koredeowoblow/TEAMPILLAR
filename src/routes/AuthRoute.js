@@ -140,4 +140,9 @@ auth.post(
   tryCatch(AuthController.adminTriggerOTP),
 );
 
+// ─── Session & Account Management ─────────────────────────────────────────────
+auth.get("/sessions",    protectUser, tryCatch(AuthController.getActiveSessions));
+auth.post("/logout-all", protectUser, tryCatch(AuthController.logoutAllDevices));
+auth.delete("/account",  protectUser, tryCatch(AuthController.deleteAccount));
+
 export default auth;

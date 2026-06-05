@@ -23,6 +23,12 @@ const UserSchema = new mongoose.Schema(
     },
     isPro: { type: Boolean, default: false },
     onboarding: { type: Object, default: {} },
+    notificationPreferences: {
+      emailNotifications: { type: Boolean, default: true },
+      examReminders:      { type: Boolean, default: true },
+      resultAlerts:       { type: Boolean, default: true },
+      productUpdates:     { type: Boolean, default: false },
+    },
     stats: {
       predictedScore: { type: Number, default: 0 },
     },

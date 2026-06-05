@@ -33,6 +33,57 @@ class PracticeService {
         throw new AppError("subjectId is required", 400);
       }
 
+      // Retrieve practice session if sessionId is provided
+      let session = null;
+      if (sessionId) {
+        session = await practiceRepository.findById(sessionId);
+      }
+
+      // If the session already has questions saved, retrieve and return them directly
+      if (session && session.questionIds && session.questionIds.length > 0) {
+        const questions = await questionRepository.find({
+          _id: { $in: session.questionIds },
+        });
+
+        // Maintain the stored ordering of questionIds
+        const qMap = new Map(questions.map((q) => [String(q._id || q.id), q]));
+        const orderedQuestions = session.questionIds
+          .map((id) => qMap.get(String(id)))
+          .filter(Boolean);
+
+        const safe = orderedQuestions.map((q) => {
+          const correctOpt = q.options?.find((o) => o.isCorrect);
+          const slim = {
+            _id: q._id,
+            subjectId: q.subjectId,
+            content: {
+              text: q.content?.text,
+              image: q.content?.image,
+              equation: q.content?.equation,
+            },
+            metadata: q.metadata,
+          };
+
+          if (isAdmin) {
+            slim.correctAnswer = correctOpt ? correctOpt.id : null;
+            slim.options = q.options?.map((o) => ({
+              id: o.id,
+              text: o.text,
+              isCorrect: o.isCorrect,
+            })) || [];
+          } else {
+            if (q.options) {
+              slim.options = q.options.map((o) => ({
+                id: o.id,
+                text: o.text,
+              }));
+            }
+          }
+          return slim;
+        });
+        return safe;
+      }
+
       let matchStage = { ...filters };
       if (resolvedSubjectId) matchStage.subjectId = resolvedSubjectId;
       if (topicId) matchStage["metadata.topic"] = topicId;
@@ -46,7 +97,6 @@ class PracticeService {
         if (!sessionId) {
           throw new AppError("sessionId is required to fetch questions", 400);
         }
-        const session = await practiceRepository.findById(sessionId);
         if (!session) {
           throw new AppError("Session not found", 404);
         }
@@ -62,13 +112,10 @@ class PracticeService {
           );
         }
       } else {
-        if (sessionId) {
-          const session = await practiceRepository.findById(sessionId);
-          if (session && session.responses) {
-            session.responses.forEach((r) =>
-              excludedIds.add(r.questionId.toString()),
-            );
-          }
+        if (session && session.responses) {
+          session.responses.forEach((r) =>
+            excludedIds.add(r.questionId.toString()),
+          );
         }
       }
 
@@ -86,9 +133,9 @@ class PracticeService {
         });
 
         const recentlyAnsweredIds = new Set();
-        recentSessions.forEach((session) => {
-          if (session.responses) {
-            session.responses.forEach((r) =>
+        recentSessions.forEach((s) => {
+          if (s.responses) {
+            s.responses.forEach((r) =>
               recentlyAnsweredIds.add(r.questionId.toString()),
             );
           }
@@ -220,7 +267,11 @@ class PracticeService {
         const slim = {
           _id: q._id,
           subjectId: q.subjectId,
-          content: { text: q.content?.text },
+          content: {
+            text: q.content?.text,
+            image: q.content?.image,
+            equation: q.content?.equation,
+          },
           metadata: q.metadata,
         };
 
@@ -241,6 +292,14 @@ class PracticeService {
         }
         return slim;
       });
+
+      // Persist the generated questionIds to the practice session if not already set
+      if (session && session.sessionStatus === "ACTIVE" && (!session.questionIds || session.questionIds.length === 0)) {
+        await practiceRepository.update(sessionId, {
+          questionIds: safe.map((q) => q._id),
+        });
+      }
+
       return safe;
     } catch (error) {
       throw new Error(`Failed to get questions for subject: ${error.message}`);
