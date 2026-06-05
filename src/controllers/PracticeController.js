@@ -20,7 +20,13 @@ const FREE_QUESTION_LIMIT = 20;
 class PracticeController {
   static async getQuestions(req, res) {
     const { subjectId, limit, difficulty, year, sessionId } = req.query;
-    if (!subjectId) throw new AppError("subjectId is required", 400);
+    
+    // Support multi-subject sessions
+    let session = null;
+    if (sessionId) {
+      session = await practiceRepository.findById(sessionId);
+    }
+
     const questions = await PracticeService.getQuestionsForSubject(subjectId, {
       userId: req.user?.id,
       sessionId,
@@ -29,9 +35,31 @@ class PracticeController {
       difficulty,
       year: year ? Number(year) : undefined,
     });
+
+    // Strip internal fields and format for the specified CBT shape
+    const formattedQuestions = questions.map((q, index) => {
+      const qObj = q.toObject ? q.toObject() : q;
+      return {
+        _id: String(qObj._id),
+        number: index + 1,
+        text: qObj.content?.text || qObj.text || "",
+        subject: { name: qObj.subjectName || "Subject" },
+        options: (qObj.options || []).map(o => ({
+          key: o.id, // Using the stored ID as the key (A, B, C, D)
+          text: o.text
+        }))
+      };
+    });
+
     return sendSuccess(res, {
       message: "Questions retrieved",
-      data: questions.map(toQuestionDTO),
+      status: "success",
+      data: {
+        examId: sessionId || "practice",
+        duration: (Number(limit) || 20) * 60, // Default to 1 min per question
+        totalQuestions: formattedQuestions.length,
+        questions: formattedQuestions
+      },
       statusCode: 200,
     });
   }

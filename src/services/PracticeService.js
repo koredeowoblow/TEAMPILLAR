@@ -544,6 +544,13 @@ class PracticeService {
       score: Math.round(accuracy),
     });
 
+    // Populate questions for the immediate result response
+    const questionsWithReview = await questionRepository.find({
+      _id: { $in: updated.questionIds }
+    });
+    const sessionWithQuestions = updated.toObject();
+    sessionWithQuestions.questions = questionsWithReview;
+
     // Build subject score map for UTME calculation if client provided subject names
     const subject = await Subject.findById(session.subjectId);
     const subjectName = subject?.name || "";
@@ -557,7 +564,7 @@ class PracticeService {
       session.subjectId,
     );
 
-    // Adaptive Engine: compute and store predicted UTME score
+    // ... user stats update logic remains ...
     const user = await userRepository.findById(session.userId);
     if (user) {
       const userPerformance = await TopicPerformance.find({
@@ -593,7 +600,7 @@ class PracticeService {
       }
     }
 
-    return { session: updated, utmeScore, flagged: flagged || timeDriftFlag };
+    return { session: sessionWithQuestions, utmeScore, flagged: flagged || timeDriftFlag };
   }
 
   static async getSessionResult(sessionId, userId) {
