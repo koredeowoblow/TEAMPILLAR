@@ -66,18 +66,22 @@ class FreemiumGuard {
     if (user.subscription === "pro" || user.isPro === true || user.subscriptionStatus === "active") return;
 
     const limit = this.LIMITS.free.mockTests;
-    const totalTests = user.limits.totalMockTests || 0;
+    const totalTests = user.limits?.totalMockTests || 0;
 
     if (totalTests >= limit) {
-      throw new AppError("Lifetime free mock test limit reached", 403, {
+      throw new AppError(`Lifetime free mock test limit reached (${totalTests}/${limit}). Upgrade to Pro for unlimited exams!`, 403, {
         code: "LIMIT_REACHED",
         used: totalTests,
         limit: limit,
       });
     }
+  }
 
-    // Increment and save
-    user.limits.totalMockTests = totalTests + 1;
+  static async incrementMockTest(user) {
+    if (user.subscription === "pro" || user.isPro === true || user.subscriptionStatus === "active") return;
+    
+    if (!user.limits) user.limits = { totalMockTests: 0 };
+    user.limits.totalMockTests = (user.limits.totalMockTests || 0) + 1;
     await user.save();
   }
 

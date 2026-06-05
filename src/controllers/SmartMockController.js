@@ -37,12 +37,14 @@ class SmartMockController {
     // Check subject limit for free users
     const requestedSubjects = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
     if (!isPro && requestedSubjects.length > 2) {
-      throw new AppError("Free plan users can select up to 2 subjects only. Upgrade to Pro to unlock all subjects!", 403);
+      throw new AppError(`Subject Limit Reached: Free users can select up to 2 subjects (you selected ${requestedSubjects.length}). Upgrade to Pro for all subjects!`, 403);
     }
 
-    if (!isPro && questionLimit > FREE_QUESTION_LIMIT) {
+    // Check TOTAL question limit for free users
+    const totalRequestedQuestions = questionLimit * requestedSubjects.length;
+    if (!isPro && totalRequestedQuestions > 40) { 
       throw new AppError(
-        `Free plan users can practice up to ${FREE_QUESTION_LIMIT} questions per session. Upgrade to Pro to unlock higher volumes.`,
+        `Question Limit Reached: Free users are limited to 40 questions total for multi-subject sessions. You requested ${totalRequestedQuestions}. Upgrade to Pro!`,
         403,
       );
     }
@@ -67,15 +69,19 @@ class SmartMockController {
       sessionStatus: "ACTIVE",
       sessionType: "smart-mock",
       questionIds: formattedQuestions.map(q => q._id),
-      questionLimit: formattedQuestions.length, // Update limit to total count (e.g. 20 * subjects)
+      questionLimit: formattedQuestions.length,
       startTime: new Date(),
     });
+
+    // 4. Increment mock test counter ONLY after successful creation
+    await FreemiumGuard.incrementMockTest(req.user);
 
     return sendSuccess(res, {
       message: "Smart Mock generated successfully",
       data: {
-        sessionId: session._id,
+        sessionId: String(session._id),
         questions: formattedQuestions,
+        session: toPracticeSessionSummaryDTO(session)
       },
       statusCode: 201,
     });

@@ -190,12 +190,14 @@ class PracticeController {
     // Check subject limit for free users
     const requestedSubjects = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
     if (!isPro && requestedSubjects.length > 2) {
-      throw new AppError("Free plan users can select up to 2 subjects only. Upgrade to Pro to unlock all subjects!", 403);
+      throw new AppError(`Subject Limit Reached: Free users can select up to 2 subjects (you selected ${requestedSubjects.length}). Upgrade to Pro for all subjects!`, 403);
     }
 
-    if (!isPro && questionLimit > FREE_QUESTION_LIMIT) {
+    // Check TOTAL question limit for free users
+    const totalRequestedQuestions = questionLimit * requestedSubjects.length;
+    if (!isPro && totalRequestedQuestions > 40) {
       throw new AppError(
-        `Free plan users can practice up to ${FREE_QUESTION_LIMIT} questions per session. Upgrade to Pro to unlock higher volumes.`,
+        `Question Limit Reached: Free users are limited to 40 questions total for multi-subject sessions. You requested ${totalRequestedQuestions}. Upgrade to Pro!`,
         403,
       );
     }
@@ -203,7 +205,10 @@ class PracticeController {
     const session = await PracticeService.startSession(userId, subjectId, questionLimit, subjectIds);
     return sendSuccess(res, {
       message: "Session started",
-      data: toPracticeSessionSummaryDTO(session),
+      data: {
+        sessionId: String(session._id),
+        session: toPracticeSessionSummaryDTO(session)
+      },
       statusCode: 201,
     });
   }
