@@ -23,23 +23,47 @@ try {
   const user = process.env.SMTP_USER?.trim();
   const pass = process.env.SMTP_PASS?.trim();
 
+  console.log(`[EmailConfig] Attempting SMTP init with host: ${host}, port: ${port}, user: ${user}`);
+
   if (host && port && user && pass) {
+    const isSecure = port === "465";
+    
     smtpTransporter = nodemailer.createTransport({
       host,
       port: Number.parseInt(port),
-      secure: port === "465", // true for 465, false for other ports
+      secure: isSecure, 
       auth: {
         user,
         pass,
       },
-      // Increase timeout for slow connections
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
+      tls: {
+        rejectUnauthorized: false, 
+      },
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 15000,
+      debug: true, // Enable debug output
+      logger: true, // Log to console
     });
-    console.log(`✅ SMTP Transporter initialized (${host}:${port})`);
+
+    console.log("[EmailConfig] SMTP Transporter created. Verifying connection...");
+
+    smtpTransporter.verify((error) => {
+      if (error) {
+        console.error("❌ [EmailConfig] SMTP Verification Failed:", {
+          message: error.message,
+          code: error.code,
+          stack: error.stack
+        });
+      } else {
+        console.log(`✅ [EmailConfig] SMTP Server is ready (${host}:${port})`);
+      }
+    });
+  } else {
+    console.warn("⚠️ [EmailConfig] SMTP configuration missing some fields. Check SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS.");
   }
 } catch (err) {
-  console.error("❌ SMTP init failed:", err.message);
+  console.error("❌ [EmailConfig] SMTP critical init failed:", err.message);
 }
 
 export const getEmailServiceHealth = () => {

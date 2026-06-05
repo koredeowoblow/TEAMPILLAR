@@ -146,15 +146,24 @@ class EmailService {
   static async sendEmail(to, subject, html, textContent = null, template = "generic") {
     const provider = process.env.EMAIL_PROVIDER || "smtp";
     const senderEmail = process.env.SMTP_USER || process.env.RESEND_SENDER_EMAIL || "onboarding@resend.dev";
-    const senderName = process.env.RESEND_SENDER_NAME || "Pillar";
+    const senderName = process.env.RESEND_SENDER_NAME || "Team Pillar";
+
+    console.log(`[EmailService] --- Start Sending Email ---`);
+    console.log(`[EmailService] To: ${to}`);
+    console.log(`[EmailService] Subject: ${subject}`);
+    console.log(`[EmailService] Provider: ${provider}`);
 
     try {
       let result;
 
       if (provider === "resend") {
+        console.log(`[EmailService] Attempting to send via Resend...`);
         if (!resend) {
-          logger.warn("⚠️ Resend client not initialized. Falling back to SMTP if available.");
-          if (!smtpTransporter) return false;
+          console.warn("[EmailService] ⚠️ Resend client not initialized. Falling back to SMTP if available.");
+          if (!smtpTransporter) {
+            console.error("[EmailService] ❌ Fallback failed: SMTP Transporter also not initialized.");
+            return false;
+          }
         } else {
           const { data, error } = await resend.emails.send({
             from: `${senderName} <${senderEmail}>`,
@@ -164,18 +173,25 @@ class EmailService {
             text: textContent,
           });
 
-          if (error) throw error;
+          if (error) {
+            console.error("[EmailService] ❌ Resend API returned error:", error);
+            throw error;
+          }
+          console.log(`[EmailService] ✅ Resend Success. ID: ${data.id}`);
           result = { messageId: data.id };
         }
       }
 
       // Default or Fallback: SMTP
       if (!result) {
+        console.log(`[EmailService] Attempting to send via SMTP (Nodemailer)...`);
         if (!smtpTransporter) {
-          logger.error("❌ No email provider available (SMTP/Resend).");
+          console.error("[EmailService] ❌ SMTP Transporter not initialized.");
           return false;
         }
 
+        console.log(`[EmailService] Sender: ${senderName} <${senderEmail}>`);
+        
         const info = await smtpTransporter.sendMail({
           from: `"${senderName}" <${senderEmail}>`,
           to,
@@ -183,6 +199,8 @@ class EmailService {
           text: textContent,
           html,
         });
+        
+        console.log(`[EmailService] ✅ SMTP Success. MessageID: ${info.messageId}`);
         result = { messageId: info.messageId };
       }
 
@@ -195,18 +213,28 @@ class EmailService {
         status: "sent",
         resendId: result.messageId,
         metadata: { provider },
-      }).catch((err) => logger.error("Failed to create success email log", err));
+      }).catch((err) => console.error("[EmailService] Failed to log success to DB:", err.message));
 
       return true;
     } catch (error) {
-      logger.error(`❌ Failed to send email to ${to} via ${provider}:`, error.message);
+      console.error(`[EmailService] ❌ FATAL FAILURE [${provider}] to ${to}:`, {
+        message: error.message,
+        code: error.code,
+        command: error.command,
+        response: error.response,
+        stack: error.stack
+      });
 
       await EmailLog.create({
         to,
         subject,
         template,
         status: "failed",
-        error: { message: error.message, provider },
+        error: { 
+          message: error.message, 
+          code: error.code,
+          provider 
+        },
       }).catch((err) => logger.error("Failed to create failure email log", err));
 
       return false;
