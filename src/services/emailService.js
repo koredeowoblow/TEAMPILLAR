@@ -1,4 +1,4 @@
-import { resend, smtpTransporter } from "../config/email.js";
+import { resend, sgMail } from "../config/email.js";
 import { logger } from "../core/logger.js";
 import EmailLog from "../models/EmailLogModel.js";
 
@@ -135,16 +135,7 @@ class EmailService {
   }
 
   /**
-   * Send a generic email using either SMTP (Nodemailer) or Resend
-   * @param {string} to - Recipient email address
-   * @param {string} subject - Email subject
-   * @param {string} html - HTML content
-   * @param {string} textContent - Plain text content (optional)
-   * @param {string} template - Template name for logging
-   * @returns {Promise<boolean>}
-   */
-  /**
-   * Send a generic email using either SMTP (Nodemailer) or Resend with retry logic
+   * Send a generic email using either SendGrid or Resend with retry logic
    * @param {string} to - Recipient email address
    * @param {string} subject - Email subject
    * @param {string} html - HTML content
@@ -154,8 +145,8 @@ class EmailService {
    * @returns {Promise<boolean>}
    */
   static async sendEmail(to, subject, html, textContent = null, template = "generic", retries = 3) {
-    const provider = process.env.EMAIL_PROVIDER || "smtp";
-    const senderEmail = process.env.SMTP_USER || process.env.RESEND_SENDER_EMAIL || "onboarding@resend.dev";
+    const provider = process.env.EMAIL_PROVIDER || "sendgrid";
+    const senderEmail = process.env.SENDGRID_FROM_EMAIL || process.env.RESEND_SENDER_EMAIL || "onboarding@resend.dev";
     const senderName = process.env.RESEND_SENDER_NAME || "Team Pillar";
 
     let attempt = 0;
@@ -169,7 +160,7 @@ class EmailService {
 
         if (provider === "resend") {
           if (!resend) {
-            console.warn("[EmailService] ⚠️ Resend client not initialized. Falling back to SMTP.");
+            console.warn("[EmailService] ⚠️ Resend client not initialized. Falling back to SendGrid.");
           } else {
             const { data, error } = await resend.emails.send({
               from: `${senderName} <${senderEmail}>`,
@@ -184,20 +175,24 @@ class EmailService {
           }
         }
 
-        // SMTP path (Primary or Fallback)
+        // SendGrid path (Primary or Fallback)
         if (!result) {
-          if (!smtpTransporter) {
-            throw new Error("SMTP Transporter not initialized");
+          if (!sgMail) {
+            throw new Error("SendGrid not initialized");
           }
 
-          const info = await smtpTransporter.sendMail({
-            from: `"${senderName}" <${senderEmail}>`,
+          const [response] = await sgMail.send({
             to,
+            from: {
+              email: senderEmail,
+              name: senderName,
+            },
             subject,
             text: textContent,
             html,
           });
-          result = { messageId: info.messageId };
+          
+          result = { messageId: response.headers["x-message-id"] || "sg-success" };
         }
 
         logger.info(`✅ Email sent via ${provider} to ${to} - ID: ${result.messageId}`);
