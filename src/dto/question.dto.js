@@ -36,7 +36,7 @@ export function toQuestionDTO(question) {
       difficulty: q.metadata?.difficulty ?? null,
       year:       q.metadata?.year       ?? null,
     },
-    subjectId: String(q.subjectId),
+    subjectId: String(q.subjectId?._id || q.subjectId?.id || q.subjectId),
   };
   // NEVER include: options[].isCorrect, explanation (during active session)
 }

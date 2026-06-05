@@ -20,9 +20,12 @@ export function toPracticeSessionSummaryDTO(session) {
   if (!session) return null;
   const s = session.toObject ? session.toObject() : session;
 
+  // Extract ID string even if populated
+  const subjectId = s.subjectId?._id || s.subjectId?.id || s.subjectId;
+
   return {
     id:            String(s._id),
-    subjectId:     String(s.subjectId),
+    subjectId:     subjectId ? String(subjectId) : null,
     sessionStatus: s.sessionStatus,
     score:         s.score ?? 0,
     questionLimit: s.questionLimit ?? 20,
@@ -55,7 +58,8 @@ export function toPracticeSessionResultDTO(session) {
   );
 
   const enrichedResponses = (s.responses ?? []).map((r) => {
-    const q = questionsMap.get(String(r.questionId));
+    const qId = r.questionId?._id || r.questionId?.id || r.questionId;
+    const q = questionsMap.get(String(qId));
 
      // Cross response + question to compute derived fields
     const selectedOpt = q?.options?.find(o => o.id === r.selectedOption);
@@ -63,7 +67,7 @@ export function toPracticeSessionResultDTO(session) {
     const isCorrect   = selectedOpt?.isCorrect === true;
 
     return {
-      questionId:     String(r.questionId),
+      questionId:     qId ? String(qId) : null,
       selectedOption: r.selectedOption ?? null,
       timeTaken:      r.timeTaken      ?? 0,
 

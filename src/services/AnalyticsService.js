@@ -65,7 +65,7 @@ class AnalyticsService {
       monthlyScores.get(monthKey).scores.push(score);
       monthlySessionCounts.set(monthKey, (monthlySessionCounts.get(monthKey) || 0) + 1);
 
-      const subjectId = String(session.subjectId || "Unknown");
+      const subjectId = String(session.subjectId?._id || session.subjectId?.id || session.subjectId || "Unknown");
       if (!subjectScores.has(subjectId)) {
         subjectScores.set(subjectId, []);
       }

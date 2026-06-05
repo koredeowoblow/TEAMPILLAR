@@ -158,7 +158,7 @@ class StudentController {
     // ── Subject mastery from sessions ───────────────────────
     const subjectScoreMap = {};
     for (const s of sessions) {
-      const sId = String(s.subjectId || "unknown");
+      const sId = String(s.subjectId?._id || s.subjectId?.id || s.subjectId || "unknown");
       if (!subjectScoreMap[sId]) subjectScoreMap[sId] = { scores: [] };
       subjectScoreMap[sId].scores.push(s.score || 0);
     }
@@ -214,7 +214,8 @@ class StudentController {
     const nextBadge = deriveNextBadge(streak, total);
 
     const recentMockTests = sessions.slice(0, 5).map((s) => {
-      const subjectName = subjectNameMap[String(s.subjectId)] || "General";
+      const sId = String(s.subjectId?._id || s.subjectId?.id || s.subjectId || "unknown");
+      const subjectName = subjectNameMap[sId] || "General";
       return {
         id: String(s._id),
         score: s.score || 0,
