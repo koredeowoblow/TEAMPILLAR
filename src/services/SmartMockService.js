@@ -166,10 +166,8 @@ Select the best ${targetLimit} questions that will most effectively target this 
 
     const safeUserId = new mongoose.Types.ObjectId(userId);
     
-    // Multi-subject support for smart mock
+    // Multi-subject support for smart mock: Fetch full limit for EACH subject
     let allSelected = [];
-    const subLimit = Math.floor(limit / ids.length);
-    const remainder = limit % ids.length;
 
     const subjectDocs = await mongoose.model('Subject').find({ _id: { $in: ids } }).lean();
     const subjectNameMap = {};
@@ -180,7 +178,7 @@ Select the best ${targetLimit} questions that will most effectively target this 
       if (!mongoose.Types.ObjectId.isValid(currentId)) continue;
       
       const safeSubjectId = new mongoose.Types.ObjectId(currentId);
-      const currentLimit = i === 0 ? subLimit + remainder : subLimit;
+      const currentLimit = Number(limit); // Fetch full limit for each subject
 
       const totalAvailableQuestions = await questionRepository.count({ subjectId: safeSubjectId });
       const actualLimit = Math.min(Number(currentLimit), totalAvailableQuestions);

@@ -60,7 +60,7 @@ class SmartMockController {
       sessionStatus: "ACTIVE",
       sessionType: "smart-mock",
       questionIds: formattedQuestions.map(q => q._id),
-      questionLimit,
+      questionLimit: formattedQuestions.length, // Update limit to total count (e.g. 20 * subjects)
       startTime: new Date(),
     });
 

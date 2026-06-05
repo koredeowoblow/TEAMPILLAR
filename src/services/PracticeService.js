@@ -86,11 +86,8 @@ class PracticeService {
 
       let matchStage = { ...filters };
       
-      // Multi-subject support: If session has multiple subjectIds, split the limit
+      // Multi-subject support: Fetch the full limit for EACH subject
       if (session && session.subjectIds && session.subjectIds.length > 1) {
-        const subLimit = Math.floor(limit / session.subjectIds.length);
-        const remainder = limit % session.subjectIds.length;
-        
         let allQuestions = [];
         const subjectDocs = await Subject.find({ _id: { $in: session.subjectIds } }).lean();
         const subjectNameMap = {};
@@ -98,7 +95,7 @@ class PracticeService {
 
         for (let i = 0; i < session.subjectIds.length; i++) {
           const currentSubId = session.subjectIds[i];
-          const currentLimit = i === 0 ? subLimit + remainder : subLimit;
+          const currentLimit = Number(limit); // Fetch full limit for each subject
           
           const subMatchStage = { ...matchStage, subjectId: currentSubId };
           if (topicId) subMatchStage["metadata.topic"] = topicId;
@@ -123,8 +120,7 @@ class PracticeService {
         // Map and persist
         const safe = allQuestions.map((q) => {
           const slim = {
-            _id: q._id,
-            subjectId: q.subjectId,
+            _id: q._id,            subjectId: q.subjectId,
             subjectName: q.subjectName,
             content: { text: q.content?.text, image: q.content?.image, equation: q.content?.equation },
             metadata: q.metadata,
@@ -136,9 +132,9 @@ class PracticeService {
         if (session && session.sessionStatus === "ACTIVE") {
           await practiceRepository.update(sessionId, {
             questionIds: safe.map((q) => q._id),
+            questionLimit: safe.length // Update session limit to total count
           });
-        }
-        return safe;
+        }        return safe;
       }
 
       if (resolvedSubjectId) matchStage.subjectId = resolvedSubjectId;
