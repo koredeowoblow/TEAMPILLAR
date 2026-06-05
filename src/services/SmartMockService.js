@@ -157,21 +157,48 @@ Select the best ${targetLimit} questions that will most effectively target this 
   /**
    * Orchestrates the full hybrid selection process.
    */
-  static async generateSmartMock(userId, subjectId, limit = 20) {
-    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(subjectId)) {
-      throw new Error("Invalid userId or subjectId");
+  static async generateSmartMock(userId, subjectId, limit = 20, subjectIds = []) {
+    const ids = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
     }
 
     const safeUserId = new mongoose.Types.ObjectId(userId);
-    const safeSubjectId = new mongoose.Types.ObjectId(subjectId);
+    
+    // Multi-subject support for smart mock
+    let allSelected = [];
+    const subLimit = Math.floor(limit / ids.length);
+    const remainder = limit % ids.length;
 
-    const totalAvailableQuestions = await questionRepository.count({ subjectId: safeSubjectId });
-    const actualLimit = Math.min(Number(limit) || 20, totalAvailableQuestions);
+    const subjectDocs = await mongoose.model('Subject').find({ _id: { $in: ids } }).lean();
+    const subjectNameMap = {};
+    subjectDocs.forEach(d => { subjectNameMap[String(d._id)] = d.name; });
 
-    const userPerformance = await TopicPerformance.find({ userId: safeUserId, subjectId: safeSubjectId });
-    const pool = await this.getFilteredPool(safeUserId, safeSubjectId, userPerformance, actualLimit);
-    const selected = await this.selectWithAI(safeUserId, safeSubjectId, pool, userPerformance, actualLimit);
-    return selected;
+    for (let i = 0; i < ids.length; i++) {
+      const currentId = ids[i];
+      if (!mongoose.Types.ObjectId.isValid(currentId)) continue;
+      
+      const safeSubjectId = new mongoose.Types.ObjectId(currentId);
+      const currentLimit = i === 0 ? subLimit + remainder : subLimit;
+
+      const totalAvailableQuestions = await questionRepository.count({ subjectId: safeSubjectId });
+      const actualLimit = Math.min(Number(currentLimit), totalAvailableQuestions);
+
+      const userPerformance = await TopicPerformance.find({ userId: safeUserId, subjectId: safeSubjectId });
+      const pool = await this.getFilteredPool(safeUserId, safeSubjectId, userPerformance, actualLimit);
+      const selected = await this.selectWithAI(safeUserId, safeSubjectId, pool, userPerformance, actualLimit);
+      
+      // Attach subject name
+      const enrichedSelected = selected.map(q => ({
+        ...q,
+        subjectName: subjectNameMap[String(currentId)] || "Subject"
+      }));
+      
+      allSelected = allSelected.concat(enrichedSelected);
+    }
+
+    return allSelected;
   }
 }
 

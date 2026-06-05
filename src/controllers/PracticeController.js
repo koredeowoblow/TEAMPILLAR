@@ -145,9 +145,11 @@ class PracticeController {
 
   static async startSession(req, res) {
     const userId = req.user?.id;
-    const { subjectId, limit, duration } = req.body;
+    const { subjectId, subjectIds, limit, duration } = req.body;
     if (!userId) throw new AppError("Unauthorized", 401);
-    if (!subjectId) throw new AppError("subjectId is required", 400);
+    if (!subjectId && (!subjectIds || subjectIds.length === 0)) {
+      throw new AppError("subjectId or subjectIds is required", 400);
+    }
     // Accept either `limit` or `duration` from the frontend payload
     const questionLimit = Math.min(
       Math.max(Number(limit || duration || 20), 1),
@@ -163,7 +165,7 @@ class PracticeController {
       );
     }
 
-    const session = await PracticeService.startSession(userId, subjectId, questionLimit);
+    const session = await PracticeService.startSession(userId, subjectId, questionLimit, subjectIds);
     return sendSuccess(res, {
       message: "Session started",
       data: toPracticeSessionSummaryDTO(session),

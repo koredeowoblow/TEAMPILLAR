@@ -16,10 +16,12 @@ class SmartMockController {
    */
   static async generateSmartMock(req, res) {
     const userId = req.user?.id;
-    const { subjectId, limit, duration } = req.body;
+    const { subjectId, subjectIds, limit, duration } = req.body;
 
     if (!userId) throw new AppError("Unauthorized", 401);
-    if (!subjectId) throw new AppError("subjectId is required", 400);
+    if (!subjectId && (!subjectIds || subjectIds.length === 0)) {
+      throw new AppError("subjectId or subjectIds is required", 400);
+    }
 
     // Freemium Guard: Lifetime Mock Test limit
     await FreemiumGuard.checkMockTest(req.user);
@@ -39,11 +41,12 @@ class SmartMockController {
     }
 
     // 1. Generate questions using hybrid system
-    const questions = await SmartMockService.generateSmartMock(userId, subjectId, questionLimit);
+    const questions = await SmartMockService.generateSmartMock(userId, subjectId, questionLimit, subjectIds);
 
     // 2. Format questions for response (strip correct answers and explanations)
     const formattedQuestions = questions.map(q => ({
       _id: q._id,
+      subjectName: q.subjectName,
       content: q.content,
       options: q.options.map(o => ({ id: o.id, text: o.text })),
       metadata: q.metadata
@@ -52,7 +55,8 @@ class SmartMockController {
     // 3. Create an active session
     const session = await practiceRepository.create({
       userId,
-      subjectId,
+      subjectId: subjectId || (subjectIds && subjectIds[0]),
+      subjectIds: subjectIds || [subjectId],
       sessionStatus: "ACTIVE",
       sessionType: "smart-mock",
       questionIds: formattedQuestions.map(q => q._id),

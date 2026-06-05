@@ -32,9 +32,12 @@ const PracticeSessionSchema = new mongoose.Schema(
     subjectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subject",
-      required: true,
       index: true,
     },
+    subjectIds: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subject",
+    }],
     sessionStatus: {
       type: String,
       enum: ["ACTIVE", "COMPLETED", "EXPIRED"],

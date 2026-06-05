@@ -85,6 +85,62 @@ class PracticeService {
       }
 
       let matchStage = { ...filters };
+      
+      // Multi-subject support: If session has multiple subjectIds, split the limit
+      if (session && session.subjectIds && session.subjectIds.length > 1) {
+        const subLimit = Math.floor(limit / session.subjectIds.length);
+        const remainder = limit % session.subjectIds.length;
+        
+        let allQuestions = [];
+        const subjectDocs = await Subject.find({ _id: { $in: session.subjectIds } }).lean();
+        const subjectNameMap = {};
+        subjectDocs.forEach(d => { subjectNameMap[String(d._id)] = d.name; });
+
+        for (let i = 0; i < session.subjectIds.length; i++) {
+          const currentSubId = session.subjectIds[i];
+          const currentLimit = i === 0 ? subLimit + remainder : subLimit;
+          
+          const subMatchStage = { ...matchStage, subjectId: currentSubId };
+          if (topicId) subMatchStage["metadata.topic"] = topicId;
+          if (difficulty) subMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
+          if (year) subMatchStage["metadata.year"] = Number(year);
+          
+          const subPipeline = [
+            { $match: subMatchStage },
+            { $sample: { size: currentLimit } },
+          ];
+          const subQuestions = await questionRepository.aggregate(subPipeline);
+          
+          // Attach subject name to each question for the frontend
+          const enrichedSubQuestions = subQuestions.map(q => ({
+            ...q,
+            subjectName: subjectNameMap[String(currentSubId)] || "Subject"
+          }));
+          
+          allQuestions = allQuestions.concat(enrichedSubQuestions);
+        }
+        
+        // Map and persist
+        const safe = allQuestions.map((q) => {
+          const slim = {
+            _id: q._id,
+            subjectId: q.subjectId,
+            subjectName: q.subjectName,
+            content: { text: q.content?.text, image: q.content?.image, equation: q.content?.equation },
+            metadata: q.metadata,
+            options: q.options?.map(o => ({ id: o.id, text: o.text })) || []
+          };
+          return slim;
+        });
+
+        if (session && session.sessionStatus === "ACTIVE") {
+          await practiceRepository.update(sessionId, {
+            questionIds: safe.map((q) => q._id),
+          });
+        }
+        return safe;
+      }
+
       if (resolvedSubjectId) matchStage.subjectId = resolvedSubjectId;
       if (topicId) matchStage["metadata.topic"] = topicId;
       if (difficulty)
@@ -363,18 +419,18 @@ class PracticeService {
     };
   }
 
-  static async startSession(userId, subjectId, questionLimit = 20) {
+  static async startSession(userId, subjectId, questionLimit = 20, subjectIds = []) {
     const user = await userRepository.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
-    // Resolve subject name/code to ObjectId
-    const resolvedSubjectId = await resolveSubjectId(subjectId);
-    const subject = await Subject.findById(resolvedSubjectId);
-    if (!subject) throw new AppError("Subject not found", 404);
+    // If subjectIds is provided and has multiple subjects, use it
+    const ids = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
+    const resolvedSubjectIds = await Promise.all(ids.map(id => resolveSubjectId(id)));
 
     const session = await practiceRepository.create({
       userId,
-      subjectId: resolvedSubjectId,
+      subjectId: resolvedSubjectIds[0], // First one as primary for compatibility
+      subjectIds: resolvedSubjectIds,
       sessionStatus: "ACTIVE",
       startTime: new Date(),
       questionLimit: Math.max(1, Number(questionLimit) || 20),
