@@ -51,9 +51,6 @@ class AuthController {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-    console.log("Login successful, token generated:", {
-      token: "[redacted]",
-    });
     return sendSuccess(res, {
       message: "Login successful",
       data: toSessionDTO({ user, token, refreshToken, expiresAt }),
@@ -271,7 +268,10 @@ class AuthController {
     });
     return sendSuccess(res, {
       message: "Users retrieved successfully",
-      data: { ...users, items: users.items.map(toAdminUserDTO) }, // map added
+      data: {
+        ...users,
+        items: users.data.map(toAdminUserDTO),
+      },
       statusCode: 200,
     });
   }
@@ -345,9 +345,21 @@ class AuthController {
     if (!idToken) {
       throw new AppError("Google ID token is required", 400);
     }
-    const SocialAuthService = (await import("../Services/SocialAuthService.js"))
+    const SocialAuthService = (await import("../services/SocialAuthService.js"))
       .default;
-    const result = await SocialAuthService.authenticateWithGoogle(idToken);
+    const result = await SocialAuthService.authenticateWithGoogle(idToken, {
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    if (result.refreshToken) {
+      res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+    }
 
     return sendSuccess(res, {
       message: "Google authentication successful",
@@ -361,12 +373,26 @@ class AuthController {
     if (!identityToken) {
       throw new AppError("Apple identity token is required", 400);
     }
-    const SocialAuthService = (await import("../Services/SocialAuthService.js"))
+    const SocialAuthService = (await import("../services/SocialAuthService.js"))
       .default;
     const result = await SocialAuthService.authenticateWithApple(
       identityToken,
       user,
+      {
+        ip: req.ip,
+        userAgent: req.headers["user-agent"],
+      },
     );
+
+    if (result.refreshToken) {
+      res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+    }
+
     return sendSuccess(res, {
       message: "Apple authentication successful",
       data: toSessionDTO(result),

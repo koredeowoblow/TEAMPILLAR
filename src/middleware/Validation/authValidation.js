@@ -4,24 +4,35 @@ import { userRepository } from "../../repository/UserRepository.js";
 // ✅ Password complexity regex
 export const validatePassword = (password) => {
   const re =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return re.test(String(password));
 };
 
 // ✅ Express-validator rules for registration
 export const validateUserRegistration = [
   body("name")
+    .optional()
     .trim()
-    .notEmpty()
-    .withMessage("Name is required")
     .isLength({ min: 2 })
     .withMessage("Name must be at least 2 characters"),
+  body("fullName")
+    .optional()
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage("Name must be at least 2 characters"),
+  body().custom((_, { req }) => {
+    const name = (req.body.name || req.body.fullName || "").trim();
+    if (name.length < 2) {
+      throw new Error("Name is required and must be at least 2 characters");
+    }
+    return true;
+  }),
 
-  body("email").trim().isEmail().withMessage("Invalid email format"),
+  body("email").trim().isEmail().withMessage("Invalid email format").normalizeEmail(),
 
   body("password")
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long")
     .custom((value) => {
       if (!validatePassword(value)) {
         throw new Error(
@@ -62,8 +73,8 @@ export const validateResetPassword = [
     .isNumeric()
     .withMessage("OTP must be a 4-digit number"),
   body("newPassword")
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long")
     .custom((value) => {
       if (!validatePassword(value)) {
         throw new Error(

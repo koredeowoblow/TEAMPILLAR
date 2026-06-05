@@ -12,13 +12,12 @@ class AchievementService {
 
     if (tab === "leaderboard") {
       return await this.getLeaderboard(10);
-    } 
-    
+    }
+
     if (tab === "history") {
       return await achievementRepository.findAchievementsByUser(userId);
     }
 
-    // Default: return all three types of data
     const [milestones, leaderboard, history] = await Promise.all([
       achievementRepository.findAchievementsByUser(userId),
       this.getLeaderboard(10),
@@ -26,6 +25,9 @@ class AchievementService {
     ]);
 
     return { milestones, leaderboard, history };
+  }
+
+  static async updateStreak(userId, streakCount) {
     if (!userId || streakCount === undefined) {
       throw new AppError("userId and streakCount are required", 400);
     }
@@ -37,13 +39,10 @@ class AchievementService {
    */
   static async getLeaderboard(limit) {
     const parsedLimit = limit ? parseInt(limit, 10) : 10;
-    // Get top users
     const board = await achievementRepository.getLeaderboard(parsedLimit);
 
-    // Assign ranks dynamically based on sorted score
     let currentRank = 1;
     for (let i = 0; i < board.length; i++) {
-      // Simple dense ranking (if scores are same, same rank)
       if (i > 0 && board[i].score < board[i - 1].score) {
         currentRank = i + 1;
       }

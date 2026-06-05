@@ -19,7 +19,8 @@ import {
 } from "../middleware/rateLimiter.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { logger } from "../core/logger.js";
-// import upload from "../Config/multer.js";
+import upload from "../config/multer.js";
+import SettingsController from "../controllers/SettingsController.js";
 
 const auth = Router();
 
@@ -100,8 +101,29 @@ auth.get("/me", protectUser, tryCatch(AuthController.getProfile));
 auth.patch(
   "/profile",
   protectUser,
+  upload.single("photo"),
   tryCatch(AuthController.createOrUpdateProfile),
 );
+
+// User settings
+auth.get("/settings", protectUser, tryCatch(SettingsController.getSettings));
+auth.patch("/settings/profile", protectUser, tryCatch(SettingsController.updateProfile));
+auth.post(
+  "/settings/photo",
+  protectUser,
+  upload.single("photo"),
+  tryCatch(SettingsController.uploadPhoto),
+);
+auth.delete("/settings/photo", protectUser, tryCatch(SettingsController.removePhoto));
+auth.patch(
+  "/settings/notifications",
+  protectUser,
+  tryCatch(SettingsController.updateNotifications),
+);
+auth.patch("/settings/privacy", protectUser, tryCatch(SettingsController.updatePrivacy));
+auth.get("/subscription", protectUser, tryCatch(SettingsController.getSubscription));
+auth.post("/deactivate", protectUser, tryCatch(SettingsController.deactivateAccount));
+auth.post("/reactivate", protectUser, tryCatch(SettingsController.reactivateAccount));
 
 // Social Authentication
 auth.post("/google", authLimiter, tryCatch(AuthController.googleAuth));

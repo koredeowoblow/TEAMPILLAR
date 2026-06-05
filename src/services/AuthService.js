@@ -27,6 +27,9 @@ class AuthService {
     if (!/[0-9]/.test(password)) {
       throw new AppError("Password must contain number", 400);
     }
+    if (!/[@$!%*?&]/.test(password)) {
+      throw new AppError("Password must contain a special character (@$!%*?&)", 400);
+    }
   }
 
   // ================= TOKENS =================
@@ -68,7 +71,14 @@ class AuthService {
 
   // ================= REGISTER =================
   static async register(userData) {
-    const { email, password, language, phone, targetUniversity, courseOfStudy } = userData;
+    const {
+      password,
+      language,
+      phone,
+      targetUniversity,
+      courseOfStudy,
+    } = userData;
+    const email = String(userData.email || "").trim().toLowerCase();
     const displayName = (userData.name || userData.fullName || "").trim();
 
     this.validatePassword(password);
@@ -134,9 +144,14 @@ class AuthService {
     const user = await userRepository.findByEmail(email, {
       includePassword: true,
     });
-    console.log("Login attempt for", email, "User found:", !!user);
     if (!user)
       throw new AppError("Invalid credentials", 401, {}, "ERR_AUTH_INVALID");
+
+    if (user.isActive === false) {
+      user.isActive = true;
+      user.deactivatedAt = null;
+      await user.save();
+    }
 
     if (!user.password) {
       throw new AppError("Invalid credentials", 401, {}, "ERR_AUTH_INVALID");
@@ -387,6 +402,110 @@ class AuthService {
     await User.findByIdAndDelete(userId);
 
     return { message: "Account deleted successfully" };
+  }
+
+  // ================= EMAIL VERIFICATION =================
+  static async verifyEmail(email, otp) {
+    const user = await userRepository.findByEmail(email);
+    if (!user) throw new AppError("Invalid request", 404);
+
+    if (user.emailVerified) {
+      return { message: "Email already verified", user };
+    }
+
+    const verification = await OTPService.verifyOTP(email, otp, "email_verification");
+    if (!verification.valid) {
+      throw new AppError(verification.message, 400);
+    }
+
+    const updated = await userRepository.updateUser(user._id, {
+      emailVerified: true,
+      emailVerifiedAt: new Date(),
+    });
+
+    return { message: "Email verified successfully", user: updated };
+  }
+
+  static async resendEmailVerification(email) {
+    const user = await userRepository.findByEmail(email);
+    if (!user) throw new AppError("Invalid request", 404);
+
+    if (user.emailVerified) {
+      throw new AppError("Email is already verified", 400);
+    }
+
+    const otp = await OTPService.storeOTP(email, "email_verification", 10);
+    await EmailService.sendEmailVerificationOTP(email, otp, user.name);
+
+    return { message: "Verification code sent" };
+  }
+
+  // ================= PROFILE DELETE =================
+  static async deleteProfile(userId) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new AppError("User not found", 404);
+
+    return userRepository.updateUser(userId, {
+      name: null,
+      photo: null,
+      photoUrl: null,
+      onboarding: {},
+    });
+  }
+
+  // ================= ADMIN =================
+  static async updateUserByAdmin(userId, updates) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new AppError("User not found", 404);
+
+    const payload = { ...updates };
+
+    if (payload.email) {
+      payload.email = String(payload.email).trim().toLowerCase();
+      const existing = await userRepository.findByEmail(payload.email);
+      if (existing && String(existing._id) !== String(userId)) {
+        throw new AppError("Email already registered", 400);
+      }
+    }
+
+    if (payload.phone !== undefined) {
+      payload.onboarding = {
+        ...(user.onboarding?.toObject?.() ?? user.onboarding ?? {}),
+        phone: payload.phone,
+      };
+      delete payload.phone;
+    }
+
+    return userRepository.updateUser(userId, payload);
+  }
+
+  static async adminTriggerPasswordReset(userId) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new AppError("User not found", 404);
+
+    const otp = await OTPService.storeOTP(user.email, "password_reset", 15);
+    await EmailService.sendTokenEmail(user.email, otp, "Password Reset");
+
+    return { message: "OTP sent" };
+  }
+
+  static async createAdmin({ email, password, name }) {
+    this.validatePassword(password);
+
+    const existingUser = await userRepository.findByEmail(email);
+    if (existingUser) {
+      throw new AppError("Email already registered", 400);
+    }
+
+    return userRepository.createUser({
+      email: String(email).trim().toLowerCase(),
+      password,
+      name: name || "Admin",
+      role: "ADMIN",
+      isAdmin: true,
+      emailVerified: true,
+      emailVerifiedAt: new Date(),
+    });
   }
 }
 

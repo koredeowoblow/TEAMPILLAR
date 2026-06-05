@@ -6,7 +6,8 @@ import bcrypt from "bcryptjs";
 const UserSchema = new mongoose.Schema(
   {
     name: { type: String },
-    email: { type: String, required: true, unique: true },
+    username: { type: String, unique: true, sparse: true, trim: true, lowercase: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, select: false }, // Optional - social auth users don't have passwords
     language: { type: String, enum: ["EN", "FR", "DE"], default: "EN" },
     photo: { type: String },
@@ -22,12 +23,26 @@ const UserSchema = new mongoose.Schema(
       default: "STUDENT",
     },
     isPro: { type: Boolean, default: false },
+    subscriptionStatus: {
+      type: String,
+      enum: ["free", "active", "expired", "cancelled"],
+      default: "free",
+    },
+    proExpiresAt: { type: Date, default: null },
+    isActive: { type: Boolean, default: true },
+    deactivatedAt: { type: Date, default: null },
     onboarding: { type: Object, default: {} },
     notificationPreferences: {
       emailNotifications: { type: Boolean, default: true },
       examReminders:      { type: Boolean, default: true },
       resultAlerts:       { type: Boolean, default: true },
       productUpdates:     { type: Boolean, default: false },
+    },
+    privacySettings: {
+      profileVisibility: { type: String, enum: ["public", "private"], default: "public" },
+      showEmail: { type: Boolean, default: false },
+      showStats: { type: Boolean, default: true },
+      dataSharing: { type: Boolean, default: false },
     },
     stats: {
       predictedScore: { type: Number, default: 0 },

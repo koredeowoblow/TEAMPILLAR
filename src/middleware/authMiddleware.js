@@ -75,7 +75,11 @@ export const protectUser = async (req, res, next) => {
       return next(new AppError("Unauthorized", 401));
     }
 
-    // Server-side session timeout (sliding, based on last activity; independent of JWT expiry)
+    if (user.isActive === false) {
+      return next(new AppError("Account is deactivated", 403));
+    }
+
+    // Server-side session timeout
     const timeoutMinutesRaw =
       process.env.AUTH_SESSION_TIMEOUT_MINUTES ||
       process.env.SESSION_TIMEOUT_MINUTES ||

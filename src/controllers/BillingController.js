@@ -31,23 +31,32 @@ class BillingController {
   }
 
   static async initialize(req, res) {
-    const { planId, email } = req.body;
+    const { planId } = req.body;
+    const email = req.body.email || req.user?.email;
     if (!planId) {
       throw new AppError("planId is required", 400);
+    }
+    if (!email) {
+      throw new AppError("Email is required", 400);
     }
     const plan = planId === "pro" ? { amount: 5000 } : { amount: 0 };
     const amountKobo = plan.amount * 100;
 
     if (!process.env.PAYSTACK_SECRET) {
       return sendSuccess(res, {
-        message: "Payment initialized (stub)",
-        data: { planId },
+        message: "Payment initialized (development mode)",
+        data: {
+          planId,
+          authorization_url: null,
+          reference: `dev_${Date.now()}`,
+          mode: "development",
+        },
         statusCode: 200,
       });
     }
 
     const body = {
-      email: email || "no-reply@pillarcbt.com",
+      email,
       amount: amountKobo,
       callback_url:
         process.env.PAYSTACK_CALLBACK_URL ||

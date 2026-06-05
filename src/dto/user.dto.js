@@ -18,6 +18,7 @@ export function toUserDTO(user) {
   return {
     id:            String(u._id),
     name:          u.name ?? null,
+    username:      u.username ?? null,
     email:         u.email,
     photo:         u.photoUrl ?? u.photo ?? null,
     language:      u.language,
@@ -26,6 +27,11 @@ export function toUserDTO(user) {
     emailVerified: u.emailVerified ?? false,
     onboarding:    u.onboarding ?? {},
     stats:         u.stats ?? {},
+    notificationPreferences: u.notificationPreferences ?? {},
+    privacySettings: u.privacySettings ?? {},
+    subscriptionStatus: u.subscriptionStatus ?? (u.isPro ? "active" : "free"),
+    proExpiresAt:  u.proExpiresAt ?? null,
+    isActive:      u.isActive !== false,
     createdAt:     u.createdAt,
   };
   // NEVER include: password, googleId, appleId, isAdmin, __v, updatedAt

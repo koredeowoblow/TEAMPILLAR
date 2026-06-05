@@ -42,8 +42,22 @@ class StudentController {
   static async updateOnboarding(req, res) {
     const userId = req.user?.id;
     if (!userId) throw new AppError("Unauthorized", 401);
+
+    const existing = await userRepository.findById(userId);
+    if (!existing) throw new AppError("User not found", 404);
+
+    const currentOnboarding =
+      existing.onboarding?.toObject?.() ?? existing.onboarding ?? {};
+
     const updated = await userRepository.updateUser(userId, {
-      onboarding: req.body,
+      onboarding: {
+        ...currentOnboarding,
+        ...req.body,
+        completedAt: req.body.studyIntensity ? new Date().toISOString() : currentOnboarding.completedAt,
+      },
+      ...(req.body.targetScore
+        ? { stats: { ...(existing.stats?.toObject?.() ?? existing.stats ?? {}), predictedScore: req.body.targetScore } }
+        : {}),
     });
     return sendSuccess(res, {
       message: "Onboarding saved",
