@@ -26,25 +26,28 @@ try {
   console.log(`[EmailConfig] Attempting SMTP init with host: ${host}, port: ${port}, user: ${user}`);
 
   if (host && port && user && pass) {
-    // Optimized Gmail Configuration for Render/Cloud
+    // FORCE IPv4 and PORT 587 for maximum Render compatibility
     smtpTransporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // false for 587 (STARTTLS)
       auth: {
         user,
         pass,
       },
       tls: {
         rejectUnauthorized: false,
+        minVersion: "TLSv1.2",
       },
-      // Force IPv4 to avoid ENETUNREACH issues with IPv6 on Render
-      connectionTimeout: 20000,
-      greetingTimeout: 20000,
-      socketTimeout: 20000,
+      family: 4, // FORCE IPv4 to eliminate ENETUNREACH permanently
+      connectionTimeout: 30000, 
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
       debug: true,
       logger: true,
     });
 
-    console.log("[EmailConfig] SMTP Transporter initialized using Gmail Service (Preferred IPv4)");
+    console.log("[EmailConfig] SMTP Transporter initialized (Forced IPv4, Port 587)");
 
     smtpTransporter.verify((error) => {
       if (error) {

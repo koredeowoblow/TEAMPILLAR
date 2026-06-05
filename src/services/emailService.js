@@ -143,102 +143,96 @@ class EmailService {
    * @param {string} template - Template name for logging
    * @returns {Promise<boolean>}
    */
-  static async sendEmail(to, subject, html, textContent = null, template = "generic") {
+  /**
+   * Send a generic email using either SMTP (Nodemailer) or Resend with retry logic
+   * @param {string} to - Recipient email address
+   * @param {string} subject - Email subject
+   * @param {string} html - HTML content
+   * @param {string} textContent - Plain text content (optional)
+   * @param {string} template - Template name for logging
+   * @param {number} retries - Number of retry attempts (default: 3)
+   * @returns {Promise<boolean>}
+   */
+  static async sendEmail(to, subject, html, textContent = null, template = "generic", retries = 3) {
     const provider = process.env.EMAIL_PROVIDER || "smtp";
     const senderEmail = process.env.SMTP_USER || process.env.RESEND_SENDER_EMAIL || "onboarding@resend.dev";
     const senderName = process.env.RESEND_SENDER_NAME || "Team Pillar";
 
-    console.log(`[EmailService] --- Start Sending Email ---`);
-    console.log(`[EmailService] To: ${to}`);
-    console.log(`[EmailService] Subject: ${subject}`);
-    console.log(`[EmailService] Provider: ${provider}`);
+    let attempt = 0;
+    while (attempt < retries) {
+      attempt++;
+      console.log(`[EmailService] --- Sending Attempt ${attempt}/${retries} ---`);
+      console.log(`[EmailService] To: ${to} | Provider: ${provider}`);
 
-    try {
-      let result;
+      try {
+        let result;
 
-      if (provider === "resend") {
-        console.log(`[EmailService] Attempting to send via Resend...`);
-        if (!resend) {
-          console.warn("[EmailService] ⚠️ Resend client not initialized. Falling back to SMTP if available.");
-          if (!smtpTransporter) {
-            console.error("[EmailService] ❌ Fallback failed: SMTP Transporter also not initialized.");
-            return false;
+        if (provider === "resend") {
+          if (!resend) {
+            console.warn("[EmailService] ⚠️ Resend client not initialized. Falling back to SMTP.");
+          } else {
+            const { data, error } = await resend.emails.send({
+              from: `${senderName} <${senderEmail}>`,
+              to: [to],
+              subject: subject,
+              html: html,
+              text: textContent,
+            });
+
+            if (error) throw error;
+            result = { messageId: data.id };
           }
-        } else {
-          const { data, error } = await resend.emails.send({
-            from: `${senderName} <${senderEmail}>`,
-            to: [to],
-            subject: subject,
-            html: html,
-            text: textContent,
-          });
-
-          if (error) {
-            console.error("[EmailService] ❌ Resend API returned error:", error);
-            throw error;
-          }
-          console.log(`[EmailService] ✅ Resend Success. ID: ${data.id}`);
-          result = { messageId: data.id };
         }
-      }
 
-      // Default or Fallback: SMTP
-      if (!result) {
-        console.log(`[EmailService] Attempting to send via SMTP (Nodemailer)...`);
-        if (!smtpTransporter) {
-          console.error("[EmailService] ❌ SMTP Transporter not initialized.");
+        // SMTP path (Primary or Fallback)
+        if (!result) {
+          if (!smtpTransporter) {
+            throw new Error("SMTP Transporter not initialized");
+          }
+
+          const info = await smtpTransporter.sendMail({
+            from: `"${senderName}" <${senderEmail}>`,
+            to,
+            subject,
+            text: textContent,
+            html,
+          });
+          result = { messageId: info.messageId };
+        }
+
+        logger.info(`✅ Email sent via ${provider} to ${to} - ID: ${result.messageId}`);
+        await EmailLog.create({
+          to,
+          subject,
+          template,
+          status: "sent",
+          resendId: result.messageId,
+          metadata: { provider, attempt },
+        }).catch((err) => console.error("[EmailService] Log error:", err.message));
+
+        return true;
+      } catch (error) {
+        console.error(`[EmailService] ❌ Attempt ${attempt} failed:`, error.message);
+
+        if (attempt >= retries) {
+          console.error(`[EmailService] ❌ All ${retries} attempts failed.`);
+          await EmailLog.create({
+            to,
+            subject,
+            template,
+            status: "failed",
+            error: { message: error.message, provider, attempts: attempt },
+          }).catch((err) => console.error("[EmailService] Log error:", err.message));
           return false;
         }
 
-        console.log(`[EmailService] Sender: ${senderName} <${senderEmail}>`);
-        
-        const info = await smtpTransporter.sendMail({
-          from: `"${senderName}" <${senderEmail}>`,
-          to,
-          subject,
-          text: textContent,
-          html,
-        });
-        
-        console.log(`[EmailService] ✅ SMTP Success. MessageID: ${info.messageId}`);
-        result = { messageId: info.messageId };
+        // Exponential backoff: 1s, 2s, 4s...
+        const delay = Math.pow(2, attempt) * 1000;
+        console.log(`[EmailService] Retrying in ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
-
-      logger.info(`✅ Email sent via ${provider} to ${to} - ID: ${result.messageId}`);
-
-      await EmailLog.create({
-        to,
-        subject,
-        template,
-        status: "sent",
-        resendId: result.messageId,
-        metadata: { provider },
-      }).catch((err) => console.error("[EmailService] Failed to log success to DB:", err.message));
-
-      return true;
-    } catch (error) {
-      console.error(`[EmailService] ❌ FATAL FAILURE [${provider}] to ${to}:`, {
-        message: error.message,
-        code: error.code,
-        command: error.command,
-        response: error.response,
-        stack: error.stack
-      });
-
-      await EmailLog.create({
-        to,
-        subject,
-        template,
-        status: "failed",
-        error: { 
-          message: error.message, 
-          code: error.code,
-          provider 
-        },
-      }).catch((err) => logger.error("Failed to create failure email log", err));
-
-      return false;
     }
+    return false;
   }
 
   /**
