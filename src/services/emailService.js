@@ -29,6 +29,9 @@ class EmailService {
       }
 
       // Send email via Brevo API
+      if (!brevoClient) {
+        throw new Error("Brevo client not initialized. Check BREVO_API_KEY.");
+      }
       const response = await brevoClient.sendTransacEmail(sendSmtpEmail);
 
       console.log(
