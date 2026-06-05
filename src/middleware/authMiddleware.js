@@ -171,6 +171,22 @@ export const protectAdmin = async (req, res, next) => {
   }
   return next(new AppError("Forbidden", 403));
 };
+
+/**
+ * Middleware to ensure the user has a pro subscription.
+ */
+export const requirePro = (req, res, next) => {
+  if (req.user && req.user.subscription === "pro") {
+    return next();
+  }
+
+  return res.status(403).json({
+    status: "error",
+    code: "UPGRADE_REQUIRED",
+    message: "This feature requires a Pro subscription",
+    upgradeUrl: "/pricing",
+  });
+};
 /**
  * Middleware to restrict access based on user roles.
  * Usage: authorize('admin', 'manager')

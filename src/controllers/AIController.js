@@ -1,6 +1,7 @@
 import AIService from "../services/AIService.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
+import FreemiumGuard from "../services/FreemiumGuard.js";
 
 class AIController {
   static async explain(req, res) {
@@ -8,6 +9,10 @@ class AIController {
     if (!questionId) {
       throw new AppError("questionId is required", 400);
     }
+
+    // Freemium Guard: AI Explanation limit
+    await FreemiumGuard.checkAIExplanation(req.user);
+
     const explanation = await AIService.generateExplanation(
       questionId,
       { ...(context || {}), selectedOptionId },

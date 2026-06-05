@@ -6,64 +6,32 @@ import EmailService from "../services/emailService.js";
 import { logger } from "../core/logger.js";
 import User from "../models/UserModel.js";
 
+import PricingPlan from "../models/PricingPlanModel.js";
+
 const PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
 
 class BillingController {
-  static async getPlans(_req, res) {
-    const plans = [
-      {
-        id: "basic",
-        name: "Basic",
-        price: 0,
-        period: "monthly",
-        features: ["limited"],
-      },
-      {
-        id: "pro",
-        name: "Pro",
-        price: 5000,
-        period: "monthly",
-        features: ["ai-explanations", "unlimited"],
-      },
-    ];
-    return sendSuccess(res, {
-      message: "Plans retrieved",
-      data: plans,
-      statusCode: 200,
-    });
-  }
+  static async initializeSubscription(req, res) {
+    const { planId, billingCycle } = req.body;
+    const email = req.user.email;
 
-  static async initialize(req, res) {
-    const { planId } = req.body;
-    const email = req.body.email || req.user?.email;
-    if (!planId) {
-      throw new AppError("planId is required", 400);
-    }
-    if (!email) {
-      throw new AppError("Email is required", 400);
-    }
-    const plan = planId === "pro" ? { amount: 5000 } : { amount: 0 };
-    const amountKobo = plan.amount * 100;
+    const plan = await PricingPlan.findById(planId);
+    if (!plan) throw new AppError("Plan not found", 404);
 
-    if (!process.env.PAYSTACK_SECRET) {
-      return sendSuccess(res, {
-        message: "Payment initialized (development mode)",
-        data: {
-          planId,
-          authorization_url: null,
-          reference: `dev_${Date.now()}`,
-          mode: "development",
-        },
-        statusCode: 200,
-      });
-    }
+    const cycle = plan.billingCycles.find((c) => c.label === billingCycle);
+    if (!cycle) throw new AppError("Invalid billing cycle", 400);
 
     const body = {
       email,
-      amount: amountKobo,
-      callback_url:
-        process.env.PAYSTACK_CALLBACK_URL ||
-        "https://example.com/paystack/callback",
+      amount: cycle.price,
+      plan: cycle.paystackPlanCode,
+      callback_url: process.env.PAYSTACK_CALLBACK_URL,
+      metadata: {
+        userId: req.user.id,
+        planId: plan._id,
+        tier: plan.tier,
+        billingCycle,
+      },
     };
 
     const initRes = await fetch(PAYSTACK_INIT_URL, {
@@ -74,20 +42,11 @@ class BillingController {
       },
       body: JSON.stringify(body),
     });
-    const data = await initRes.json();
-    if (!initRes.ok) {
-      return sendError(res, {
-        message: "Payment initialization failed",
-        data,
-        statusCode: 400,
-      });
-    }
 
-    return sendSuccess(res, {
-      message: "Payment initialized",
-      data,
-      statusCode: 200,
-    });
+    const data = await initRes.json();
+    if (!initRes.ok) throw new AppError("Payment initialization failed", 400);
+
+    return sendSuccess(res, { data });
   }
 
   static async webhook(req, res) {
@@ -109,25 +68,19 @@ class BillingController {
 
     const event = req.body;
 
-    if (event.event === "charge.success") {
-      const { customer, amount, currency } = event.data;
-      const email = customer.email;
-
-      setImmediate(async () => {
-        try {
-          const user = await User.findOne({ email });
-          await EmailService.sendPaymentConfirmation(email, user?.name || "Customer", {
-            planName: "Pro Plan", // This should ideally be derived from metadata
-            amount: amount / 100,
-            currency,
-          });
-        } catch (err) {
-          logger.error("Failed to send payment confirmation email", {
-            email,
-            message: err.message,
-          });
-        }
-      });
+    switch (event.event) {
+      case "charge.success":
+        await this.handleChargeSuccess(event.data);
+        break;
+      case "subscription.create":
+        await this.handleSubscriptionCreate(event.data);
+        break;
+      case "invoice.payment_failed":
+        await this.handlePaymentFailed(event.data);
+        break;
+      case "subscription.disable":
+        await this.handleSubscriptionDisabled(event.data);
+        break;
     }
 
     return sendSuccess(res, {
@@ -135,6 +88,109 @@ class BillingController {
       data: event,
       statusCode: 200,
     });
+  }
+
+  static async handleChargeSuccess(data) {
+    const { customer, amount, currency, metadata } = data;
+    const email = customer.email;
+
+    setImmediate(async () => {
+      try {
+        const user = await User.findOne({ email });
+        if (!user) return;
+
+        // If it was a one-time payment that should upgrade them
+        if (metadata?.tier === "pro") {
+          user.subscription = "pro";
+          await user.save();
+        }
+
+        await EmailService.sendPaymentConfirmation(
+          email,
+          user?.name || "Customer",
+          {
+            planName: metadata?.planName || "Pro Plan",
+            amount: amount / 100,
+            currency,
+          }
+        );
+      } catch (err) {
+        logger.error("Failed to handle charge success", {
+          email,
+          message: err.message,
+        });
+      }
+    });
+  }
+
+  static async handleSubscriptionCreate(data) {
+    const { customer, subscription_code, next_payment_date, plan, metadata } =
+      data;
+    const email = customer.email;
+
+    try {
+      const user = await User.findOne({ email });
+      if (!user) return;
+
+      user.subscription = "pro";
+      user.subscriptionDetails = {
+        paystackSubscriptionCode: subscription_code,
+        nextPaymentDate: new Date(next_payment_date),
+        billingCycle: metadata?.billingCycle,
+      };
+      await user.save();
+
+      logger.info(`Subscription created for ${email}: ${subscription_code}`);
+    } catch (err) {
+      logger.error("Failed to handle subscription create", {
+        email,
+        message: err.message,
+      });
+    }
+  }
+
+  static async handlePaymentFailed(data) {
+    const { customer } = data;
+    const email = customer.email;
+
+    try {
+      const user = await User.findOne({ email });
+      if (!user) return;
+
+      user.subscription = "free";
+      await user.save();
+
+      await EmailService.sendEmail(
+        email,
+        "Subscription Payment Failed",
+        "<p>Your subscription payment failed. Your account has been reverted to the free tier.</p>"
+      );
+    } catch (err) {
+      logger.error("Failed to handle payment failed", {
+        email,
+        message: err.message,
+      });
+    }
+  }
+
+  static async handleSubscriptionDisabled(data) {
+    const { customer } = data;
+    const email = customer.email;
+
+    try {
+      const user = await User.findOne({ email });
+      if (!user) return;
+
+      user.subscription = "free";
+      await user.save();
+
+      logger.info(`Subscription disabled for ${email}`);
+    } catch (err) {
+      logger.error("Failed to handle subscription disabled", {
+        email,
+        message: err.message,
+      });
+    }
   }
 }
 

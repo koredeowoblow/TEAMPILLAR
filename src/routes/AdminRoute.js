@@ -2,6 +2,7 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import AdminController from "../controllers/AdminController.js";
 import PracticeController from "../controllers/PracticeController.js";
+import AdminPricingController from "../controllers/AdminPricingController.js";
 import { protectUser, protectAdmin } from "../middleware/authMiddleware.js";
 import { tryCatch } from "../utils/try-catch.js";
 import {
@@ -171,6 +172,43 @@ router.delete(
   protectUser,
   protectAdmin,
   tryCatch(PracticeController.deleteSubject),
+);
+
+/* ─────────────────── PRICING ─────────────────── */
+
+router.get(
+  "/pricing",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminPricingController.listPlans),
+);
+
+router.post(
+  "/pricing",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminPricingController.createPlan),
+);
+
+router.put(
+  "/pricing/:id",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminPricingController.updatePlan),
+);
+
+router.delete(
+  "/pricing/:id",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminPricingController.softDeletePlan),
+);
+
+router.put(
+  "/pricing/:id/toggle-popular",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminPricingController.togglePopular),
 );
 
 export default router;

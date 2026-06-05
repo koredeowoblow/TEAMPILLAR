@@ -33,6 +33,21 @@ const UserSchema = new mongoose.Schema(
     deactivatedAt: { type: Date, default: null },
     selectedSubjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subject" }],
     lastSubjectUpdate: { type: Date, default: null },
+    subscription: {
+      type: String,
+      enum: ["free", "pro"],
+      default: "free",
+    },
+    subscriptionDetails: {
+      paystackSubscriptionCode: String,
+      nextPaymentDate: Date,
+      billingCycle: String, // 'monthly' | 'yearly'
+    },
+    limits: {
+      dailyAICount: { type: Number, default: 0 },
+      lastAIReset: { type: Date, default: Date.now },
+      totalMockTests: { type: Number, default: 0 },
+    },
     onboarding: { type: Object, default: {} },
     notificationPreferences: {
       emailNotifications: { type: Boolean, default: true },

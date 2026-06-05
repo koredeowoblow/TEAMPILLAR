@@ -5,6 +5,7 @@ import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
 import { toPracticeSessionSummaryDTO } from "../dto/index.js";
 import { CONSTANTS } from "../config/constants.js";
+import FreemiumGuard from "../services/FreemiumGuard.js";
 
 // Maximum question count allowed for free-tier users
 const FREE_QUESTION_LIMIT = 20;
@@ -19,6 +20,9 @@ class SmartMockController {
 
     if (!userId) throw new AppError("Unauthorized", 401);
     if (!subjectId) throw new AppError("subjectId is required", 400);
+
+    // Freemium Guard: Lifetime Mock Test limit
+    await FreemiumGuard.checkMockTest(req.user);
 
     const questionLimit = Math.min(
       Math.max(Number(limit || duration || 20), 1),

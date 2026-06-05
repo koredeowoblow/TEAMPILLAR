@@ -4,6 +4,7 @@ import { practiceRepository } from "../repository/PracticeRepository.js";
 import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utils/AppError.js";
 import { toUserDTO } from "../dto/index.js";
+import FreemiumGuard from "../services/FreemiumGuard.js";
 
 /* ── UTME exam date: set UTME_DATE in .env as YYYY-MM-DD ── */
 function getDaysToExam() {
@@ -51,6 +52,9 @@ class StudentController {
 
     const subjects = req.body.subjects;
     if (subjects && Array.isArray(subjects)) {
+      // Freemium Guard: Subject limit
+      FreemiumGuard.checkSubjectLimit(subjects.length, req.user.subscription);
+
       if (subjects.length > 6) {
         throw new AppError("You can select a maximum of 6 subjects", 400);
       }
@@ -81,6 +85,9 @@ class StudentController {
     if (!subjects || !Array.isArray(subjects)) {
       throw new AppError("Subjects array is required", 400);
     }
+
+    // Freemium Guard: Subject limit
+    FreemiumGuard.checkSubjectLimit(subjects.length, req.user.subscription);
 
     if (subjects.length > 6) {
       throw new AppError("You can select a maximum of 6 subjects", 400);
