@@ -195,11 +195,29 @@ class PracticeController {
     }
 
     const session = await PracticeService.startSession(userId, subjectId, questionLimit, subjectIds);
+
+    // Fetch questions immediately after session creation so the frontend CBT
+    // component can start rendering without a separate round-trip.
+    const primarySubjectId = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds[0] : subjectId;
+    let questions = [];
+    try {
+      const rawQuestions = await PracticeService.getQuestionsForSubject(primarySubjectId, {
+        userId,
+        sessionId: String(session._id),
+        limit: questionLimit,
+        isAdmin: false,
+      });
+      questions = rawQuestions.map((q, index) => toCBTQuestionDTO(q, index));
+    } catch (qErr) {
+      // Non-fatal: frontend will show "No questions" screen with retry option
+    }
+
     return sendSuccess(res, {
       message: "Session started",
       data: {
         sessionId: String(session._id),
-        session: toPracticeSessionSummaryDTO(session)
+        session: toPracticeSessionSummaryDTO(session),
+        questions,
       },
       statusCode: 201,
     });

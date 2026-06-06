@@ -82,11 +82,11 @@ const corsOptions = {
     // Allow server-to-server or requests without Origin
     if (!origin) return callback(null, true);
     
-    const isLocalhost = /^http:\/\/localhost(:\d+)?$/.test(origin);
+    const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin);
     
     if (
       allowedOrigins.includes(origin) ||
-      (process.env.NODE_ENV !== "production" && isLocalhost)
+      isLocalhost
     ) {
       return callback(null, true);
     }

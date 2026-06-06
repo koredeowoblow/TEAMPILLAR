@@ -61,7 +61,10 @@ function buildExpectCtHeader() {
 }
 
 export function enforceSecureTransport(req, res, next) {
-  if (!isProductionEnvironment() || isSecureRequest(req)) {
+  const host = req.get("host") || "";
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1") || host.includes("[::1]");
+
+  if (!isProductionEnvironment() || isSecureRequest(req) || isLocal) {
     return next();
   }
 
