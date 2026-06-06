@@ -45,6 +45,12 @@ class PracticeService {
           _id: { $in: session.questionIds },
         });
 
+        // Fetch subject names for enrichment
+        const subjectIds = [...new Set(questions.map(q => String(q.subjectId)))];
+        const subjectDocs = await Subject.find({ _id: { $in: subjectIds } }).lean();
+        const subjectMap = {};
+        subjectDocs.forEach(d => { subjectMap[String(d._id)] = d.name; });
+
         // Maintain the stored ordering of questionIds
         const qMap = new Map(questions.map((q) => [String(q._id || q.id), q]));
         const orderedQuestions = session.questionIds
@@ -56,6 +62,7 @@ class PracticeService {
           const slim = {
             _id: q._id,
             subjectId: q.subjectId,
+            subjectName: subjectMap[String(q.subjectId)] || "Subject",
             content: {
               text: q.content?.text,
               image: q.content?.image,
@@ -97,7 +104,21 @@ class PracticeService {
           const currentSubId = session.subjectIds[i];
           const currentLimit = Number(limit); // Fetch full limit for each subject
           
-          const subMatchStage = { ...matchStage, subjectId: currentSubId };
+          // Apply adaptive logic PER SUBJECT
+          let subMatchStage = { ...filters, subjectId: currentSubId };
+          
+          if (!filters["metadata.topic"] && !filters["metadata.difficulty"]) {
+            const adaptiveMatch = await AdaptiveEngineService.buildWeightedPool(
+              userId,
+              currentSubId,
+              filters,
+            );
+            if (adaptiveMatch["metadata.topic"])
+              subMatchStage["metadata.topic"] = adaptiveMatch["metadata.topic"];
+            if (adaptiveMatch["metadata.difficulty"])
+              subMatchStage["metadata.difficulty"] = adaptiveMatch["metadata.difficulty"];
+          }
+
           if (topicId) subMatchStage["metadata.topic"] = topicId;
           if (difficulty) subMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
           if (year) subMatchStage["metadata.year"] = Number(year);
@@ -106,8 +127,44 @@ class PracticeService {
             { $match: subMatchStage },
             { $sample: { size: currentLimit } },
           ];
-          const subQuestions = await questionRepository.aggregate(subPipeline);
+          let subQuestions = await questionRepository.aggregate(subPipeline);
           
+          // Fallback if adaptive pool is too small for this subject
+          if (subQuestions.length < currentLimit) {
+            let fallbackLimit = currentLimit - subQuestions.length;
+            let fallbackMatchStage = { subjectId: currentSubId };
+            if (difficulty) fallbackMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
+            if (year) fallbackMatchStage["metadata.year"] = Number(year);
+            
+            let foundIds = subQuestions.map(q => q._id);
+            if (foundIds.length > 0) {
+              fallbackMatchStage._id = { $nin: foundIds };
+            }
+
+            let fallbackPipeline = [
+              { $match: fallbackMatchStage },
+              { $sample: { size: fallbackLimit } },
+            ];
+            let fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
+            subQuestions = subQuestions.concat(fallbackQuestions);
+
+            // Final absolute fallback: Drop difficulty/year if still not enough
+            if (subQuestions.length < currentLimit) {
+              fallbackLimit = currentLimit - subQuestions.length;
+              foundIds = subQuestions.map(q => q._id);
+              fallbackMatchStage = { subjectId: currentSubId };
+              if (foundIds.length > 0) {
+                fallbackMatchStage._id = { $nin: foundIds };
+              }
+              fallbackPipeline = [
+                { $match: fallbackMatchStage },
+                { $sample: { size: fallbackLimit } },
+              ];
+              fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
+              subQuestions = subQuestions.concat(fallbackQuestions);
+            }
+          }
+
           // Attach subject name to each question for the frontend
           const enrichedSubQuestions = subQuestions.map(q => ({
             ...q,
@@ -120,7 +177,8 @@ class PracticeService {
         // Map and persist
         const safe = allQuestions.map((q) => {
           const slim = {
-            _id: q._id,            subjectId: q.subjectId,
+            _id: q._id,
+            subjectId: q.subjectId,
             subjectName: q.subjectName,
             content: { text: q.content?.text, image: q.content?.image, equation: q.content?.equation },
             metadata: q.metadata,
@@ -134,7 +192,8 @@ class PracticeService {
             questionIds: safe.map((q) => q._id),
             questionLimit: safe.length // Update session limit to total count
           });
-        }        return safe;
+        }
+        return safe;
       }
 
       if (resolvedSubjectId) matchStage.subjectId = resolvedSubjectId;
@@ -239,13 +298,6 @@ class PracticeService {
       if (difficulty)
         matchStage["metadata.difficulty"] = difficulty.toLowerCase();
       if (year) matchStage["metadata.year"] = Number(year);
-
-      if (process.env.NODE_ENV === "development") {
-        console.log(
-          "Adaptive Weight Breakdown Match Stage:",
-          JSON.stringify(matchStage, null, 2),
-        );
-      }
 
       const pipeline = [
         { $match: matchStage },

@@ -56,7 +56,7 @@ class PracticeController {
       status: "success",
       data: {
         examId: sessionId || "practice",
-        duration: (Number(limit) || 20) * 60, // Default to 1 min per question
+        duration: formattedQuestions.length * 60, // 1 min per question total
         totalQuestions: formattedQuestions.length,
         questions: formattedQuestions
       },
@@ -185,7 +185,10 @@ class PracticeController {
     );
 
     // Enforce question count restriction for free-tier users
-    const isPro = req.user?.isPro === true || req.user?.subscription === "pro" || req.user?.subscriptionStatus === "active";
+    const isPro = req.user?.isPro === true || 
+                 req.user?.subscription === "pro" || 
+                 req.user?.subscriptionStatus === "active" || 
+                 ["ADMIN", "TUTOR"].includes(req.user?.role);
     
     // Check subject limit for free users
     const requestedSubjects = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];

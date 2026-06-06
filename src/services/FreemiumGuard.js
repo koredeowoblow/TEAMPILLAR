@@ -25,7 +25,10 @@ class FreemiumGuard {
    * @returns {Promise<void>}
    */
   static async checkAIExplanation(user) {
-    if (user.subscription === "pro" || user.isPro === true || user.subscriptionStatus === "active") return;
+    if (user.subscription === "pro" || 
+        user.isPro === true || 
+        user.subscriptionStatus === "active" || 
+        ["ADMIN", "TUTOR"].includes(user.role)) return;
 
     const limit = this.LIMITS.free.dailyAIExplanations;
     const now = new Date();
@@ -63,7 +66,10 @@ class FreemiumGuard {
    * @returns {Promise<void>}
    */
   static async checkMockTest(user) {
-    if (user.subscription === "pro" || user.isPro === true || user.subscriptionStatus === "active") return;
+    if (user.subscription === "pro" || 
+        user.isPro === true || 
+        user.subscriptionStatus === "active" || 
+        ["ADMIN", "TUTOR"].includes(user.role)) return;
 
     const limit = this.LIMITS.free.mockTests;
     const totalTests = user.limits?.totalMockTests || 0;
@@ -78,7 +84,10 @@ class FreemiumGuard {
   }
 
   static async incrementMockTest(user) {
-    if (user.subscription === "pro" || user.isPro === true || user.subscriptionStatus === "active") return;
+    if (user.subscription === "pro" || 
+        user.isPro === true || 
+        user.subscriptionStatus === "active" || 
+        ["ADMIN", "TUTOR"].includes(user.role)) return;
     
     if (!user.limits) user.limits = { totalMockTests: 0 };
     user.limits.totalMockTests = (user.limits.totalMockTests || 0) + 1;
@@ -92,7 +101,10 @@ class FreemiumGuard {
    * @returns {void}
    */
   static checkSubjectLimit(count, user) {
-    if (user?.subscription === "pro" || user?.isPro === true || user?.subscriptionStatus === "active") return;
+    if (user?.subscription === "pro" || 
+        user?.isPro === true || 
+        user?.subscriptionStatus === "active" || 
+        ["ADMIN", "TUTOR"].includes(user?.role)) return;
 
     const limit = this.LIMITS.free.subjects;
     if (count > limit) {
