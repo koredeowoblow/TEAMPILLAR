@@ -12,6 +12,7 @@ import {
   toPracticeSessionResultDTO,
   toSubjectDTO,
   toPracticeSessionSummaryDTO,
+  toCBTQuestionDTO,
 } from "../dto/index.js";
 
 // Maximum question count allowed for free-tier users
@@ -37,19 +38,7 @@ class PracticeController {
     });
 
     // Strip internal fields and format for the specified CBT shape
-    const formattedQuestions = questions.map((q, index) => {
-      const qObj = q.toObject ? q.toObject() : q;
-      return {
-        _id: String(qObj._id),
-        number: index + 1,
-        text: qObj.content?.text || qObj.text || "",
-        subject: { name: qObj.subjectName || "Subject" },
-        options: (qObj.options || []).map(o => ({
-          key: o.id, // Using the stored ID as the key (A, B, C, D)
-          text: o.text
-        }))
-      };
-    });
+    const formattedQuestions = questions.map((q, index) => toCBTQuestionDTO(q, index));
 
     return sendSuccess(res, {
       message: "Questions retrieved",

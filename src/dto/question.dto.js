@@ -42,6 +42,30 @@ export function toQuestionDTO(question) {
 }
 
 /**
+ * Question shape optimized for the CBT Exam engine.
+ * Flattened for easy rendering and selection.
+ */
+export function toCBTQuestionDTO(question, index = 0) {
+  if (!question) return null;
+  const q = question.toObject ? question.toObject() : question;
+
+  return {
+    _id: String(q._id || q.id),
+    number: index + 1,
+    text: q.text || q.content?.text || "",
+    subject: { 
+      name: q.subjectName || (q.subjectId?.name) || "Subject" 
+    },
+    subjectId: String(q.subjectId?._id || q.subjectId?.id || q.subjectId || ""),
+    options: (q.options || []).map(o => ({
+      key: o.id || o.key,
+      text: o.text
+    })),
+    metadata: q.metadata || {}
+  };
+}
+
+/**
  * Question shape for post-session review (result screen).
  * isCorrect and explanation are included so the student can learn.
  *

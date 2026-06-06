@@ -3,7 +3,7 @@ import PracticeService from "../services/PracticeService.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
-import { toPracticeSessionSummaryDTO } from "../dto/index.js";
+import { toPracticeSessionSummaryDTO, toCBTQuestionDTO } from "../dto/index.js";
 import { CONSTANTS } from "../config/constants.js";
 import FreemiumGuard from "../services/FreemiumGuard.js";
 
@@ -56,13 +56,7 @@ class SmartMockController {
     const questions = await SmartMockService.generateSmartMock(userId, subjectId, questionLimit, subjectIds);
 
     // 2. Format questions for response (strip correct answers and explanations)
-    const formattedQuestions = questions.map(q => ({
-      _id: q._id,
-      subjectName: q.subjectName,
-      content: q.content,
-      options: q.options.map(o => ({ id: o.id, text: o.text })),
-      metadata: q.metadata
-    }));
+    const formattedQuestions = questions.map((q, index) => toCBTQuestionDTO(q, index));
 
     // 3. Create an active session
     const session = await practiceRepository.create({
