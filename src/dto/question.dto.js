@@ -29,6 +29,7 @@ export function toQuestionDTO(question) {
     // Strip isCorrect — never expose during active session
     options: (q.options ?? []).map((o) => ({
       id:   o.id,
+      key:  o.id, // For compatibility with CBT engine
       text: o.text,
     })),
     metadata: {
@@ -80,6 +81,7 @@ export function toQuestionReviewDTO(question) {
     // Safe to reveal after submission
     options: (q.options ?? []).map((o) => ({
       id:        o.id,
+      key:       o.id, // For compatibility with CBT engine
       text:      o.text,
       isCorrect: o.isCorrect ?? false,
     })),
