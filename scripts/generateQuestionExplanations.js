@@ -6,12 +6,8 @@ import dns from "node:dns";
 import Question from "../src/models/QuestionModel.js";
 import QuestionExplanationService from "../src/services/QuestionExplanationService.js";
 
-// Load environment variables
-dotenv.config({
-  path: resolve(process.cwd(), ".env"),
-});
+dotenv.config({ path: resolve(process.cwd(), ".env") });
 
-// DNS override for SRV resolution
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -23,24 +19,19 @@ async function main() {
 
   try {
     const mongoUri = process.env.MONGO_URI;
-    if (!mongoUri) {
-      throw new Error("MONGO_URI missing from .env");
-    }
+    if (!mongoUri) throw new Error("MONGO_URI missing from .env");
 
     console.log("🔌 Connecting to MongoDB...");
-    await mongoose.connect(mongoUri, {
-      dbName: "teampillar",
-    });
+    await mongoose.connect(mongoUri, { dbName: "teampillar" });
     console.log("✅ Connected to MongoDB");
 
-    // Find questions with pending explanations
     const query = {
       $or: [
         { explanationStatus: "pending" },
         { explanationStatus: { $exists: false } },
         { explanation: null },
-        { explanation: "" }
-      ]
+        { explanation: "" },
+      ],
     };
 
     const count = await Question.countDocuments(query);
@@ -52,42 +43,67 @@ async function main() {
     }
 
     const targetLimit = isNaN(limit) ? 50 : limit;
-    console.log(`🚀 Starting processing of up to ${targetLimit} questions...`);
+    console.log(`🚀 Processing up to ${targetLimit} questions...\n`);
 
-    const questions = await Question.find(query).limit(targetLimit);
+    const questions = await Question.find(query).limit(targetLimit).lean();
+
     let successCount = 0;
     let failCount = 0;
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
-      console.log(`[${i + 1}/${questions.length}] Processing Question ID: ${q._id} (${q.metadata?.questionCode || "no-code"})...`);
+      const code = q.metadata?.questionCode || "no-code";
+      console.log(`[${i + 1}/${questions.length}] ID: ${q._id} (${code})`);
 
       try {
-        await QuestionExplanationService.generateAndSaveExplanation(q);
+        const result = await QuestionExplanationService.generateExplanation(q);
+
+        // ✅ updateOne bypasses full schema validation
+        await Question.updateOne(
+          { _id: q._id },
+          {
+            $set: {
+              explanation: result.summary,
+              explanationStatus: "completed",
+              explanationGeneratedAt: new Date(),
+              explanationSource: "ai",
+              explanationDetails: {
+                whyCorrect: result.whyCorrect,
+                whyOthersWrong: result.whyOthersWrong,
+                examTip: result.examTip,
+                relatedConcepts: result.relatedConcepts,
+              },
+            },
+          }
+        );
+
         successCount++;
-        console.log(`  ✅ Success`);
+        console.log(`  ✅ Saved\n`);
       } catch (err) {
         failCount++;
-        console.error(`  ❌ Failed: ${err.message}`);
+        console.error(`  ❌ Failed: ${err.message}\n`);
+
+        // Mark as failed so it doesn't get re-picked next run
+        await Question.updateOne(
+          { _id: q._id },
+          { $set: { explanationStatus: "failed" } }
+        ).catch(() => { });
       }
 
-      // Rate limit safety delay
       if (i < questions.length - 1) {
-        console.log("  ⏳ Sleeping 1.5s for rate limit safety...");
         await sleep(1500);
       }
     }
 
-    console.log(`\n🏁 Completed batch processing!`);
-    console.log(`  - Total processed: ${questions.length}`);
-    console.log(`  - Successfully generated: ${successCount}`);
-    console.log(`  - Failed: ${failCount}`);
-
+    console.log(`🏁 Done!`);
+    console.log(`  ✅ Success: ${successCount}`);
+    console.log(`  ❌ Failed:  ${failCount}`);
+    console.log(`  📦 Total:   ${questions.length}`);
   } catch (error) {
-    console.error("❌ Seeding execution failed:", error);
+    console.error("❌ Fatal error:", error);
   } finally {
     await mongoose.disconnect();
-    console.log("🔌 MongoDB disconnected");
+    console.log("\n🔌 MongoDB disconnected");
   }
 }
 

@@ -3,15 +3,9 @@ import AIService from "./AIService.js";
 import { logger } from "../core/logger.js";
 
 class QuestionExplanationService {
-  /**
-   * Safe, fast read-only method to fetch cached explanation from DB.
-   * NEVER calls AI during runtime.
-   */
   static async getExplanation(questionId) {
     const question = await Question.findById(questionId).lean();
-    if (!question) {
-      return null;
-    }
+    if (!question) return null;
 
     if (question.explanationStatus === "generated" && question.explanationDetails) {
       return {
@@ -25,7 +19,6 @@ class QuestionExplanationService {
       };
     }
 
-    // Return pending placeholder structure
     return {
       summary: question.explanation || "Explanation is pending generation.",
       whyCorrect: "",
@@ -38,13 +31,13 @@ class QuestionExplanationService {
   }
 
   /**
-   * Invokes AI to generate explanation. Used ONLY by bulk seeder / import.
+   * Generates explanation via AI and returns parsed JSON.
+   * Does NOT save to DB — caller handles persistence.
    */
-  static async generateAndSaveExplanation(question) {
+  static async generateExplanation(question) {
     const { content, options, metadata } = question;
     const correctAnswer = options?.find((o) => o.isCorrect)?.text || "Unknown";
-    
-    // Construct system prompt guiding Groq to return clean structured JSON
+
     const systemPrompt = `You are a UTME (JAMB) educational expert explaining concepts to Nigerian secondary school students.
 You must analyze the question and return a valid JSON object with detailed explanations.
 Format requirements:
@@ -76,57 +69,84 @@ CORRECT ANSWER: ${correctAnswer}
 ### TASK:
 Generate the explanation JSON object matching the requested schema. Ensure all incorrect options are explained in whyOthersWrong array.`;
 
-    try {
-      const response = await AIService._callAIWithFallback([
+    const response = await AIService._callAIWithFallback(
+      [
         { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ], { max_tokens: 1200, temperature: 0.2 });
+        { role: "user", content: userPrompt },
+      ],
+      { max_tokens: 1200, temperature: 0.2 }
+    );
 
-      if (!response || !response.content) {
-        throw new Error("Empty AI response content");
-      }
+    if (!response || !response.content) {
+      throw new Error("Empty AI response content");
+    }
 
-      // Parse JSON from response
-      let parsedJson;
-      try {
-        const jsonMatch = response.content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          parsedJson = JSON.parse(jsonMatch[0]);
-        } else {
-          parsedJson = JSON.parse(response.content);
-        }
-      } catch (parseErr) {
-        logger.warn("AI returned malformed JSON, utilizing fallback parser", { error: parseErr.message, content: response.content });
-        // Fallback placeholder structure
-        parsedJson = {
-          summary: response.content,
-          whyCorrect: "The selected answer is correct based on the question constraints.",
-          whyOthersWrong: options?.filter(o => !o.isCorrect).map(o => `${o.text} is incorrect.`) || [],
-          examTip: `Study ${metadata?.topic || "this topic"} carefully.`,
-          relatedConcepts: [metadata?.topic || "General"]
-        };
-      }
+    let parsedJson;
+    try {
+      const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+      const raw = jsonMatch ? jsonMatch[0] : response.content;
 
-      // Update and save question
-      question.explanation = parsedJson.summary || response.content;
-      question.explanationStatus = "generated";
-      question.explanationSource = "ai";
-      question.explanationGeneratedAt = new Date();
-      question.explanationDetails = {
-        summary: parsedJson.summary || response.content,
-        whyCorrect: parsedJson.whyCorrect || "",
-        whyOthersWrong: Array.isArray(parsedJson.whyOthersWrong) ? parsedJson.whyOthersWrong : [],
-        examTip: parsedJson.examTip || "",
-        relatedConcepts: Array.isArray(parsedJson.relatedConcepts) ? parsedJson.relatedConcepts : [],
+      // Fix unescaped backslashes from LaTeX (e.g. \frac, \times, \alpha)
+      const sanitized = raw.replace(/\\(?!["\\/bfnrtu])/g, "\\\\");
+
+      parsedJson = JSON.parse(sanitized);
+    } catch (parseErr) {
+      logger.warn("AI returned malformed JSON, using fallback", { error: parseErr.message });
+      parsedJson = {
+        summary: response.content,
+        whyCorrect: "The selected answer is correct based on the question constraints.",
+        whyOthersWrong: options?.filter((o) => !o.isCorrect).map((o) => `${o.text} is incorrect.`) || [],
+        examTip: `Study ${metadata?.topic || "this topic"} carefully.`,
+        relatedConcepts: [metadata?.topic || "General"],
       };
+    }
 
-      await question.save();
-      logger.info(`Successfully generated and saved explanation for question: ${question._id}`);
-      return question;
+    return {
+      summary: parsedJson.summary || response.content,
+      whyCorrect: parsedJson.whyCorrect || "",
+      whyOthersWrong: Array.isArray(parsedJson.whyOthersWrong) ? parsedJson.whyOthersWrong : [],
+      examTip: parsedJson.examTip || "",
+      relatedConcepts: Array.isArray(parsedJson.relatedConcepts) ? parsedJson.relatedConcepts : [],
+    };
+  }
+
+  /**
+   * Legacy method — kept for backwards compatibility.
+   * Uses updateOne internally to avoid save() validation issues.
+   */
+  static async generateAndSaveExplanation(question) {
+    try {
+      const result = await QuestionExplanationService.generateExplanation(question);
+
+      await Question.updateOne(
+        { _id: question._id },
+        {
+          $set: {
+            explanation: result.summary,
+            explanationStatus: "generated",
+            explanationSource: "ai",
+            explanationGeneratedAt: new Date(),
+            explanationDetails: {
+              summary: result.summary,
+              whyCorrect: result.whyCorrect,
+              whyOthersWrong: result.whyOthersWrong,
+              examTip: result.examTip,
+              relatedConcepts: result.relatedConcepts,
+            },
+          },
+        }
+      );
+
+      logger.info(`Explanation saved for question: ${question._id}`);
+      return result;
     } catch (err) {
       logger.error(`Failed to generate explanation for question: ${question._id}`, { error: err.message });
-      question.explanationStatus = "failed";
-      await question.save();
+
+      await Question.updateOne(
+        { _id: question._id },
+        { $set: { explanationStatus: "failed" } }
+      ).catch(() => { });
+
       throw err;
     }
   }

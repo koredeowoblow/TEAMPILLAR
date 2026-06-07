@@ -92,7 +92,7 @@ class PracticeService {
       }
 
       let matchStage = { ...filters };
-      
+
       // Multi-subject support: Fetch the full limit for EACH subject
       if (session && session.subjectIds && session.subjectIds.length > 1) {
         let allQuestions = [];
@@ -103,10 +103,10 @@ class PracticeService {
         for (let i = 0; i < session.subjectIds.length; i++) {
           const currentSubId = session.subjectIds[i];
           const currentLimit = Number(limit); // Fetch full limit for each subject
-          
+
           // Apply adaptive logic PER SUBJECT
           let subMatchStage = { ...filters, subjectId: currentSubId };
-          
+
           if (!filters["metadata.topic"] && !filters["metadata.difficulty"]) {
             const adaptiveMatch = await AdaptiveEngineService.buildWeightedPool(
               userId,
@@ -122,20 +122,20 @@ class PracticeService {
           if (topicId) subMatchStage["metadata.topic"] = topicId;
           if (difficulty) subMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
           if (year) subMatchStage["metadata.year"] = Number(year);
-          
+
           const subPipeline = [
             { $match: subMatchStage },
             { $sample: { size: currentLimit } },
           ];
           let subQuestions = await questionRepository.aggregate(subPipeline);
-          
+
           // Fallback if adaptive pool is too small for this subject
           if (subQuestions.length < currentLimit) {
             let fallbackLimit = currentLimit - subQuestions.length;
             let fallbackMatchStage = { subjectId: currentSubId };
             if (difficulty) fallbackMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
             if (year) fallbackMatchStage["metadata.year"] = Number(year);
-            
+
             let foundIds = subQuestions.map(q => q._id);
             if (foundIds.length > 0) {
               fallbackMatchStage._id = { $nin: foundIds };
@@ -170,10 +170,10 @@ class PracticeService {
             ...q,
             subjectName: subjectNameMap[String(currentSubId)] || "Subject"
           }));
-          
+
           allQuestions = allQuestions.concat(enrichedSubQuestions);
         }
-        
+
         // Map and persist
         const safe = allQuestions.map((q) => {
           const slim = {
@@ -343,7 +343,7 @@ class PracticeService {
           fallbackLimit = limit - questions.length;
           foundIds = questions.map((q) => q._id);
           fallbackMatchStage = { subjectId: resolvedSubjectId };
-          
+
           if (foundIds.length > 0) {
             fallbackMatchStage._id = {
               $nin: foundIds
