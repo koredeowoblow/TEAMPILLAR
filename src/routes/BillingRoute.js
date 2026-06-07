@@ -27,6 +27,7 @@ router.post(
   handleValidationErrors,
   tryCatch(BillingController.initializeSubscription),
 );
+router.get("/verify", protectUser, tryCatch(BillingController.verify));
 router.post("/webhook", tryCatch(BillingController.webhook));
 
 export default router;

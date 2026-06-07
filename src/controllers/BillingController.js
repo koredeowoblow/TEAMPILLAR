@@ -192,6 +192,66 @@ class BillingController {
       });
     }
   }
+
+  static async verify(req, res) {
+    const { reference } = req.query;
+    if (!reference) throw new AppError("Reference is required", 400);
+
+    const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+      },
+    });
+
+    const data = await verifyRes.json();
+    if (!verifyRes.ok || !data.status || data.data.status !== "success") {
+      throw new AppError(data.message || "Payment verification failed", 400);
+    }
+
+    const { customer, metadata, subscription: paystackSubCode, amount, currency } = data.data;
+    const email = customer.email;
+
+    const user = await User.findOne({ email });
+    if (!user) throw new AppError("User not found", 404);
+
+    // Update user subscription
+    user.subscription = "pro";
+    if (paystackSubCode) {
+      user.subscriptionDetails = {
+        paystackSubscriptionCode: paystackSubCode,
+        nextPaymentDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default to 30 days
+        billingCycle: metadata?.billingCycle || "monthly",
+      };
+    }
+    await user.save();
+
+    // Send confirmation email
+    try {
+      await EmailService.sendPaymentConfirmation(
+        email,
+        user?.name || "Customer",
+        {
+          planName: metadata?.planName || "Pro Plan",
+          amount: amount / 100,
+          currency,
+        }
+      );
+    } catch (err) {
+      logger.error("Failed to send payment confirmation email in verify", {
+        email,
+        message: err.message,
+      });
+    }
+
+    return sendSuccess(res, {
+      message: "Payment verified successfully",
+      data: {
+        status: "success",
+        subscription: user.subscription,
+      },
+    });
+  }
 }
 
 export default BillingController;
