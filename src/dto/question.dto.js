@@ -76,6 +76,15 @@ export function toQuestionReviewDTO(question) {
   if (!question) return null;
   const q = question.toObject ? question.toObject() : question;
 
+  const hasDetails = q.explanationDetails && q.explanationStatus === "generated";
+  const explanationObj = {
+    summary: hasDetails ? q.explanationDetails.summary : (q.explanation || "Explanation is pending generation."),
+    whyCorrect: hasDetails ? q.explanationDetails.whyCorrect : "",
+    whyOthersWrong: hasDetails ? (Array.isArray(q.explanationDetails.whyOthersWrong) ? q.explanationDetails.whyOthersWrong : []) : [],
+    examTip: hasDetails ? q.explanationDetails.examTip : "",
+    relatedConcepts: hasDetails ? (Array.isArray(q.explanationDetails.relatedConcepts) ? q.explanationDetails.relatedConcepts : []) : []
+  };
+
   return {
     ...toQuestionDTO(question),
     // Safe to reveal after submission
@@ -85,7 +94,7 @@ export function toQuestionReviewDTO(question) {
       text:      o.text,
       isCorrect: o.isCorrect ?? false,
     })),
-    explanation: q.explanation ?? null,
+    explanation: explanationObj,
   };
 }
 

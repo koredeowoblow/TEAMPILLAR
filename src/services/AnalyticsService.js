@@ -5,6 +5,7 @@ import Subject from "../models/SubjectModel.js";
 import cache from "../utils/cache.js";
 import AIService from "./AIService.js";
 import { CONSTANTS } from "../config/constants.js";
+import FocusAreaAnalysisService from "./FocusAreaAnalysisService.js";
 
 const monthLabels = [
   "Jan",
@@ -371,6 +372,9 @@ class AnalyticsService {
       weakTopics: weakTopicsList,
     });
 
+    const focusAreas = await FocusAreaAnalysisService.getOrCreateFocusAreas(userId);
+    const priorityRecommendations = FocusAreaAnalysisService.getRecommendations(userId, focusAreas);
+
     return {
       targetScore: user.onboarding?.targetScore || 280,
       overallScore,
@@ -381,6 +385,8 @@ class AnalyticsService {
       totalSessions: total,
       averageTimePerQuestion,
       aiRecommendations,
+      focusAreas,
+      priorityRecommendations,
     };
   }
 }

@@ -44,6 +44,24 @@ const QuestionSchema = new mongoose.Schema(
     },
 
     explanation: String,
+    explanationStatus: {
+      type: String,
+      enum: ["pending", "generated", "failed"],
+      default: "pending",
+    },
+    explanationSource: {
+      type: String,
+      enum: ["manual", "ai", "import"],
+      default: "manual",
+    },
+    explanationGeneratedAt: Date,
+    explanationDetails: {
+      summary: { type: String, default: null },
+      whyCorrect: { type: String, default: null },
+      whyOthersWrong: { type: [String], default: [] },
+      examTip: { type: String, default: null },
+      relatedConcepts: { type: [String], default: [] },
+    },
 
     metadata: {
       questionCode: {
@@ -54,6 +72,7 @@ const QuestionSchema = new mongoose.Schema(
       year: Number,
 
       topic: String,
+      subTopic: String,
 
       difficulty: {
         type: String,

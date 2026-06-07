@@ -46,8 +46,8 @@ class PracticeService {
         });
 
         // Fetch subject names for enrichment
-        const subjectIds = [...new Set(questions.map(q => String(q.subjectId)))];
-        const subjectDocs = await Subject.find({ _id: { $in: subjectIds } }).lean();
+        const subjectIds = [...new Set(questions.map(q => q.subjectId).filter(Boolean).map(String))];
+        const subjectDocs = subjectIds.length > 0 ? await Subject.find({ _id: { $in: subjectIds } }).lean() : [];
         const subjectMap = {};
         subjectDocs.forEach(d => { subjectMap[String(d._id)] = d.name; });
 
