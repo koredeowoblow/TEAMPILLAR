@@ -527,6 +527,32 @@ class PracticeService {
     // submission: { responses: [{questionId, selectedOption, timeTaken}], tabSwitches, endTime }
     const session = await practiceRepository.findById(sessionId);
     if (!session) throw new AppError("Session not found", 404);
+
+    // Idempotency guard: if the session was already completed (e.g. via
+    // auto-submit triggered by tab-switch violations), return the existing
+    // result rather than throwing. This prevents the "Session not active"
+    // error when the client sends a duplicate submit after the server already
+    // closed the session.
+    if (session.sessionStatus === "COMPLETED") {
+      const questionsWithReview = await questionRepository.find({
+        _id: { $in: session.questionIds || [] },
+      });
+      const sessionWithQuestions = session.toObject
+        ? session.toObject()
+        : { ...session };
+      sessionWithQuestions.questions = questionsWithReview;
+      const subject = await Subject.findById(session.subjectId);
+      const subjectName = subject?.name || "";
+      const utmeScore = this.computeUTMEScoreFromMap({
+        [subjectName]: session.score || 0,
+      });
+      return {
+        session: sessionWithQuestions,
+        utmeScore,
+        flagged: session.security?.flagged || false,
+      };
+    }
+
     if (session.sessionStatus !== "ACTIVE")
       throw new AppError("Session not active", 400);
 

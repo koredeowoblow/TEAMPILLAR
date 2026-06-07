@@ -15,7 +15,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function main() {
   const args = process.argv.slice(2);
   const limitArgIndex = args.indexOf("--limit");
-  const limit = limitArgIndex !== -1 ? parseInt(args[limitArgIndex + 1], 10) : 50;
+  const limit = limitArgIndex !== -1 ? parseInt(args[limitArgIndex + 1], 10) : 500;
 
   try {
     const mongoUri = process.env.MONGO_URI;
