@@ -81,13 +81,11 @@ const corsOptions = {
   origin: (origin, callback) => {
     // Allow server-to-server or requests without Origin
     if (!origin) return callback(null, true);
-    
-    const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin);
-    
-    if (
-      allowedOrigins.includes(origin) ||
-      isLocalhost
-    ) {
+
+    const isLocalhost =
+      /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin);
+
+    if (allowedOrigins.includes(origin) || isLocalhost) {
       return callback(null, true);
     }
     return callback(new Error("CORS policy violation: Origin not allowed"));
@@ -138,8 +136,8 @@ const healthCheckHandler = measurePerformance(async (_req, res) => {
 app.get("/health", healthCheckHandler);
 
 // Parsers
-app.use(express.json({ limit: "10kb" }));
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // API Router
 const apiRouter = express.Router();

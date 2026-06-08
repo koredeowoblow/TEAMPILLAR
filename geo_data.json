@@ -1,0 +1,2042 @@
+[
+    {
+        "id": "GEO001",
+        "question": "The study of the physical features of the earth's surface is called",
+        "options": {
+            "A": "Geology",
+            "B": "Geomorphology",
+            "C": "Topography",
+            "D": "Geophysics"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO002",
+        "question": "The longest river in Africa is",
+        "options": {
+            "A": "Congo",
+            "B": "Niger",
+            "C": "Nile",
+            "D": "Zambezi"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO003",
+        "question": "The process by which rocks are broken down in situ is called",
+        "options": {
+            "A": "Erosion",
+            "B": "Weathering",
+            "C": "Transportation",
+            "D": "Deposition"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO004",
+        "question": "Nigeria is located in which part of Africa?",
+        "options": {
+            "A": "East Africa",
+            "B": "West Africa",
+            "C": "North Africa",
+            "D": "Central Africa"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO005",
+        "question": "The Tropic of Cancer is located at",
+        "options": {
+            "A": "23.5\u00b0N",
+            "B": "23.5\u00b0S",
+            "C": "66.5\u00b0N",
+            "D": "0\u00b0"
+        },
+        "answer": "A",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO006",
+        "question": "Which type of rainfall is caused by mountains?",
+        "options": {
+            "A": "Convectional",
+            "B": "Frontal",
+            "C": "Orographic",
+            "D": "Cyclonic"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO007",
+        "question": "The largest ocean in the world is",
+        "options": {
+            "A": "Atlantic",
+            "B": "Indian",
+            "C": "Arctic",
+            "D": "Pacific"
+        },
+        "answer": "D",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO008",
+        "question": "Harmattan is a wind that blows from",
+        "options": {
+            "A": "South to North",
+            "B": "West to East",
+            "C": "Northeast across West Africa",
+            "D": "South West"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO009",
+        "question": "The Greenwich Meridian has a longitude of",
+        "options": {
+            "A": "0\u00b0",
+            "B": "90\u00b0E",
+            "C": "90\u00b0W",
+            "D": "180\u00b0"
+        },
+        "answer": "A",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO010",
+        "question": "The most abundant gas in the atmosphere is",
+        "options": {
+            "A": "Oxygen",
+            "B": "Carbon dioxide",
+            "C": "Nitrogen",
+            "D": "Argon"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO011",
+        "question": "The process of water moving through plants and into the air is",
+        "options": {
+            "A": "Evaporation",
+            "B": "Transpiration",
+            "C": "Precipitation",
+            "D": "Condensation"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO012",
+        "question": "Which layer of the atmosphere contains the ozone layer?",
+        "options": {
+            "A": "Troposphere",
+            "B": "Stratosphere",
+            "C": "Mesosphere",
+            "D": "Thermosphere"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO013",
+        "question": "The Sahara Desert is located in",
+        "options": {
+            "A": "Southern Africa",
+            "B": "Central Africa",
+            "C": "North Africa",
+            "D": "East Africa"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO014",
+        "question": "Longitude lines are also called",
+        "options": {
+            "A": "Parallels",
+            "B": "Meridians",
+            "C": "Isobars",
+            "D": "Isotherms"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO015",
+        "question": "The folded mountains formed by collision of tectonic plates are called",
+        "options": {
+            "A": "Block mountains",
+            "B": "Volcanic mountains",
+            "C": "Fold mountains",
+            "D": "Residual mountains"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO016",
+        "question": "The delta of the Niger River is in",
+        "options": {
+            "A": "Ogun State",
+            "B": "Delta State",
+            "C": "Rivers State",
+            "D": "Lagos State"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO017",
+        "question": "The instrument used to measure atmospheric pressure is",
+        "options": {
+            "A": "Thermometer",
+            "B": "Barometer",
+            "C": "Hygrometer",
+            "D": "Anemometer"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO018",
+        "question": "Slash and burn agriculture is also known as",
+        "options": {
+            "A": "Plantation farming",
+            "B": "Shifting cultivation",
+            "C": "Mixed farming",
+            "D": "Subsistence farming"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO019",
+        "question": "Which gas is primarily responsible for the greenhouse effect?",
+        "options": {
+            "A": "Nitrogen",
+            "B": "Oxygen",
+            "C": "Carbon dioxide",
+            "D": "Argon"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO020",
+        "question": "The River Niger has its source in",
+        "options": {
+            "A": "Nigeria",
+            "B": "Mali",
+            "C": "Guinea",
+            "D": "Senegal"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO021",
+        "question": "Population density is calculated as",
+        "options": {
+            "A": "Total area/Total population",
+            "B": "Total population/Total area",
+            "C": "Birth rate - Death rate",
+            "D": "Immigration + Birth rate"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO022",
+        "question": "The movement of people from rural to urban areas is called",
+        "options": {
+            "A": "Emigration",
+            "B": "Immigration",
+            "C": "Rural-urban migration",
+            "D": "Urbanization"
+        },
+        "answer": "C",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO023",
+        "question": "Which type of climate is found near the equator?",
+        "options": {
+            "A": "Mediterranean",
+            "B": "Desert",
+            "C": "Equatorial",
+            "D": "Savanna"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO024",
+        "question": "The imaginary line that divides the earth into Northern and Southern hemispheres is called",
+        "options": {
+            "A": "Prime Meridian",
+            "B": "Tropic of Cancer",
+            "C": "International Date Line",
+            "D": "Equator"
+        },
+        "answer": "D",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO025",
+        "question": "Laterite soils are found mainly in",
+        "options": {
+            "A": "Temperate regions",
+            "B": "Tropical regions",
+            "C": "Polar regions",
+            "D": "Desert regions"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO026",
+        "question": "A watershed is",
+        "options": {
+            "A": "A river valley",
+            "B": "An area from which a river collects water",
+            "C": "A lake",
+            "D": "A dam"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO027",
+        "question": "The annual rainfall of the tropical rainforest zone exceeds",
+        "options": {
+            "A": "500mm",
+            "B": "1000mm",
+            "C": "1500mm",
+            "D": "2000mm"
+        },
+        "answer": "D",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO028",
+        "question": "Lumbering is the economic activity of",
+        "options": {
+            "A": "Mining",
+            "B": "Fishing",
+            "C": "Timber exploitation",
+            "D": "Farming"
+        },
+        "answer": "C",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO029",
+        "question": "The world's largest country by area is",
+        "options": {
+            "A": "China",
+            "B": "USA",
+            "C": "Canada",
+            "D": "Russia"
+        },
+        "answer": "D",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO030",
+        "question": "Cocoa is predominantly grown in",
+        "options": {
+            "A": "Northern Nigeria",
+            "B": "Western Nigeria",
+            "C": "Eastern Nigeria",
+            "D": "Southern Nigeria"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO031",
+        "question": "An isoline on a map connecting points of equal temperature is an",
+        "options": {
+            "A": "Isobar",
+            "B": "Isohyet",
+            "C": "Isotherm",
+            "D": "Isoneph"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO032",
+        "question": "The Canopy layer of the rainforest consists of",
+        "options": {
+            "A": "Grasses",
+            "B": "Tall trees",
+            "C": "Shrubs",
+            "D": "Mosses"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO033",
+        "question": "Which of these is a pull factor of migration?",
+        "options": {
+            "A": "Famine",
+            "B": "War",
+            "C": "Better job opportunities",
+            "D": "Natural disasters"
+        },
+        "answer": "C",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO034",
+        "question": "The dry season in Nigeria lasts from approximately",
+        "options": {
+            "A": "April to October",
+            "B": "November to March",
+            "C": "June to September",
+            "D": "January to July"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO035",
+        "question": "Soil erosion is most severe on",
+        "options": {
+            "A": "Flat land",
+            "B": "Vegetated land",
+            "C": "Steep slopes",
+            "D": "River beds"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO036",
+        "question": "The term 'GNP' in economic geography stands for",
+        "options": {
+            "A": "Gross Natural Product",
+            "B": "Gross National Product",
+            "C": "Growth National Production",
+            "D": "General National Product"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO037",
+        "question": "Countries with birth rates higher than death rates experience",
+        "options": {
+            "A": "Population decline",
+            "B": "Population growth",
+            "C": "Zero growth",
+            "D": "Aging population"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO038",
+        "question": "The study of human population is called",
+        "options": {
+            "A": "Geography",
+            "B": "Demography",
+            "C": "Ecology",
+            "D": "Cartography"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO039",
+        "question": "Nigeria's most important export commodity is",
+        "options": {
+            "A": "Cocoa",
+            "B": "Groundnut",
+            "C": "Petroleum",
+            "D": "Rubber"
+        },
+        "answer": "C",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO040",
+        "question": "A contour line on a map joins points of equal",
+        "options": {
+            "A": "Temperature",
+            "B": "Rainfall",
+            "C": "Altitude",
+            "D": "Pressure"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO041",
+        "question": "The Bight of Benin is found along the coast of",
+        "options": {
+            "A": "East Africa",
+            "B": "West Africa",
+            "C": "North Africa",
+            "D": "South Africa"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO042",
+        "question": "Subsistence farming is characterized by",
+        "options": {
+            "A": "Large-scale production",
+            "B": "Production mainly for family use",
+            "C": "Use of modern machinery",
+            "D": "Export orientation"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO043",
+        "question": "Lake Chad is shared between Nigeria and",
+        "options": {
+            "A": "Ghana, Togo, Benin",
+            "B": "Niger, Chad, Cameroon",
+            "C": "Mali, Guinea, Senegal",
+            "D": "Sudan, Ethiopia, Kenya"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO044",
+        "question": "The wind belt between the tropics is called",
+        "options": {
+            "A": "Trade winds",
+            "B": "Westerlies",
+            "C": "Polar easterlies",
+            "D": "Monsoon"
+        },
+        "answer": "A",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO045",
+        "question": "The term 'urbanization' refers to",
+        "options": {
+            "A": "Building of cities",
+            "B": "Increase in urban population",
+            "C": "Rural development",
+            "D": "Forest clearance"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO046",
+        "question": "A natural harbour is formed by",
+        "options": {
+            "A": "Human engineering",
+            "B": "An indented coastline",
+            "C": "River deposits",
+            "D": "Wind action"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO047",
+        "question": "The process by which wind transports and deposits sand is called",
+        "options": {
+            "A": "Attrition",
+            "B": "Saltation",
+            "C": "Deflation",
+            "D": "Corrasion"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO048",
+        "question": "The savanna vegetation zone in Nigeria is found in the",
+        "options": {
+            "A": "South",
+            "B": "Middle Belt and North",
+            "C": "East",
+            "D": "West"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO049",
+        "question": "Nomadic pastoralism is common in",
+        "options": {
+            "A": "Rain forests",
+            "B": "Desert margins",
+            "C": "Coastal areas",
+            "D": "River deltas"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO050",
+        "question": "The term 'infant mortality rate' refers to",
+        "options": {
+            "A": "Death rate of adults",
+            "B": "Death of children under one year per 1000 births",
+            "C": "Birth rate",
+            "D": "Life expectancy"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO051",
+        "question": "Which of these is NOT a type of fold mountain?",
+        "options": {
+            "A": "Himalayas",
+            "B": "Alps",
+            "C": "Andes",
+            "D": "Block Vosges"
+        },
+        "answer": "D",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO052",
+        "question": "An artesian well is formed when",
+        "options": {
+            "A": "Water is pumped",
+            "B": "Confined water rises under pressure",
+            "C": "A hole is dug in sand",
+            "D": "Water collects in a valley"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO053",
+        "question": "The hot desert climate is characterized by",
+        "options": {
+            "A": "Heavy rainfall",
+            "B": "High diurnal temperature range",
+            "C": "Low temperatures",
+            "D": "Dense vegetation"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO054",
+        "question": "River Niger enters Nigeria through",
+        "options": {
+            "A": "Kebbi State",
+            "B": "Sokoto State",
+            "C": "Kogi State",
+            "D": "Benue State"
+        },
+        "answer": "A",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO055",
+        "question": "The concept of sustainable development means",
+        "options": {
+            "A": "Using resources without restraint",
+            "B": "Meeting present needs without compromising future needs",
+            "C": "Industrialization at all costs",
+            "D": "Deforestation for farming"
+        },
+        "answer": "B",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO056",
+        "question": "Which economic activity involves the extraction of minerals?",
+        "options": {
+            "A": "Primary",
+            "B": "Secondary",
+            "C": "Tertiary",
+            "D": "Quaternary"
+        },
+        "answer": "A",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO057",
+        "question": "The process of salt crystallization causing rock disintegration is",
+        "options": {
+            "A": "Biological weathering",
+            "B": "Chemical weathering",
+            "C": "Mechanical weathering",
+            "D": "Frost action"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO058",
+        "question": "The North-South divide in Nigeria roughly follows the",
+        "options": {
+            "A": "River Niger-Benue trough",
+            "B": "Sahara Desert",
+            "C": "Atlantic Ocean",
+            "D": "Lake Chad"
+        },
+        "answer": "A",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO059",
+        "question": "An oxbow lake is formed from a",
+        "options": {
+            "A": "Reservoir",
+            "B": "Meander cut-off",
+            "C": "Tectonic lake",
+            "D": "Volcanic crater"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO060",
+        "question": "Ocean currents influence",
+        "options": {
+            "A": "Climate",
+            "B": "Tidal waves",
+            "C": "Earthquakes",
+            "D": "Volcanic activity"
+        },
+        "answer": "A",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO061",
+        "question": "The world's population is currently approximately",
+        "options": {
+            "A": "5 billion",
+            "B": "7 billion",
+            "C": "9 billion",
+            "D": "10 billion"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO062",
+        "question": "Industrial location near raw materials is an example of",
+        "options": {
+            "A": "Market orientation",
+            "B": "Raw material orientation",
+            "C": "Labour orientation",
+            "D": "Power orientation"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO063",
+        "question": "Which vegetation is found between the forest and the savanna in Nigeria?",
+        "options": {
+            "A": "Mangrove",
+            "B": "Guinea savanna",
+            "C": "Derived savanna",
+            "D": "Sahel savanna"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO064",
+        "question": "The instrument for measuring wind speed is",
+        "options": {
+            "A": "Barometer",
+            "B": "Anemometer",
+            "C": "Thermometer",
+            "D": "Rain gauge"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO065",
+        "question": "The Nigerian Iron and Steel Development Authority is located in",
+        "options": {
+            "A": "Ajaokuta",
+            "B": "Jos",
+            "C": "Enugu",
+            "D": "Ibadan"
+        },
+        "answer": "A",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO066",
+        "question": "A tributary is",
+        "options": {
+            "A": "A river that flows into the sea",
+            "B": "A river that flows into a larger river",
+            "C": "A lake",
+            "D": "A spring"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO067",
+        "question": "The process by which sea water is converted to fresh water is",
+        "options": {
+            "A": "Filtration",
+            "B": "Distillation",
+            "C": "Desalination",
+            "D": "Osmosis"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO068",
+        "question": "Forest reserves in Nigeria serve to",
+        "options": {
+            "A": "Promote tourism only",
+            "B": "Conserve forests and regulate exploitation",
+            "C": "Provide land for farming",
+            "D": "Generate electricity"
+        },
+        "answer": "B",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO069",
+        "question": "Terracing is a method of",
+        "options": {
+            "A": "Soil conservation on slopes",
+            "B": "Irrigation",
+            "C": "Drainage",
+            "D": "Pest control"
+        },
+        "answer": "A",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO070",
+        "question": "The major diamond producing country in Africa is",
+        "options": {
+            "A": "Nigeria",
+            "B": "South Africa",
+            "C": "Ghana",
+            "D": "Congo"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO071",
+        "question": "A rift valley is formed by",
+        "options": {
+            "A": "Compressional forces",
+            "B": "Tensional forces",
+            "C": "Volcanic activity",
+            "D": "Glacial erosion"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO072",
+        "question": "The relationship between altitude and temperature is",
+        "options": {
+            "A": "Direct",
+            "B": "Inverse",
+            "C": "No relation",
+            "D": "Cyclic"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO073",
+        "question": "The main occupation of people in the savanna zone is",
+        "options": {
+            "A": "Fishing",
+            "B": "Lumbering",
+            "C": "Farming and herding",
+            "D": "Mining"
+        },
+        "answer": "C",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO074",
+        "question": "Which country has the largest population in Africa?",
+        "options": {
+            "A": "South Africa",
+            "B": "Kenya",
+            "C": "Ethiopia",
+            "D": "Nigeria"
+        },
+        "answer": "D",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO075",
+        "question": "The term 'land use' refers to",
+        "options": {
+            "A": "Land ownership",
+            "B": "How people use the land",
+            "C": "Size of land",
+            "D": "Soil type"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO076",
+        "question": "The lowest layer of the atmosphere is the",
+        "options": {
+            "A": "Mesosphere",
+            "B": "Stratosphere",
+            "C": "Troposphere",
+            "D": "Thermosphere"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO077",
+        "question": "A narrow strip of land connecting two larger land masses is called",
+        "options": {
+            "A": "Peninsula",
+            "B": "Isthmus",
+            "C": "Cape",
+            "D": "Bay"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO078",
+        "question": "Commercial agriculture is characterized by",
+        "options": {
+            "A": "Subsistence production",
+            "B": "Production for sale",
+            "C": "Mixed cropping",
+            "D": "Shifting cultivation"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO079",
+        "question": "The humid tropical climate receives annual rainfall of",
+        "options": {
+            "A": "Less than 250mm",
+            "B": "250-500mm",
+            "C": "500-1000mm",
+            "D": "Over 2000mm"
+        },
+        "answer": "D",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO080",
+        "question": "Irrigation is used mainly in",
+        "options": {
+            "A": "Humid areas",
+            "B": "Arid and semi-arid areas",
+            "C": "Forest zones",
+            "D": "Coastal areas"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO081",
+        "question": "An estuary is",
+        "options": {
+            "A": "A lake",
+            "B": "A wide mouth of a river where it meets the sea",
+            "C": "A tributary",
+            "D": "A canal"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO082",
+        "question": "The concept of optimum population means",
+        "options": {
+            "A": "Largest possible population",
+            "B": "Population that gives highest living standard",
+            "C": "Smallest possible population",
+            "D": "Zero population growth"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO083",
+        "question": "The scale 1:50,000 means",
+        "options": {
+            "A": "1cm represents 50m",
+            "B": "1cm represents 500m",
+            "C": "1cm represents 50km",
+            "D": "1cm represents 5km"
+        },
+        "answer": "B",
+        "topic": "Cartography"
+    },
+    {
+        "id": "GEO084",
+        "question": "Mineral deposits in Northern Nigeria include",
+        "options": {
+            "A": "Cocoa and rubber",
+            "B": "Tin and columbite",
+            "C": "Iron and steel",
+            "D": "Palm oil and groundnut"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO085",
+        "question": "Which gas protects the earth from ultraviolet radiation?",
+        "options": {
+            "A": "Ozone",
+            "B": "Carbon dioxide",
+            "C": "Nitrogen",
+            "D": "Methane"
+        },
+        "answer": "A",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO086",
+        "question": "The angle of slope influences",
+        "options": {
+            "A": "Rainfall",
+            "B": "Drainage pattern",
+            "C": "Wind speed",
+            "D": "Vegetation only"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO087",
+        "question": "A monoculture system involves",
+        "options": {
+            "A": "Growing multiple crops",
+            "B": "Growing only one crop",
+            "C": "Mixed farming",
+            "D": "Shifting cultivation"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO088",
+        "question": "The Volta River project is in",
+        "options": {
+            "A": "Nigeria",
+            "B": "Ghana",
+            "C": "Togo",
+            "D": "Cameroon"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO089",
+        "question": "Birth rate refers to",
+        "options": {
+            "A": "Total births",
+            "B": "Number of births per 1000 people per year",
+            "C": "Death rate",
+            "D": "Migration"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO090",
+        "question": "Karst topography is associated with",
+        "options": {
+            "A": "Volcanic rocks",
+            "B": "Limestone areas",
+            "C": "Sandstone",
+            "D": "Granites"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO091",
+        "question": "The difference between GMT and Nigerian Standard Time is",
+        "options": {
+            "A": "+1 hour",
+            "B": "+2 hours",
+            "C": "-1 hour",
+            "D": "No difference"
+        },
+        "answer": "A",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO092",
+        "question": "The main cause of deforestation in Nigeria is",
+        "options": {
+            "A": "Road construction",
+            "B": "Agricultural expansion",
+            "C": "Mining",
+            "D": "Urbanization"
+        },
+        "answer": "B",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO093",
+        "question": "River capture or piracy involves",
+        "options": {
+            "A": "A river being blocked",
+            "B": "A stronger river diverting another's headwaters",
+            "C": "Two rivers merging",
+            "D": "A river drying up"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO094",
+        "question": "Soil texture is determined by",
+        "options": {
+            "A": "Colour of soil",
+            "B": "Proportion of sand, silt and clay",
+            "C": "Organic content",
+            "D": "Moisture level"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO095",
+        "question": "The Atlantic Ocean borders Nigeria on the",
+        "options": {
+            "A": "North",
+            "B": "South",
+            "C": "East",
+            "D": "West"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO096",
+        "question": "An isohyet joins points of equal",
+        "options": {
+            "A": "Temperature",
+            "B": "Pressure",
+            "C": "Rainfall",
+            "D": "Wind speed"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO097",
+        "question": "Which type of farming is associated with plantations?",
+        "options": {
+            "A": "Subsistence",
+            "B": "Commercial",
+            "C": "Nomadic",
+            "D": "Shifting"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO098",
+        "question": "Afforestation means",
+        "options": {
+            "A": "Cutting down trees",
+            "B": "Planting new forests",
+            "C": "Burning forest",
+            "D": "Forest conservation"
+        },
+        "answer": "B",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO099",
+        "question": "The Gongola River drains into the",
+        "options": {
+            "A": "River Niger",
+            "B": "River Benue",
+            "C": "Lake Chad",
+            "D": "Atlantic Ocean"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO100",
+        "question": "A hanging valley is a feature of",
+        "options": {
+            "A": "River erosion",
+            "B": "Glacial erosion",
+            "C": "Wind erosion",
+            "D": "Wave erosion"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO101",
+        "question": "Crude oil is refined at which Nigerian city?",
+        "options": {
+            "A": "Warri",
+            "B": "Kaduna",
+            "C": "Both Warri and Port Harcourt",
+            "D": "All of the above"
+        },
+        "answer": "D",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO102",
+        "question": "The concept of 'brain drain' refers to",
+        "options": {
+            "A": "Water management",
+            "B": "Emigration of skilled professionals",
+            "C": "Deforestation",
+            "D": "Soil erosion"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO103",
+        "question": "Swamp rice cultivation is common in",
+        "options": {
+            "A": "Northern Nigeria",
+            "B": "The Niger Delta",
+            "C": "Sahel zone",
+            "D": "Jos Plateau"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO104",
+        "question": "A continental shelf is",
+        "options": {
+            "A": "The deep ocean floor",
+            "B": "A shallow submerged extension of a continent",
+            "C": "A mountain range",
+            "D": "A plateau"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO105",
+        "question": "A spit is a coastal feature formed by",
+        "options": {
+            "A": "Wave erosion",
+            "B": "Longshore drift deposition",
+            "C": "Tidal action",
+            "D": "River deposits"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO106",
+        "question": "The Harmattan causes",
+        "options": {
+            "A": "Flooding",
+            "B": "Cold dry dusty conditions",
+            "C": "Heavy rainfall",
+            "D": "High humidity"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO107",
+        "question": "Which of these is a renewable energy source?",
+        "options": {
+            "A": "Coal",
+            "B": "Natural gas",
+            "C": "Solar energy",
+            "D": "Petroleum"
+        },
+        "answer": "C",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO108",
+        "question": "National parks in Nigeria include",
+        "options": {
+            "A": "Yankari",
+            "B": "Cross River",
+            "C": "Both A and B",
+            "D": "Kainji"
+        },
+        "answer": "C",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO109",
+        "question": "The Mediterranean climate has",
+        "options": {
+            "A": "Rain in summer",
+            "B": "Rain in winter",
+            "C": "Rain all year",
+            "D": "No rain"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO110",
+        "question": "The steepest part of a river is found at",
+        "options": {
+            "A": "The upper course",
+            "B": "The middle course",
+            "C": "The lower course",
+            "D": "The mouth"
+        },
+        "answer": "A",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO111",
+        "question": "Gully erosion is most common on",
+        "options": {
+            "A": "Flat agricultural land",
+            "B": "Overgrazed hillslopes",
+            "C": "Forest floors",
+            "D": "River banks only"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO112",
+        "question": "Population pyramid with a wide base indicates",
+        "options": {
+            "A": "Aging population",
+            "B": "High birth rate",
+            "C": "Low birth rate",
+            "D": "Balanced population"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO113",
+        "question": "A LAND use map shows",
+        "options": {
+            "A": "Relief features",
+            "B": "Vegetation types",
+            "C": "How land is utilized",
+            "D": "Soil types"
+        },
+        "answer": "C",
+        "topic": "Cartography"
+    },
+    {
+        "id": "GEO114",
+        "question": "The Jos Plateau is important for",
+        "options": {
+            "A": "Cocoa production",
+            "B": "Tin mining",
+            "C": "Oil production",
+            "D": "Tourism only"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO115",
+        "question": "Denudation refers to",
+        "options": {
+            "A": "Building up of land",
+            "B": "Wearing down of land",
+            "C": "Flooding of land",
+            "D": "Cultivation of land"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO116",
+        "question": "Wind erosion is most active in",
+        "options": {
+            "A": "Humid areas",
+            "B": "Semi-arid and arid areas",
+            "C": "Forest zones",
+            "D": "River valleys"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO117",
+        "question": "One degree of latitude equals approximately",
+        "options": {
+            "A": "11 km",
+            "B": "111 km",
+            "C": "1110 km",
+            "D": "1 km"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO118",
+        "question": "The Congo Basin is characterized by",
+        "options": {
+            "A": "Desert vegetation",
+            "B": "Dense equatorial rainforest",
+            "C": "Savanna grassland",
+            "D": "Alpine vegetation"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO119",
+        "question": "The process of water soaking into the ground is called",
+        "options": {
+            "A": "Runoff",
+            "B": "Infiltration",
+            "C": "Percolation",
+            "D": "Condensation"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO120",
+        "question": "Fishing communities in Nigeria are mainly found in",
+        "options": {
+            "A": "Jos Plateau",
+            "B": "Niger Delta and coastal areas",
+            "C": "Sahel zone",
+            "D": "Central Nigeria"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO121",
+        "question": "Which type of map shows administrative boundaries?",
+        "options": {
+            "A": "Physical map",
+            "B": "Political map",
+            "C": "Topographic map",
+            "D": "Climate map"
+        },
+        "answer": "B",
+        "topic": "Cartography"
+    },
+    {
+        "id": "GEO122",
+        "question": "An alluvial fan is deposited by",
+        "options": {
+            "A": "Wind",
+            "B": "Glaciers",
+            "C": "Rivers at mountain bases",
+            "D": "Ocean currents"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO123",
+        "question": "The main vegetation of the Sahel zone in Nigeria is",
+        "options": {
+            "A": "Dense forest",
+            "B": "Thorny scrub and short grasses",
+            "C": "Mangroves",
+            "D": "Montane forest"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO124",
+        "question": "Environmental degradation means",
+        "options": {
+            "A": "Improvement of environment",
+            "B": "Deterioration of the environment",
+            "C": "Conservation of resources",
+            "D": "Afforestation"
+        },
+        "answer": "B",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO125",
+        "question": "Population distribution refers to",
+        "options": {
+            "A": "Number of people in a country",
+            "B": "How people are spread across an area",
+            "C": "Rate of population growth",
+            "D": "Migration patterns"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO126",
+        "question": "The Kebbi State is known for",
+        "options": {
+            "A": "Petroleum",
+            "B": "Rice production",
+            "C": "Cocoa",
+            "D": "Tin"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO127",
+        "question": "A sea breeze blows from",
+        "options": {
+            "A": "Land to sea in daytime",
+            "B": "Sea to land in daytime",
+            "C": "Sea to land at night",
+            "D": "Land to sea at night"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO128",
+        "question": "Overgrazing leads to",
+        "options": {
+            "A": "Increased vegetation",
+            "B": "Desertification",
+            "C": "Floods",
+            "D": "Soil fertility"
+        },
+        "answer": "B",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO129",
+        "question": "The Kainji Dam is on which river?",
+        "options": {
+            "A": "River Benue",
+            "B": "River Niger",
+            "C": "River Kaduna",
+            "D": "River Gongola"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO130",
+        "question": "Crop rotation helps",
+        "options": {
+            "A": "Increase pests",
+            "B": "Maintain soil fertility",
+            "C": "Cause erosion",
+            "D": "Reduce yields"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO131",
+        "question": "The equatorial climate receives rainfall",
+        "options": {
+            "A": "Only in summer",
+            "B": "Only in winter",
+            "C": "Throughout the year",
+            "D": "Only in spring"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO132",
+        "question": "A biome is",
+        "options": {
+            "A": "A type of rock",
+            "B": "A large ecological community",
+            "C": "A type of map",
+            "D": "A water body"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO133",
+        "question": "Petroleum is found in Nigeria mainly in the",
+        "options": {
+            "A": "North",
+            "B": "South-west",
+            "C": "South-east and Niger Delta",
+            "D": "Central region"
+        },
+        "answer": "C",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO134",
+        "question": "The population of Nigeria is approximately",
+        "options": {
+            "A": "50 million",
+            "B": "100 million",
+            "C": "200 million",
+            "D": "300 million"
+        },
+        "answer": "C",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO135",
+        "question": "A tributary differs from a distributary in that",
+        "options": {
+            "A": "It flows into a larger river",
+            "B": "It flows out of a larger river",
+            "C": "It is smaller",
+            "D": "It is temporary"
+        },
+        "answer": "A",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO136",
+        "question": "Transhumance is",
+        "options": {
+            "A": "Permanent migration",
+            "B": "Seasonal movement of livestock",
+            "C": "Urban migration",
+            "D": "Nomadic lifestyle permanently"
+        },
+        "answer": "B",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO137",
+        "question": "Which type of cloud produces thunderstorms?",
+        "options": {
+            "A": "Cirrus",
+            "B": "Cumulus",
+            "C": "Cumulonimbus",
+            "D": "Stratus"
+        },
+        "answer": "C",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO138",
+        "question": "The rate of temperature decrease with altitude is",
+        "options": {
+            "A": "Lapse rate",
+            "B": "Inversion",
+            "C": "Gradient",
+            "D": "Albedo"
+        },
+        "answer": "A",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO139",
+        "question": "Nigeria was colonized by",
+        "options": {
+            "A": "France",
+            "B": "Britain",
+            "C": "Portugal",
+            "D": "Spain"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO140",
+        "question": "A plateau is",
+        "options": {
+            "A": "A low-lying flat area",
+            "B": "An elevated flat-topped area",
+            "C": "A hill",
+            "D": "A valley"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO141",
+        "question": "The most densely populated area in Nigeria is",
+        "options": {
+            "A": "North-east",
+            "B": "Lagos and South-west",
+            "C": "Central Nigeria",
+            "D": "North-west"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO142",
+        "question": "Mangrove forests are found in",
+        "options": {
+            "A": "Arid zones",
+            "B": "Tidal coastal swamps",
+            "C": "Savanna",
+            "D": "Jos Plateau"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO143",
+        "question": "Which process deposits material transported by rivers?",
+        "options": {
+            "A": "Erosion",
+            "B": "Weathering",
+            "C": "Deposition",
+            "D": "Attrition"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO144",
+        "question": "The term 'refugee' refers to",
+        "options": {
+            "A": "A tourist",
+            "B": "A person fleeing persecution",
+            "C": "A migrant worker",
+            "D": "An internal migrant"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO145",
+        "question": "ECOWAS was formed to",
+        "options": {
+            "A": "Promote political unity",
+            "B": "Promote economic integration in West Africa",
+            "C": "Resolve military conflicts",
+            "D": "Manage environmental issues"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO146",
+        "question": "The Harmattan season in Nigeria is",
+        "options": {
+            "A": "March to June",
+            "B": "November to February",
+            "C": "July to September",
+            "D": "April to August"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO147",
+        "question": "A valley glacier is found in",
+        "options": {
+            "A": "Desert regions",
+            "B": "Mountain regions",
+            "C": "Coastal areas",
+            "D": "River flood plains"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO148",
+        "question": "Industrialization refers to",
+        "options": {
+            "A": "Agricultural development",
+            "B": "Development of manufacturing industries",
+            "C": "Service sector growth",
+            "D": "Mining activities"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO149",
+        "question": "Coral reefs are built by",
+        "options": {
+            "A": "Fish",
+            "B": "Algae",
+            "C": "Coral polyps",
+            "D": "Sea plants"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO150",
+        "question": "The energy source for most surface processes is",
+        "options": {
+            "A": "Geothermal heat",
+            "B": "Solar energy",
+            "C": "Wind energy",
+            "D": "Nuclear energy"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO151",
+        "question": "Immigration is movement",
+        "options": {
+            "A": "Within a country",
+            "B": "Into a country",
+            "C": "Out of a country",
+            "D": "Between continents"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO152",
+        "question": "The tropic of Capricorn is at",
+        "options": {
+            "A": "23.5\u00b0N",
+            "B": "23.5\u00b0S",
+            "C": "0\u00b0",
+            "D": "66.5\u00b0S"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO153",
+        "question": "Over-population occurs when",
+        "options": {
+            "A": "Population is too low",
+            "B": "Resources are insufficient for the population",
+            "C": "Birth rate falls",
+            "D": "Death rate rises"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO154",
+        "question": "Contour interval is the",
+        "options": {
+            "A": "Distance between contours",
+            "B": "Difference in altitude between adjacent contours",
+            "C": "Length of contour",
+            "D": "Scale of map"
+        },
+        "answer": "B",
+        "topic": "Cartography"
+    },
+    {
+        "id": "GEO155",
+        "question": "The Lake Victoria is in",
+        "options": {
+            "A": "West Africa",
+            "B": "East Africa",
+            "C": "Central Africa",
+            "D": "Southern Africa"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO156",
+        "question": "Latitude affects",
+        "options": {
+            "A": "Longitude",
+            "B": "Day length and climate",
+            "C": "Altitude",
+            "D": "Soil type"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO157",
+        "question": "A meander is",
+        "options": {
+            "A": "A straight river",
+            "B": "A winding river bend",
+            "C": "A waterfall",
+            "D": "A delta"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO158",
+        "question": "The most significant environmental problem in the Niger Delta is",
+        "options": {
+            "A": "Drought",
+            "B": "Oil pollution",
+            "C": "Deforestation",
+            "D": "Desertification"
+        },
+        "answer": "B",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO159",
+        "question": "Gross Domestic Product (GDP) measures",
+        "options": {
+            "A": "A country's population",
+            "B": "Total value of goods and services produced",
+            "C": "Exports only",
+            "D": "Imports only"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO160",
+        "question": "Mixed farming involves",
+        "options": {
+            "A": "Only crops",
+            "B": "Only livestock",
+            "C": "Both crops and livestock",
+            "D": "Subsistence only"
+        },
+        "answer": "C",
+        "topic": "Agriculture"
+    },
+    {
+        "id": "GEO161",
+        "question": "Coal is mined in Nigeria at",
+        "options": {
+            "A": "Enugu",
+            "B": "Kano",
+            "C": "Port Harcourt",
+            "D": "Warri"
+        },
+        "answer": "A",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO162",
+        "question": "A natural vegetation map shows",
+        "options": {
+            "A": "Roads",
+            "B": "Administrative boundaries",
+            "C": "Natural plant cover",
+            "D": "Relief"
+        },
+        "answer": "C",
+        "topic": "Cartography"
+    },
+    {
+        "id": "GEO163",
+        "question": "The Ogun River originates from",
+        "options": {
+            "A": "Kwara State",
+            "B": "Oyo State",
+            "C": "Ogun State",
+            "D": "Lagos State"
+        },
+        "answer": "A",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO164",
+        "question": "Leaching is the downward movement of",
+        "options": {
+            "A": "Rocks",
+            "B": "Minerals dissolved by water through soil",
+            "C": "Soil particles",
+            "D": "Air"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO165",
+        "question": "The world's tallest mountain is",
+        "options": {
+            "A": "K2",
+            "B": "Kilimanjaro",
+            "C": "Everest",
+            "D": "Mont Blanc"
+        },
+        "answer": "C",
+        "topic": "Physical Geography"
+    },
+    {
+        "id": "GEO166",
+        "question": "Dense population settlement in coastal areas of Nigeria is due to",
+        "options": {
+            "A": "Fertile soils only",
+            "B": "Trade, industry and ports",
+            "C": "Religion",
+            "D": "Cool climate"
+        },
+        "answer": "B",
+        "topic": "Population Geography"
+    },
+    {
+        "id": "GEO167",
+        "question": "The Sahara Desert expands southward in a process called",
+        "options": {
+            "A": "Desertification",
+            "B": "Deforestation",
+            "C": "Leaching",
+            "D": "Laterization"
+        },
+        "answer": "A",
+        "topic": "Environmental Geography"
+    },
+    {
+        "id": "GEO168",
+        "question": "A quarry is a",
+        "options": {
+            "A": "Mine for minerals underground",
+            "B": "An open pit extraction of rocks",
+            "C": "A type of soil",
+            "D": "A river feature"
+        },
+        "answer": "B",
+        "topic": "Economic Geography"
+    },
+    {
+        "id": "GEO169",
+        "question": "Insolation refers to",
+        "options": {
+            "A": "Wind energy",
+            "B": "Incoming solar radiation",
+            "C": "Geothermal energy",
+            "D": "Reflected sunlight"
+        },
+        "answer": "B",
+        "topic": "Climatology"
+    },
+    {
+        "id": "GEO170",
+        "question": "The Cape of Good Hope is in",
+        "options": {
+            "A": "Nigeria",
+            "B": "South Africa",
+            "C": "Ghana",
+            "D": "Angola"
+        },
+        "answer": "B",
+        "topic": "Physical Geography"
+    }
+]

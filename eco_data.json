@@ -1,0 +1,1586 @@
+[
+    {
+        "id": "ECO001",
+        "question": "Economics is the study of how society manages its",
+        "options": {
+            "A": "Natural resources",
+            "B": "Scarce resources to satisfy unlimited wants",
+            "C": "Political systems",
+            "D": "Military power"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO002",
+        "question": "The concept of scarcity in economics means",
+        "options": {
+            "A": "Goods are too expensive",
+            "B": "Resources are limited relative to wants",
+            "C": "There is no production",
+            "D": "Demand is low"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO003",
+        "question": "Opportunity cost is",
+        "options": {
+            "A": "The price of a good",
+            "B": "The value of the next best alternative forgone",
+            "C": "Total cost of production",
+            "D": "Fixed cost"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO004",
+        "question": "Which of the following is a factor of production?",
+        "options": {
+            "A": "Money",
+            "B": "Capital",
+            "C": "Profit",
+            "D": "Trade"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO005",
+        "question": "The law of demand states that",
+        "options": {
+            "A": "As price rises, demand rises",
+            "B": "As price falls, demand falls",
+            "C": "As price rises, demand falls",
+            "D": "Price has no effect on demand"
+        },
+        "answer": "C",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO006",
+        "question": "When demand equals supply, the market is in",
+        "options": {
+            "A": "Surplus",
+            "B": "Shortage",
+            "C": "Equilibrium",
+            "D": "Disequilibrium"
+        },
+        "answer": "C",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO007",
+        "question": "A normal good is one for which demand",
+        "options": {
+            "A": "Falls as income rises",
+            "B": "Rises as income rises",
+            "C": "Is unaffected by income",
+            "D": "Falls as price falls"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO008",
+        "question": "An inferior good is one for which demand",
+        "options": {
+            "A": "Rises as income rises",
+            "B": "Falls as income rises",
+            "C": "Is not affected by price",
+            "D": "Rises as price rises"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO009",
+        "question": "Price elasticity of demand measures",
+        "options": {
+            "A": "Change in price",
+            "B": "Responsiveness of demand to a change in price",
+            "C": "Change in quantity supplied",
+            "D": "Change in income"
+        },
+        "answer": "B",
+        "topic": "Elasticity"
+    },
+    {
+        "id": "ECO010",
+        "question": "If PED = 0, demand is",
+        "options": {
+            "A": "Elastic",
+            "B": "Perfectly elastic",
+            "C": "Inelastic",
+            "D": "Perfectly inelastic"
+        },
+        "answer": "D",
+        "topic": "Elasticity"
+    },
+    {
+        "id": "ECO011",
+        "question": "The Central Bank of Nigeria was established in",
+        "options": {
+            "A": "1958",
+            "B": "1960",
+            "C": "1962",
+            "D": "1970"
+        },
+        "answer": "A",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO012",
+        "question": "GDP stands for",
+        "options": {
+            "A": "General Domestic Product",
+            "B": "Gross Domestic Product",
+            "C": "Gross Demand Price",
+            "D": "General Development Plan"
+        },
+        "answer": "B",
+        "topic": "National Income"
+    },
+    {
+        "id": "ECO013",
+        "question": "Inflation refers to",
+        "options": {
+            "A": "Decrease in general price level",
+            "B": "Increase in general price level",
+            "C": "Decrease in money supply",
+            "D": "Increase in output"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO014",
+        "question": "The central bank controls inflation through",
+        "options": {
+            "A": "Fiscal policy",
+            "B": "Monetary policy",
+            "C": "Trade policy",
+            "D": "Agricultural policy"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO015",
+        "question": "A budget deficit occurs when",
+        "options": {
+            "A": "Revenue exceeds expenditure",
+            "B": "Expenditure exceeds revenue",
+            "C": "Revenue equals expenditure",
+            "D": "Imports exceed exports"
+        },
+        "answer": "B",
+        "topic": "Fiscal Policy"
+    },
+    {
+        "id": "ECO016",
+        "question": "The multiplier effect refers to",
+        "options": {
+            "A": "A single increase in spending leading to larger increase in income",
+            "B": "Doubling of prices",
+            "C": "Increase in savings",
+            "D": "Reduction in taxes"
+        },
+        "answer": "A",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO017",
+        "question": "Privatization means",
+        "options": {
+            "A": "Government taking over private firms",
+            "B": "Transfer of state enterprises to private ownership",
+            "C": "Nationalizing industries",
+            "D": "Regulating private firms"
+        },
+        "answer": "B",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO018",
+        "question": "Which of the following is a direct tax?",
+        "options": {
+            "A": "VAT",
+            "B": "Customs duty",
+            "C": "Income tax",
+            "D": "Excise duty"
+        },
+        "answer": "C",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO019",
+        "question": "The Nigerian Stock Exchange is located in",
+        "options": {
+            "A": "Abuja",
+            "B": "Kano",
+            "C": "Lagos",
+            "D": "Port Harcourt"
+        },
+        "answer": "C",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO020",
+        "question": "Subsistence farming is characterized by",
+        "options": {
+            "A": "Production for profit",
+            "B": "Production mainly for family consumption",
+            "C": "Use of modern technology",
+            "D": "Large-scale production"
+        },
+        "answer": "B",
+        "topic": "Agricultural Economics"
+    },
+    {
+        "id": "ECO021",
+        "question": "The law of supply states that",
+        "options": {
+            "A": "Higher prices lead to less supply",
+            "B": "Higher prices lead to more supply",
+            "C": "Price has no effect on supply",
+            "D": "Supply is always constant"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO022",
+        "question": "A monopoly exists when there is",
+        "options": {
+            "A": "One buyer",
+            "B": "One seller",
+            "C": "Two sellers",
+            "D": "Many sellers"
+        },
+        "answer": "B",
+        "topic": "Market Structures"
+    },
+    {
+        "id": "ECO023",
+        "question": "Perfect competition is characterized by",
+        "options": {
+            "A": "Few sellers",
+            "B": "Price-setting power",
+            "C": "Many buyers and sellers with identical products",
+            "D": "Barriers to entry"
+        },
+        "answer": "C",
+        "topic": "Market Structures"
+    },
+    {
+        "id": "ECO024",
+        "question": "The term 'utility' in economics means",
+        "options": {
+            "A": "Usefulness of a good",
+            "B": "Electricity service",
+            "C": "Government benefit",
+            "D": "Profit margin"
+        },
+        "answer": "A",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO025",
+        "question": "Fixed costs are costs that",
+        "options": {
+            "A": "Change with output",
+            "B": "Do not change with output",
+            "C": "Equal variable costs",
+            "D": "Are zero when output is zero"
+        },
+        "answer": "B",
+        "topic": "Theory of Production"
+    },
+    {
+        "id": "ECO026",
+        "question": "Variable costs are costs that",
+        "options": {
+            "A": "Do not change with output",
+            "B": "Change with level of output",
+            "C": "Are always constant",
+            "D": "Equal fixed costs"
+        },
+        "answer": "B",
+        "topic": "Theory of Production"
+    },
+    {
+        "id": "ECO027",
+        "question": "The break-even point is where",
+        "options": {
+            "A": "Revenue exceeds costs",
+            "B": "Total revenue equals total cost",
+            "C": "Profit is maximum",
+            "D": "Cost exceeds revenue"
+        },
+        "answer": "B",
+        "topic": "Theory of Production"
+    },
+    {
+        "id": "ECO028",
+        "question": "National income is the total value of",
+        "options": {
+            "A": "Imports and exports",
+            "B": "Goods and services produced by a country in a year",
+            "C": "Government expenditure",
+            "D": "Money in circulation"
+        },
+        "answer": "B",
+        "topic": "National Income"
+    },
+    {
+        "id": "ECO029",
+        "question": "Devaluation of currency makes",
+        "options": {
+            "A": "Exports more expensive, imports cheaper",
+            "B": "Exports cheaper, imports more expensive",
+            "C": "Both exports and imports cheaper",
+            "D": "Currency stronger"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO030",
+        "question": "Balance of payments records",
+        "options": {
+            "A": "Only imports",
+            "B": "Only exports",
+            "C": "All financial transactions between a country and the world",
+            "D": "Internal transactions only"
+        },
+        "answer": "C",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO031",
+        "question": "ECOWAS stands for",
+        "options": {
+            "A": "Economic Community of West African States",
+            "B": "East Coast of West Africa Settlements",
+            "C": "Economic Congress of Western African States",
+            "D": "European Community of West Africa Settlements"
+        },
+        "answer": "A",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO032",
+        "question": "The IMF was created to",
+        "options": {
+            "A": "Promote world trade",
+            "B": "Provide loans to developing countries",
+            "C": "Stabilize international exchange rates",
+            "D": "All of the above"
+        },
+        "answer": "C",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO033",
+        "question": "Demand pull inflation is caused by",
+        "options": {
+            "A": "Excess demand in the economy",
+            "B": "Rising production costs",
+            "C": "Falling wages",
+            "D": "Import restrictions"
+        },
+        "answer": "A",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO034",
+        "question": "Cost push inflation is caused by",
+        "options": {
+            "A": "Excess demand",
+            "B": "Rising costs of production",
+            "C": "Falling unemployment",
+            "D": "Tax cuts"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO035",
+        "question": "Money serves as a",
+        "options": {
+            "A": "Store of value only",
+            "B": "Medium of exchange only",
+            "C": "Store of value, medium of exchange, unit of account",
+            "D": "Source of production"
+        },
+        "answer": "C",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO036",
+        "question": "A commercial bank creates money through",
+        "options": {
+            "A": "Printing currency",
+            "B": "Lending deposits",
+            "C": "Collecting taxes",
+            "D": "Investing in stocks"
+        },
+        "answer": "B",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO037",
+        "question": "The repo rate is",
+        "options": {
+            "A": "Interest rate on government bonds",
+            "B": "Rate at which central bank lends to commercial banks",
+            "C": "Rate of inflation",
+            "D": "Rate of economic growth"
+        },
+        "answer": "B",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO038",
+        "question": "Consumer price index measures",
+        "options": {
+            "A": "Income levels",
+            "B": "Changes in the price level of consumer goods",
+            "C": "Production levels",
+            "D": "Employment rates"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO039",
+        "question": "The term 'economic development' includes",
+        "options": {
+            "A": "Only GDP growth",
+            "B": "GDP growth plus improvements in living standards",
+            "C": "Only industrialization",
+            "D": "Only export growth"
+        },
+        "answer": "B",
+        "topic": "Development Economics"
+    },
+    {
+        "id": "ECO040",
+        "question": "Comparative advantage means",
+        "options": {
+            "A": "A country is best at producing everything",
+            "B": "A country should produce goods at lower opportunity cost",
+            "C": "Trade is never beneficial",
+            "D": "All countries produce the same goods"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO041",
+        "question": "Which body regulates the Nigerian capital market?",
+        "options": {
+            "A": "CBN",
+            "B": "SEC",
+            "C": "NDIC",
+            "D": "DMO"
+        },
+        "answer": "B",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO042",
+        "question": "A tariff is a",
+        "options": {
+            "A": "Subsidy on imports",
+            "B": "Tax on imports",
+            "C": "Ban on imports",
+            "D": "Quota on imports"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO043",
+        "question": "Price ceiling is set",
+        "options": {
+            "A": "Above equilibrium price",
+            "B": "Below equilibrium price",
+            "C": "Equal to equilibrium price",
+            "D": "At zero"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO044",
+        "question": "Price floor is set",
+        "options": {
+            "A": "Below equilibrium",
+            "B": "Above equilibrium",
+            "C": "At market price",
+            "D": "At zero"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO045",
+        "question": "The elasticity of supply for agricultural products is generally",
+        "options": {
+            "A": "Perfectly elastic",
+            "B": "Inelastic in the short run",
+            "C": "Perfectly inelastic",
+            "D": "Elastic in short run"
+        },
+        "answer": "B",
+        "topic": "Elasticity"
+    },
+    {
+        "id": "ECO046",
+        "question": "An oligopoly is a market with",
+        "options": {
+            "A": "One seller",
+            "B": "Two sellers",
+            "C": "Few large sellers",
+            "D": "Many small sellers"
+        },
+        "answer": "C",
+        "topic": "Market Structures"
+    },
+    {
+        "id": "ECO047",
+        "question": "The Nigerian National Petroleum Corporation is abbreviated as",
+        "options": {
+            "A": "NPHC",
+            "B": "NNPC",
+            "C": "NPC",
+            "D": "NIPCO"
+        },
+        "answer": "B",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO048",
+        "question": "Depreciation in economics means",
+        "options": {
+            "A": "Decrease in value of capital assets over time",
+            "B": "Decrease in currency value externally",
+            "C": "Decrease in wage rates",
+            "D": "Decrease in profits"
+        },
+        "answer": "A",
+        "topic": "Theory of Production"
+    },
+    {
+        "id": "ECO049",
+        "question": "A trade surplus occurs when",
+        "options": {
+            "A": "Imports exceed exports",
+            "B": "Exports exceed imports",
+            "C": "Imports equal exports",
+            "D": "Trade is balanced"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO050",
+        "question": "The concept of diminishing marginal utility states that",
+        "options": {
+            "A": "Utility increases with consumption",
+            "B": "Each additional unit gives less additional utility",
+            "C": "Utility is constant",
+            "D": "Utility increases with price"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO051",
+        "question": "Which of the following is NOT a characteristic of money?",
+        "options": {
+            "A": "Portability",
+            "B": "Divisibility",
+            "C": "Perishability",
+            "D": "Durability"
+        },
+        "answer": "C",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO052",
+        "question": "Mixed economy combines",
+        "options": {
+            "A": "Only public sector",
+            "B": "Only private sector",
+            "C": "Both public and private sector",
+            "D": "Traditional and barter"
+        },
+        "answer": "C",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO053",
+        "question": "Monetary policy tools include",
+        "options": {
+            "A": "Taxation",
+            "B": "Open market operations",
+            "C": "Government spending",
+            "D": "Import quotas"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO054",
+        "question": "The multiplier is calculated as",
+        "options": {
+            "A": "1/(marginal propensity to consume)",
+            "B": "1/(marginal propensity to save)",
+            "C": "Savings/Income",
+            "D": "Income/Savings"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO055",
+        "question": "Gross National Product differs from GDP in that it",
+        "options": {
+            "A": "Excludes services",
+            "B": "Includes income earned abroad by citizens",
+            "C": "Includes only manufacturing",
+            "D": "Excludes government spending"
+        },
+        "answer": "B",
+        "topic": "National Income"
+    },
+    {
+        "id": "ECO056",
+        "question": "Stagflation refers to",
+        "options": {
+            "A": "High inflation with high growth",
+            "B": "Inflation with stagnant economy and high unemployment",
+            "C": "Deflation with growth",
+            "D": "Zero inflation"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO057",
+        "question": "The Laffer curve shows the relationship between",
+        "options": {
+            "A": "Inflation and unemployment",
+            "B": "Tax rate and tax revenue",
+            "C": "Supply and demand",
+            "D": "Savings and investment"
+        },
+        "answer": "B",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO058",
+        "question": "Macroeconomics studies",
+        "options": {
+            "A": "Individual consumers",
+            "B": "Individual firms",
+            "C": "The economy as a whole",
+            "D": "Single markets"
+        },
+        "answer": "C",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO059",
+        "question": "Microeconomics studies",
+        "options": {
+            "A": "The whole economy",
+            "B": "Inflation and unemployment",
+            "C": "Individual firms and consumers",
+            "D": "International trade"
+        },
+        "answer": "C",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO060",
+        "question": "The Engel curve shows the relationship between",
+        "options": {
+            "A": "Price and demand",
+            "B": "Income and demand for a good",
+            "C": "Price and supply",
+            "D": "Income and savings"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO061",
+        "question": "Disguised unemployment means",
+        "options": {
+            "A": "Openly unemployed workers",
+            "B": "Workers employed but contributing little output",
+            "C": "High unemployment",
+            "D": "Seasonal unemployment"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO062",
+        "question": "The underground economy refers to",
+        "options": {
+            "A": "Mining industry",
+            "B": "Economic activities not reported to government",
+            "C": "Tunnel construction",
+            "D": "Rural economy"
+        },
+        "answer": "B",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO063",
+        "question": "A subsidy is",
+        "options": {
+            "A": "A tax on goods",
+            "B": "Government payment to reduce cost of production or consumption",
+            "C": "An import ban",
+            "D": "A price floor"
+        },
+        "answer": "B",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO064",
+        "question": "Frictional unemployment is",
+        "options": {
+            "A": "Long-term unemployment",
+            "B": "Unemployment between jobs",
+            "C": "Unemployment due to recession",
+            "D": "Structural unemployment"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO065",
+        "question": "Cyclical unemployment is caused by",
+        "options": {
+            "A": "Changing technology",
+            "B": "Recession and fall in demand",
+            "C": "Workers changing jobs",
+            "D": "Seasonal factors"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO066",
+        "question": "The aggregate demand curve slopes downward because",
+        "options": {
+            "A": "Incomes rise with price",
+            "B": "Higher prices reduce purchasing power",
+            "C": "Wages increase",
+            "D": "Exports rise"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO067",
+        "question": "If CPI rises from 100 to 110, inflation rate is",
+        "options": {
+            "A": "5%",
+            "B": "10%",
+            "C": "15%",
+            "D": "20%"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO068",
+        "question": "The human development index measures",
+        "options": {
+            "A": "GDP only",
+            "B": "Income, health and education",
+            "C": "Military strength",
+            "D": "Trade balance"
+        },
+        "answer": "B",
+        "topic": "Development Economics"
+    },
+    {
+        "id": "ECO069",
+        "question": "Gini coefficient measures",
+        "options": {
+            "A": "Economic growth",
+            "B": "Income inequality",
+            "C": "Inflation",
+            "D": "Unemployment"
+        },
+        "answer": "B",
+        "topic": "Development Economics"
+    },
+    {
+        "id": "ECO070",
+        "question": "Quantitative easing involves",
+        "options": {
+            "A": "Raising interest rates",
+            "B": "Central bank buying bonds to increase money supply",
+            "C": "Reducing money supply",
+            "D": "Increasing taxes"
+        },
+        "answer": "B",
+        "topic": "Monetary Policy"
+    },
+    {
+        "id": "ECO071",
+        "question": "A trade embargo is",
+        "options": {
+            "A": "A tariff",
+            "B": "Complete ban on trade with a country",
+            "C": "Import quota",
+            "D": "Export subsidy"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO072",
+        "question": "The World Bank provides",
+        "options": {
+            "A": "Military aid",
+            "B": "Long-term development loans",
+            "C": "Short-term balance of payments support",
+            "D": "Currency"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO073",
+        "question": "Price discrimination means",
+        "options": {
+            "A": "Charging same price",
+            "B": "Charging different prices for the same good to different customers",
+            "C": "Reducing prices",
+            "D": "Increasing prices for everyone"
+        },
+        "answer": "B",
+        "topic": "Market Structures"
+    },
+    {
+        "id": "ECO074",
+        "question": "Net National Product equals",
+        "options": {
+            "A": "GNP + Depreciation",
+            "B": "GNP - Depreciation",
+            "C": "GDP + Depreciation",
+            "D": "GDP - Depreciation"
+        },
+        "answer": "B",
+        "topic": "National Income"
+    },
+    {
+        "id": "ECO075",
+        "question": "Fiscal policy tools include",
+        "options": {
+            "A": "Interest rates",
+            "B": "Reserve requirements",
+            "C": "Government spending and taxation",
+            "D": "Open market operations"
+        },
+        "answer": "C",
+        "topic": "Fiscal Policy"
+    },
+    {
+        "id": "ECO076",
+        "question": "The term 'liquidity' refers to",
+        "options": {
+            "A": "Profitability",
+            "B": "How easily an asset can be converted to cash",
+            "C": "Long-term investment",
+            "D": "Capital gains"
+        },
+        "answer": "B",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO077",
+        "question": "Economies of scale occur when",
+        "options": {
+            "A": "Production costs rise with output",
+            "B": "Production costs fall as output increases",
+            "C": "Output falls",
+            "D": "Quality decreases"
+        },
+        "answer": "B",
+        "topic": "Theory of Production"
+    },
+    {
+        "id": "ECO078",
+        "question": "Diseconomies of scale occur when",
+        "options": {
+            "A": "Costs fall with output",
+            "B": "Costs rise with output",
+            "C": "Output rises",
+            "D": "Firm shrinks"
+        },
+        "answer": "B",
+        "topic": "Theory of Production"
+    },
+    {
+        "id": "ECO079",
+        "question": "The accelerator theory explains",
+        "options": {
+            "A": "How savings drive investment",
+            "B": "How changes in output cause larger changes in investment",
+            "C": "How interest rates affect money",
+            "D": "How exports drive growth"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO080",
+        "question": "Which is an automatic stabilizer?",
+        "options": {
+            "A": "Minimum wage",
+            "B": "Progressive taxation and unemployment benefits",
+            "C": "Interest rates",
+            "D": "Government projects"
+        },
+        "answer": "B",
+        "topic": "Fiscal Policy"
+    },
+    {
+        "id": "ECO081",
+        "question": "Transfer payments are",
+        "options": {
+            "A": "Payments for services",
+            "B": "Government payments without corresponding output (pensions, welfare)",
+            "C": "Wages",
+            "D": "Dividends"
+        },
+        "answer": "B",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO082",
+        "question": "The incidence of a tax refers to",
+        "options": {
+            "A": "The legal payer",
+            "B": "Who ultimately bears the burden",
+            "C": "The tax rate",
+            "D": "The collection method"
+        },
+        "answer": "B",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO083",
+        "question": "Cross elasticity of demand measures",
+        "options": {
+            "A": "Price and demand of one good",
+            "B": "How demand for one good responds to price change of another",
+            "C": "Income and demand",
+            "D": "Supply responsiveness"
+        },
+        "answer": "B",
+        "topic": "Elasticity"
+    },
+    {
+        "id": "ECO084",
+        "question": "Nigeria's Vision 2020 aimed to",
+        "options": {
+            "A": "Make Nigeria a top 20 economy",
+            "B": "Achieve 100% literacy",
+            "C": "End oil production",
+            "D": "Join the EU"
+        },
+        "answer": "A",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO085",
+        "question": "The Economic and Financial Crimes Commission (EFCC) was established in",
+        "options": {
+            "A": "1999",
+            "B": "2003",
+            "C": "2007",
+            "D": "2010"
+        },
+        "answer": "B",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO086",
+        "question": "Rent in economics refers to",
+        "options": {
+            "A": "Payment for housing",
+            "B": "Payment for use of land",
+            "C": "Interest on capital",
+            "D": "Wages for labour"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO087",
+        "question": "Profit is the reward for",
+        "options": {
+            "A": "Labour",
+            "B": "Land",
+            "C": "Capital",
+            "D": "Entrepreneurship"
+        },
+        "answer": "D",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO088",
+        "question": "Wages are the reward for",
+        "options": {
+            "A": "Land",
+            "B": "Capital",
+            "C": "Labour",
+            "D": "Entrepreneurship"
+        },
+        "answer": "C",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO089",
+        "question": "Interest is the reward for",
+        "options": {
+            "A": "Labour",
+            "B": "Land",
+            "C": "Capital",
+            "D": "Entrepreneurship"
+        },
+        "answer": "C",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO090",
+        "question": "The production possibilities curve shows",
+        "options": {
+            "A": "Trade-off between two goods",
+            "B": "Income distribution",
+            "C": "Employment levels",
+            "D": "Inflation rates"
+        },
+        "answer": "A",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO091",
+        "question": "Consumer surplus is",
+        "options": {
+            "A": "Extra profit",
+            "B": "Difference between what consumers pay and what they would have paid",
+            "C": "Government tax revenue",
+            "D": "Producer profit"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO092",
+        "question": "Producer surplus is",
+        "options": {
+            "A": "Extra consumer spending",
+            "B": "Difference between price received and minimum sellers would accept",
+            "C": "Government revenue",
+            "D": "Depreciation"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO093",
+        "question": "Deadweight loss results from",
+        "options": {
+            "A": "Perfect competition",
+            "B": "Market inefficiency due to taxes or monopoly",
+            "C": "Subsidies only",
+            "D": "Free trade"
+        },
+        "answer": "B",
+        "topic": "Market Structures"
+    },
+    {
+        "id": "ECO094",
+        "question": "The velocity of money refers to",
+        "options": {
+            "A": "Speed of production",
+            "B": "How often money is spent in the economy per period",
+            "C": "Interest rate",
+            "D": "Inflation rate"
+        },
+        "answer": "B",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO095",
+        "question": "A current account deficit means",
+        "options": {
+            "A": "Exports exceed imports",
+            "B": "Imports exceed exports on trade and services",
+            "C": "Savings exceed investment",
+            "D": "No deficit"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO096",
+        "question": "The debt-to-GDP ratio measures",
+        "options": {
+            "A": "Level of exports",
+            "B": "Government debt relative to economic output",
+            "C": "Foreign investment",
+            "D": "Trade balance"
+        },
+        "answer": "B",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO097",
+        "question": "Opportunity cost of attending university includes",
+        "options": {
+            "A": "Tuition fees",
+            "B": "Tuition fees and foregone earnings",
+            "C": "Only foregone earnings",
+            "D": "Living costs"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO098",
+        "question": "An increase in consumer income shifts demand curve for normal goods",
+        "options": {
+            "A": "Left (decrease)",
+            "B": "Right (increase)",
+            "C": "Not at all",
+            "D": "Downward"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO099",
+        "question": "The supply curve shifts right when",
+        "options": {
+            "A": "Production costs rise",
+            "B": "Production costs fall",
+            "C": "Taxes increase",
+            "D": "Labour costs rise"
+        },
+        "answer": "B",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO100",
+        "question": "Full employment does not mean",
+        "options": {
+            "A": "Zero unemployment",
+            "B": "Natural rate of unemployment exists",
+            "C": "Some frictional unemployment",
+            "D": "No cyclical unemployment"
+        },
+        "answer": "A",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO101",
+        "question": "Seigniorage is revenue earned by",
+        "options": {
+            "A": "Private banks",
+            "B": "Government from printing money",
+            "C": "Exporters",
+            "D": "Foreign investors"
+        },
+        "answer": "B",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO102",
+        "question": "Which of these is a public good?",
+        "options": {
+            "A": "Bread",
+            "B": "National defence",
+            "C": "Private hospital",
+            "D": "Car"
+        },
+        "answer": "B",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO103",
+        "question": "A merit good is",
+        "options": {
+            "A": "A luxury item",
+            "B": "A good society deems beneficial but may be under-consumed",
+            "C": "A public good",
+            "D": "A normal good"
+        },
+        "answer": "B",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO104",
+        "question": "Structural unemployment is caused by",
+        "options": {
+            "A": "Recession",
+            "B": "Changes in technology or industry structure",
+            "C": "Workers changing jobs",
+            "D": "Seasonal demand changes"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO105",
+        "question": "The quantity theory of money states MV=PQ where M is",
+        "options": {
+            "A": "Money velocity",
+            "B": "Money supply",
+            "C": "Market value",
+            "D": "Monetary gain"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO106",
+        "question": "The Nigerian Bureau of Statistics (NBS) is responsible for",
+        "options": {
+            "A": "Tax collection",
+            "B": "Collecting and publishing economic data",
+            "C": "Monetary policy",
+            "D": "Trade regulations"
+        },
+        "answer": "B",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO107",
+        "question": "Planned economy is where",
+        "options": {
+            "A": "Market forces determine production",
+            "B": "Government controls what is produced",
+            "C": "Mixed decisions are made",
+            "D": "Firms decide individually"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO108",
+        "question": "Foreign direct investment (FDI) is",
+        "options": {
+            "A": "Short-term loans",
+            "B": "Long-term investment by foreign firms in domestic economy",
+            "C": "Portfolio investment",
+            "D": "Aid"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO109",
+        "question": "The real interest rate equals",
+        "options": {
+            "A": "Nominal rate \u00d7 inflation",
+            "B": "Nominal rate - inflation",
+            "C": "Inflation rate",
+            "D": "Nominal rate + inflation"
+        },
+        "answer": "B",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO110",
+        "question": "Which institution insures bank deposits in Nigeria?",
+        "options": {
+            "A": "CBN",
+            "B": "SEC",
+            "C": "NDIC",
+            "D": "PENCOM"
+        },
+        "answer": "C",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO111",
+        "question": "A regressive tax takes a",
+        "options": {
+            "A": "Higher percentage from high earners",
+            "B": "Higher percentage from low earners",
+            "C": "Equal percentage from all",
+            "D": "Flat amount from all"
+        },
+        "answer": "B",
+        "topic": "Public Finance"
+    },
+    {
+        "id": "ECO112",
+        "question": "The multiplier is higher when",
+        "options": {
+            "A": "MPS is high",
+            "B": "MPC is high",
+            "C": "Taxes are high",
+            "D": "Imports are high"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO113",
+        "question": "Balance of trade refers to",
+        "options": {
+            "A": "Difference between exports and imports of goods",
+            "B": "All financial transactions",
+            "C": "Service trade only",
+            "D": "Capital flows"
+        },
+        "answer": "A",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO114",
+        "question": "Economic growth is measured by",
+        "options": {
+            "A": "Decrease in GDP",
+            "B": "Percentage increase in real GDP",
+            "C": "Population growth",
+            "D": "Decrease in unemployment"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO115",
+        "question": "A fall in interest rates generally",
+        "options": {
+            "A": "Discourages borrowing",
+            "B": "Encourages borrowing and spending",
+            "C": "Reduces investment",
+            "D": "Increases savings"
+        },
+        "answer": "B",
+        "topic": "Monetary Policy"
+    },
+    {
+        "id": "ECO116",
+        "question": "Protectionism refers to",
+        "options": {
+            "A": "Free trade policies",
+            "B": "Government policies to restrict imports",
+            "C": "Reducing tariffs",
+            "D": "Currency devaluation"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO117",
+        "question": "The OPEC is a cartel of",
+        "options": {
+            "A": "Industrial countries",
+            "B": "Oil-producing countries",
+            "C": "Agricultural nations",
+            "D": "Developing nations"
+        },
+        "answer": "B",
+        "topic": "International Trade"
+    },
+    {
+        "id": "ECO118",
+        "question": "Contractionary fiscal policy involves",
+        "options": {
+            "A": "Cutting taxes and increasing spending",
+            "B": "Increasing taxes and cutting spending",
+            "C": "Printing money",
+            "D": "Reducing interest rates"
+        },
+        "answer": "B",
+        "topic": "Fiscal Policy"
+    },
+    {
+        "id": "ECO119",
+        "question": "Expansionary monetary policy involves",
+        "options": {
+            "A": "Raising interest rates",
+            "B": "Reducing money supply",
+            "C": "Lowering interest rates to stimulate economy",
+            "D": "Increasing taxes"
+        },
+        "answer": "C",
+        "topic": "Monetary Policy"
+    },
+    {
+        "id": "ECO120",
+        "question": "The law of variable proportions states",
+        "options": {
+            "A": "Returns always increase",
+            "B": "Marginal product eventually diminishes",
+            "C": "Fixed costs decline",
+            "D": "Variable costs are constant"
+        },
+        "answer": "B",
+        "topic": "Theory of Production"
+    },
+    {
+        "id": "ECO121",
+        "question": "An externality is",
+        "options": {
+            "A": "A company's profit",
+            "B": "A cost or benefit affecting third parties not in the transaction",
+            "C": "A foreign investment",
+            "D": "An export"
+        },
+        "answer": "B",
+        "topic": "Market Structures"
+    },
+    {
+        "id": "ECO122",
+        "question": "Which of these is a negative externality?",
+        "options": {
+            "A": "Education",
+            "B": "Vaccination",
+            "C": "Industrial pollution",
+            "D": "Public parks"
+        },
+        "answer": "C",
+        "topic": "Market Structures"
+    },
+    {
+        "id": "ECO123",
+        "question": "The crowding out effect occurs when",
+        "options": {
+            "A": "Government borrowing reduces private investment",
+            "B": "Exports fall",
+            "C": "Unemployment rises",
+            "D": "Inflation falls"
+        },
+        "answer": "A",
+        "topic": "Fiscal Policy"
+    },
+    {
+        "id": "ECO124",
+        "question": "Hyperinflation refers to",
+        "options": {
+            "A": "Moderate inflation",
+            "B": "Extremely rapid inflation",
+            "C": "Deflation",
+            "D": "Zero inflation"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO125",
+        "question": "Deflation is",
+        "options": {
+            "A": "Slowing of inflation",
+            "B": "Falling general price level",
+            "C": "Rising prices",
+            "D": "Stable prices"
+        },
+        "answer": "B",
+        "topic": "Macroeconomics"
+    },
+    {
+        "id": "ECO126",
+        "question": "The poverty trap refers to",
+        "options": {
+            "A": "High taxation",
+            "B": "Situation where benefits of working are offset by loss of welfare",
+            "C": "Low wages",
+            "D": "Unemployment"
+        },
+        "answer": "B",
+        "topic": "Development Economics"
+    },
+    {
+        "id": "ECO127",
+        "question": "Nigeria's major economic challenge includes",
+        "options": {
+            "A": "Surplus revenue",
+            "B": "Oil dependency and lack of diversification",
+            "C": "Over-employment",
+            "D": "Strong manufacturing base"
+        },
+        "answer": "B",
+        "topic": "Nigerian Economy"
+    },
+    {
+        "id": "ECO128",
+        "question": "The stock market provides",
+        "options": {
+            "A": "Loans for businesses",
+            "B": "Long-term equity capital for firms",
+            "C": "Government funds",
+            "D": "Agricultural credit"
+        },
+        "answer": "B",
+        "topic": "Money and Banking"
+    },
+    {
+        "id": "ECO129",
+        "question": "Ceteris paribus means",
+        "options": {
+            "A": "All things change",
+            "B": "All other things being equal",
+            "C": "Nothing changes",
+            "D": "Time passes"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "ECO130",
+        "question": "Which of the following causes a rightward shift in demand?",
+        "options": {
+            "A": "Increase in price",
+            "B": "Decrease in consumer income for normal goods",
+            "C": "Increase in price of complementary goods",
+            "D": "Increase in consumer income for normal goods"
+        },
+        "answer": "D",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO131",
+        "question": "The income effect refers to",
+        "options": {
+            "A": "Change in quantity demanded due to price change affecting real income",
+            "B": "Change due to substitute goods",
+            "C": "Change in supply",
+            "D": "Change in income tax"
+        },
+        "answer": "A",
+        "topic": "Demand and Supply"
+    },
+    {
+        "id": "ECO132",
+        "question": "The substitution effect means",
+        "options": {
+            "A": "Buying more of a cheaper substitute when price of a good rises",
+            "B": "Buying more expensive goods",
+            "C": "Reducing savings",
+            "D": "Investing abroad"
+        },
+        "answer": "A",
+        "topic": "Demand and Supply"
+    }
+]

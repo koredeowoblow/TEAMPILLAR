@@ -1,0 +1,2402 @@
+[
+    {
+        "id": "GOV001",
+        "question": "Government is defined as",
+        "options": {
+            "A": "The ruling party",
+            "B": "The institution through which the state exercises authority",
+            "C": "The military",
+            "D": "The judiciary only"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV002",
+        "question": "The three arms of government are",
+        "options": {
+            "A": "President, Senate, House",
+            "B": "Executive, Legislature, Judiciary",
+            "C": "Presidency, Ministry, Courts",
+            "D": "Federal, State, Local"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV003",
+        "question": "The doctrine of separation of powers was propounded by",
+        "options": {
+            "A": "John Locke",
+            "B": "Thomas Hobbes",
+            "C": "Montesquieu",
+            "D": "Jean-Jacques Rousseau"
+        },
+        "answer": "C",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV004",
+        "question": "A federal system of government is one where",
+        "options": {
+            "A": "Power is concentrated at the centre",
+            "B": "Power is shared between central and component units",
+            "C": "All power is local",
+            "D": "Only one party rules"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV005",
+        "question": "The 1999 Constitution of Nigeria established",
+        "options": {
+            "A": "A unitary system",
+            "B": "A federal republic",
+            "C": "A confederacy",
+            "D": "A monarchy"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV006",
+        "question": "The head of state in Nigeria is",
+        "options": {
+            "A": "The Senate President",
+            "B": "The Speaker of House of Representatives",
+            "C": "The President",
+            "D": "The Chief Justice"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV007",
+        "question": "Checks and balances ensures that",
+        "options": {
+            "A": "One arm dominates",
+            "B": "No arm of government becomes too powerful",
+            "C": "The executive controls everything",
+            "D": "Judiciary is supreme"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV008",
+        "question": "The legislature in Nigeria at the federal level is",
+        "options": {
+            "A": "The National Executive Council",
+            "B": "The National Assembly",
+            "C": "The Supreme Court",
+            "D": "The Council of State"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV009",
+        "question": "Bicameralism refers to a legislature with",
+        "options": {
+            "A": "One chamber",
+            "B": "Two chambers",
+            "C": "Three chambers",
+            "D": "No chambers"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV010",
+        "question": "The upper house of the Nigerian National Assembly is",
+        "options": {
+            "A": "House of Representatives",
+            "B": "Senate",
+            "C": "House of Assembly",
+            "D": "Council of State"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV011",
+        "question": "A unitary system concentrates power in",
+        "options": {
+            "A": "State governments",
+            "B": "Local governments",
+            "C": "The central government",
+            "D": "The judiciary"
+        },
+        "answer": "C",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV012",
+        "question": "Democracy is government",
+        "options": {
+            "A": "By the military",
+            "B": "By a king",
+            "C": "Of the people, by the people, for the people",
+            "D": "By elites only"
+        },
+        "answer": "C",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV013",
+        "question": "Sovereignty means",
+        "options": {
+            "A": "Military power",
+            "B": "Supreme authority of the state",
+            "C": "Economic wealth",
+            "D": "Population size"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV014",
+        "question": "The principle of rule of law means",
+        "options": {
+            "A": "Only the ruler makes law",
+            "B": "All persons and institutions are subject to the law",
+            "C": "Laws favour the rich",
+            "D": "Military can override law"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV015",
+        "question": "Judicial review is the power of courts to",
+        "options": {
+            "A": "Make laws",
+            "B": "Declare laws unconstitutional",
+            "C": "Collect taxes",
+            "D": "Conduct elections"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV016",
+        "question": "The concept of constitutionalism means",
+        "options": {
+            "A": "Government acts according to the constitution",
+            "B": "No constitution exists",
+            "C": "Military rule",
+            "D": "Absolute power of rulers"
+        },
+        "answer": "A",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV017",
+        "question": "A constitution is",
+        "options": {
+            "A": "A map of a country",
+            "B": "The fundamental law of the land",
+            "C": "A government budget",
+            "D": "An election guideline"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV018",
+        "question": "The first constitution of independent Nigeria was",
+        "options": {
+            "A": "The 1951 Macpherson Constitution",
+            "B": "The 1954 Lyttleton Constitution",
+            "C": "The 1960 Independence Constitution",
+            "D": "The 1963 Republican Constitution"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV019",
+        "question": "Nigeria became a republic in",
+        "options": {
+            "A": "1960",
+            "B": "1963",
+            "C": "1966",
+            "D": "1979"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV020",
+        "question": "The first military coup in Nigeria was in",
+        "options": {
+            "A": "January 1966",
+            "B": "July 1966",
+            "C": "1970",
+            "D": "1976"
+        },
+        "answer": "A",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV021",
+        "question": "Fundamental human rights in Nigeria are contained in",
+        "options": {
+            "A": "Chapter I",
+            "B": "Chapter II",
+            "C": "Chapter IV",
+            "D": "Chapter VI"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV022",
+        "question": "The INEC was established to",
+        "options": {
+            "A": "Manage economy",
+            "B": "Conduct elections in Nigeria",
+            "C": "Fight corruption",
+            "D": "Handle foreign affairs"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV023",
+        "question": "Proportional representation is a system where",
+        "options": {
+            "A": "Winner takes all",
+            "B": "Seats are allocated proportionally to votes won",
+            "C": "Only majority party wins",
+            "D": "No elections held"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV024",
+        "question": "The first-past-the-post system is also called",
+        "options": {
+            "A": "Proportional representation",
+            "B": "Simple majority system",
+            "C": "Two-round system",
+            "D": "Party list"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV025",
+        "question": "A coalition government is formed when",
+        "options": {
+            "A": "One party wins majority",
+            "B": "Two or more parties form government together",
+            "C": "Military takes over",
+            "D": "No elections are held"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV026",
+        "question": "The concept of federalism in Nigeria was introduced by",
+        "options": {
+            "A": "The 1946 Richards Constitution",
+            "B": "The 1951 Macpherson Constitution",
+            "C": "The 1954 Lyttleton Constitution",
+            "D": "The 1960 Constitution"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV027",
+        "question": "The residual legislative list contains",
+        "options": {
+            "A": "Matters for federal government only",
+            "B": "Matters for state governments",
+            "C": "Matters for both federal and state",
+            "D": "Local government matters"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV028",
+        "question": "Concurrent list matters can be legislated on by",
+        "options": {
+            "A": "Federal only",
+            "B": "State only",
+            "C": "Both federal and state governments",
+            "D": "Local government"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV029",
+        "question": "The exclusive legislative list contains matters for",
+        "options": {
+            "A": "State governments",
+            "B": "Local governments",
+            "C": "Federal government only",
+            "D": "Judiciary"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV030",
+        "question": "Citizenship by birth in Nigeria is acquired when",
+        "options": {
+            "A": "One parent is Nigerian",
+            "B": "Both parents are Nigerians or person is born in Nigeria to Nigerian parents",
+            "C": "Born anywhere in the world",
+            "D": "Registered by government"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV031",
+        "question": "Naturalization is",
+        "options": {
+            "A": "Citizenship by birth",
+            "B": "Acquiring citizenship of another country",
+            "C": "Renouncing citizenship",
+            "D": "Diplomatic status"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV032",
+        "question": "Political parties in Nigeria are registered by",
+        "options": {
+            "A": "INEC",
+            "B": "National Assembly",
+            "C": "President",
+            "D": "Supreme Court"
+        },
+        "answer": "A",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV033",
+        "question": "The process of impeachment removes",
+        "options": {
+            "A": "A judge",
+            "B": "An elected official through legislative action",
+            "C": "A military officer",
+            "D": "A civil servant"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV034",
+        "question": "A pressure group differs from a political party in that",
+        "options": {
+            "A": "It contests elections",
+            "B": "It does not contest elections but seeks to influence policy",
+            "C": "It has no members",
+            "D": "It is illegal"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV035",
+        "question": "Trade unions are examples of",
+        "options": {
+            "A": "Political parties",
+            "B": "Interest groups",
+            "C": "Government agencies",
+            "D": "International organisations"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV036",
+        "question": "Totalitarianism is a system where",
+        "options": {
+            "A": "Citizens have full rights",
+            "B": "The state has total control over all aspects of life",
+            "C": "Power is shared",
+            "D": "Local governments are supreme"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV037",
+        "question": "Authoritarianism means",
+        "options": {
+            "A": "Democratic governance",
+            "B": "Concentrated power with limited political freedoms",
+            "C": "Federal system",
+            "D": "Theocracy"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV038",
+        "question": "A theocracy is a government",
+        "options": {
+            "A": "Based on science",
+            "B": "Based on religious law",
+            "C": "Based on military power",
+            "D": "Based on wealth"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV039",
+        "question": "Fascism is",
+        "options": {
+            "A": "Democratic socialism",
+            "B": "Extreme nationalist authoritarian ideology",
+            "C": "Communism",
+            "D": "Liberalism"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV040",
+        "question": "Communism advocates for",
+        "options": {
+            "A": "Private ownership",
+            "B": "Public ownership of means of production",
+            "C": "Free market economy",
+            "D": "Monarchy"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV041",
+        "question": "Capitalism is based on",
+        "options": {
+            "A": "State ownership",
+            "B": "Private ownership and free market",
+            "C": "Collective ownership",
+            "D": "Military control"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV042",
+        "question": "The Nigerian Senate has how many members?",
+        "options": {
+            "A": "120",
+            "B": "109",
+            "C": "360",
+            "D": "469"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV043",
+        "question": "The House of Representatives has how many members?",
+        "options": {
+            "A": "109",
+            "B": "360",
+            "C": "469",
+            "D": "240"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV044",
+        "question": "The term of office of Nigerian President is",
+        "options": {
+            "A": "4 years",
+            "B": "5 years",
+            "C": "6 years",
+            "D": "3 years"
+        },
+        "answer": "A",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV045",
+        "question": "Zoning policy in Nigerian politics refers to",
+        "options": {
+            "A": "Agricultural zoning",
+            "B": "Rotation of power among geopolitical zones",
+            "C": "Urban planning",
+            "D": "Resource allocation"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV046",
+        "question": "The military governed Nigeria from 1966 to 1979 and",
+        "options": {
+            "A": "1983 to 1999",
+            "B": "1980 to 1990",
+            "C": "1985 to 1993",
+            "D": "1990 to 2000"
+        },
+        "answer": "A",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV047",
+        "question": "The Economic and Financial Crimes Commission fights",
+        "options": {
+            "A": "Military coups",
+            "B": "Corruption and financial crimes",
+            "C": "Electoral fraud only",
+            "D": "Terrorism"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV048",
+        "question": "The concept of delegated legislation means",
+        "options": {
+            "A": "Parliament passes all laws",
+            "B": "Lower bodies make laws under authority of Parliament",
+            "C": "Only courts can legislate",
+            "D": "President makes all laws"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV049",
+        "question": "Public opinion refers to",
+        "options": {
+            "A": "Government's view",
+            "B": "Views of the general public on political matters",
+            "C": "Media opinions",
+            "D": "Expert opinions only"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV050",
+        "question": "Political socialisation is",
+        "options": {
+            "A": "Training soldiers",
+            "B": "Process of learning political values and norms",
+            "C": "Electoral process",
+            "D": "Government propaganda"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV051",
+        "question": "Nationalism is",
+        "options": {
+            "A": "Loyalty to one's ethnic group",
+            "B": "Love of one's nation and desire for national sovereignty",
+            "C": "Desire for world government",
+            "D": "Anti-government sentiment"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV052",
+        "question": "The principle of federalism is applied in",
+        "options": {
+            "A": "France",
+            "B": "UK",
+            "C": "USA and Nigeria",
+            "D": "China"
+        },
+        "answer": "C",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV053",
+        "question": "The right to vote is called",
+        "options": {
+            "A": "Civil right",
+            "B": "Franchise or suffrage",
+            "C": "Fundamental right",
+            "D": "Social right"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV054",
+        "question": "Universal adult suffrage means",
+        "options": {
+            "A": "Only educated can vote",
+            "B": "All adults have the right to vote",
+            "C": "Only property owners can vote",
+            "D": "Only men can vote"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV055",
+        "question": "Cabinet government is a feature of",
+        "options": {
+            "A": "Presidential system",
+            "B": "Parliamentary system",
+            "C": "Military rule",
+            "D": "Monarchical system"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV056",
+        "question": "The Prime Minister heads government in a",
+        "options": {
+            "A": "Presidential system",
+            "B": "Parliamentary system",
+            "C": "Federal system",
+            "D": "Unitary system"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV057",
+        "question": "Recall in politics refers to",
+        "options": {
+            "A": "Remembering past events",
+            "B": "Removing an elected official before term ends",
+            "C": "Nominating candidates",
+            "D": "Political propaganda"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV058",
+        "question": "A by-election is held",
+        "options": {
+            "A": "At every regular interval",
+            "B": "To fill a vacant seat between general elections",
+            "C": "Only in wartime",
+            "D": "By military order"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV059",
+        "question": "Gerrymander refers to",
+        "options": {
+            "A": "Manipulating electoral boundaries for political advantage",
+            "B": "Electoral rigging",
+            "C": "Ballot stuffing",
+            "D": "Voter intimidation"
+        },
+        "answer": "A",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV060",
+        "question": "The civil service is characterized by",
+        "options": {
+            "A": "Political partisanship",
+            "B": "Neutrality, permanence and anonymity",
+            "C": "Military hierarchy",
+            "D": "Elected membership"
+        },
+        "answer": "B",
+        "topic": "Public Administration"
+    },
+    {
+        "id": "GOV061",
+        "question": "A state in international law must have",
+        "options": {
+            "A": "Territory, population and effective government",
+            "B": "Only territory",
+            "C": "Only population",
+            "D": "Only government"
+        },
+        "answer": "A",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV062",
+        "question": "Diplomatic immunity means",
+        "options": {
+            "A": "Diplomats can commit crimes freely",
+            "B": "Foreign diplomats are protected from host country's laws",
+            "C": "Diplomats have no rights",
+            "D": "Embassies are military bases"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV063",
+        "question": "The United Nations was founded in",
+        "options": {
+            "A": "1918",
+            "B": "1945",
+            "C": "1960",
+            "D": "1963"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV064",
+        "question": "The UN Security Council has how many permanent members?",
+        "options": {
+            "A": "3",
+            "B": "5",
+            "C": "7",
+            "D": "10"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV065",
+        "question": "The African Union replaced",
+        "options": {
+            "A": "OAU (Organisation of African Unity)",
+            "B": "ECOWAS",
+            "C": "Commonwealth",
+            "D": "League of Nations"
+        },
+        "answer": "A",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV066",
+        "question": "Nigeria's foreign policy principle includes",
+        "options": {
+            "A": "Isolationism",
+            "B": "Africa as centrepiece of foreign policy",
+            "C": "Military aggression",
+            "D": "Non-membership in international bodies"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV067",
+        "question": "The concept of non-alignment means",
+        "options": {
+            "A": "Being neutral between superpowers",
+            "B": "Supporting one superpower",
+            "C": "Joining NATO",
+            "D": "Military isolationism"
+        },
+        "answer": "A",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV068",
+        "question": "A confederation is",
+        "options": {
+            "A": "A strong federal state",
+            "B": "A loose union where member states retain sovereignty",
+            "C": "A military alliance",
+            "D": "A unitary state"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV069",
+        "question": "Political apathy means",
+        "options": {
+            "A": "High voter turnout",
+            "B": "Lack of interest in politics",
+            "C": "High political participation",
+            "D": "Political extremism"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV070",
+        "question": "Pluralism in politics means",
+        "options": {
+            "A": "One party system",
+            "B": "Multiple political parties and groups competing for power",
+            "C": "Military rule",
+            "D": "Elite control"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV071",
+        "question": "Judicial independence means",
+        "options": {
+            "A": "Judges are elected",
+            "B": "Judges are free from political interference",
+            "C": "Judiciary controls legislature",
+            "D": "Courts are private"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV072",
+        "question": "The writ of habeas corpus protects",
+        "options": {
+            "A": "Property rights",
+            "B": "Right of person not to be unlawfully detained",
+            "C": "Right to education",
+            "D": "Freedom of speech"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV073",
+        "question": "Constitutional amendment in Nigeria requires",
+        "options": {
+            "A": "Simple majority",
+            "B": "Two-thirds of National Assembly plus two-thirds of State Assemblies",
+            "C": "Presidential approval only",
+            "D": "Supreme Court approval"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV074",
+        "question": "The Governor of a state in Nigeria is elected for",
+        "options": {
+            "A": "3 years",
+            "B": "4 years",
+            "C": "5 years",
+            "D": "6 years"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV075",
+        "question": "Local government in Nigeria was recognised in the",
+        "options": {
+            "A": "1976 local government reform",
+            "B": "1960 Constitution",
+            "C": "1963 Constitution",
+            "D": "1957 reforms"
+        },
+        "answer": "A",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV076",
+        "question": "Bureaucracy is",
+        "options": {
+            "A": "Elected government",
+            "B": "Administrative system with clear hierarchy and rules",
+            "C": "Military organisation",
+            "D": "Judicial system"
+        },
+        "answer": "B",
+        "topic": "Public Administration"
+    },
+    {
+        "id": "GOV077",
+        "question": "Technocracy is governance by",
+        "options": {
+            "A": "Elected politicians",
+            "B": "Technical experts",
+            "C": "Military",
+            "D": "Elders"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV078",
+        "question": "An ombudsman is",
+        "options": {
+            "A": "A court judge",
+            "B": "An official who investigates public complaints against government",
+            "C": "A government minister",
+            "D": "A military officer"
+        },
+        "answer": "B",
+        "topic": "Public Administration"
+    },
+    {
+        "id": "GOV079",
+        "question": "Lobbyists are people who",
+        "options": {
+            "A": "Vote in elections",
+            "B": "Try to influence government decisions on behalf of interest groups",
+            "C": "Spy for foreign governments",
+            "D": "Administer public services"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV080",
+        "question": "Freedom of the press is",
+        "options": {
+            "A": "An economic right",
+            "B": "A fundamental right allowing media to report freely",
+            "C": "A social welfare provision",
+            "D": "A military right"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV081",
+        "question": "The mass media functions in democracy to",
+        "options": {
+            "A": "Control elections",
+            "B": "Inform, educate and hold government accountable",
+            "C": "Govern the country",
+            "D": "Appoint officials"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV082",
+        "question": "The concept of social contract was developed by",
+        "options": {
+            "A": "Aristotle",
+            "B": "Plato",
+            "C": "Locke, Hobbes and Rousseau",
+            "D": "Napoleon"
+        },
+        "answer": "C",
+        "topic": "Political Philosophy"
+    },
+    {
+        "id": "GOV083",
+        "question": "Thomas Hobbes described life without government as",
+        "options": {
+            "A": "Peaceful",
+            "B": "Nasty, brutish and short",
+            "C": "Prosperous",
+            "D": "Religious"
+        },
+        "answer": "B",
+        "topic": "Political Philosophy"
+    },
+    {
+        "id": "GOV084",
+        "question": "John Locke believed the purpose of government was to",
+        "options": {
+            "A": "Increase power",
+            "B": "Protect natural rights of life, liberty and property",
+            "C": "Wage war",
+            "D": "Control religion"
+        },
+        "answer": "B",
+        "topic": "Political Philosophy"
+    },
+    {
+        "id": "GOV085",
+        "question": "An election manifesto is",
+        "options": {
+            "A": "A court document",
+            "B": "A party's statement of policies and programmes",
+            "C": "A military order",
+            "D": "A constitution"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV086",
+        "question": "The winner in a Nigerian presidential election must receive",
+        "options": {
+            "A": "Simple majority",
+            "B": "25% of votes in two-thirds of states and overall majority",
+            "C": "50% of all votes",
+            "D": "One-third of votes"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV087",
+        "question": "Public administration is concerned with",
+        "options": {
+            "A": "Private business management",
+            "B": "Implementation of government policies",
+            "C": "Electoral processes",
+            "D": "Judicial decisions"
+        },
+        "answer": "B",
+        "topic": "Public Administration"
+    },
+    {
+        "id": "GOV088",
+        "question": "The concept of legitimate government means",
+        "options": {
+            "A": "Government by force",
+            "B": "Government whose authority is accepted as right and proper",
+            "C": "Military government",
+            "D": "Government by the wealthy"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV089",
+        "question": "Bicameral legislature exists in Nigeria because",
+        "options": {
+            "A": "It's traditional",
+            "B": "It provides checks within the legislature and represents both states and people",
+            "C": "Only one chamber is needed",
+            "D": "The constitution requires it for historical reasons only"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV090",
+        "question": "The Nigerian Federal Executive Council is chaired by",
+        "options": {
+            "A": "The Senate President",
+            "B": "The President",
+            "C": "The Chief Justice",
+            "D": "The Speaker"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV091",
+        "question": "Which Nigerian constitution introduced the presidential system?",
+        "options": {
+            "A": "1963",
+            "B": "1979",
+            "C": "1960",
+            "D": "1989"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV092",
+        "question": "An executive bill becomes law after",
+        "options": {
+            "A": "President signs or assembly overrides veto",
+            "B": "Judiciary approves",
+            "C": "Public vote",
+            "D": "Senate alone approves"
+        },
+        "answer": "A",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV093",
+        "question": "The concept of popular sovereignty means",
+        "options": {
+            "A": "Military rules",
+            "B": "Power ultimately resides in the people",
+            "C": "Judiciary is supreme",
+            "D": "President is all-powerful"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV094",
+        "question": "Party primaries are held to",
+        "options": {
+            "A": "Elect government officials",
+            "B": "Select party candidates for elections",
+            "C": "Amend the constitution",
+            "D": "Recall officials"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV095",
+        "question": "A two-party system has",
+        "options": {
+            "A": "One dominant party",
+            "B": "Exactly two major political parties",
+            "C": "Multiple parties",
+            "D": "No parties"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV096",
+        "question": "Multi-party system is characterized by",
+        "options": {
+            "A": "Two parties",
+            "B": "One party",
+            "C": "Three or more competing parties",
+            "D": "Party-less system"
+        },
+        "answer": "C",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV097",
+        "question": "Disenfranchisement means",
+        "options": {
+            "A": "Granting voting rights",
+            "B": "Taking away voting rights",
+            "C": "Increasing voter registration",
+            "D": "Electoral reform"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV098",
+        "question": "The principle of equality before the law means",
+        "options": {
+            "A": "Rich are treated better",
+            "B": "All citizens are treated equally under the law",
+            "C": "Officials are above the law",
+            "D": "Only citizens have rights"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV099",
+        "question": "Coup d'\u00e9tat refers to",
+        "options": {
+            "A": "A military parade",
+            "B": "Sudden seizure of government by force",
+            "C": "Democratic election",
+            "D": "Constitutional amendment"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV100",
+        "question": "Political culture refers to",
+        "options": {
+            "A": "Art and music in politics",
+            "B": "Shared political values, beliefs and practices of a society",
+            "C": "Government propaganda",
+            "D": "Electoral systems"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV101",
+        "question": "INEC chairperson in Nigeria is appointed by",
+        "options": {
+            "A": "The President alone",
+            "B": "The President with Senate confirmation",
+            "C": "The National Assembly",
+            "D": "State governors"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV102",
+        "question": "A quorum in legislative assembly refers to",
+        "options": {
+            "A": "Total membership",
+            "B": "Minimum number needed to conduct business",
+            "C": "Majority of members",
+            "D": "Two-thirds of members"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV103",
+        "question": "The term 'lame duck' refers to",
+        "options": {
+            "A": "A politician losing power after election of successor",
+            "B": "A weak party",
+            "C": "A military officer",
+            "D": "A failed policy"
+        },
+        "answer": "A",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV104",
+        "question": "Bipartisanship means",
+        "options": {
+            "A": "One party domination",
+            "B": "Two parties cooperating across party lines",
+            "C": "Military and civilian cooperation",
+            "D": "Federal and state cooperation"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV105",
+        "question": "Constitutional monarchy has",
+        "options": {
+            "A": "Absolute royal power",
+            "B": "A monarch whose powers are limited by the constitution",
+            "C": "No monarchy",
+            "D": "Military government"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV106",
+        "question": "The concept of devolution means",
+        "options": {
+            "A": "Centralizing power",
+            "B": "Transferring power from central to regional governments",
+            "C": "Abolishing federalism",
+            "D": "Military control"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV107",
+        "question": "The Exclusive list in Nigerian constitution lists matters",
+        "options": {
+            "A": "For states only",
+            "B": "For local governments",
+            "C": "That only the federal government can legislate on",
+            "D": "For both federal and state"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV108",
+        "question": "Political violence threatens",
+        "options": {
+            "A": "Economic development",
+            "B": "Democratic governance and stability",
+            "C": "Trade",
+            "D": "Education"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV109",
+        "question": "Oligarchy is government by",
+        "options": {
+            "A": "The many",
+            "B": "A small elite group",
+            "C": "The military",
+            "D": "Religious leaders"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV110",
+        "question": "The Federal Character principle in Nigeria ensures",
+        "options": {
+            "A": "Majority tribe dominates",
+            "B": "Equitable representation of all groups in government",
+            "C": "Only educated Nigerians serve",
+            "D": "Only one zone rules"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV111",
+        "question": "A casting vote is used when",
+        "options": {
+            "A": "There is a clear majority",
+            "B": "There is a tie and the presiding officer casts the deciding vote",
+            "C": "All members vote",
+            "D": "No one votes"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV112",
+        "question": "The office of the Comptroller-General of Customs reports to",
+        "options": {
+            "A": "The President",
+            "B": "The Minister of Finance",
+            "C": "The National Assembly",
+            "D": "The Central Bank"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV113",
+        "question": "Perestroika and Glasnost were policies associated with",
+        "options": {
+            "A": "USA",
+            "B": "China",
+            "C": "USSR under Gorbachev",
+            "D": "Nigeria"
+        },
+        "answer": "C",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV114",
+        "question": "The Cold War was between",
+        "options": {
+            "A": "USA and UK",
+            "B": "USA and USSR",
+            "C": "UK and USSR",
+            "D": "China and USA"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV115",
+        "question": "The Universal Declaration of Human Rights was adopted in",
+        "options": {
+            "A": "1945",
+            "B": "1948",
+            "C": "1960",
+            "D": "1963"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV116",
+        "question": "NATO is primarily a",
+        "options": {
+            "A": "Trade organization",
+            "B": "Military alliance",
+            "C": "Economic union",
+            "D": "Cultural group"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV117",
+        "question": "The principle of self-determination means",
+        "options": {
+            "A": "Nations have the right to choose their own political status",
+            "B": "Governments can decide for citizens",
+            "C": "Only powerful nations decide",
+            "D": "Colonial rule is acceptable"
+        },
+        "answer": "A",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV118",
+        "question": "Nigeria joined the United Nations in",
+        "options": {
+            "A": "1960",
+            "B": "1963",
+            "C": "1945",
+            "D": "1955"
+        },
+        "answer": "A",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV119",
+        "question": "The International Court of Justice is located in",
+        "options": {
+            "A": "New York",
+            "B": "Geneva",
+            "C": "The Hague",
+            "D": "London"
+        },
+        "answer": "C",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV120",
+        "question": "Citizenship duties include",
+        "options": {
+            "A": "Only voting",
+            "B": "Paying taxes, obeying laws, defending the state",
+            "C": "Only defending the state",
+            "D": "No duties, only rights"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV121",
+        "question": "An ambassador represents",
+        "options": {
+            "A": "A private company",
+            "B": "One country's government in another country",
+            "C": "The United Nations",
+            "D": "A non-governmental organisation"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV122",
+        "question": "Biafra declared independence from Nigeria in",
+        "options": {
+            "A": "1966",
+            "B": "1967",
+            "C": "1970",
+            "D": "1960"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV123",
+        "question": "The Nigerian Civil War ended in",
+        "options": {
+            "A": "1966",
+            "B": "1967",
+            "C": "1970",
+            "D": "1975"
+        },
+        "answer": "C",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV124",
+        "question": "The Operation Feed the Nation programme was launched under",
+        "options": {
+            "A": "Gowon",
+            "B": "Obasanjo",
+            "C": "Shagari",
+            "D": "Buhari"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV125",
+        "question": "The indigene principle in Nigeria means",
+        "options": {
+            "A": "Citizenship by birth anywhere",
+            "B": "Rights based on ancestral origin in a place",
+            "C": "Federal character",
+            "D": "Zoning only"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV126",
+        "question": "The 36 states in Nigeria were created over several periods with the last being created in",
+        "options": {
+            "A": "1991",
+            "B": "1996",
+            "C": "1999",
+            "D": "1987"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV127",
+        "question": "The concept of judicial precedent means",
+        "options": {
+            "A": "Judges make laws",
+            "B": "Courts follow earlier decisions of higher courts",
+            "C": "Judges are elected",
+            "D": "Laws are flexible always"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV128",
+        "question": "Certiorari is a writ used to",
+        "options": {
+            "A": "Release unlawful detention",
+            "B": "Bring a lower court case to a higher court for review",
+            "C": "Compel a public officer to act",
+            "D": "Prohibit a lower court from acting"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV129",
+        "question": "Mandamus is a writ that",
+        "options": {
+            "A": "Releases a prisoner",
+            "B": "Compels a public official or body to perform a duty",
+            "C": "Reviews a lower court",
+            "D": "Prevents an act"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV130",
+        "question": "The term 'ultra vires' means",
+        "options": {
+            "A": "Within legal authority",
+            "B": "Beyond legal authority",
+            "C": "Military power",
+            "D": "Judicial review"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV131",
+        "question": "Which body declares the winner in Nigerian presidential elections?",
+        "options": {
+            "A": "National Assembly",
+            "B": "INEC",
+            "C": "Supreme Court",
+            "D": "Council of State"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV132",
+        "question": "The Code of Conduct Bureau investigates",
+        "options": {
+            "A": "Electoral fraud",
+            "B": "Asset declaration and conduct of public officials",
+            "C": "Corruption in private sector",
+            "D": "Foreign policy violations"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV133",
+        "question": "In Nigeria, a bill becomes law when",
+        "options": {
+            "A": "Senate alone passes it",
+            "B": "Both Houses pass it and President assents",
+            "C": "Only President approves",
+            "D": "Supreme Court confirms it"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV134",
+        "question": "The principle of supremacy of the constitution means",
+        "options": {
+            "A": "President is supreme",
+            "B": "The constitution is the highest law of the land",
+            "C": "Parliament can override constitution",
+            "D": "Military can suspend constitution permanently"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV135",
+        "question": "Nigeria's geopolitical zones number",
+        "options": {
+            "A": "4",
+            "B": "6",
+            "C": "7",
+            "D": "5"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV136",
+        "question": "The State Security Service (SSS) is responsible for",
+        "options": {
+            "A": "External intelligence",
+            "B": "Internal security intelligence",
+            "C": "Military operations",
+            "D": "Electoral management"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV137",
+        "question": "Plea bargaining in Nigeria involves",
+        "options": {
+            "A": "Jury trial",
+            "B": "Negotiated guilty plea for reduced charges",
+            "C": "Public prosecution",
+            "D": "Military tribunal"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV138",
+        "question": "Presidential pardon in Nigeria is granted by",
+        "options": {
+            "A": "The National Assembly",
+            "B": "The President",
+            "C": "The Chief Justice",
+            "D": "The Senate"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV139",
+        "question": "The concept of political equality means",
+        "options": {
+            "A": "Equal wealth",
+            "B": "Every citizen's vote counts equally",
+            "C": "Leaders are equal to citizens",
+            "D": "Equal education"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV140",
+        "question": "The state Independent Electoral Commission (SIEC) conducts",
+        "options": {
+            "A": "Federal elections",
+            "B": "Local government elections",
+            "C": "Gubernatorial elections",
+            "D": "National Assembly elections"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV141",
+        "question": "The Fiscal Responsibility Act in Nigeria promotes",
+        "options": {
+            "A": "Military spending",
+            "B": "Transparency and accountability in public finance",
+            "C": "Electoral reforms",
+            "D": "Trade policies"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV142",
+        "question": "Under the 1999 Constitution, executive power is vested in",
+        "options": {
+            "A": "The National Assembly",
+            "B": "The President",
+            "C": "The Judiciary",
+            "D": "The Council of State"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV143",
+        "question": "Public corporations in Nigeria are",
+        "options": {
+            "A": "Privately owned firms",
+            "B": "Government-owned enterprises",
+            "C": "Foreign companies",
+            "D": "NGOs"
+        },
+        "answer": "B",
+        "topic": "Public Administration"
+    },
+    {
+        "id": "GOV144",
+        "question": "The concept of electoral college is used in",
+        "options": {
+            "A": "Nigeria",
+            "B": "UK",
+            "C": "France",
+            "D": "USA"
+        },
+        "answer": "D",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV145",
+        "question": "Liberalism emphasises",
+        "options": {
+            "A": "State control",
+            "B": "Individual freedoms and rights",
+            "C": "Collective ownership",
+            "D": "Military rule"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV146",
+        "question": "Conservatism emphasises",
+        "options": {
+            "A": "Radical change",
+            "B": "Preservation of traditional institutions and order",
+            "C": "Revolution",
+            "D": "Communism"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV147",
+        "question": "Socialism advocates for",
+        "options": {
+            "A": "Complete private ownership",
+            "B": "Government ownership of key industries",
+            "C": "Military governance",
+            "D": "No taxation"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV148",
+        "question": "The concept of social welfare state includes",
+        "options": {
+            "A": "No government services",
+            "B": "Government provision of healthcare, education, welfare",
+            "C": "Only military provision",
+            "D": "Only trade"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV149",
+        "question": "Direct democracy means",
+        "options": {
+            "A": "Representatives decide",
+            "B": "Citizens vote directly on issues",
+            "C": "Military decides",
+            "D": "Courts decide"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV150",
+        "question": "Representative democracy means",
+        "options": {
+            "A": "Citizens vote directly",
+            "B": "Elected representatives make decisions",
+            "C": "No elections",
+            "D": "Monarchy"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV151",
+        "question": "A political party is formed to",
+        "options": {
+            "A": "Influence policy without contesting elections",
+            "B": "Contest elections and form government",
+            "C": "Conduct business",
+            "D": "Resolve legal disputes"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV152",
+        "question": "The concept of accountability in government means",
+        "options": {
+            "A": "Officials are secretive",
+            "B": "Officials must answer for their actions",
+            "C": "Courts are supreme",
+            "D": "Military controls"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV153",
+        "question": "Transparency in governance means",
+        "options": {
+            "A": "Secret government",
+            "B": "Open and accessible government operations",
+            "C": "Military secrecy",
+            "D": "No accountability"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV154",
+        "question": "The National Judicial Council oversees",
+        "options": {
+            "A": "Legislature",
+            "B": "Federal Judiciary",
+            "C": "Executive branch",
+            "D": "Local government"
+        },
+        "answer": "B",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV155",
+        "question": "The Supreme Court of Nigeria has how many justices?",
+        "options": {
+            "A": "5",
+            "B": "7",
+            "C": "21",
+            "D": "15"
+        },
+        "answer": "C",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV156",
+        "question": "The concept of bicameralism prevents",
+        "options": {
+            "A": "Efficient legislation",
+            "B": "Hasty and poorly considered legislation",
+            "C": "Federal character",
+            "D": "State independence"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV157",
+        "question": "Political recruitment refers to",
+        "options": {
+            "A": "Hiring civil servants",
+            "B": "Process of selecting political leaders and candidates",
+            "C": "Appointing judges",
+            "D": "Military conscription"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV158",
+        "question": "The doctrine of locus standi means",
+        "options": {
+            "A": "Standing to sue \u2014 having sufficient interest to bring a case",
+            "B": "Military authority",
+            "C": "Government power",
+            "D": "Legislative supremacy"
+        },
+        "answer": "A",
+        "topic": "Judiciary"
+    },
+    {
+        "id": "GOV159",
+        "question": "National consciousness is",
+        "options": {
+            "A": "Ethnic loyalty",
+            "B": "Awareness of and pride in national identity",
+            "C": "Religious identity",
+            "D": "Political apathy"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV160",
+        "question": "Under the 1999 Constitution, fundamental objectives are in",
+        "options": {
+            "A": "Chapter I",
+            "B": "Chapter II",
+            "C": "Chapter III",
+            "D": "Chapter IV"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV161",
+        "question": "The principle of federalism promotes",
+        "options": {
+            "A": "Centralisation",
+            "B": "Unity in diversity and devolution of power",
+            "C": "Military control",
+            "D": "One-party system"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV162",
+        "question": "The Council of State in Nigeria is an advisory body chaired by",
+        "options": {
+            "A": "The Senate President",
+            "B": "The President",
+            "C": "The Chief Justice",
+            "D": "The Speaker"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV163",
+        "question": "Anti-defection law prevents legislators from",
+        "options": {
+            "A": "Voting against party",
+            "B": "Crossing the floor without recall by constituents",
+            "C": "Forming new parties",
+            "D": "Criticising government"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV164",
+        "question": "The Freedom of Information Act in Nigeria gives citizens",
+        "options": {
+            "A": "Right to bear arms",
+            "B": "Right to access public records",
+            "C": "Right to immunity",
+            "D": "Right to form monopolies"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV165",
+        "question": "Political legitimacy is enhanced by",
+        "options": {
+            "A": "Force and coercion",
+            "B": "Free and fair elections and rule of law",
+            "C": "Propaganda",
+            "D": "Suppressing opposition"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV166",
+        "question": "The ECOWAS Monitoring Group (ECOMOG) is",
+        "options": {
+            "A": "A trade body",
+            "B": "A military intervention force",
+            "C": "An electoral body",
+            "D": "A development bank"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV167",
+        "question": "Federalism in Nigeria is described as",
+        "options": {
+            "A": "True federalism",
+            "B": "Fiscal federalism with federal dominance",
+            "C": "Confederal system",
+            "D": "Unitary system"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV168",
+        "question": "The rule of law doctrine was popularised by",
+        "options": {
+            "A": "Montesquieu",
+            "B": "A.V. Dicey",
+            "C": "Hobbes",
+            "D": "Karl Marx"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV169",
+        "question": "Recall of a senator in Nigeria requires",
+        "options": {
+            "A": "Simple majority of constituents",
+            "B": "At least half of registered voters in constituency signing a petition",
+            "C": "Presidential approval",
+            "D": "Court order"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV170",
+        "question": "The concept of electoral integrity means",
+        "options": {
+            "A": "Winning at all costs",
+            "B": "Free, fair, transparent and credible elections",
+            "C": "Government controls elections",
+            "D": "Only literate can vote"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV171",
+        "question": "A motion of no confidence removes",
+        "options": {
+            "A": "A civil servant",
+            "B": "A parliamentary government when legislature withdraws support",
+            "C": "A judge",
+            "D": "A military officer"
+        },
+        "answer": "B",
+        "topic": "Legislature"
+    },
+    {
+        "id": "GOV172",
+        "question": "De facto recognition means",
+        "options": {
+            "A": "Full legal recognition",
+            "B": "Practical recognition of a government without formal legal status",
+            "C": "No recognition",
+            "D": "Recognition by the UN"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV173",
+        "question": "De jure recognition means",
+        "options": {
+            "A": "Practical recognition",
+            "B": "Full legal and formal recognition of a state or government",
+            "C": "Military occupation",
+            "D": "Economic cooperation"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV174",
+        "question": "The Economic Community of West African States was founded in",
+        "options": {
+            "A": "1960",
+            "B": "1975",
+            "C": "1980",
+            "D": "1963"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV175",
+        "question": "Intergovernmental organisations are",
+        "options": {
+            "A": "Private firms",
+            "B": "International bodies composed of member state governments",
+            "C": "NGOs",
+            "D": "Multinational corporations"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV176",
+        "question": "The concept of veto power allows permanent UN Security Council members to",
+        "options": {
+            "A": "Make all decisions",
+            "B": "Block any resolution",
+            "C": "Control elections",
+            "D": "Impose sanctions alone"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV177",
+        "question": "The term 'bipolarity' in international relations refers to",
+        "options": {
+            "A": "Two-party system",
+            "B": "World dominated by two superpowers",
+            "C": "Bilateral trade",
+            "D": "Two-house legislature"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV178",
+        "question": "Soft power in international relations means",
+        "options": {
+            "A": "Military force",
+            "B": "Influence through culture, diplomacy and values",
+            "C": "Economic sanctions",
+            "D": "Military alliances"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV179",
+        "question": "Political obligation refers to",
+        "options": {
+            "A": "Duty to pay taxes only",
+            "B": "Moral or legal duty to obey the state",
+            "C": "Obligation to vote",
+            "D": "Duty to serve in military"
+        },
+        "answer": "B",
+        "topic": "Political Philosophy"
+    },
+    {
+        "id": "GOV180",
+        "question": "A green paper in government is",
+        "options": {
+            "A": "A final law",
+            "B": "A consultative document inviting discussion on proposed policy",
+            "C": "A party manifesto",
+            "D": "A budget"
+        },
+        "answer": "B",
+        "topic": "Public Administration"
+    },
+    {
+        "id": "GOV181",
+        "question": "A white paper in government is",
+        "options": {
+            "A": "A consultative document",
+            "B": "A government's final policy statement after consultation",
+            "C": "A party platform",
+            "D": "A court ruling"
+        },
+        "answer": "B",
+        "topic": "Public Administration"
+    },
+    {
+        "id": "GOV182",
+        "question": "The term 'geopolitics' studies",
+        "options": {
+            "A": "Geography and history",
+            "B": "How geography influences political power and international relations",
+            "C": "Economic geography",
+            "D": "Cultural geography"
+        },
+        "answer": "B",
+        "topic": "International Relations"
+    },
+    {
+        "id": "GOV183",
+        "question": "Citizens can participate in governance through",
+        "options": {
+            "A": "Elections only",
+            "B": "Voting, protest, petitions, civic engagement",
+            "C": "Only through political parties",
+            "D": "Only through courts"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV184",
+        "question": "The concept of civic responsibility includes",
+        "options": {
+            "A": "Only paying taxes",
+            "B": "Duties citizens owe to society including voting and community service",
+            "C": "Only military service",
+            "D": "Only obeying laws"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    },
+    {
+        "id": "GOV185",
+        "question": "Political stability means",
+        "options": {
+            "A": "No government changes ever",
+            "B": "Consistent governance without violent upheaval or unconstitutional change",
+            "C": "One-party rule",
+            "D": "Military government"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV186",
+        "question": "The National Council of State includes",
+        "options": {
+            "A": "Only elected officials",
+            "B": "State governors, former presidents and heads of state",
+            "C": "Only senators",
+            "D": "Only ministers"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV187",
+        "question": "Power-sharing arrangements promote",
+        "options": {
+            "A": "One-group dominance",
+            "B": "Inclusion of diverse groups in governance",
+            "C": "Military rule",
+            "D": "Single-party state"
+        },
+        "answer": "B",
+        "topic": "Systems of Government"
+    },
+    {
+        "id": "GOV188",
+        "question": "The 1963 Republican Constitution made Nigeria a republic under President",
+        "options": {
+            "A": "Balewa",
+            "B": "Azikiwe",
+            "C": "Awolowo",
+            "D": "Bello"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV189",
+        "question": "The concept of good governance includes",
+        "options": {
+            "A": "Corruption and opacity",
+            "B": "Accountability, transparency, rule of law and participation",
+            "C": "Military rule",
+            "D": "No elections"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV190",
+        "question": "The Aburi Accord of 1967 was",
+        "options": {
+            "A": "A trade agreement",
+            "B": "A political agreement to restructure Nigeria",
+            "C": "A military defeat",
+            "D": "A constitutional amendment"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV191",
+        "question": "Revenue sharing in Nigerian federalism is managed by",
+        "options": {
+            "A": "State governments",
+            "B": "Revenue Mobilisation Allocation and Fiscal Commission (RMAFC)",
+            "C": "Central Bank",
+            "D": "National Assembly alone"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV192",
+        "question": "The 1986 Political Bureau under Babangida recommended",
+        "options": {
+            "A": "Parliamentary system",
+            "B": "Presidential system with two-party system",
+            "C": "Military rule",
+            "D": "Confederation"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV193",
+        "question": "The National Orientation Agency promotes",
+        "options": {
+            "A": "Trade policy",
+            "B": "National unity and civic values",
+            "C": "Military recruitment",
+            "D": "Electoral management"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV194",
+        "question": "Political ideology provides",
+        "options": {
+            "A": "Military tactics",
+            "B": "A coherent set of ideas that guide political action",
+            "C": "Economic analysis",
+            "D": "Legal framework"
+        },
+        "answer": "B",
+        "topic": "Political Ideologies"
+    },
+    {
+        "id": "GOV195",
+        "question": "Sovereignty is described as external when",
+        "options": {
+            "A": "Citizens obey laws",
+            "B": "The state is independent of foreign control",
+            "C": "Federal government is supreme",
+            "D": "States have autonomy"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV196",
+        "question": "Internal sovereignty means",
+        "options": {
+            "A": "Independence from other states",
+            "B": "The state's supreme authority within its territory",
+            "C": "Military control",
+            "D": "Economic independence"
+        },
+        "answer": "B",
+        "topic": "Basic Concepts"
+    },
+    {
+        "id": "GOV197",
+        "question": "A referendum is a vote",
+        "options": {
+            "A": "By elected representatives",
+            "B": "Directly by citizens on a specific issue",
+            "C": "By party leaders",
+            "D": "By judges"
+        },
+        "answer": "B",
+        "topic": "Electoral Systems"
+    },
+    {
+        "id": "GOV198",
+        "question": "The Nigerian Police Force is under the",
+        "options": {
+            "A": "State government",
+            "B": "Federal government",
+            "C": "Local government",
+            "D": "Judiciary"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV199",
+        "question": "The Nigerian Economic Summit Group (NESG) is",
+        "options": {
+            "A": "A government agency",
+            "B": "A private sector-led policy think tank",
+            "C": "A political party",
+            "D": "A trade union"
+        },
+        "answer": "B",
+        "topic": "Nigerian Government"
+    },
+    {
+        "id": "GOV200",
+        "question": "The term 'politicization' refers to",
+        "options": {
+            "A": "Depoliticizing governance",
+            "B": "Bringing political considerations into non-political areas",
+            "C": "Increasing voter turnout",
+            "D": "Electoral reform"
+        },
+        "answer": "B",
+        "topic": "Political Participation"
+    }
+]

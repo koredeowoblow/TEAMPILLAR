@@ -6,7 +6,6 @@
 export const AI_MODELS = {
   // Primary high-reasoning model for complex explanations and analytics
   PRIMARY: "llama-3.3-70b-versatile",
-  
   // Secondary fast model for quick insights and fallbacks
   SECONDARY: "llama-3.1-8b-instant",
 
