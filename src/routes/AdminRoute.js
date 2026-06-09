@@ -25,6 +25,8 @@ const adminRateLimiter = rateLimit({
 
 router.use(adminRateLimiter);
 
+/* ─────────────────── STUDENTS ─────────────────── */
+
 router.get(
   "/students",
   protectUser,
@@ -40,6 +42,12 @@ router.get(
   validateGetStudent,
   handleValidationErrors,
   tryCatch(AdminController.getStudent),
+);
+router.get(
+  "/students/:id/achievements",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getStudentAchievements),
 );
 router.patch(
   "/students/:id",
@@ -65,6 +73,54 @@ router.post(
   protectAdmin,
   tryCatch(AdminController.sendReminder),
 );
+
+/* ─────────────────── USER MANAGEMENT (migrated from AuthRoute) ─────────────────── */
+
+router.get(
+  "/users",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getAllUsers),
+);
+router.get(
+  "/users/:userId",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getUserById),
+);
+router.put(
+  "/users/:userId",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.adminUpdateUser),
+);
+router.patch(
+  "/users/:userId/promote",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.toggleAdminStatus),
+);
+router.post(
+  "/users/:userId/otp",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.adminTriggerOTP),
+);
+router.post(
+  "/users/create-admin",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.createAdmin),
+);
+router.delete(
+  "/users/:userId",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.deleteUserProfile),
+);
+
+/* ─────────────────── ANALYTICS ─────────────────── */
+
 router.get(
   "/analytics/reports",
   protectUser,
@@ -73,24 +129,46 @@ router.get(
   handleValidationErrors,
   tryCatch(AdminController.analyticsReports),
 );
-router.get(
-  "/analytics/reports/export",
-  protectUser,
-  protectAdmin,
-  tryCatch(AdminController.exportAnalytics),
-);
-router.post(
-  "/analytics/schedule",
-  protectUser,
-  protectAdmin,
-  tryCatch(AdminController.scheduleReport),
-);
+
 router.get(
   "/dashboard/stats",
   protectUser,
   protectAdmin,
   tryCatch(AdminController.dashboardStats),
 );
+router.get(
+  "/live-monitor",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.liveMonitorData),
+);
+
+/* ─────────────────── TUTORS ─────────────────── */
+
+router.get(
+  "/tutors",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getTutors),
+);
+
+/* ─────────────────── SETTINGS ─────────────────── */
+
+router.get(
+  "/settings",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getSettings),
+);
+router.put(
+  "/settings",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.updateSettings),
+);
+
+/* ─────────────────── QUESTIONS ─────────────────── */
+
 router.get(
   "/questions",
   protectUser,
@@ -128,20 +206,6 @@ router.delete(
   protectUser,
   protectAdmin,
   tryCatch(AdminController.deleteQuestion),
-);
-
-router.get(
-  "/tutors",
-  protectUser,
-  protectAdmin,
-  tryCatch(AdminController.getTutors),
-);
-
-router.get(
-  "/settings",
-  protectUser,
-  protectAdmin,
-  tryCatch(AdminController.getSettings),
 );
 
 /* ─────────────────── SUBJECTS ─────────────────── */

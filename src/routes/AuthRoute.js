@@ -129,38 +129,8 @@ auth.post("/reactivate", protectUser, tryCatch(SettingsController.reactivateAcco
 auth.post("/google", authLimiter, tryCatch(AuthController.googleAuth));
 auth.post("/apple", authLimiter, tryCatch(AuthController.appleAuth));
 
-// Admin Management (Admin Only)
-auth.get(
-  "/admin/users",
-  protectUser,
-  protectAdmin,
-  tryCatch(AuthController.getAllUsers),
-);
-auth.get(
-  "/admin/users/:userId",
-  protectUser,
-  protectAdmin,
-  tryCatch(AuthController.getUserById),
-);
-auth.put(
-  "/admin/users/:userId",
-  logLoginRequest,
-  protectUser,
-  protectAdmin,
-  tryCatch(AuthController.adminUpdateUser),
-);
-auth.patch(
-  "/admin/users/:userId/promote",
-  protectUser,
-  protectAdmin,
-  tryCatch(AuthController.toggleAdminStatus),
-);
-auth.post(
-  "/admin/users/:userId/otp",
-  protectUser,
-  protectAdmin,
-  tryCatch(AuthController.adminTriggerOTP),
-);
+// Admin user management routes have been consolidated into AdminRoute.js
+// under /api/v1/admin/users/*
 
 // ─── Session & Account Management ─────────────────────────────────────────────
 auth.get("/sessions",    protectUser, tryCatch(AuthController.getActiveSessions));

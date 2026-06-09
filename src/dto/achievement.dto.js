@@ -27,9 +27,12 @@ export function toLeaderboardDTO(entry) {
   if (!entry) return null;
   const l = entry.toObject ? entry.toObject() : entry;
 
+  const userObj = l.userId && typeof l.userId === 'object' ? l.userId : null;
   return {
     id: String(l._id),
-    user_id: String(l.userId),
+    user_id: userObj ? String(userObj._id) : String(l.userId),
+    userName: userObj ? userObj.name : "Student",
+    userPhoto: userObj ? userObj.photo : null,
     score: l.score,
     rank: l.rank || 0,
     updated_at: l.updatedAt,

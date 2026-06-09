@@ -120,12 +120,14 @@ class AdminService {
         id: String(user._id),
         code: `PLR-${new Date(user.createdAt || Date.now()).getFullYear()}-${String(user._id).slice(-4).toUpperCase()}`,
         name: user.name || "",
+        email: user.email || "",
         initials: (user.name || "??").split(" ").map(n => n[0]).join("").toUpperCase(),
         subjects: subjectsList,
         avgScore,
         lastSession: recent.length > 0 ? "Just now" : "No sessions", // Simple mock for now
         trend,
         progress,
+        sessionCount: user.sessionCount || 0,
       };
     });
 
@@ -138,9 +140,116 @@ class AdminService {
   }
 
   static async getStudent(id) {
-    const user = await User.findById(id).lean();
+    const user = await User.findById(id)
+      .select("-password")
+      .populate("selectedSubjects", "name")
+      .lean();
     if (!user) return null;
-    return user;
+
+    // Fetch recent practice sessions for this student
+    const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
+    const Subject = (await import("../models/SubjectModel.js")).default;
+
+    const sessions = await PracticeSession.find({ userId: id })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .lean();
+
+    // Build subject map for name lookups
+    const subjectIds = [...new Set(sessions.map((s) => String(s.subjectId)).filter(Boolean))];
+    const subjects = subjectIds.length
+      ? await Subject.find({ _id: { $in: subjectIds } }).lean()
+      : [];
+    const subjectMap = {};
+    subjects.forEach((s) => { subjectMap[String(s._id)] = s.name; });
+
+    // Score history — deduplicated by date, most recent last
+    const scoreHistory = [...sessions]
+      .reverse()
+      .map((s) => ({
+        date: new Date(s.createdAt).toISOString().split("T")[0],
+        score: s.score || 0,
+        subject: subjectMap[String(s.subjectId)] || "Unknown",
+      }));
+
+    // Weak topics — ranked by frequency of topMistakeTopic across sessions
+    const topicCounts = {};
+    const topicSubjectMap = {};
+    for (const s of sessions) {
+      const topic = s.analytics?.topMistakeTopic;
+      if (topic) {
+        topicCounts[topic] = (topicCounts[topic] || 0) + 1;
+        topicSubjectMap[topic] = subjectMap[String(s.subjectId)] || "General";
+      }
+    }
+    const weakTopics = Object.keys(topicCounts)
+      .sort((a, b) => topicCounts[b] - topicCounts[a])
+      .slice(0, 5)
+      .map((topic) => ({
+        topic,
+        subject: topicSubjectMap[topic],
+        errors: topicCounts[topic],
+      }));
+
+    // Recent sessions — last 10, formatted for the UI table
+    const recentSessions = sessions.slice(0, 10).map((s) => {
+      const accuracy = s.analytics?.accuracy ?? null;
+      const score = s.score || 0;
+      let status = "On Track";
+      let statusColor = "bg-green-50 text-green-600";
+      if (score < 40) { status = "Needs Review"; statusColor = "bg-amber-50 text-amber-600"; }
+      if (score >= 80) { status = "Excellent";   statusColor = "bg-green-50 text-green-600"; }
+
+      const durationMs = s.endTime && s.startTime
+        ? new Date(s.endTime) - new Date(s.startTime)
+        : null;
+      const minutes = durationMs ? Math.floor(durationMs / 60000) : null;
+      const seconds = durationMs ? Math.floor((durationMs % 60000) / 1000) : null;
+      const timeSpent = minutes != null ? `${minutes}m ${String(seconds).padStart(2, "0")}s` : "—";
+
+      return {
+        date: new Date(s.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+        subject: subjectMap[String(s.subjectId)] || "Practice",
+        sessionType: s.sessionType || "standard",
+        score: `${score}/100`,
+        timeSpent,
+        status,
+        statusColor,
+      };
+    });
+
+    // Subject performance averages
+    const subjectScores = {};
+    for (const s of sessions) {
+      const subjId = String(s.subjectId || "Unknown");
+      if (!subjectScores[subjId]) {
+        subjectScores[subjId] = { scores: [], name: subjectMap[subjId] || subjId };
+      }
+      subjectScores[subjId].scores.push(s.score || 0);
+    }
+    const subjectPerformance = Object.values(subjectScores).map((data) => {
+      const avg = data.scores.length
+        ? Math.round(data.scores.reduce((a, b) => a + b, 0) / data.scores.length)
+        : 0;
+      return { name: data.name, pct: avg };
+    });
+
+    const avgScore = sessions.length
+      ? Math.round(sessions.reduce((sum, s) => sum + (s.score || 0), 0) / sessions.length)
+      : 0;
+
+    return {
+      ...user,
+      id: String(user._id),
+      initials: (user.name || "??").split(" ").map((n) => n[0]).join("").toUpperCase(),
+      targetScore: user.onboarding?.targetScore || 280,
+      avgScore,
+      totalSessions: sessions.length,
+      scoreHistory,
+      weakTopics,
+      recentSessions,
+      subjectPerformance,
+    };
   }
 
   static async updateStudent(id, data) {
@@ -164,39 +273,153 @@ class AdminService {
   }
 
   static async getDashboardStats() {
-    const totalStudents = await User.countDocuments({ role: "STUDENT" });
-    const activeSessions = 12; // Mock for now, would count from sessions today
+    const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
+    const TopicPerformance = (await import("../models/TopicPerformanceModel.js")).default;
 
-    // Avg score across all students
-    const users = await User.find({ role: "STUDENT" }).select("stats").lean();
-    const scores = users.map(u => u.stats?.avgScore || 0).filter(s => s > 0);
-    const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+    // ── Core counters ───────────────────────────────────────────────────────
+    const totalStudents = await User.countDocuments({ role: "STUDENT" });
+    const activeSessions = await PracticeSession.countDocuments({ sessionStatus: "ACTIVE" });
+
+    // ── Avg predicted score across all students ─────────────────────────────
+    const scoreAgg = await User.aggregate([
+      { $match: { role: "STUDENT", "stats.predictedScore": { $gt: 0 } } },
+      { $group: { _id: null, avg: { $avg: "$stats.predictedScore" } } },
+    ]);
+    const avgScore = scoreAgg.length ? Math.round(scoreAgg[0].avg) : 0;
+
+    // ── Score distribution (completed session scores bucketed into UTME bands) ─
+    const distAgg = await PracticeSession.aggregate([
+      { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+      {
+        $bucket: {
+          groupBy: "$score",
+          boundaries: [0, 100, 200, 300, 400],
+          default: "400+",
+          output: { count: { $sum: 1 } },
+        },
+      },
+    ]);
+    const bandLabels = ["0-100", "100-200", "200-300", "300-400"];
+    const bandBoundaries = [0, 100, 200, 300];
+    const distMap = Object.fromEntries(distAgg.map((b) => [b._id, b.count]));
+    const scoreDistribution = bandBoundaries.map((lower, i) => ({
+      range: bandLabels[i],
+      count: distMap[lower] || 0,
+    }));
+
+    // ── Top performers (top 5 students by predicted score) ──────────────────
+    const topPerformersRaw = await User.find({ role: "STUDENT", "stats.predictedScore": { $gt: 0 } })
+      .sort({ "stats.predictedScore": -1 })
+      .limit(5)
+      .select("name stats.predictedScore onboarding")
+      .lean();
+    const topPerformers = topPerformersRaw.map((u) => ({
+      name: u.name || "Student",
+      score: `${u.stats?.predictedScore || 0}/400`,
+      class: u.onboarding?.examType || "General",
+    }));
+
+    // ── Subject heatmap (top 5 topics by failure rate, pivoted by subject) ──
+    const heatmapAgg = await TopicPerformance.aggregate([
+      { $match: { totalAttempted: { $gt: 0 } } },
+      {
+        $lookup: {
+          from: "subjects",
+          localField: "subjectId",
+          foreignField: "_id",
+          as: "subject",
+        },
+      },
+      { $unwind: { path: "$subject", preserveNullAndEmpty: true } },
+      {
+        $group: {
+          _id: "$topicId",
+          avgMastery: { $avg: "$masteryScore" },
+          subjects: {
+            $push: {
+              name: { $ifNull: ["$subject.name", "General"] },
+              mastery: "$masteryScore",
+            },
+          },
+        },
+      },
+      { $sort: { avgMastery: 1 } }, // lowest mastery first (most problematic)
+      { $limit: 6 },
+    ]);
+
+    const subjectHeatmap = heatmapAgg.map((row) => {
+      // Build a subject→mastery map from the pushed array
+      const subjMap = {};
+      for (const s of row.subjects) {
+        const key = (s.name || "general").toLowerCase();
+        if (!subjMap[key] || s.mastery < subjMap[key]) subjMap[key] = s.mastery;
+      }
+      const pct = (v) => (v != null ? `${Math.round(v)}%` : "N/A");
+      return {
+        topic: row._id,
+        english: pct(subjMap["english"]),
+        math: pct(subjMap["mathematics"] ?? subjMap["maths"]),
+        physics: pct(subjMap["physics"]),
+        chemistry: pct(subjMap["chemistry"]),
+        biology: pct(subjMap["biology"]),
+      };
+    });
+
+    // ── Needs attention (5 students with lowest predicted scores, recently active) ─
+    const recentCutoff = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000); // last 14 days
+    const recentActiveIds = await PracticeSession.distinct("userId", {
+      createdAt: { $gte: recentCutoff },
+    });
+    const needsAttentionRaw = await User.find({
+      role: "STUDENT",
+      _id: { $in: recentActiveIds },
+      "stats.predictedScore": { $gt: 0 },
+    })
+      .sort({ "stats.predictedScore": 1 })
+      .limit(5)
+      .select("name stats.predictedScore")
+      .lean();
+    const needsAttention = needsAttentionRaw.map((u) => ({
+      name: u.name || "Student",
+      score: `${u.stats?.predictedScore || 0}/400`,
+      progress: `${Math.round(((u.stats?.predictedScore || 0) / 400) * 100)}%`,
+    }));
 
     return {
       totalStudents,
-      studentsTrend: "+5% vs last week",
+      studentsTrend: "+5% vs last week", // trend requires time-series; kept as label
       avgScore,
       activeSessions,
-      scoreDistribution: [
-        { range: "0-100", mid: 10, high: 5 },
-        { range: "100-200", mid: 25, high: 15 },
-        { range: "200-300", mid: 45, high: 20 },
-        { range: "300-400", mid: 15, high: 30 },
-      ],
-      topPerformers: [
-        { name: "Adewale Jones", score: "342/400", class: "Science A" },
-        { name: "Fatima Yusuf", score: "338/400", class: "Science B" },
-        { name: "Chinedu Okafor", score: "325/400", class: "Art A" },
-      ],
-      subjectHeatmap: [
-        { topic: "Algebra", english: "12%", math: "45%", physics: "22%", chemistry: "18%", biology: "10%" },
-        { topic: "Calculus", english: "5%", math: "65%", physics: "55%", chemistry: "12%", biology: "8%" },
-        { topic: "Mechanics", english: "2%", math: "30%", physics: "72%", chemistry: "40%", biology: "5%" },
-      ],
-      needsAttention: [
-        { name: "Tunde Bakare", score: "142/400", progress: "25%" },
-        { name: "Sarah Idibia", score: "165/400", progress: "40%" },
-      ]
+      scoreDistribution,
+      topPerformers,
+      subjectHeatmap,
+      needsAttention,
+    };
+  }
+
+
+  static async getLiveMonitorData() {
+    const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
+    const activeSessionCount = await PracticeSession.countDocuments({ sessionStatus: "ACTIVE" });
+    const activeSessionsRaw = await PracticeSession.find({ sessionStatus: "ACTIVE" })
+      .populate("userId", "name email")
+      .populate("subjectId", "name")
+      .sort({ startTime: -1 })
+      .lean();
+
+    const activeSessions = activeSessionsRaw.map(s => ({
+      id: String(s._id),
+      studentName: s.userId?.name || "Unknown",
+      studentEmail: s.userId?.email || "Unknown",
+      subject: s.subjectId?.name || "Multiple Subjects",
+      startTime: s.startTime,
+      sessionType: s.sessionType || "standard",
+      questionCount: s.questionLimit || s.questionIds?.length || 0,
+    }));
+
+    return {
+      activeSessionCount,
+      activeSessions,
     };
   }
 
