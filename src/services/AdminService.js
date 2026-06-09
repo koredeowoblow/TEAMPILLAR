@@ -330,7 +330,7 @@ class AdminService {
           as: "subject",
         },
       },
-      { $unwind: { path: "$subject", preserveNullAndEmpty: true } },
+      { $unwind: { path: "$subject", preserveNullAndEmptyArrays: true } },
       {
         $group: {
           _id: "$topicId",
