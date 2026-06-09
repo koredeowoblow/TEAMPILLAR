@@ -1,6 +1,7 @@
 import { questionRepository } from "../repository/QuestionRepository.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import TopicPerformance from "../models/TopicPerformanceModel.js";
+import Subject from "../models/SubjectModel.js";
 import { AI_MODELS } from "../config/aiModels.js";
 import Groq from "groq-sdk";
 import { logger } from "../core/logger.js";
@@ -169,7 +170,7 @@ Select the best ${targetLimit} questions that will most effectively target this 
     // Multi-subject support for smart mock: Fetch full limit for EACH subject
     let allSelected = [];
 
-    const subjectDocs = await mongoose.model('Subject').find({ _id: { $in: ids } }).lean();
+    const subjectDocs = await Subject.find({ _id: { $in: ids } }).lean();
     const subjectNameMap = {};
     subjectDocs.forEach(d => { subjectNameMap[String(d._id)] = d.name; });
 

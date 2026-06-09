@@ -80,25 +80,33 @@ export const protectUser = async (req, res, next) => {
     }
 
     // Server-side session timeout
-    const timeoutMinutesRaw =
-      process.env.AUTH_SESSION_TIMEOUT_MINUTES ||
-      process.env.SESSION_TIMEOUT_MINUTES ||
-      "0";
-    const timeoutMinutes = Number.parseInt(timeoutMinutesRaw, 10);
+    let timeoutMs = 0;
+    if (process.env.INACTIVITY_TIMEOUT_MS) {
+      timeoutMs = Number.parseInt(process.env.INACTIVITY_TIMEOUT_MS, 10);
+    } else {
+      const timeoutMinutesRaw =
+        process.env.AUTH_SESSION_TIMEOUT_MINUTES ||
+        process.env.SESSION_TIMEOUT_MINUTES ||
+        "0";
+      const timeoutMinutes = Number.parseInt(timeoutMinutesRaw, 10);
+      if (Number.isFinite(timeoutMinutes) && timeoutMinutes > 0) {
+        timeoutMs = timeoutMinutes * 60 * 1000;
+      }
+    }
 
     // Throttle how often we write the "last used" timestamp to DB
     const touchIntervalSecondsRaw =
       process.env.AUTH_SESSION_TOUCH_INTERVAL_SECONDS || "60";
     const touchIntervalSeconds = Number.parseInt(touchIntervalSecondsRaw, 10);
 
-    if (Number.isFinite(timeoutMinutes) && timeoutMinutes > 0) {
+    if (Number.isFinite(timeoutMs) && timeoutMs > 0) {
       const lastUsedValue = session.lastLogin || session.createdAt;
       const lastUsedAt = lastUsedValue ? new Date(lastUsedValue) : null;
 
       if (lastUsedAt && !Number.isNaN(lastUsedAt.getTime())) {
         const nowMs = Date.now();
         const expiresAt = new Date(
-          lastUsedAt.getTime() + timeoutMinutes * 60 * 1000,
+          lastUsedAt.getTime() + timeoutMs,
         );
 
         if (nowMs > expiresAt.getTime()) {
@@ -109,7 +117,7 @@ export const protectUser = async (req, res, next) => {
             new AppError("Unauthorized", 401, {
               reason: "session_timeout",
               expiresAt: expiresAt.toISOString(),
-              timeoutMinutes,
+              timeoutMinutes: timeoutMs / 60000,
             }),
           );
         }
@@ -136,7 +144,10 @@ export const protectUser = async (req, res, next) => {
               }
               setImmediate(async () => {
                 try {
-                  await authRepository.touchToken(tokenHash, new Date(nowMs));
+                  await Promise.all([
+                    authRepository.touchToken(tokenHash, new Date(nowMs)),
+                    userRepository.updateUser(user._id, { lastActive: new Date(nowMs) }),
+                  ]);
                 } catch (touchError) {
                   logger.error("Failed to update session activity", {
                     message: touchError.message,

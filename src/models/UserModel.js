@@ -64,6 +64,7 @@ const UserSchema = new mongoose.Schema(
     stats: {
       predictedScore: { type: Number, default: 0 },
     },
+    lastActive: { type: Date, default: Date.now },
   },
   {
     timestamps: true,

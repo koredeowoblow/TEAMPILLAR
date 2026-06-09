@@ -75,7 +75,7 @@ class AuthService {
 
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) {
-      throw new AppError("Invalid credentials", 400);
+      throw new AppError("Email already registered", 400);
     }
 
     const newUser = await userRepository.createUser({
@@ -217,6 +217,12 @@ class AuthService {
     const session = await authRepository.findSessionByToken(tokenHash);
     if (session) {
       await authRepository.invalidateSession(tokenHash);
+      try {
+        const SessionService = (await import("./SessionService.js")).default;
+        await SessionService.endSessionsForUser(session.userId);
+      } catch (err) {
+        logger.error(`Practice sessions cleanup failed during logout: ${err.message}`);
+      }
     }
 
     invalidateCachedSessionUser(tokenHash);

@@ -7,6 +7,16 @@ import mongoose from "mongoose";
 jest.mock("../src/repository/QuestionRepository.js");
 jest.mock("../src/repository/PracticeRepository.js");
 jest.mock("../src/models/TopicPerformanceModel.js");
+jest.mock("../src/models/SubjectModel.js", () => {
+  return {
+    __esModule: true,
+    default: {
+      find: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue([{ _id: "subjectId", name: "Physics" }])
+      })
+    }
+  };
+});
 jest.mock("groq-sdk", () => {
   return jest.fn().mockImplementation(() => {
     return {

@@ -1,6 +1,7 @@
 import User from "../models/UserModel.js";
 import Subject from "../models/SubjectModel.js";
 import Question from "../models/QuestionModel.js";
+import { questionRepository } from "../repository/QuestionRepository.js";
 import { escapeRegex } from "../utils/stringUtils.js";
 
 function clamp(value, min, max) {
@@ -480,8 +481,9 @@ class AdminService {
   }
 
   static async uploadQuestions(questionsData) {
-    // Basic bulk insert with validation logic
-    const results = await Question.insertMany(questionsData, { ordered: false });
+    // Strip rogue _id fields before bulk insert to prevent conflicts
+    const sanitized = questionsData.map(({ _id, __v, ...rest }) => rest);
+    const results = await questionRepository.insertMany(sanitized);
     return {
       count: results.length,
       message: `${results.length} questions uploaded successfully.`
