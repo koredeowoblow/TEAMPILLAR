@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Pillar - API Documentation Explorer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+    }
+    code, pre {
+      font-family: 'Fira Code', monospace;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(30, 30, 40, 0.3);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.3);
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.6);
+    }
+  </style>
+</head>
+<body class="bg-[#0b0a0f] text-slate-100 antialiased custom-scrollbar">
+
+  <!-- Main Container -->
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-80 bg-[#121118] border-r border-slate-800/80 flex flex-col h-full shrink-0">
+      <!-- Logo Header -->
+      <div class="p-6 border-b border-slate-800/80 flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
+          <i data-lucide="zap" class="w-5 h-5 text-white animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Pillar API</h1>
+          <span class="text-xs text-brand-500 font-semibold tracking-wider uppercase">Reference v1.0.0</span>
+        </div>
+      </div>
+
+      <!-- Categories Navigation -->
+      <nav class="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar" id="sidebar-categories">
+        <!-- Dynnamically populated -->
+      </nav>
+
+      <!-- Footer Info -->
+      <div class="p-4 border-t border-slate-800/80 bg-[#0e0d14] text-xs text-slate-500 flex justify-between items-center">
+        <span>Base Path: <code class="text-brand-400 bg-brand-500/10 px-1 py-0.5 rounded">/api/v1</code></span>
+        <button onclick="toggleTheme()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 transition-colors">
+          <i data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-[#0b0a0f] overflow-hidden">
+      <!-- Top Search & Filter Bar -->
+      <header class="h-20 bg-[#121118]/40 border-b border-slate-800/60 backdrop-blur-md px-8 flex items-center justify-between shrink-0 gap-4">
+        <!-- Search -->
+        <div class="relative w-full max-w-lg">
+          <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+          <input 
+            type="text" 
+            id="search-input"
+            placeholder="Search endpoints, parameters, descriptions..." 
+            class="w-full bg-[#16151f] border border-slate-800 text-slate-100 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all placeholder:text-slate-500"
+            oninput="handleSearch()"
+          >
+        </div>
+
+        <!-- Filter Badges -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium text-slate-400 mr-1">Methods:</span>
+          <button onclick="filterMethod('ALL')" class="method-tab active px-3 py-1.5 rounded-lg bg-brand-500 text-white text-xs font-medium transition-all">ALL</button>
+          <button onclick="filterMethod('GET')" class="method-tab px-3 py-1.5 rounded-lg bg-[#16151f] hover:bg-slate-800 text-emerald-400 text-xs font-semibold transition-all">GET</button>
+          <button onclick="filterMethod('POST')" class="method-tab px-3 py-1.5 rounded-lg bg-[#16151f] hover:bg-slate-800 text-blue-400 text-xs font-semibold transition-all">POST</button>
+          <button onclick="filterMethod('PATCH')" class="method-tab px-3 py-1.5 rounded-lg bg-[#16151f] hover:bg-slate-800 text-amber-400 text-xs font-semibold transition-all">PATCH</button>
+          <button onclick="filterMethod('PUT')" class="method-tab px-3 py-1.5 rounded-lg bg-[#16151f] hover:bg-slate-800 text-amber-500 text-xs font-semibold transition-all">PUT</button>
+          <button onclick="filterMethod('DELETE')" class="method-tab px-3 py-1.5 rounded-lg bg-[#16151f] hover:bg-slate-800 text-rose-400 text-xs font-semibold transition-all">DELETE</button>
+        </div>
+      </header>
+
+      <!-- Content Explorer Body -->
+      <div class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-12" id="endpoints-list">
+        <!-- Dynamically populated -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Javascript & Data Model -->
+  <script>
+    const API_DATA = [
+      {
+        category: "Authentication & Profile",
+        id: "auth",
+        icon: "key",
+        endpoints: [
+          {
+            method: "POST",
+            path: "/auth/register",
+            description: "Register a new student account.",
+            access: "Public",
+            rateLimit: "registrationLimiter",
+            validation: {
+              body: [
+                { name: "email", type: "string", required: true, desc: "Valid email structure" },
+                { name: "password", type: "string", required: true, desc: "Min 8 chars, 1 uppercase, 1 lowercase, 1 digit, 1 symbol (@$!%*?&)" },
+                { name: "name", type: "string", required: false, desc: "Min length 2 characters" },
+                { name: "fullName", type: "string", required: false, desc: "Min length 2 characters" }
+              ],
+              custom: "Either 'name' or 'fullName' must be provided, trimmed, and >= 2 characters."
+            },
+            payload: {
+              email: "student@pillar.ng",
+              password: "SecurePassword123!",
+              fullName: "Korede Owoblow"
+            }
+          },
+          {
+            method: "POST",
+            path: "/auth/login",
+            description: "Authenticate user and issue access & refresh JWT tokens.",
+            access: "Public",
+            rateLimit: "authLimiter",
+            validation: {
+              body: [
+                { name: "email", type: "string", required: true, desc: "Valid email address" },
+                { name: "password", type: "string", required: true, desc: "Password credentials" }
+              ]
+            },
+            payload: {
+              email: "student@pillar.ng",
+              password: "SecurePassword123!"
+            }
+          },
+          {
+            method: "POST",
+            path: "/auth/logout",
+            description: "Invalidate the active JWT session and revoke access tokens.",
+            access: "Private (Student/Admin)",
+            validation: {
+              headers: [
+                { name: "Authorization", type: "string", required: true, desc: "Bearer <JWT_TOKEN>" }
+              ]
+            }
+          },
+          {
+            method: "POST",
+            path: "/auth/refresh",
+            description: "Refresh access token using a valid refresh token.",
+            access: "Public",
+            rateLimit: "authLimiter",
+            payload: {
+              refreshToken: "eyJhbGciOiJIUzI1NiIsIn..."
+            }
+          },
+          {
+            method: "POST",
+            path: "/auth/forgot-password",
+            description: "Sends a 4-digit password recovery OTP code to the email address.",
+            access: "Public",
+            rateLimit: "passwordResetLimiter",
+            validation: {
+              body: [{ name: "email", type: "string", required: true, desc: "Valid registered email" }]
+            },
+            payload: { email: "student@pillar.ng" }
+          },
+          {
+            method: "POST",
+            path: "/auth/reset-password",
+            description: "Completes the password reset process using the OTP.",
+            access: "Public",
+            rateLimit: "otpLimiter",
+            validation: {
+              body: [
+                { name: "email", type: "string", required: true, desc: "Valid user email" },
+                { name: "otp", type: "number/string", required: true, desc: "4-digit verification code" },
+                { name: "newPassword", type: "string", required: true, desc: "Meets complexity criteria" },
+                { name: "confirmPassword", type: "string", required: true, desc: "Must match newPassword" }
+              ]
+            },
+            payload: {
+              email: "student@pillar.ng",
+              otp: "1234",
+              newPassword: "NewSecurePassword123!",
+              confirmPassword: "NewSecurePassword123!"
+            }
+          },
+          {
+            method: "POST",
+            path: "/auth/change-password",
+            description: "Change password for an authenticated session.",
+            access: "Private (Student/Admin)",
+            validation: {
+              body: [
+                { name: "currentPassword", type: "string", required: true, desc: "Active current password" },
+                { name: "newPassword", type: "string", required: true, desc: "Min 8 chars, strong complexity" }
+              ]
+            },
+            payload: {
+              currentPassword: "SecurePassword123!",
+              newPassword: "NewSecurePassword123!"
+            }
+          },
+          {
+            method: "POST",
+            path: "/auth/verify-otp",
+            description: "Verify user's account using email registration verification OTP.",
+            access: "Public",
+            rateLimit: "otpLimiter",
+            validation: {
+              body: [
+                { name: "email", type: "string", required: true, desc: "Valid student email" },
+                { name: "otp", type: "string/number", required: true, desc: "4-digit code" }
+              ]
+            },
+            payload: { email: "student@pillar.ng", otp: "5678" }
+          },
+          {
+            method: "GET",
+            path: "/auth/me",
+            description: "Get active user session details, onboarding flags, status, and rate limits.",
+            access: "Private (Student/Admin)"
+          },
+          {
+            method: "PATCH",
+            path: "/auth/profile",
+            description: "Update student details or upload a new profile picture.",
+            access: "Private (Student)",
+            upload: "Multipart form: single file under field 'photo'",
+            payload: {
+              fullName: "Korede Owoblow Updated",
+              phoneNumber: "+2348012345678"
+            }
+          },
+          {
+            method: "GET",
+            path: "/auth/settings",
+            description: "Fetch notification preference structures and user privacy locks.",
+            access: "Private (Student)"
+          },
+          {
+            method: "PATCH",
+            path: "/auth/settings/notifications",
+            description: "Toggle notification configurations (email, study nudges, and alerts).",
+            access: "Private (Student)",
+            payload: {
+              emailNotifications: true,
+              studyReminders: false
+            }
+          },
+          {
+            method: "GET",
+            path: "/auth/sessions",
+            description: "Fetch all active browser/mobile sessions with device signatures.",
+            access: "Private (Student/Admin)"
+          },
+          {
+            method: "POST",
+            path: "/auth/logout-all",
+            description: "Revoke all active device/browser sessions for this user.",
+            access: "Private (Student/Admin)"
+          }
+        ]
+      },
+      {
+        category: "Practice & Exam Sessions",
+        id: "practice",
+        icon: "book-open",
+        endpoints: [
+          {
+            method: "GET",
+            path: "/practice/subjects",
+            description: "Fetch the list of UTME academic subjects configured in the platform.",
+            access: "Private (Student)"
+          },
+          {
+            method: "GET",
+            path: "/practice/questions",
+            description: "Fetch questions for testing.",
+            access: "Private (Student)",
+            validation: {
+              query: [
+                { name: "subjectId", type: "string", required: true, desc: "Valid ID of the subject" },
+                { name: "limit", type: "integer", required: false, desc: "Amount to retrieve (1 to 200)" },
+                { name: "difficulty", type: "string", required: false, desc: "EASY, MEDIUM, HARD, or ADAPTIVE" },
+                { name: "year", type: "integer", required: false, desc: "Filter questions by year (>= 1900)" }
+              ]
+            }
+          },
+          {
+            method: "POST",
+            path: "/practice/session/start",
+            description: "Initialize a standard/adaptive practice exam session.",
+            access: "Private (Student)",
+            validation: {
+              body: [
+                { name: "subjectId", type: "string", required: false, desc: "Initial subject ID (Alternative to list)" },
+                { name: "subjectIds", type: "array of strings", required: false, desc: "Array of subject IDs to bundle" }
+              ],
+              custom: "Either subjectId or subjectIds array must be supplied with content."
+            },
+            payload: {
+              subjectIds: ["65ee3bc49a37e5d8a8b12345"]
+            }
+          },
+          {
+            method: "POST",
+            path: "/practice/questions/next",
+            description: "Retrieve next segment of adaptive questions based on cumulative exam status.",
+            access: "Private (Student)",
+            payload: {
+              sessionId: "65ee3bc49a37e5d8a8b54321",
+              subjectId: "65ee3bc49a37e5d8a8b12345"
+            }
+          },
+          {
+            method: "POST",
+            path: "/practice/session/submit",
+            description: "Grade student responses, calculate streaks, and build learning analytics report.",
+            access: "Private (Student)",
+            payload: {
+              sessionId: "65ee3bc49a37e5d8a8b54321",
+              responses: [
+                { questionId: "65ee3bc49a37e5d8a8b77777", selectedOption: "A" }
+              ],
+              tabSwitches: 1
+            }
+          },
+          {
+            method: "POST",
+            path: "/practice/session/visibility",
+            description: "Logs window tab changes or visibility losses for real-time cheat audit logs.",
+            access: "Private (Student)",
+            payload: {
+              sessionId: "65ee3bc49a37e5d8a8b54321",
+              increment: 1
+            }
+          },
+          {
+            method: "GET",
+            path: "/practice/session/result/:id",
+            description: "View results, analytics charts, and question explanations.",
+            access: "Private (Student)"
+          }
+        ]
+      },
+      {
+        category: "AI Tutor & Assistance",
+        id: "ai",
+        icon: "cpu",
+        endpoints: [
+          {
+            method: "POST",
+            path: "/ai/explain",
+            description: "Request a step-by-step LaTeX pedagogical explanation for a question.",
+            access: "Private (Student)",
+            payload: {
+              questionId: "65ee3bc49a37e5d8a8b77777",
+              context: { selectedOptionId: "B" }
+            }
+          },
+          {
+            method: "POST",
+            path: "/ai/study-plan",
+            description: "Generate a strategic study plan based on weak topics.",
+            access: "Private (Student)",
+            payload: {
+              weakTopics: ["Quadratic Equations", "Organic Chemistry"]
+            }
+          },
+          {
+            method: "POST",
+            path: "/ai/chat",
+            description: "Interactive chat with the UTME AI Tutor. Supports conversation history context.",
+            access: "Private (Student)",
+            payload: {
+              message: "Explain the difference between alkanes and alkenes.",
+              subject: "Chemistry",
+              history: [
+                { role: "user", content: "Hi!" },
+                { role: "assistant", content: "Hello! I am your Chemistry AI Tutor." }
+              ]
+            }
+          },
+          {
+            method: "POST",
+            path: "/practice/smart-mock/generate",
+            description: "Generate a structured full-length Mock Exam meeting official JAMB volume requirements.",
+            access: "Private (Student)",
+            rateLimit: "smartMockLimiter",
+            payload: {
+              subjectIds: ["65ee3bc49a37e5d8a8b12345", "65ee3bc49a37e5d8a8b66666"]
+            }
+          }
+        ]
+      },
+      {
+        category: "Study Planner & Agenda",
+        id: "planner",
+        icon: "calendar",
+        endpoints: [
+          {
+            method: "GET",
+            path: "/planner/schedule",
+            description: "Retrieve active daily agenda and calendar tasks.",
+            access: "Private (Student)"
+          },
+          {
+            method: "POST",
+            path: "/planner/generate",
+            description: "Produce a custom long-term planner routine using AI analysis.",
+            access: "Private (Student)",
+            payload: {
+              targetScore: 320,
+              hoursPerDay: 3,
+              examDate: "2026-05-15",
+              prioritySubjects: ["65ee3bc49a37e5d8a8b12345"]
+            }
+          },
+          {
+            method: "POST",
+            path: "/planner/reschedule-day",
+            description: "Re-arrange planning slots and topic distributions for a calendar day.",
+            access: "Private (Student)",
+            payload: {
+              date: "2026-06-12"
+            }
+          },
+          {
+            method: "PATCH",
+            path: "/planner/session/:id/complete",
+            description: "Mark a planner study card as fully completed.",
+            access: "Private (Student)"
+          }
+        ]
+      },
+      {
+        category: "Billing & Subscriptions",
+        id: "billing",
+        icon: "credit-card",
+        endpoints: [
+          {
+            method: "GET",
+            path: "/billing/plans",
+            description: "Retrieve list of all pricing plan options.",
+            access: "Public"
+          },
+          {
+            method: "POST",
+            path: "/billing/initialize",
+            description: "Set up billing transaction configuration prior to Paystack modal initiation.",
+            access: "Private (Student)",
+            payload: {
+              planId: "premium_monthly",
+              billingCycle: "Monthly"
+            }
+          },
+          {
+            method: "POST",
+            path: "/billing/subscribe",
+            description: "Formulates official checkout link on the Paystack dashboard.",
+            access: "Private (Student)",
+            payload: {
+              planId: "premium_monthly",
+              billingCycle: "Monthly"
+            }
+          },
+          {
+            method: "GET",
+            path: "/billing/verify",
+            description: "Confirm standard reference codes with Paystack hooks.",
+            access: "Private (Student)",
+            validation: {
+              query: [{ name: "reference", type: "string", required: true, desc: "Paystack transaction code" }]
+            }
+          }
+        ]
+      },
+      {
+        category: "Platform Administration",
+        id: "admin",
+        icon: "shield",
+        endpoints: [
+          {
+            method: "GET",
+            path: "/admin/students",
+            description: "Paginated list of registered students.",
+            access: "Admin Only",
+            rateLimit: "adminRateLimiter",
+            validation: {
+              query: [
+                { name: "page", type: "integer", required: false, desc: "Min value 1" },
+                { name: "limit", type: "integer", required: false, desc: "Max 100" },
+                { name: "search", type: "string", required: false, desc: "Search by student name or email" }
+              ]
+            }
+          },
+          {
+            method: "GET",
+            path: "/admin/dashboard/stats",
+            description: "Fetch global counts, dashboard summaries, and mock parameters.",
+            access: "Admin Only"
+          },
+          {
+            method: "GET",
+            path: "/admin/live-monitor",
+            description: "Returns stream details of students currently running test sessions.",
+            access: "Admin Only"
+          },
+          {
+            method: "POST",
+            path: "/admin/students/export",
+            description: "Download entire student performance registers in CSV structure.",
+            access: "Admin Only"
+          },
+          {
+            method: "PUT",
+            path: "/admin/settings",
+            description: "Modify global platform configuration parameters.",
+            access: "Admin Only",
+            payload: {
+              maintenanceMode: true,
+              enableRegistration: true
+            }
+          },
+          {
+            method: "POST",
+            path: "/admin/questions",
+            description: "Batch upload test questions.",
+            access: "Admin Only",
+            payload: [
+              {
+                subjectId: "65ee3bc49a37e5d8a8b12345",
+                content: { type: "text", value: "What is the capital of Nigeria?" },
+                options: [
+                  { text: "Abuja", isCorrect: true },
+                  { text: "Lagos", isCorrect: false }
+                ],
+                metadata: { year: 2024, difficulty: "EASY" }
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
+    let currentMethodFilter = 'ALL';
+
+    function init() {
+      renderSidebar();
+      renderEndpoints();
+      lucide.createIcons();
+    }
+
+    function renderSidebar() {
+      const nav = document.getElementById('sidebar-categories');
+      nav.innerHTML = API_DATA.map(cat => `
+        <a href="#cat-${cat.id}" class="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/40 rounded-xl transition-all group">
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="${cat.icon}" class="w-4 h-4 text-slate-500 group-hover:text-brand-500 transition-colors"></i>
+            <span>${cat.category}</span>
+          </div>
+          <span class="text-xs bg-[#1a1924] px-2 py-0.5 rounded-lg text-slate-500 border border-slate-800/50">${cat.endpoints.length}</span>
+        </a>
+      `).join('');
+    }
+
+    function getMethodBadge(method) {
+      const colors = {
+        GET: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        POST: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+        PATCH: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+        PUT: 'bg-amber-600/10 text-amber-500 border-amber-600/20',
+        DELETE: 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+      };
+      return `<span class="px-2.5 py-1 rounded-lg text-xs font-bold border ${colors[method] || 'bg-slate-500/10 text-slate-400 border-slate-500/20'}">${method}</span>`;
+    }
+
+    function renderEndpoints() {
+      const container = document.getElementById('endpoints-list');
+      const searchVal = document.getElementById('search-input').value.toLowerCase();
+
+      container.innerHTML = API_DATA.map(cat => {
+        const filteredEndpoints = cat.endpoints.filter(ep => {
+          const matchMethod = currentMethodFilter === 'ALL' || ep.method === currentMethodFilter;
+          const matchSearch = ep.path.toLowerCase().includes(searchVal) || 
+                              ep.description.toLowerCase().includes(searchVal) ||
+                              cat.category.toLowerCase().includes(searchVal);
+          return matchMethod && matchSearch;
+        });
+
+        if (filteredEndpoints.length === 0) return '';
+
+        return `
+          <section id="cat-${cat.id}" class="space-y-6">
+            <div class="flex items-center gap-3 border-b border-slate-800/50 pb-4">
+              <div class="p-2 bg-brand-500/10 rounded-lg text-brand-400">
+                <i data-lucide="${cat.icon}" class="w-5 h-5"></i>
+              </div>
+              <h2 class="text-xl font-bold text-slate-200">${cat.category}</h2>
+            </div>
+
+            <div class="grid gap-6">
+              ${filteredEndpoints.map(ep => `
+                <div class="bg-[#121118] border border-slate-800/80 rounded-2xl p-6 hover:border-slate-700/60 transition-all shadow-md shadow-black/10 space-y-4">
+                  <!-- Header Row -->
+                  <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                      ${getMethodBadge(ep.method)}
+                      <code class="text-sm font-semibold text-slate-100 bg-[#16151f] border border-slate-800 px-3 py-1 rounded-lg">${ep.path}</code>
+                      <button onclick="copyToClipboard('${ep.path}')" class="p-1 rounded hover:bg-slate-800 text-slate-500 hover:text-slate-300 transition-colors" title="Copy Endpoint Path">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#1a1924] border border-slate-800 text-slate-400">
+                        <i data-lucide="user" class="w-3 h-3"></i> ${ep.access}
+                      </span>
+                      ${ep.rateLimit ? `
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#1a1924] border border-slate-800 text-brand-400">
+                          <i data-lucide="shield-alert" class="w-3 h-3"></i> ${ep.rateLimit}
+                        </span>
+                      ` : ''}
+                    </div>
+                  </div>
+
+                  <!-- Description -->
+                  <p class="text-sm text-slate-400">${ep.description}</p>
+
+                  <!-- Layout Grid: Parameters & Code Sample -->
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+                    <!-- Validation Parameters -->
+                    <div class="space-y-3">
+                      <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Request Parameters</h4>
+                      ${renderParams(ep.validation)}
+                    </div>
+
+                    <!-- Code / JSON Sample -->
+                    ${ep.payload ? `
+                      <div class="space-y-3">
+                        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Example Payload</h4>
+                        <div class="relative">
+                          <pre class="bg-[#0b0a0f] border border-slate-800 p-4 rounded-xl text-xs overflow-x-auto text-brand-200 custom-scrollbar"><code>${JSON.stringify(ep.payload, null, 2)}</code></pre>
+                        </div>
+                      </div>
+                    ` : `
+                      <div class="flex items-center justify-center border border-dashed border-slate-800/80 rounded-xl p-6 bg-[#0e0d14]/40">
+                        <span class="text-xs text-slate-500">No request body required</span>
+                      </div>
+                    `}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderParams(val) {
+      if (!val || (!val.body && !val.query && !val.headers && !val.custom)) {
+        return `<p class="text-xs text-slate-600 italic">None defined</p>`;
+      }
+
+      let html = '';
+
+      if (val.headers) {
+        html += `<div class="space-y-1"><span class="text-[10px] font-bold text-slate-600 uppercase">Headers</span>`;
+        val.headers.forEach(p => {
+          html += `<div class="flex justify-between items-center text-xs bg-[#16151f]/50 p-2 rounded border border-slate-800/40">
+            <span class="font-medium text-slate-300">${p.name} <span class="text-[10px] text-slate-500">(${p.type})</span></span>
+            <span class="text-slate-500">${p.desc}</span>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+
+      if (val.query) {
+        html += `<div class="space-y-1"><span class="text-[10px] font-bold text-slate-600 uppercase">Query</span>`;
+        val.query.forEach(p => {
+          html += `<div class="flex justify-between items-center text-xs bg-[#16151f]/50 p-2 rounded border border-slate-800/40">
+            <span class="font-medium text-slate-300">${p.name} <span class="text-[10px] text-slate-500">(${p.type})</span> ${p.required ? '<span class="text-red-500 font-bold">*</span>' : ''}</span>
+            <span class="text-slate-500">${p.desc}</span>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+
+      if (val.body) {
+        html += `<div class="space-y-1"><span class="text-[10px] font-bold text-slate-600 uppercase">Body</span>`;
+        val.body.forEach(p => {
+          html += `<div class="flex justify-between items-center text-xs bg-[#16151f]/50 p-2 rounded border border-slate-800/40">
+            <span class="font-medium text-slate-300">${p.name} <span class="text-[10px] text-slate-500">(${p.type})</span> ${p.required ? '<span class="text-red-500 font-bold">*</span>' : ''}</span>
+            <span class="text-slate-500 text-right max-w-xs">${p.desc}</span>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+
+      if (val.custom) {
+        html += `<div class="p-2 bg-brand-500/5 border border-brand-500/10 rounded text-[11px] text-brand-300/95 leading-relaxed">
+          <strong>Constraint:</strong> ${val.custom}
+        </div>`;
+      }
+
+      return `<div class="space-y-2">${html}</div>`;
+    }
+
+    function filterMethod(method) {
+      currentMethodFilter = method;
+      document.querySelectorAll('.method-tab').forEach(btn => {
+        if (btn.innerText === method) {
+          btn.classList.add('bg-brand-500', 'text-white');
+          btn.classList.remove('bg-[#16151f]', 'text-slate-400', 'hover:bg-slate-800');
+        } else {
+          btn.classList.remove('bg-brand-500', 'text-white');
+          btn.classList.add('bg-[#16151f]', 'text-slate-400', 'hover:bg-slate-800');
+        }
+      });
+      renderEndpoints();
+    }
+
+    function handleSearch() {
+      renderEndpoints();
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Endpoint path copied to clipboard!');
+      });
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        document.body.classList.replace('bg-[#0b0a0f]', 'bg-slate-50');
+        document.body.classList.replace('text-slate-100', 'text-slate-900');
+      } else {
+        html.classList.add('dark');
+        document.body.classList.replace('bg-slate-50', 'bg-[#0b0a0f]');
+        document.body.classList.replace('text-slate-900', 'text-slate-100');
+      }
+    }
+
+    // Initialize Page
+    init();
+  </script>
+</body>
+</html>
