@@ -6,8 +6,11 @@ class ClassRepository {
     return await c.save();
   }
 
-  async findById(id) {
-    return await ClassModel.findById(id).exec();
+  async findById(id, options = {}) {
+    const q = ClassModel.findById(id);
+    if (options.select) q.select(options.select);
+    if (options.lean) q.lean();
+    return await q.exec();
   }
 
   async update(id, updateData) {
@@ -21,6 +24,8 @@ class ClassRepository {
     if (options.limit) q.limit(options.limit);
     if (options.skip) q.skip(options.skip);
     if (options.sort) q.sort(options.sort);
+    if (options.select) q.select(options.select);
+    if (options.lean) q.lean();
     return await q.exec();
   }
 

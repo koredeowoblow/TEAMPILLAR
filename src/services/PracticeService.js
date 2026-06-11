@@ -470,7 +470,7 @@ class PracticeService {
     let query = {};
 
     if (userId) {
-      const user = await userRepository.findById(userId);
+      const user = await userRepository.findById(userId, { lean: true, select: "selectedSubjects" });
       if (user && user.selectedSubjects && user.selectedSubjects.length > 0) {
         query = { _id: { $in: user.selectedSubjects } };
       }

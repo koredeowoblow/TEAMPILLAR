@@ -5,7 +5,7 @@ class AuthRepository {
     return await session.save();
   }
   async findByUserId(userId) {
-    return await Auth.find({ userId, isLoggedOut: false }).exec();
+    return await Auth.find({ userId, isLoggedOut: false }).select("_id userId tokenHash refreshTokenHash isLoggedOut lastLogin createdAt deviceInfo ipAddress").lean().exec();
   }
   async findSessionByToken(token) {
     return await Auth.findOne({ tokenHash: token }).exec();

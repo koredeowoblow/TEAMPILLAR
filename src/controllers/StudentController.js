@@ -44,7 +44,7 @@ class StudentController {
     const userId = req.user?.id;
     if (!userId) throw new AppError("Unauthorized", 401);
 
-    const existing = await userRepository.findById(userId);
+    const existing = await userRepository.findById(userId, { lean: true, select: "_id onboarding stats" });
     if (!existing) throw new AppError("User not found", 404);
 
     const currentOnboarding =
@@ -93,7 +93,7 @@ class StudentController {
       throw new AppError("You can select a maximum of 6 subjects", 400);
     }
 
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "_id lastSubjectUpdate" });
     if (!user) throw new AppError("User not found", 404);
 
     // Check if the user has updated subjects in the last week
@@ -126,10 +126,15 @@ class StudentController {
     const user = req.user;
     if (!user) throw new AppError("Unauthorized", 401);
 
-    // Fetch last 50 sessions for richer analytics
+    // Fetch last 50 sessions for richer analytics (lean & project required fields only)
     const sessions = await practiceRepository.find(
       { userId: user.id },
-      { sort: { createdAt: -1 }, limit: 50 },
+      { 
+        sort: { createdAt: -1 }, 
+        limit: 50, 
+        lean: true,
+        select: "score subjectId totalQuestions createdAt sessionType responses.timeTaken responses.selectedOption"
+      },
     );
 
     // ── Core score metrics ──────────────────────────────────
@@ -170,7 +175,7 @@ class StudentController {
     const allSubjectIds = Array.from(new Set([...subjectIds, ...onboardingSubjectIds])).filter(Boolean);
 
     const subjectDocs = allSubjectIds.length
-      ? await Subject.find({ _id: { $in: allSubjectIds } }).lean()
+      ? await Subject.find({ _id: { $in: allSubjectIds } }).select("_id name").lean()
       : [];
     const subjectNameMap = {};
     subjectDocs.forEach((d) => {
@@ -191,10 +196,12 @@ class StudentController {
     const dailyTasks = Array.isArray(user.onboarding?.studyPlan)
       ? user.onboarding.studyPlan.map((task, i) => ({
         id: task.id || String(i),
+        topic: task.topic || task.title || "Study Session",   // frontend reads task.topic
         title: task.topic || task.title || "Study Session",
         subject: task.subject || "General",
-        duration: task.duration || null,
+        duration: Number(task.duration) || 20,               // never send null — default 20 min
         subjectId: task.subjectId || null,
+        type: task.type || "Practice",
         completed: Boolean(task.completed),
       }))
       : [];

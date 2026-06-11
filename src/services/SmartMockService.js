@@ -54,6 +54,7 @@ class SmartMockService {
       
       const seenAgg = await practiceRepository.aggregate([
         { $match: { userId, createdAt: { $gte: sevenDaysAgo } } },
+        { $project: { "responses.questionId": 1 } },
         { $unwind: "$responses" },
         { $group: { _id: "$responses.questionId" } }
       ]);

@@ -70,7 +70,7 @@ class AdaptiveEngineService {
 
       // Fetch questions to calculate mid-session correctness
       const questionIds = session.responses.map(r => r.questionId);
-      const questions = await questionRepository.find({ _id: { $in: questionIds } }, { lean: true });
+      const questions = await questionRepository.find({ _id: { $in: questionIds } }, { lean: true, select: "_id metadata.topic options.id options.isCorrect" });
       const questionMap = new Map(questions.map(q => [String(q._id), q]));
 
       // Live mid-session recalculation of mastery
@@ -145,7 +145,7 @@ class AdaptiveEngineService {
       if (!userExists) return;
 
       const questionIds = sessionResponses.map(r => r.questionId);
-      const questions = await questionRepository.find({ _id: { $in: questionIds } }, { lean: true });
+      const questions = await questionRepository.find({ _id: { $in: questionIds } }, { lean: true, select: "_id metadata.topic options.id options.isCorrect" });
       const qMap = new Map(questions.map(q => [String(q._id), q]));
 
       const currentSessionTopics = {};

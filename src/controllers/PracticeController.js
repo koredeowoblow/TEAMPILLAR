@@ -133,7 +133,13 @@ class PracticeController {
 
     const sessions = await practiceRepository.find(
       { userId, sessionStatus: "COMPLETED" },
-      { sort: { createdAt: -1 }, skip, limit },
+      { 
+        sort: { createdAt: -1 }, 
+        skip, 
+        limit, 
+        lean: true, 
+        select: "subjectId sessionStatus score questionLimit analytics startTime endTime createdAt" 
+      },
     );
 
     const total = await practiceRepository.count({ userId, sessionStatus: "COMPLETED" });

@@ -13,9 +13,13 @@ export const connectMongoDB = async () => {
       await mongoose.connect(mongoUri, {
         dbName: process.env.MONGO_DB_NAME,
         serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 10000,
+        socketTimeoutMS: 45000,
+        heartbeatFrequencyMS: 10000,
         maxPoolSize: parseInt(process.env.MONGO_POOL_SIZE) || 20,
         minPoolSize: 2,
-        socketTimeoutMS: 45000,
+        // Disable automatic index creation in production to avoid blocking queries on startup
+        autoIndex: process.env.NODE_ENV !== "production",
       });
       console.log("✅ MongoDB connection established successfully.");
 

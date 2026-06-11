@@ -19,8 +19,13 @@ class FocusAreaAnalysisService {
       return [];
     }
 
-    // 2. Programmatically identify Weak Concepts (subTopics) from user's incorrect responses
-    const sessions = await PracticeSession.find({ userId, sessionStatus: "COMPLETED" }).select("responses").lean();
+    // 2. Programmatically identify Weak Concepts from user's incorrect responses
+    // Limit to last 200 sessions to avoid fetching unbounded data
+    const sessions = await PracticeSession.find({ userId, sessionStatus: "COMPLETED" })
+      .sort({ createdAt: -1 })
+      .limit(200)
+      .select("responses.questionId responses.selectedOption")
+      .lean();
     const incorrectQuestionIds = [];
     for (const session of sessions) {
       if (!session.responses) continue;

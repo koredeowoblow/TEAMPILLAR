@@ -96,7 +96,7 @@ class BillingController {
 
     setImmediate(async () => {
       try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select("_id name email subscription isPro subscriptionDetails");
         if (!user) return;
 
         // If it was a one-time payment that should upgrade them
@@ -129,7 +129,7 @@ class BillingController {
     const email = customer.email;
 
     try {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).select("_id name email subscription subscriptionDetails");
       if (!user) return;
 
       user.subscription = "pro";
@@ -154,7 +154,7 @@ class BillingController {
     const email = customer.email;
 
     try {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).select("_id subscription");
       if (!user) return;
 
       user.subscription = "free";
@@ -178,7 +178,7 @@ class BillingController {
     const email = customer.email;
 
     try {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).select("_id subscription");
       if (!user) return;
 
       user.subscription = "free";
@@ -212,7 +212,7 @@ class BillingController {
     const { customer, metadata, subscription: paystackSubCode, amount, currency } = data.data;
     const email = customer.email;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("_id name email subscription subscriptionDetails subscriptionStatus isPro");
     if (!user) throw new AppError("User not found", 404);
 
     // Update user subscription

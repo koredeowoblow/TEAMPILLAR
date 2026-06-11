@@ -14,6 +14,10 @@ import {
 
 const authRepository = new AuthRepository();
 
+// Minimal user projection — only fields needed for auth checks and attaching to req.user
+const USER_AUTH_SELECT =
+  "_id name email role isAdmin isActive isPro subscription subscriptionStatus onboarding stats selectedSubjects lastSubjectUpdate";
+
 /**
  * Middleware to protect routes and ensure the user is authenticated.
  */
@@ -58,7 +62,10 @@ export const protectUser = async (req, res, next) => {
     if (!session || !user) {
       [session, user] = await Promise.all([
         authRepository.findSessionByToken(tokenHash),
-        userRepository.findById(decoded.id),
+        userRepository.findById(decoded.id, {
+          lean: true,
+          select: USER_AUTH_SELECT,
+        }),
       ]);
 
       if (!isMutationMethod && session && user) {
@@ -198,38 +205,6 @@ export const requirePro = (req, res, next) => {
     upgradeUrl: "/pricing",
   });
 };
-/**
- * Middleware to restrict access based on user roles.
- * Usage: authorize('admin', 'manager')
- */
-// export const authorize = (...allowedRoles) => {
-//   return async (req, res, next) => {
-//     try {
-//       if (!req.user) {
-//         return res.status(401).json({
-//           status: 'error',
-//           message: 'User not authenticated',
-//         });
-//       }
-// 
-//       const userRoleId = req.user.role_id;
-// 
-//       // Fetch role from DB
-//       const dbRole = await role.findOne({ where: { id: userRoleId } });
-// 
-//       if (!dbRole || !allowedRoles.includes(dbRole.name)) {
-//         return res.status(403).json({
-//           status: 'error',
-//           message: `Role '${dbRole?.name || 'unknown'}' is not authorized to access this route`,
-//         });
-//       }
-// 
-//       next();
-//     } catch (err) {
-//       return next(err);
-//     }
-//   };
-// };
 
 export const optionalProtectUser = async (req, res, next) => {
   try {
@@ -251,7 +226,10 @@ export const optionalProtectUser = async (req, res, next) => {
 
     const tokenHash = AuthService.hashToken(token);
     const session = await authRepository.findSessionByToken(tokenHash);
-    const user = await userRepository.findById(decoded.id);
+    const user = await userRepository.findById(decoded.id, {
+      lean: true,
+      select: USER_AUTH_SELECT,
+    });
 
     if (session && !session.isLoggedOut && user && user.isActive !== false) {
       req.user = user;

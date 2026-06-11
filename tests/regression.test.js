@@ -102,7 +102,13 @@ describe("Regression Tests", () => {
 
     expect(practiceRepository.find).toHaveBeenCalledWith(
       { userId: "6a028262ec07526b47f1b6ea", sessionStatus: "COMPLETED" },
-      { sort: { createdAt: -1 }, skip: 0, limit: 10 }
+      { 
+        sort: { createdAt: -1 }, 
+        skip: 0, 
+        limit: 10,
+        lean: true,
+        select: "subjectId sessionStatus score questionLimit analytics startTime endTime createdAt"
+      }
     );
     expect(res.json).toHaveBeenCalled();
 

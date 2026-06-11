@@ -82,7 +82,7 @@ class AdminService {
     });
 
     const subjects = allSubjectIds.size > 0 
-      ? await Subject.find({ _id: { $in: Array.from(allSubjectIds) } }).lean() 
+      ? await Subject.find({ _id: { $in: Array.from(allSubjectIds) } }).select("_id name").lean() 
       : [];
     
     const subjectMap = {};
@@ -155,12 +155,13 @@ class AdminService {
     const sessions = await PracticeSession.find({ userId: id })
       .sort({ createdAt: -1 })
       .limit(50)
+      .select("score subjectId analytics.topMistakeTopic analytics.accuracy sessionType startTime endTime createdAt questionLimit")
       .lean();
 
     // Build subject map for name lookups
     const subjectIds = [...new Set(sessions.map((s) => String(s.subjectId)).filter(Boolean))];
     const subjects = subjectIds.length
-      ? await Subject.find({ _id: { $in: subjectIds } }).lean()
+      ? await Subject.find({ _id: { $in: subjectIds } }).select("_id name").lean()
       : [];
     const subjectMap = {};
     subjects.forEach((s) => { subjectMap[String(s._id)] = s.name; });
@@ -412,6 +413,7 @@ class AdminService {
     const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
     const activeSessionCount = await PracticeSession.countDocuments({ sessionStatus: "ACTIVE" });
     const activeSessionsRaw = await PracticeSession.find({ sessionStatus: "ACTIVE" })
+      .select("userId subjectId startTime sessionType questionLimit questionIds")
       .populate("userId", "name email")
       .populate("subjectId", "name")
       .sort({ startTime: -1 })

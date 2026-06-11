@@ -7,7 +7,7 @@ class TokenRepository {
   }
 
   static async findAll(query) {
-    return await Token.find(query);
+    return await Token.find(query).lean();
   }
 
   static async update(id, updateData) {
