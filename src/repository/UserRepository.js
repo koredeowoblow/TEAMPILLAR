@@ -41,9 +41,15 @@ class UserRepository {
   }
   async findById(id, options = {}) {
     let query = User.findById(id);
-    if (options.select) query.select(options.select);
-    if (options.lean) query.lean();
-    return await query.exec();
+    if (options.select) query = query.select(options.select);
+    if (options.lean) query = query.lean();
+    const result = await query.exec();
+    // Mongoose lean() removes the .id virtual — synthesise it so req.user.id
+    // works throughout the codebase regardless of whether lean was used.
+    if (result && options.lean && !result.id) {
+      result.id = String(result._id);
+    }
+    return result;
   }
   async find(filter = {}, options = {}) {
     const q = User.find(filter);
