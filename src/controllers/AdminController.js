@@ -169,6 +169,30 @@ class AdminController {
     });
   }
 
+  static async createStudent(req, res) {
+    const { name, email, password, phone } = req.body;
+    if (!name || !email || !password) {
+      return sendError(res, { message: "name, email and password are required", statusCode: 400 });
+    }
+    // Register through AuthService with role forced to STUDENT
+    const result = await AuthService.register({
+      fullName: name,
+      email,
+      password,
+      phone: phone || "",
+      role: "STUDENT",
+    });
+    // Mark email as verified since an admin is creating the account
+    if (result.user?._id) {
+      await User.findByIdAndUpdate(result.user._id, { isEmailVerified: true });
+    }
+    return sendSuccess(res, {
+      message: "Student account created successfully",
+      data: toAdminUserDTO(result.user),
+      statusCode: 201,
+    });
+  }
+
   static async deleteUserProfile(req, res) {
     const { userId } = req.params;
     if (!userId) {

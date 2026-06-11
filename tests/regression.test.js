@@ -204,5 +204,36 @@ describe("Regression Tests", () => {
 
     PlannerService.generateSchedule = origGenerateSchedule;
   });
+
+  it("checkMaintenance middleware blocks requests on maintenance mode except for allowed paths or admin", async () => {
+    const { checkMaintenance } = await import("../src/middleware/maintenanceMiddleware.js");
+    const PlatformSettings = (await import("../src/models/PlatformSettingsModel.js")).default;
+
+    const mockFindOne = jest.spyOn(PlatformSettings, "findOne").mockResolvedValue({
+      maintenanceMode: true,
+    });
+
+    const next = jest.fn();
+    const req = {
+      path: "/api/v1/student/dashboard",
+      headers: {},
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    await checkMaintenance(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: "MAINTENANCE_MODE",
+      })
+    );
+    expect(next).not.toHaveBeenCalled();
+
+    mockFindOne.mockRestore();
+  });
 });
 

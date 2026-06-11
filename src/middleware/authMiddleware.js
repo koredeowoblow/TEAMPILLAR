@@ -211,22 +211,53 @@ export const requirePro = (req, res, next) => {
 //           message: 'User not authenticated',
 //         });
 //       }
-
+// 
 //       const userRoleId = req.user.role_id;
-
+// 
 //       // Fetch role from DB
 //       const dbRole = await role.findOne({ where: { id: userRoleId } });
-
+// 
 //       if (!dbRole || !allowedRoles.includes(dbRole.name)) {
 //         return res.status(403).json({
 //           status: 'error',
 //           message: `Role '${dbRole?.name || 'unknown'}' is not authorized to access this route`,
 //         });
 //       }
-
+// 
 //       next();
 //     } catch (err) {
 //       return next(err);
 //     }
 //   };
 // };
+
+export const optionalProtectUser = async (req, res, next) => {
+  try {
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (!token) {
+      return next();
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: ["HS256"],
+    });
+
+    const tokenHash = AuthService.hashToken(token);
+    const session = await authRepository.findSessionByToken(tokenHash);
+    const user = await userRepository.findById(decoded.id);
+
+    if (session && !session.isLoggedOut && user && user.isActive !== false) {
+      req.user = user;
+    }
+    next();
+  } catch (error) {
+    next();
+  }
+};
