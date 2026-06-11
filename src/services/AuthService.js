@@ -73,7 +73,7 @@ class AuthService {
 
     this.validatePassword(password);
 
-    const existingUser = await userRepository.findByEmail(email);
+    const existingUser = await userRepository.findByEmail(email, { lean: true, select: "_id" });
     if (existingUser) {
       throw new AppError("Email already registered", 400);
     }
@@ -133,6 +133,7 @@ class AuthService {
   static async login(email, password, meta = {}) {
     const user = await userRepository.findByEmail(email, {
       includePassword: true,
+      lean: true
     });
     console.log("Login attempt for", email, "User found:", !!user);
     if (!user)
@@ -232,7 +233,7 @@ class AuthService {
 
   // ================= PASSWORD RESET =================
   static async forgotPassword(email) {
-    const user = await userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email, { lean: true, select: "_id" });
     if (!user) throw new AppError("Request failed", 404);
 
     const otp = await OTPService.storeOTP(email, "password_reset", 15);
@@ -279,7 +280,8 @@ class AuthService {
     const users = await User.find(filter)
       .skip(skip)
       .limit(limit)
-      .select("-password");
+      .select("-password")
+      .lean();
 
     const total = await User.countDocuments(filter);
 
@@ -295,13 +297,9 @@ class AuthService {
   }
 
   static async getUserById(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "-password" });
     if (!user) throw new AppError("Not found", 404);
-
-    const safe = user.toObject();
-    delete safe.password;
-
-    return safe;
+    return user;
   }
 
   // Convenience: controller expects getProfile()
@@ -310,14 +308,14 @@ class AuthService {
   }
 
   static async createOrUpdateProfile(userId, profileData) {
-    const user = await userRepository.findById(userId);
-    if (!user) throw new AppError("Not found", 404);
+    const userExists = await userRepository.findById(userId, { lean: true, select: "_id" });
+    if (!userExists) throw new AppError("Not found", 404);
 
     return await userRepository.updateUser(userId, profileData);
   }
 
   static async toggleAdminStatus(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "isAdmin" });
     if (!user) throw new AppError("Not found", 404);
 
     return await userRepository.updateUser(userId, {

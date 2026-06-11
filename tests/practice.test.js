@@ -124,6 +124,9 @@ describe("PracticeService deterministic selection and scoring", () => {
     expect(questionRepository.aggregate).not.toHaveBeenCalled();
     expect(questionRepository.find).toHaveBeenCalledWith({
       _id: { $in: ["5f8d0a92d2b5880017a8e5f2", "5f8d0a92d2b5880017a8e5f3"] },
+    }, {
+      lean: true,
+      select: "_id subjectId content metadata options.id options.text"
     });
 
     // Restore original methods

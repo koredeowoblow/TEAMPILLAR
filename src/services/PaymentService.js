@@ -14,7 +14,7 @@ class PaymentService {
       const expiredUsers = await User.find({
         subscriptionStatus: "active",
         proExpiresAt: { $lt: now }
-      });
+      }, { _id: 1 }).lean();
 
       if (expiredUsers.length === 0) {
         return { expired: 0 };

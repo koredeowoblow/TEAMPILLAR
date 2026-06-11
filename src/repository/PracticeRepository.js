@@ -11,12 +11,14 @@ class PracticeRepository {
     return await PracticeSession.countDocuments(filter).exec();
   }
 
-  async findById(id, populate = []) {
+  async findById(id, populate = [], options = {}) {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
     const query = PracticeSession.findById(id);
     if (populate.length > 0) {
       populate.forEach((p) => query.populate(p));
     }
+    if (options.select) query.select(options.select);
+    if (options.lean) query.lean();
     return await query.exec();
   }
 
@@ -33,6 +35,8 @@ class PracticeRepository {
     if (options.limit) query.limit(options.limit);
     if (options.skip) query.skip(options.skip);
     if (options.sort) query.sort(options.sort);
+    if (options.select) query.select(options.select);
+    if (options.lean) query.lean();
     return await query.exec();
   }
 

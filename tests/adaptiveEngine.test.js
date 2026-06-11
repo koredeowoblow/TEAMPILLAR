@@ -20,29 +20,30 @@ jest.mock("../src/services/AIService.js", () => {
   };
 });
 jest.mock("../src/models/TopicPerformanceModel.js", () => {
+  const mockSaveFn = jest.fn().mockResolvedValue(true);
+  class MockTopicPerformance {
+    constructor(data) {
+      Object.assign(this, data);
+      this.save = mockSaveFn;
+    }
+  }
+  MockTopicPerformance.find = jest.fn().mockImplementation(() => {
+    const results = [
+      new MockTopicPerformance({ topicId: "topicWeak", masteryScore: 20 }),
+      new MockTopicPerformance({ topicId: "topicMed", masteryScore: 50 }),
+      new MockTopicPerformance({ topicId: "topicStrong", masteryScore: 80 })
+    ];
+    return {
+      lean: jest.fn().mockResolvedValue(results),
+      then: jest.fn().mockImplementation((cb) => Promise.resolve(results).then(cb))
+    };
+  });
+  MockTopicPerformance.findOneAndUpdate = jest.fn();
+  MockTopicPerformance.mockSave = mockSaveFn;
+
   return {
     __esModule: true,
-    default: {
-      find: jest.fn().mockResolvedValue([
-        { topicId: "topicWeak", masteryScore: 20 },
-        { topicId: "topicMed", masteryScore: 50 },
-        { topicId: "topicStrong", masteryScore: 80 }
-      ]),
-      findOneAndUpdate: jest.fn().mockImplementation(() => {
-        return {
-          then: jest.fn().mockImplementation((callback) => {
-            return Promise.resolve(
-              callback({
-                totalAttempted: 1,
-                totalCorrect: 1,
-                masteryScore: 100,
-                save: jest.fn().mockResolvedValue(true)
-              })
-            );
-          })
-        };
-      })
-    }
+    default: MockTopicPerformance
   };
 });
 jest.mock("../src/utils/subjectResolver.js");
@@ -148,6 +149,6 @@ describe("Adaptive Engine & Question Randomization", () => {
 
     await AdaptiveEngineService.updateTopicPerformance(userId, sessionResponses, "5f8d0a92d2b5880017a8e5f2");
 
-    expect(TopicPerformance.findOneAndUpdate).toHaveBeenCalled();
+    expect(TopicPerformance.mockSave).toHaveBeenCalled();
   });
 });

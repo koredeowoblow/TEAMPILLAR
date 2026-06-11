@@ -5,7 +5,7 @@ import Leaderboard from "../models/LeaderboardModel.js";
 class AchievementRepository {
   // --- Achievements ---
   async findAchievementsByUser(userId) {
-    return await Achievement.find({ userId }).sort({ createdAt: -1 }).exec();
+    return await Achievement.find({ userId }).sort({ createdAt: -1 }).lean().exec();
   }
 
   async createAchievement(data) {
@@ -15,7 +15,7 @@ class AchievementRepository {
 
   // --- Streaks ---
   async getStreakByUser(userId) {
-    return await Streak.findOne({ userId }).exec();
+    return await Streak.findOne({ userId }).lean().exec();
   }
 
   async updateStreak(userId, streakCount) {
@@ -32,11 +32,12 @@ class AchievementRepository {
       .sort({ score: -1 })
       .limit(limit)
       .populate("userId", "name photo")
+      .lean()
       .exec();
   }
 
   async getUserLeaderboard(userId) {
-    return await Leaderboard.findOne({ userId }).exec();
+    return await Leaderboard.findOne({ userId }).lean().exec();
   }
 
   async updateLeaderboardScore(userId, score) {

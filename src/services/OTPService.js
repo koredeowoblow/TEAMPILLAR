@@ -16,6 +16,9 @@ const cleanupInterval = setInterval(
   },
   5 * 60 * 1000,
 );
+if (cleanupInterval.unref) {
+  cleanupInterval.unref();
+}
 
 class OTPService {
   static generate4DigitOTP() {

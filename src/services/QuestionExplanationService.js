@@ -4,7 +4,9 @@ import { logger } from "../core/logger.js";
 
 class QuestionExplanationService {
   static async getExplanation(questionId) {
-    const question = await Question.findById(questionId).lean();
+    const question = await Question.findById(questionId)
+      .select("explanationStatus explanationDetails explanation explanationSource explanationGeneratedAt")
+      .lean();
     if (!question) return null;
 
     if (question.explanationStatus === "generated" && question.explanationDetails) {
@@ -38,25 +40,20 @@ class QuestionExplanationService {
     const { content, options, metadata } = question;
     const correctAnswer = options?.find((o) => o.isCorrect)?.text || "Unknown";
 
-    const systemPrompt = `You are a UTME (JAMB) educational expert explaining concepts to Nigerian secondary school students.
-You must analyze the question and return a valid JSON object with detailed explanations.
+    const systemPrompt = `You are a UTME educational expert. Return a valid JSON object with concept explanations.
 Format requirements:
-- Use LaTeX for ALL math expressions, inline with single dollar signs: $x^2$.
-- Use LaTeX for display equations with double dollar signs: $$E = mc^2$$.
-- Never write math as plain text.
-- Do NOT wrap your JSON response in markdown blocks like \`\`\`json. Output raw JSON only.
-
-Your response MUST be a single valid JSON object containing exactly the following keys:
+- Use LaTeX for all math/chemistry (inline: $x^2$, display: $$E=mc^2$$).
+- Output a valid JSON object matching this schema:
 {
-  "summary": "High-level summary of the concept in 2-3 sentences.",
+  "summary": "Concept summary in 2-3 sentences.",
   "whyCorrect": "Explanation of why the correct option is the right answer.",
   "whyOthersWrong": [
-    "Explanation for the first incorrect option",
-    "Explanation for the second incorrect option",
-    "Explanation for the third incorrect option"
+    "Explanation for incorrect option 1",
+    "Explanation for incorrect option 2",
+    "Explanation for incorrect option 3"
   ],
-  "examTip": "A strategic exam-taking tip or memory helper for this concept.",
-  "relatedConcepts": ["Concept 1", "Concept 2"]
+  "examTip": "A strategic exam tip or memory helper.",
+  "relatedConcepts": ["Concept A", "Concept B"]
 }`;
 
     const userPrompt = `### INPUT DATA:
@@ -67,14 +64,14 @@ OPTIONS: ${options?.map((o) => `${o.id}: ${o.text}`).join(" | ") || "None"}
 CORRECT ANSWER: ${correctAnswer}
 
 ### TASK:
-Generate the explanation JSON object matching the requested schema. Ensure all incorrect options are explained in whyOthersWrong array.`;
+Generate the explanation JSON object matching the requested schema.`;
 
     const response = await AIService._callAIWithFallback(
       [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      { max_tokens: 1200, temperature: 0.2 }
+      { max_tokens: 1200, temperature: 0.2, response_format: { type: "json_object" } }
     );
 
     if (!response || !response.content) {

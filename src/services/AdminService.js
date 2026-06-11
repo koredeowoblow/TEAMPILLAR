@@ -3,6 +3,7 @@ import Subject from "../models/SubjectModel.js";
 import Question from "../models/QuestionModel.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
 import { escapeRegex } from "../utils/stringUtils.js";
+import cache from "../utils/cache.js";
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -255,11 +256,13 @@ class AdminService {
 
   static async updateStudent(id, data) {
     const updated = await User.findByIdAndUpdate(id, data, { new: true });
+    await cache.del("admin:dashboard:stats");
     return updated;
   }
 
   static async deleteStudent(id) {
     await User.findByIdAndDelete(id);
+    await cache.del("admin:dashboard:stats");
     return { success: true };
   }
 
@@ -274,6 +277,10 @@ class AdminService {
   }
 
   static async getDashboardStats() {
+    const cacheKey = "admin:dashboard:stats";
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
     const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
     const TopicPerformance = (await import("../models/TopicPerformanceModel.js")).default;
 
@@ -386,7 +393,7 @@ class AdminService {
       progress: `${Math.round(((u.stats?.predictedScore || 0) / 400) * 100)}%`,
     }));
 
-    return {
+    const result = {
       totalStudents,
       studentsTrend: "+5% vs last week", // trend requires time-series; kept as label
       avgScore,
@@ -396,6 +403,8 @@ class AdminService {
       subjectHeatmap,
       needsAttention,
     };
+    await cache.set(cacheKey, result, 60); // Cache for 60 seconds
+    return result;
   }
 
 
@@ -432,6 +441,7 @@ class AdminService {
     if (difficulty) filter["metadata.difficulty"] = difficulty;
 
     const questions = await Question.find(filter)
+      .select("subjectId metadata.topic metadata.difficulty content.text metadata.year options")
       .populate("subjectId", "name")
       .sort({ createdAt: -1 })
       .skip(skip)

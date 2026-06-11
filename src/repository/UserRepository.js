@@ -30,17 +30,28 @@ class UserRepository {
     if (options.includePassword) {
       query = query.select("+password");
     }
+    if (options.select) {
+      query = query.select(options.select);
+    }
+    if (options.lean) {
+      query = query.lean();
+    }
 
     return await query.exec();
   }
-  async findById(id) {
-    return await User.findById(id).exec();
+  async findById(id, options = {}) {
+    let query = User.findById(id);
+    if (options.select) query.select(options.select);
+    if (options.lean) query.lean();
+    return await query.exec();
   }
   async find(filter = {}, options = {}) {
     const q = User.find(filter);
     if (options.limit) q.limit(options.limit);
     if (options.skip) q.skip(options.skip);
     if (options.sort) q.sort(options.sort);
+    if (options.select) q.select(options.select);
+    if (options.lean) q.lean();
     return await q.exec();
   }
   async updateUser(id, updateData) {

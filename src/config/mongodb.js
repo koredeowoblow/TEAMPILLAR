@@ -18,6 +18,11 @@ export const connectMongoDB = async () => {
         socketTimeoutMS: 45000,
       });
       console.log("✅ MongoDB connection established successfully.");
+
+      // Enable query profiler if supported
+      mongoose.connection.db.command({ profile: 1, slowms: 50 })
+        .then(() => console.log('[DB] Query profiler enabled — logging queries > 50ms'))
+        .catch(err => console.log('[DB] Note: Query profiler could not be enabled:', err.message));
       return;
     } catch (error) {
       console.error(`❌ MongoDB connection error:`, error.message);
@@ -30,6 +35,15 @@ export const connectMongoDB = async () => {
       );
       await new Promise((res) => setTimeout(res, 5000));
     }
+  }
+};
+
+export const disconnectMongoDB = async () => {
+  try {
+    await mongoose.disconnect();
+    console.log("MongoDB connection closed cleanly.");
+  } catch (err) {
+    console.error("Error closing MongoDB connection:", err.message);
   }
 };
 

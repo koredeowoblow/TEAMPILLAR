@@ -15,7 +15,7 @@ class ExamService {
   }) {
     // Resolve subject name/code to ObjectId
     const resolvedSubjectId = await resolveSubjectId(subject);
-    const subj = await Subject.findById(resolvedSubjectId);
+    const subj = await Subject.findById(resolvedSubjectId).select("_id").lean();
     if (!subj) throw new AppError("Subject not found", 404);
 
     const exam = await Exam.create({

@@ -31,6 +31,8 @@ import planner from "./routes/PlannerRoute.js";
 import support from "./routes/SupportRoute.js";
 import { checkMaintenance } from "./middleware/maintenanceMiddleware.js";
 import PlatformSettings from "./models/PlatformSettingsModel.js";
+import { timingMiddleware } from "./middleware/timing.middleware.js";
+import { startHealthMonitor } from "./utils/healthMonitor.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";
@@ -66,6 +68,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const app = express();
+app.use(timingMiddleware);
 
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
@@ -215,6 +218,7 @@ let server;
 
 async function bootstrap() {
   try {
+    startHealthMonitor();
     // MongoDB only
     logger.info("Connecting to MongoDB...");
     await connectMongoDB();

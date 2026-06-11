@@ -48,7 +48,9 @@ describe("SmartMockService - Dynamic Limits and AI Fallback", () => {
 
     // Mock DB counts and performance records
     questionRepository.count.mockResolvedValue(100);
-    TopicPerformance.find.mockResolvedValue([]);
+    TopicPerformance.find.mockReturnValue({
+      lean: jest.fn().mockResolvedValue([])
+    });
     practiceRepository.find.mockResolvedValue([]);
     practiceRepository.aggregate.mockResolvedValue([]);
 

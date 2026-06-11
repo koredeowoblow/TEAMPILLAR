@@ -8,6 +8,7 @@ import AdaptiveEngineService from "./AdaptiveEngineService.js";
 import { AppError } from "../utils/AppError.js";
 import { resolveSubjectId } from "../utils/subjectResolver.js";
 import TopicPerformance from "../models/TopicPerformanceModel.js";
+import cache from "../utils/cache.js";
 
 class PracticeService {
   // Return randomized set of questions for subjectId
@@ -26,6 +27,18 @@ class PracticeService {
     } = {},
   ) {
     try {
+      const projectionStage = {
+        $project: {
+          _id: 1,
+          subjectId: 1,
+          content: { text: 1, image: 1, equation: 1 },
+          metadata: 1,
+          options: isAdmin
+            ? 1
+            : { id: 1, text: 1 }
+        }
+      };
+
       let resolvedSubjectId = null;
       if (subjectId) {
         resolvedSubjectId = await resolveSubjectId(subjectId);
@@ -36,13 +49,18 @@ class PracticeService {
       // Retrieve practice session if sessionId is provided
       let session = null;
       if (sessionId) {
-        session = await practiceRepository.findById(sessionId);
+        session = await practiceRepository.findById(sessionId, [], { lean: true });
       }
 
       // If the session already has questions saved, retrieve and return them directly
       if (session && session.questionIds && session.questionIds.length > 0) {
         const questions = await questionRepository.find({
           _id: { $in: session.questionIds },
+        }, {
+          lean: true,
+          select: isAdmin
+            ? "_id subjectId content metadata options"
+            : "_id subjectId content metadata options.id options.text"
         });
 
         // Fetch subject names for enrichment
@@ -126,6 +144,7 @@ class PracticeService {
           const subPipeline = [
             { $match: subMatchStage },
             { $sample: { size: currentLimit } },
+            projectionStage
           ];
           let subQuestions = await questionRepository.aggregate(subPipeline);
 
@@ -144,6 +163,7 @@ class PracticeService {
             let fallbackPipeline = [
               { $match: fallbackMatchStage },
               { $sample: { size: fallbackLimit } },
+              projectionStage
             ];
             let fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
             subQuestions = subQuestions.concat(fallbackQuestions);
@@ -159,6 +179,7 @@ class PracticeService {
               fallbackPipeline = [
                 { $match: fallbackMatchStage },
                 { $sample: { size: fallbackLimit } },
+                projectionStage
               ];
               fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
               subQuestions = subQuestions.concat(fallbackQuestions);
@@ -241,7 +262,7 @@ class PracticeService {
           userId,
           createdAt: { $gte: sevenDaysAgo },
           sessionStatus: "COMPLETED",
-        });
+        }, { lean: true });
 
         const recentlyAnsweredIds = new Set();
         recentSessions.forEach((s) => {
@@ -302,6 +323,7 @@ class PracticeService {
       const pipeline = [
         { $match: matchStage },
         { $sample: { size: Number(limit) } },
+        projectionStage
       ];
 
       let questions = await questionRepository.aggregate(pipeline);
@@ -332,6 +354,7 @@ class PracticeService {
         let fallbackPipeline = [
           { $match: fallbackMatchStage },
           { $sample: { size: fallbackLimit } },
+          projectionStage
         ];
         let fallbackQuestions =
           await questionRepository.aggregate(fallbackPipeline);
@@ -357,6 +380,7 @@ class PracticeService {
           fallbackPipeline = [
             { $match: fallbackMatchStage },
             { $sample: { size: fallbackLimit } },
+            projectionStage
           ];
           fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
           questions = questions.concat(fallbackQuestions);
@@ -525,7 +549,7 @@ class PracticeService {
   static async submitSession(sessionId, submission) {
     const { responses } = submission;
     // submission: { responses: [{questionId, selectedOption, timeTaken}], tabSwitches, endTime }
-    const session = await practiceRepository.findById(sessionId);
+    const session = await practiceRepository.findById(sessionId, [], { lean: true });
     if (!session) throw new AppError("Session not found", 404);
 
     // Idempotency guard: if the session was already completed (e.g. via
@@ -536,12 +560,10 @@ class PracticeService {
     if (session.sessionStatus === "COMPLETED") {
       const questionsWithReview = await questionRepository.find({
         _id: { $in: session.questionIds || [] },
-      });
-      const sessionWithQuestions = session.toObject
-        ? session.toObject()
-        : { ...session };
+      }, { lean: true });
+      const sessionWithQuestions = { ...session };
       sessionWithQuestions.questions = questionsWithReview;
-      const subject = await Subject.findById(session.subjectId);
+      const subject = await Subject.findById(session.subjectId).select("name").lean();
       const subjectName = subject?.name || "";
       const utmeScore = this.computeUTMEScoreFromMap({
         [subjectName]: session.score || 0,
@@ -568,6 +590,9 @@ class PracticeService {
 
     const questions = await questionRepository.find({
       _id: { $in: submission.responses.map((r) => r.questionId) },
+    }, {
+      lean: true,
+      select: "_id options.id options.isCorrect metadata.topic"
     });
     const qMap = new Map(questions.map((q) => [String(q._id), q]));
 
@@ -625,12 +650,12 @@ class PracticeService {
     // Populate questions for the immediate result response
     const questionsWithReview = await questionRepository.find({
       _id: { $in: updated.questionIds }
-    });
+    }, { lean: true });
     const sessionWithQuestions = updated.toObject();
     sessionWithQuestions.questions = questionsWithReview;
 
     // Build subject score map for UTME calculation if client provided subject names
-    const subject = await Subject.findById(session.subjectId);
+    const subject = await Subject.findById(session.subjectId).select("name").lean();
     const subjectName = subject?.name || "";
     const sessionSubjectScores = { [subjectName]: Math.round(accuracy) };
     const utmeScore = this.computeUTMEScoreFromMap(sessionSubjectScores);
@@ -647,7 +672,7 @@ class PracticeService {
     if (user) {
       const userPerformance = await TopicPerformance.find({
         userId: session.userId,
-      });
+      }).select("subjectId masteryScore").lean();
 
       if (userPerformance && userPerformance.length > 0) {
         const subjectMastery = {};
@@ -663,7 +688,7 @@ class PracticeService {
         const userSubjectScores = {};
         const userSubjects = await Subject.find({
           _id: { $in: Object.keys(subjectMastery) },
-        });
+        }).select("name").lean();
         userSubjects.forEach((s) => {
           const sid = String(s._id);
           if (subjectMastery[sid]) {
@@ -678,13 +703,24 @@ class PracticeService {
       }
     }
 
+    // Invalidate cached reports and dashboard stats
+    try {
+      await Promise.all([
+        cache.del("admin:dashboard:stats", "analytics:summary"),
+        cache.invalidatePattern("analytics:reports:*")
+      ]);
+    } catch (err) {
+      console.warn("Failed to invalidate analytics/dashboard caches:", err.message);
+    }
+
     return { session: sessionWithQuestions, utmeScore, flagged: flagged || timeDriftFlag };
   }
 
   static async getSessionResult(sessionId, userId) {
     const session = await (await import("../models/PracticeSessionModel.js")).default.findById(sessionId)
       .populate("subjectId")
-      .populate("responses.questionId");
+      .populate("responses.questionId")
+      .lean();
 
     if (!session) throw new AppError("Not found", 404);
 
@@ -694,7 +730,7 @@ class PracticeService {
     }
 
     // Convert to plain JS object so we can attach computed fields
-    const result = session.toObject ? session.toObject() : { ...session };
+    const result = { ...session };
 
     // Map populated questionId back to questions array for DTO compatibility
     result.questions = (result.responses ?? [])

@@ -124,7 +124,7 @@ class PlannerService {
         generatedAt: new Date(),
       },
       { upsert: true, new: true, setDefaultsOnInsert: true },
-    );
+    ).lean();
 
     return schedule;
   }
@@ -146,8 +146,8 @@ class PlannerService {
     }
 
     schedule.markModified("weeks");
-    await schedule.save();
-    return schedule;
+    const updated = await schedule.save();
+    return updated.toObject();
   }
 
   /**
@@ -172,8 +172,8 @@ class PlannerService {
     }
 
     schedule.markModified("weeks");
-    await schedule.save();
-    return schedule;
+    const updated = await schedule.save();
+    return updated.toObject();
   }
 }
 

@@ -27,7 +27,7 @@ class SmartMockService {
       
       const lastSession = await practiceRepository.find(
         { userId, subjectId, sessionStatus: "COMPLETED" },
-        { sort: { createdAt: -1 }, limit: 1 }
+        { sort: { createdAt: -1 }, limit: 1, lean: true, select: "analytics.accuracy" }
       );
 
       if (lastSession && lastSession.length > 0 && lastSession[0].analytics.accuracy < 50) {
@@ -70,9 +70,20 @@ class SmartMockService {
         totalAvailable
       );
 
+      const projectionStage = {
+        $project: {
+          _id: 1,
+          subjectId: 1,
+          content: { text: 1, image: 1, equation: 1 },
+          metadata: 1,
+          options: { id: 1, text: 1 }
+        }
+      };
+
       const pipeline = [
         { $match: matchStage },
-        { $sample: { size: poolSize } }
+        { $sample: { size: poolSize } },
+        projectionStage
       ];
 
       const pool = await questionRepository.aggregate(pipeline);
@@ -82,7 +93,8 @@ class SmartMockService {
         delete matchStage["metadata.topic"];
         const fallbackPipeline = [
           { $match: matchStage },
-          { $sample: { size: poolSize } }
+          { $sample: { size: poolSize } },
+          projectionStage
         ];
         return await questionRepository.aggregate(fallbackPipeline);
       }
@@ -184,7 +196,7 @@ Select the best ${targetLimit} questions that will most effectively target this 
       const totalAvailableQuestions = await questionRepository.count({ subjectId: safeSubjectId });
       const actualLimit = Math.min(Number(currentLimit), totalAvailableQuestions);
 
-      const userPerformance = await TopicPerformance.find({ userId: safeUserId, subjectId: safeSubjectId });
+      const userPerformance = await TopicPerformance.find({ userId: safeUserId, subjectId: safeSubjectId }).lean();
       const pool = await this.getFilteredPool(safeUserId, safeSubjectId, userPerformance, actualLimit);
       const selected = await this.selectWithAI(safeUserId, safeSubjectId, pool, userPerformance, actualLimit);
       

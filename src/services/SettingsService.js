@@ -23,7 +23,7 @@ class SettingsService {
   }
 
   static async getSettings(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true });
     if (!user) throw new AppError("User not found", 404);
 
     return {
@@ -62,7 +62,7 @@ class SettingsService {
   }
 
   static async updateProfile(userId, updates) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "email name" });
     if (!user) throw new AppError("User not found", 404);
 
     const payload = {};
@@ -81,7 +81,7 @@ class SettingsService {
       if (!/^[a-z0-9_]+$/.test(username)) {
         throw new AppError("Username may only contain letters, numbers, and underscores", 400);
       }
-      const existing = await userRepository.findOne({ username });
+      const existing = await userRepository.findOne({ username }, { lean: true, select: "_id" });
       if (existing && String(existing._id) !== String(userId)) {
         throw new AppError("Username already taken", 400);
       }
@@ -90,7 +90,7 @@ class SettingsService {
 
     if (payload.email !== undefined) {
       const email = String(payload.email).trim().toLowerCase();
-      const existing = await userRepository.findByEmail(email);
+      const existing = await userRepository.findByEmail(email, { lean: true, select: "_id" });
       if (existing && String(existing._id) !== String(userId)) {
         throw new AppError("Email already registered", 400);
       }
@@ -122,7 +122,7 @@ class SettingsService {
   }
 
   static async updatePhoto(userId, fileBuffer) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "photoUrl photo" });
     if (!user) throw new AppError("User not found", 404);
 
     const existingPhoto = user.photoUrl || user.photo;
@@ -138,7 +138,7 @@ class SettingsService {
   }
 
   static async removePhoto(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "photoUrl photo" });
     if (!user) throw new AppError("User not found", 404);
 
     const existingPhoto = user.photoUrl || user.photo;
@@ -150,10 +150,10 @@ class SettingsService {
   }
 
   static async updateNotificationPreferences(userId, preferences) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "notificationPreferences" });
     if (!user) throw new AppError("User not found", 404);
 
-    const next = { ...(user.notificationPreferences?.toObject?.() ?? user.notificationPreferences ?? {}) };
+    const next = { ...(user.notificationPreferences ?? {}) };
     for (const field of NOTIFICATION_FIELDS) {
       if (preferences[field] !== undefined) {
         next[field] = Boolean(preferences[field]);
@@ -164,10 +164,10 @@ class SettingsService {
   }
 
   static async updatePrivacySettings(userId, settings) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "privacySettings" });
     if (!user) throw new AppError("User not found", 404);
 
-    const next = { ...(user.privacySettings?.toObject?.() ?? user.privacySettings ?? {}) };
+    const next = { ...(user.privacySettings ?? {}) };
     for (const field of PRIVACY_FIELDS) {
       if (settings[field] !== undefined) {
         next[field] = settings[field];
@@ -182,7 +182,7 @@ class SettingsService {
   }
 
   static async deactivateAccount(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "isActive" });
     if (!user) throw new AppError("User not found", 404);
     if (user.isActive === false) {
       throw new AppError("Account is already deactivated", 400);
@@ -195,7 +195,7 @@ class SettingsService {
   }
 
   static async reactivateAccount(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "isActive" });
     if (!user) throw new AppError("User not found", 404);
     if (user.isActive !== false) {
       throw new AppError("Account is already active", 400);
