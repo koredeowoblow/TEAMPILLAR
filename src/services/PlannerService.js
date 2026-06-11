@@ -102,11 +102,9 @@ class PlannerService {
    */
   static async generateSchedule({ userId, targetScore, hoursPerDay, examDate, prioritySubjects, studyPreference }) {
     // Try to enrich with AI topic suggestions (non-blocking; fall back to static pool)
-    try {
-      await AIService.generateStudyPlan(userId, prioritySubjects);
-    } catch (err) {
+    AIService.generateStudyPlan(userId, prioritySubjects).catch((err) => {
       logger.warn("PlannerService: AI enrichment skipped", { error: err.message });
-    }
+    });
 
     const weeks = buildDateGrid(examDate, hoursPerDay);
     populateSessions(weeks, prioritySubjects, hoursPerDay);

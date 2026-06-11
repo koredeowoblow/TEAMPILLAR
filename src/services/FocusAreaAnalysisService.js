@@ -20,10 +20,10 @@ class FocusAreaAnalysisService {
     }
 
     // 2. Programmatically identify Weak Concepts from user's incorrect responses
-    // Limit to last 200 sessions to avoid fetching unbounded data
+    // Limit to last 30 sessions to avoid fetching unbounded data (sufficient for recent weakness tracking)
     const sessions = await PracticeSession.find({ userId, sessionStatus: "COMPLETED" })
       .sort({ createdAt: -1 })
-      .limit(200)
+      .limit(30)
       .select("responses.questionId responses.selectedOption")
       .lean();
     const incorrectQuestionIds = [];
@@ -33,11 +33,6 @@ class FocusAreaAnalysisService {
         // Find incorrect ones
         const qId = resp.questionId?._id || resp.questionId?.id || resp.questionId;
         if (qId) {
-          // Check correctness:
-          // Since session response doesn't store isCorrect in DB directly, we check accuracy/mistakes
-          // or we can cross-reference with the Question's correct options.
-          // To be safe and highly performant, we find all questions in these sessions
-          // and see if the selectedOption matches the correct option.
           incorrectQuestionIds.push({
             questionId: qId,
             selectedOption: resp.selectedOption
@@ -83,6 +78,11 @@ class FocusAreaAnalysisService {
     // Limit to top 5 weak focus areas for detail tracking
     const targetPerformances = sortedPerformances.slice(0, 5);
 
+    // Batch fetch TopicInsight records for all target topics to avoid sequential queries in the loop
+    const targetTopics = targetPerformances.map(p => p.topicId).filter(Boolean);
+    const insights = await TopicInsight.find({ userId, topic: { $in: targetTopics } }).lean();
+    const insightsMap = new Map(insights.map(ins => [ins.topic, ins]));
+
     for (const perf of targetPerformances) {
       const topicName = perf.topicId;
       if (!topicName) continue;
@@ -105,8 +105,8 @@ class FocusAreaAnalysisService {
         topicsToReview.push(`${topicName} Core Concepts`);
       }
 
-      // Check cache for AI Insights
-      let insight = await TopicInsight.findOne({ userId, topic: topicName }).lean();
+      // Check cache for AI Insights using the pre-fetched map
+      let insight = insightsMap.get(topicName);
       
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);

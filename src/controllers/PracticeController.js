@@ -131,18 +131,19 @@ class PracticeController {
     const limit = Math.max(Number.parseInt(req.query.limit, 10) || 20, 1);
     const skip = (page - 1) * limit;
 
-    const sessions = await practiceRepository.find(
-      { userId, sessionStatus: "COMPLETED" },
-      { 
-        sort: { createdAt: -1 }, 
-        skip, 
-        limit, 
-        lean: true, 
-        select: "subjectId sessionStatus score questionLimit analytics startTime endTime createdAt" 
-      },
-    );
-
-    const total = await practiceRepository.count({ userId, sessionStatus: "COMPLETED" });
+    const [sessions, total] = await Promise.all([
+      practiceRepository.find(
+        { userId, sessionStatus: "COMPLETED" },
+        { 
+          sort: { createdAt: -1 }, 
+          skip, 
+          limit, 
+          lean: true, 
+          select: "subjectId sessionStatus score questionLimit analytics startTime endTime createdAt" 
+        },
+      ),
+      practiceRepository.count({ userId, sessionStatus: "COMPLETED" }),
+    ]);
 
     return sendSuccess(res, {
       message: "Sessions retrieved",
