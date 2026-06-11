@@ -70,9 +70,7 @@ if (process.env.NODE_ENV === "production") {
 const app = express();
 app.use(timingMiddleware);
 
-if (process.env.NODE_ENV === "production") {
-  app.set("trust proxy", 1);
-}
+app.set("trust proxy", true);
 app.use(enforceSecureTransport);
 app.use(applySecurityHeaders);
 
@@ -122,28 +120,34 @@ app.use((req, res, next) => {
 });
 
 // Health check
+let cachedMaintenanceMode = false;
+let lastMaintenanceCheck = 0;
+
 const healthCheckHandler = measurePerformance(async (_req, res) => {
   const dbStatus = mongoConnectionReady ? "connected" : "disconnected";
   const redisStatus = redisConnectionReady ? "connected" : "disconnected";
 
-  let maintenanceMode = false;
-  try {
-    const settings = await PlatformSettings.findOne({});
-    maintenanceMode = !!settings?.maintenanceMode;
-  } catch (err) {
-    // Ignore error
+  const now = Date.now();
+  if (now - lastMaintenanceCheck > 10000) { // 10 seconds cache
+    try {
+      const settings = await PlatformSettings.findOne({}).lean();
+      cachedMaintenanceMode = !!settings?.maintenanceMode;
+      lastMaintenanceCheck = now;
+    } catch (err) {
+      // Keep previous cached state on error
+    }
   }
 
-  const healthy = dbStatus === "connected" && !maintenanceMode;
+  const healthy = dbStatus === "connected" && !cachedMaintenanceMode;
 
   res.status(healthy ? 200 : 503).json({
-    status: healthy ? "healthy" : (maintenanceMode ? "maintenance" : "unhealthy"),
+    status: healthy ? "healthy" : (cachedMaintenanceMode ? "maintenance" : "unhealthy"),
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
     services: {
       database: dbStatus,
       redis: redisStatus,
-      maintenanceMode,
+      maintenanceMode: cachedMaintenanceMode,
     },
   });
 }, "GET /health");

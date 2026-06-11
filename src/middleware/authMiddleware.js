@@ -16,7 +16,10 @@ const authRepository = new AuthRepository();
 
 // Minimal user projection — only fields needed for auth checks and attaching to req.user
 const USER_AUTH_SELECT =
-  "_id name email role isAdmin isActive isPro subscription subscriptionStatus onboarding stats selectedSubjects lastSubjectUpdate";
+  "_id name username email photoUrl photo language role isAdmin isActive isPro emailVerified onboarding stats notificationPreferences privacySettings subscription subscriptionStatus proExpiresAt selectedSubjects lastSubjectUpdate createdAt";
+
+// Map to track lookups in progress to deduplicate concurrent requests for the same token
+const pendingLookups = new Map();
 
 /**
  * Middleware to protect routes and ensure the user is authenticated.
@@ -60,13 +63,24 @@ export const protectUser = async (req, res, next) => {
     }
 
     if (!session || !user) {
-      [session, user] = await Promise.all([
-        authRepository.findSessionByToken(tokenHash),
-        userRepository.findById(decoded.id, {
-          lean: true,
-          select: USER_AUTH_SELECT,
-        }),
-      ]);
+      // Deduplicate concurrent lookups for the same session token
+      let lookupPromise = pendingLookups.get(tokenHash);
+      if (!lookupPromise) {
+        lookupPromise = Promise.all([
+          authRepository.findSessionByToken(tokenHash),
+          userRepository.findById(decoded.id, {
+            lean: true,
+            select: USER_AUTH_SELECT,
+          }),
+        ]);
+        pendingLookups.set(tokenHash, lookupPromise);
+        
+        lookupPromise.finally(() => {
+          pendingLookups.delete(tokenHash);
+        });
+      }
+
+      [session, user] = await lookupPromise;
 
       if (!isMutationMethod && session && user) {
         setCachedSessionUser(tokenHash, { session, user });

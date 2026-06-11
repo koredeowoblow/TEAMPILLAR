@@ -181,20 +181,15 @@ class AuthController {
 
   // Get user profile
   static async getProfile(req, res) {
-    const userId = req.user.id;
-    if (!userId) {
+    if (!req.user) {
       return sendError(res, {
-        message: "User ID is required",
-        statusCode: 400,
+        message: "Unauthorized",
+        statusCode: 401,
       });
-    }
-    const profile = await AuthService.getProfile(userId);
-    if (!profile) {
-      return sendError(res, { message: "Resource not found", statusCode: 404 });
     }
     return sendSuccess(res, {
       message: "Profile retrieved successfully",
-      data: toUserDTO(profile),
+      data: toUserDTO(req.user),
       statusCode: 200,
     });
   }
