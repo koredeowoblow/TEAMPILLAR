@@ -67,7 +67,11 @@ export function toPracticeSessionResultDTO(session) {
     });
 
     // Cross response + question to compute derived fields
-    const selectedOpt = r ? q?.options?.find(o => o.id === r.selectedOption) : null;
+    // Mock tests store selectedOption as option.key OR option.id, practice uses option.id
+    const selectedOpt = r ? (
+      q?.options?.find(o => o.id === r.selectedOption) ||
+      q?.options?.find(o => o.key === r.selectedOption)
+    ) : null;
     const correctOpt  = q?.options?.find(o => o.isCorrect);
     const isCorrect   = r ? selectedOpt?.isCorrect === true : false;
 
@@ -89,6 +93,11 @@ export function toPracticeSessionResultDTO(session) {
   return {
     ...toPracticeSessionSummaryDTO(session),
     responses: enrichedResponses,
+    // Mock test specific fields
+    isMockTest:     s.isMockTest     ?? false,
+    compositeScore: s.compositeScore ?? null,
+    subjectScores:  s.subjectScores  ?? [],
+    sessionType:    s.sessionType    ?? 'standard',
     // Expose tab-switch count to the student (they already know they switched)
     // but never expose the stored ipAddress
     tabSwitches: s.security?.tabSwitches ?? 0,
