@@ -36,7 +36,7 @@ router.post(
 router.get("/sessions", protectUser, onboardingGuard, tryCatch(PracticeController.getSessions));
 
 // Subjects
-router.get("/subjects", protectUser, onboardingGuard, tryCatch(PracticeController.getSubjects));
+router.get("/subjects", protectUser, tryCatch(PracticeController.getSubjects));
 
 // Topics
 router.get("/topics", protectUser, onboardingGuard, tryCatch(PracticeController.getTopicsForSubject));
