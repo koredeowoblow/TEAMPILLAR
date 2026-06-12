@@ -515,7 +515,7 @@ class AuthController {
     return sendSuccess(res, {
       message: "Onboarding status retrieved",
       data: {
-        completed: o.completed ?? false,
+        completed: currentStep === "completed",
         currentStep,
         steps: {
           emailVerified: emailVerified,

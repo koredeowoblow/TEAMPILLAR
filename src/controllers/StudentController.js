@@ -81,7 +81,8 @@ class StudentController {
 
     // Check completion
     const o = user.onboarding || {};
-    if (o.emailVerified && o.subjectsSelected && o.targetScoreSet && o.studyHoursSet) {
+    const emailVerified = user.emailVerified === true || o.emailVerified === true;
+    if (emailVerified && o.subjectsSelected && o.targetScoreSet && o.studyHoursSet) {
       user.onboarding.completed = true;
     }
 
