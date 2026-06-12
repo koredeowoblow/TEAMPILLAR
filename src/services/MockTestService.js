@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { PracticeSession } from "../models/PracticeSessionModel.js";
 import User from "../models/UserModel.js";
 import Question from "../models/QuestionModel.js";
 import Subject from "../models/SubjectModel.js";

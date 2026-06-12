@@ -763,3 +763,38 @@ Public ticket creation.
 #### `PUT` `/admin/pricing/:id/toggle-popular`
 *   **Description**: Toggle isPopular flag.
 *   **Action**: `AdminPricingController.togglePopular`
+
+---
+
+## 🎓 15. UTME Mock Exams Router (`/api/v1/mock`)
+
+Dedicated router for full-length 4-subject UTME Mock Exams.
+
+#### `POST` `/mock/start`
+*   **Description**: Generate a 160-question mock test based on the student's 4 selected subjects.
+*   **Access**: Private (`protectUser`, `onboardingGuard`)
+*   **Validation (Custom)**:
+    *   Requires exactly 4 subjects selected in user profile.
+    *   Requires freemium limit check (max 3 for free users).
+*   **Action**: `MockTestController.startMockTest`
+
+#### `POST` `/mock/submit`
+*   **Description**: Grade an active mock test and calculate the composite score out of 400 and subject breakdowns.
+*   **Access**: Private (`protectUser`, `onboardingGuard`)
+*   **Validation (Body)**:
+    *   `sessionId` (string, required): Valid Mock Session ID.
+    *   `responses` (array, required): Array of submitted responses.
+*   **Action**: `MockTestController.submitMockTest`
+
+#### `GET` `/mock/history`
+*   **Description**: Fetch the history of completed mock tests.
+*   **Access**: Private (`protectUser`, `onboardingGuard`)
+*   **Validation (Query)**:
+    *   `page` (integer, optional): Pagination page.
+    *   `limit` (integer, optional): Items per page.
+*   **Action**: `MockTestController.getMockHistory`
+
+#### `GET` `/mock/stats`
+*   **Description**: Fetch aggregate mock test statistics (highest score, average score, total taken).
+*   **Access**: Private (`protectUser`, `onboardingGuard`)
+*   **Action**: `MockTestController.getMockStats`
