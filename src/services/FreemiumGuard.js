@@ -5,7 +5,7 @@ class FreemiumGuard {
   static LIMITS = {
     free: {
       dailyAIExplanations: 10,
-      subjects: 2,
+      subjects: 6,
       mockTests: 5,
       offlineMode: false,
       prioritySupport: false,
