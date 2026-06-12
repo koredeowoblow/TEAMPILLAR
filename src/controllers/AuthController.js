@@ -53,8 +53,9 @@ class AuthController {
     });
 
     const o = user.onboarding || {};
+    const emailVerified = user.emailVerified === true || o.emailVerified === true;
     let currentStep = "verify-email";
-    if (o.emailVerified)    currentStep = "subject-selection";
+    if (emailVerified)      currentStep = "subject-selection";
     if (o.subjectsSelected) currentStep = "target-score";
     if (o.targetScoreSet)   currentStep = "study-hours";
     if (o.studyHoursSet)    currentStep = "completed";
@@ -384,8 +385,9 @@ class AuthController {
     }
 
     const o = result.user?.onboarding || {};
+    const emailVerified = result.user?.emailVerified === true || o.emailVerified === true;
     let currentStep = "verify-email";
-    if (o.emailVerified)    currentStep = "subject-selection";
+    if (emailVerified)      currentStep = "subject-selection";
     if (o.subjectsSelected) currentStep = "target-score";
     if (o.targetScoreSet)   currentStep = "study-hours";
     if (o.studyHoursSet)    currentStep = "completed";
@@ -429,8 +431,9 @@ class AuthController {
     }
 
     const o2 = result.user?.onboarding || {};
+    const emailVerified2 = result.user?.emailVerified === true || o2.emailVerified === true;
     let currentStep2 = "verify-email";
-    if (o2.emailVerified)    currentStep2 = "subject-selection";
+    if (emailVerified2)      currentStep2 = "subject-selection";
     if (o2.subjectsSelected) currentStep2 = "target-score";
     if (o2.targetScoreSet)   currentStep2 = "study-hours";
     if (o2.studyHoursSet)    currentStep2 = "completed";
@@ -502,8 +505,9 @@ class AuthController {
     const user = req.user;
     if (!user) throw new AppError("Unauthorized", 401);
     const o = user.onboarding || {};
+    const emailVerified = user.emailVerified === true || o.emailVerified === true;
     let currentStep = "verify-email";
-    if (o.emailVerified)    currentStep = "subject-selection";
+    if (emailVerified)      currentStep = "subject-selection";
     if (o.subjectsSelected) currentStep = "target-score";
     if (o.targetScoreSet)   currentStep = "study-hours";
     if (o.studyHoursSet)    currentStep = "completed";
@@ -514,7 +518,7 @@ class AuthController {
         completed: o.completed ?? false,
         currentStep,
         steps: {
-          emailVerified: o.emailVerified ?? false,
+          emailVerified: emailVerified,
           subjectsSelected: o.subjectsSelected ?? false,
           targetScoreSet: o.targetScoreSet ?? false,
           studyHoursSet: o.studyHoursSet ?? false,

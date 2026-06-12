@@ -5,6 +5,7 @@ export const onboardingGuard = (req, res, next) => {
     return next();
   }
   const o = req.user?.onboarding || {};
+  const emailVerified = req.user?.emailVerified === true || o.emailVerified === true;
   const completed = o.completed ?? false;
 
   if (completed) {
@@ -13,7 +14,7 @@ export const onboardingGuard = (req, res, next) => {
 
   // Determine current step
   let currentStep = "verify-email";
-  if (o.emailVerified ?? false)    currentStep = "subject-selection";
+  if (emailVerified)               currentStep = "subject-selection";
   if (o.subjectsSelected ?? false) currentStep = "target-score";
   if (o.targetScoreSet ?? false)   currentStep = "study-hours";
   if (o.studyHoursSet ?? false)    currentStep = "completed";
@@ -23,7 +24,7 @@ export const onboardingGuard = (req, res, next) => {
     code: "ONBOARDING_INCOMPLETE",
     currentStep,
     onboarding: {
-      emailVerified: o.emailVerified ?? false,
+      emailVerified: emailVerified,
       subjectsSelected: o.subjectsSelected ?? false,
       targetScoreSet: o.targetScoreSet ?? false,
       studyHoursSet: o.studyHoursSet ?? false,
