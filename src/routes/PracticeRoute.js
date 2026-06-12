@@ -17,6 +17,7 @@ const router = express.Router();
 router.get(
   "/questions",
   protectUser,
+  requireRole("STUDENT"), //RBAC added
   validateGetQuestions,
   handleValidationErrors,
   tryCatch(PracticeController.getQuestions),

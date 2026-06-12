@@ -176,12 +176,24 @@ export const protectUser = async (req, res, next) => {
   }
 };
 
+// export const protectAdmin = async (req, res, next) => {
+//   if (req.user && req.user.isAdmin) {
+//     return next();
+//   }
+//   return next(new AppError("Forbidden", 403));
+// };
+
+
+
+// REPLACE WITH — uses the role field, consistent with rbac.js
 export const protectAdmin = async (req, res, next) => {
-  if (req.user && req.user.isAdmin) {
+  if (req.user && req.user.role === "ADMIN") {
     return next();
   }
   return next(new AppError("Forbidden", 403));
 };
+
+
 
 /**
  * Middleware to ensure the user has a pro subscription.
