@@ -85,10 +85,10 @@ class MockTestService {
       questionLimit: allQuestionIds.length
     });
 
-    // Increment limits
-    if (!user.limits) user.limits = {};
-    user.limits.totalMockTests = (user.limits.totalMockTests || 0) + 1;
-    await user.save();
+    // Increment mock test usage counter atomically
+    await User.findByIdAndUpdate(user._id, {
+      $inc: { 'limits.totalMockTests': 1 }
+    });
 
     return {
       sessionId: session._id,
@@ -184,16 +184,20 @@ class MockTestService {
     session.endTime = new Date();
     await session.save();
 
-    // Update user stats
-    if (!user.stats) user.stats = {};
-    const previousTotalMocks = user.stats.totalMocksTaken || 0;
-    const previousAvg = user.stats.avgMockScore || 0;
+    // Update user stats atomically (req.user is a plain object, not a Mongoose doc)
+    const prevTotal = user.stats?.totalMocksTaken || 0;
+    const prevAvg   = user.stats?.avgMockScore    || 0;
+    const newTotal  = prevTotal + 1;
+    const newAvg    = Math.round(((prevAvg * prevTotal) + compositeScore) / newTotal);
+    const prevHigh  = user.stats?.highestMockScore || 0;
 
-    user.stats.totalMocksTaken = previousTotalMocks + 1;
-    user.stats.highestMockScore = Math.max(user.stats.highestMockScore || 0, compositeScore);
-    user.stats.avgMockScore = Math.round(((previousAvg * previousTotalMocks) + compositeScore) / user.stats.totalMocksTaken);
-
-    await user.save();
+    await User.findByIdAndUpdate(user._id, {
+      $set: {
+        'stats.totalMocksTaken':  newTotal,
+        'stats.avgMockScore':     newAvg,
+        'stats.highestMockScore': Math.max(prevHigh, compositeScore),
+      }
+    });
 
     return {
       compositeScore,
