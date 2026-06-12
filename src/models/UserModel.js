@@ -48,7 +48,16 @@ const UserSchema = new mongoose.Schema(
       lastAIReset: { type: Date, default: Date.now },
       totalMockTests: { type: Number, default: 0 },
     },
-    onboarding: { type: Object, default: {} },
+    onboarding: {
+      emailVerified:    { type: Boolean, default: false },
+      subjectsSelected: { type: Boolean, default: false },
+      targetScoreSet:   { type: Boolean, default: false },
+      studyHoursSet:    { type: Boolean, default: false },
+      completed:        { type: Boolean, default: false },
+      targetScore:      { type: Number,  default: null },
+      studyHoursPerDay: { type: Number,  default: null },
+      subjects:         [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }]
+    },
     notificationPreferences: {
       emailNotifications: { type: Boolean, default: true },
       examReminders:      { type: Boolean, default: true },

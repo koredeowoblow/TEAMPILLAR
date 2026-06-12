@@ -51,9 +51,24 @@ class AuthController {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
+
+    const o = user.onboarding || {};
+    const emailVerified = user.emailVerified === true || o.emailVerified === true;
+    let currentStep = "verify-email";
+    if (emailVerified)      currentStep = "subject-selection";
+    if (o.subjectsSelected) currentStep = "target-score";
+    if (o.targetScoreSet)   currentStep = "study-hours";
+    if (o.studyHoursSet)    currentStep = "completed";
+
     return sendSuccess(res, {
       message: "Login successful",
-      data: toSessionDTO({ user, token, refreshToken, expiresAt }),
+      data: {
+        ...toSessionDTO({ user, token, refreshToken, expiresAt }),
+        onboarding: {
+          completed: currentStep === "completed",
+          currentStep,
+        },
+      },
       statusCode: 200,
     });
   }
@@ -144,9 +159,22 @@ class AuthController {
       });
     }
     const result = await AuthService.verifyEmail(email, otp);
+    if (result.refreshToken) {
+      res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+    }
     return sendSuccess(res, {
       message: result.message,
-      data: toUserDTO(result.user),
+      data: toSessionDTO({
+        user: result.user,
+        token: result.token,
+        refreshToken: result.refreshToken,
+        expiresAt: result.expiresAt,
+      }),
       statusCode: 200,
     });
   }
@@ -181,20 +209,15 @@ class AuthController {
 
   // Get user profile
   static async getProfile(req, res) {
-    const userId = req.user.id;
-    if (!userId) {
+    if (!req.user) {
       return sendError(res, {
-        message: "User ID is required",
-        statusCode: 400,
+        message: "Unauthorized",
+        statusCode: 401,
       });
-    }
-    const profile = await AuthService.getProfile(userId);
-    if (!profile) {
-      return sendError(res, { message: "Resource not found", statusCode: 404 });
     }
     return sendSuccess(res, {
       message: "Profile retrieved successfully",
-      data: toUserDTO(profile),
+      data: toUserDTO(req.user),
       statusCode: 200,
     });
   }
@@ -361,9 +384,23 @@ class AuthController {
       });
     }
 
+    const o = result.user?.onboarding || {};
+    const emailVerified = result.user?.emailVerified === true || o.emailVerified === true;
+    let currentStep = "verify-email";
+    if (emailVerified)      currentStep = "subject-selection";
+    if (o.subjectsSelected) currentStep = "target-score";
+    if (o.targetScoreSet)   currentStep = "study-hours";
+    if (o.studyHoursSet)    currentStep = "completed";
+
     return sendSuccess(res, {
       message: "Google authentication successful",
-      data: toSessionDTO(result), // this could be changed back after inspecting what result on its own returns, same applicable to apple auth
+      data: {
+        ...toSessionDTO(result),
+        onboarding: {
+          completed: currentStep === "completed",
+          currentStep,
+        },
+      },
       statusCode: 200,
     });
   }
@@ -393,9 +430,23 @@ class AuthController {
       });
     }
 
+    const o2 = result.user?.onboarding || {};
+    const emailVerified2 = result.user?.emailVerified === true || o2.emailVerified === true;
+    let currentStep2 = "verify-email";
+    if (emailVerified2)      currentStep2 = "subject-selection";
+    if (o2.subjectsSelected) currentStep2 = "target-score";
+    if (o2.targetScoreSet)   currentStep2 = "study-hours";
+    if (o2.studyHoursSet)    currentStep2 = "completed";
+
     return sendSuccess(res, {
       message: "Apple authentication successful",
-      data: toSessionDTO(result),
+      data: {
+        ...toSessionDTO(result),
+        onboarding: {
+          completed: currentStep2 === "completed",
+          currentStep: currentStep2,
+        },
+      },
       statusCode: 200,
     });
   }
@@ -445,6 +496,34 @@ class AuthController {
     return sendSuccess(res, {
       message: "Account deleted successfully",
       data: {},
+      statusCode: 200,
+    });
+  }
+
+  // ─── GET /auth/onboarding-status ───────────────────────────────────────────
+  static async getOnboardingStatus(req, res) {
+    const user = req.user;
+    if (!user) throw new AppError("Unauthorized", 401);
+    const o = user.onboarding || {};
+    const emailVerified = user.emailVerified === true || o.emailVerified === true;
+    let currentStep = "verify-email";
+    if (emailVerified)      currentStep = "subject-selection";
+    if (o.subjectsSelected) currentStep = "target-score";
+    if (o.targetScoreSet)   currentStep = "study-hours";
+    if (o.studyHoursSet)    currentStep = "completed";
+
+    return sendSuccess(res, {
+      message: "Onboarding status retrieved",
+      data: {
+        completed: currentStep === "completed",
+        currentStep,
+        steps: {
+          emailVerified: emailVerified,
+          subjectsSelected: o.subjectsSelected ?? false,
+          targetScoreSet: o.targetScoreSet ?? false,
+          studyHoursSet: o.studyHoursSet ?? false,
+        },
+      },
       statusCode: 200,
     });
   }

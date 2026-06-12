@@ -13,11 +13,20 @@ export const connectMongoDB = async () => {
       await mongoose.connect(mongoUri, {
         dbName: process.env.MONGO_DB_NAME,
         serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 10000,
+        socketTimeoutMS: 45000,
+        heartbeatFrequencyMS: 10000,
         maxPoolSize: parseInt(process.env.MONGO_POOL_SIZE) || 20,
         minPoolSize: 2,
-        socketTimeoutMS: 45000,
+        // Disable automatic index creation in production to avoid blocking queries on startup
+        autoIndex: process.env.NODE_ENV !== "production",
       });
       console.log("✅ MongoDB connection established successfully.");
+
+      // Enable query profiler if supported
+      mongoose.connection.db.command({ profile: 1, slowms: 50 })
+        .then(() => console.log('[DB] Query profiler enabled — logging queries > 50ms'))
+        .catch(err => console.log('[DB] Note: Query profiler could not be enabled:', err.message));
       return;
     } catch (error) {
       console.error(`❌ MongoDB connection error:`, error.message);
@@ -30,6 +39,15 @@ export const connectMongoDB = async () => {
       );
       await new Promise((res) => setTimeout(res, 5000));
     }
+  }
+};
+
+export const disconnectMongoDB = async () => {
+  try {
+    await mongoose.disconnect();
+    console.log("MongoDB connection closed cleanly.");
+  } catch (err) {
+    console.error("Error closing MongoDB connection:", err.message);
   }
 };
 

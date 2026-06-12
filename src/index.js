@@ -28,6 +28,11 @@ import smartMock from "./routes/SmartMockRoute.js";
 import achievements from "./routes/AchievementRoute.js";
 import notifications from "./routes/NotificationRoute.js";
 import planner from "./routes/PlannerRoute.js";
+import support from "./routes/SupportRoute.js";
+import { checkMaintenance } from "./middleware/maintenanceMiddleware.js";
+import PlatformSettings from "./models/PlatformSettingsModel.js";
+import { timingMiddleware } from "./middleware/timing.middleware.js";
+import { startHealthMonitor } from "./utils/healthMonitor.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";
@@ -63,10 +68,9 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const app = express();
+app.use(timingMiddleware);
 
-if (process.env.NODE_ENV === "production") {
-  app.set("trust proxy", 1);
-}
+app.set("trust proxy", true);
 app.use(enforceSecureTransport);
 app.use(applySecurityHeaders);
 
@@ -116,19 +120,34 @@ app.use((req, res, next) => {
 });
 
 // Health check
+let cachedMaintenanceMode = false;
+let lastMaintenanceCheck = 0;
+
 const healthCheckHandler = measurePerformance(async (_req, res) => {
   const dbStatus = mongoConnectionReady ? "connected" : "disconnected";
   const redisStatus = redisConnectionReady ? "connected" : "disconnected";
 
-  const healthy = dbStatus === "connected";
+  const now = Date.now();
+  if (now - lastMaintenanceCheck > 10000) { // 10 seconds cache
+    try {
+      const settings = await PlatformSettings.findOne({}).lean();
+      cachedMaintenanceMode = !!settings?.maintenanceMode;
+      lastMaintenanceCheck = now;
+    } catch (err) {
+      // Keep previous cached state on error
+    }
+  }
+
+  const healthy = dbStatus === "connected" && !cachedMaintenanceMode;
 
   res.status(healthy ? 200 : 503).json({
-    status: healthy ? "healthy" : "unhealthy",
+    status: healthy ? "healthy" : (cachedMaintenanceMode ? "maintenance" : "unhealthy"),
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
     services: {
       database: dbStatus,
       redis: redisStatus,
+      maintenanceMode: cachedMaintenanceMode,
     },
   });
 }, "GET /health");
@@ -142,6 +161,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // API Router
 const apiRouter = express.Router();
 apiRouter.use(apiLimiter);
+apiRouter.use(checkMaintenance);
 app.use("/api/v1", apiRouter);
 
 apiRouter.use("/auth", auth);
@@ -157,6 +177,7 @@ apiRouter.use("/practice/smart-mock", smartMock);
 apiRouter.use("/", achievements); // registers /achievements, /streaks, /leaderboard under /api/v1/
 apiRouter.use("/notifications", notifications);
 apiRouter.use("/planner", planner);
+apiRouter.use("/support", support);
 
 // Admin & Student Registry routes
 apiRouter.use("/", admin); // Exposes /students, /tutors, etc. at /api/v1/
@@ -201,6 +222,7 @@ let server;
 
 async function bootstrap() {
   try {
+    startHealthMonitor();
     // MongoDB only
     logger.info("Connecting to MongoDB...");
     await connectMongoDB();

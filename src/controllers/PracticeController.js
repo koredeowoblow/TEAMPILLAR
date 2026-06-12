@@ -3,6 +3,8 @@ import AdaptiveEngineService from "../services/AdaptiveEngineService.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import Subject from "../models/SubjectModel.js";
+import Question from "../models/QuestionModel.js";
+import { resolveSubjectId } from "../utils/subjectResolver.js";
 import mongoose from "mongoose";
 import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
@@ -19,6 +21,24 @@ import {
 const FREE_QUESTION_LIMIT = 20;
 
 class PracticeController {
+  static async getTopicsForSubject(req, res) {
+    const { subjectId } = req.query;
+    if (!subjectId) {
+      throw new AppError("subjectId is required", 400);
+    }
+    const resolvedSubjectId = await resolveSubjectId(subjectId);
+    const topics = await Question.distinct("metadata.topic", {
+      subjectId: resolvedSubjectId,
+      "metadata.topic": { $exists: true, $ne: "" },
+    });
+    const sortedTopics = topics.filter(Boolean).sort((a, b) => a.localeCompare(b));
+    return sendSuccess(res, {
+      message: "Topics retrieved successfully",
+      data: sortedTopics,
+      statusCode: 200,
+    });
+  }
+
   static async getQuestions(req, res) {
     const { subjectId, limit, difficulty, year, sessionId } = req.query;
     
@@ -131,12 +151,19 @@ class PracticeController {
     const limit = Math.max(Number.parseInt(req.query.limit, 10) || 20, 1);
     const skip = (page - 1) * limit;
 
-    const sessions = await practiceRepository.find(
-      { userId, sessionStatus: "COMPLETED" },
-      { sort: { createdAt: -1 }, skip, limit },
-    );
-
-    const total = await practiceRepository.count({ userId, sessionStatus: "COMPLETED" });
+    const [sessions, total] = await Promise.all([
+      practiceRepository.find(
+        { userId, sessionStatus: "COMPLETED" },
+        { 
+          sort: { createdAt: -1 }, 
+          skip, 
+          limit, 
+          lean: true, 
+          select: "subjectId sessionStatus score questionLimit analytics startTime endTime createdAt" 
+        },
+      ),
+      practiceRepository.count({ userId, sessionStatus: "COMPLETED" }),
+    ]);
 
     return sendSuccess(res, {
       message: "Sessions retrieved",
@@ -162,7 +189,7 @@ class PracticeController {
 
   static async startSession(req, res) {
     const userId = req.user?.id;
-    const { subjectId, subjectIds, limit, duration } = req.body;
+    const { subjectId, subjectIds, limit, duration, topic } = req.body;
     if (!userId) throw new AppError("Unauthorized", 401);
     if (!subjectId && (!subjectIds || subjectIds.length === 0)) {
       throw new AppError("subjectId or subjectIds is required", 400);
@@ -194,7 +221,7 @@ class PracticeController {
       );
     }
 
-    const session = await PracticeService.startSession(userId, subjectId, questionLimit, subjectIds);
+    const session = await PracticeService.startSession(userId, subjectId, questionLimit, subjectIds, topic);
 
     // Fetch questions immediately after session creation so the frontend CBT
     // component can start rendering without a separate round-trip.
@@ -206,6 +233,7 @@ class PracticeController {
         sessionId: String(session._id),
         limit: questionLimit,
         isAdmin: false,
+        topic: session.topic || undefined,
       });
       questions = rawQuestions.map((q, index) => toCBTQuestionDTO(q, index));
     } catch (qErr) {

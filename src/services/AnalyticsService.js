@@ -6,6 +6,7 @@ import cache from "../utils/cache.js";
 import AIService from "./AIService.js";
 import { CONSTANTS } from "../config/constants.js";
 import FocusAreaAnalysisService from "./FocusAreaAnalysisService.js";
+import UserAnalytics from "../models/UserAnalyticsModel.js";
 
 const monthLabels = [
   "Jan",
@@ -36,14 +37,16 @@ class AnalyticsService {
     const sessions = await practiceRepository.find(match, {
       sort: { createdAt: 1 },
       limit: 1000,
+      lean: true,
+      select: "createdAt score subjectId responses.questionId responses.selectedOption"
     });
 
     const students = await userRepository.find(
       { role: "STUDENT" },
-      { sort: { createdAt: 1 }, limit: 5000 },
+      { sort: { createdAt: 1 }, limit: 5000, lean: true, select: "createdAt" },
     );
 
-    const subjects = await Subject.find({}).lean();
+    const subjects = await Subject.find({}).select("_id name").lean();
     const subjectMap = {};
     subjects.forEach((subject) => {
       subjectMap[String(subject._id)] = subject.name;
@@ -141,6 +144,7 @@ class AnalyticsService {
 
     const questions = questionIds.size
       ? await Question.find({ _id: { $in: [...questionIds] } })
+        .select("-explanationDetails -explanation")
         .populate("subjectId", "name")
         .lean()
       : [];
@@ -256,7 +260,7 @@ class AnalyticsService {
     const avgScore = agg && agg[0] ? Math.round(agg[0].avgScore) : 0;
     const topPerformer = await userRepository.findOne(
       { role: "STUDENT" },
-      { sort: { "analytics.overallScore": -1 } },
+      { sort: { "analytics.overallScore": -1 }, lean: true, select: "name analytics.overallScore" },
     );
     const finalSummary = {
       totalStudents,
@@ -291,11 +295,16 @@ class AnalyticsService {
   }
 
   static async getStudentAnalytics(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "onboarding.targetScore" });
     if (!user) return { error: "User not found" };
     const sessions = await practiceRepository.find(
       { userId },
-      { sort: { createdAt: -1 }, limit: 100 },
+      {
+        sort: { createdAt: -1 },
+        limit: 100,
+        lean: true,
+        select: "score createdAt subjectId analytics.topMistakeTopic sessionStatus analytics.speedPerQuestion"
+      },
     );
     const total = sessions.length;
     const avgScore = total
@@ -305,7 +314,7 @@ class AnalyticsService {
       ? Math.max(...sessions.map((s) => s.score || 0))
       : 0;
 
-    const subjects = await Subject.find({}).lean();
+    const subjects = await Subject.find({}).select("_id name").lean();
     const subjectMap = {};
     subjects.forEach((subj) => {
       subjectMap[subj._id.toString()] = subj.name;
@@ -365,15 +374,32 @@ class AnalyticsService {
       : 0;
     const averageTimePerQuestion = `${avgSpeedVal}s`;
 
-    const aiRecommendations = await AIService.generateStudentInsights({
-      userId,
-      averageScore: avgScore,
-      targetScore: user.onboarding?.targetScore || 280,
-      weakTopics: weakTopicsList,
-    });
+    // Try to load pre-calculated background analytics
+    const preGenerated = await UserAnalytics.findOne({ userId }).lean();
 
-    const focusAreas = await FocusAreaAnalysisService.getOrCreateFocusAreas(userId);
-    const priorityRecommendations = FocusAreaAnalysisService.getRecommendations(userId, focusAreas);
+    let aiRecommendations;
+    let focusAreas;
+    let priorityRecommendations;
+
+    if (preGenerated) {
+      aiRecommendations = {
+        tips: preGenerated.tips,
+        generatedAt: preGenerated.updatedAt,
+        ai: { used: true, model: "groq", fallback: false }
+      };
+      focusAreas = preGenerated.focusAreas || [];
+      priorityRecommendations = preGenerated.priorityRecommendations || [];
+    } else {
+      aiRecommendations = await AIService.generateStudentInsights({
+        userId,
+        averageScore: avgScore,
+        targetScore: user.onboarding?.targetScore || 280,
+        weakTopics: weakTopicsList,
+      });
+
+      focusAreas = await FocusAreaAnalysisService.getOrCreateFocusAreas(userId);
+      priorityRecommendations = FocusAreaAnalysisService.getRecommendations(userId, focusAreas);
+    }
 
     return {
       targetScore: user.onboarding?.targetScore || 280,

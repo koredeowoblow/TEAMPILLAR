@@ -103,6 +103,18 @@ QuestionSchema.index({
   "metadata.difficulty": 1,
 });
 
+// Subject + Difficulty compound index
+QuestionSchema.index({
+  subjectId: 1,
+  "metadata.difficulty": 1,
+});
+
+// Subject + Year compound index
+QuestionSchema.index({
+  subjectId: 1,
+  "metadata.year": 1,
+});
+
 // Prevent duplicate questions within same subject
 QuestionSchema.index(
   {

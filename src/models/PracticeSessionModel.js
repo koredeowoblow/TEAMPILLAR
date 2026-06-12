@@ -56,6 +56,7 @@ const PracticeSessionSchema = new mongoose.Schema(
     endTime: { type: Date },
     score: { type: Number, default: 0 },
     questionLimit: { type: Number, default: 20 },
+    topic: { type: String, default: null },
   },
   { timestamps: true },
 );

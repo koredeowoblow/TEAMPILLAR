@@ -62,6 +62,12 @@ router.delete(
   tryCatch(AdminController.deleteStudent),
 );
 router.post(
+  "/students",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.createStudent),
+);
+router.post(
   "/students/export",
   protectUser,
   protectAdmin,

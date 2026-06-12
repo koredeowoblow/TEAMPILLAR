@@ -24,15 +24,23 @@ class NotificationService {
     const filter = { userId };
     if (unreadOnly) filter.isRead = false;
 
-    const [notifications, total, unreadCount] = await Promise.all([
+    const promises = [
       Notification.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
       Notification.countDocuments(filter),
-      Notification.countDocuments({ userId, isRead: false }),
-    ]);
+    ];
+
+    if (!unreadOnly) {
+      promises.push(Notification.countDocuments({ userId, isRead: false }));
+    }
+
+    const results = await Promise.all(promises);
+    const notifications = results[0];
+    const total = results[1];
+    const unreadCount = unreadOnly ? total : results[2];
 
     return {
       notifications,

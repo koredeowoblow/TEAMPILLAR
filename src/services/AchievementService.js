@@ -18,13 +18,12 @@ class AchievementService {
       return await achievementRepository.findAchievementsByUser(userId);
     }
 
-    const [milestones, leaderboard, history] = await Promise.all([
+    const [userAchievements, leaderboard] = await Promise.all([
       achievementRepository.findAchievementsByUser(userId),
       this.getLeaderboard(10),
-      achievementRepository.findAchievementsByUser(userId),
     ]);
 
-    return { milestones, leaderboard, history };
+    return { milestones: userAchievements, leaderboard, history: userAchievements };
   }
 
   static async updateStreak(userId, streakCount) {

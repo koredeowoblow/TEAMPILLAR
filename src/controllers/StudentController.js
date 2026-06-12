@@ -44,33 +44,51 @@ class StudentController {
     const userId = req.user?.id;
     if (!userId) throw new AppError("Unauthorized", 401);
 
-    const existing = await userRepository.findById(userId);
-    if (!existing) throw new AppError("User not found", 404);
+    const user = await userRepository.findById(userId);
+    if (!user) throw new AppError("User not found", 404);
 
-    const currentOnboarding =
-      existing.onboarding?.toObject?.() ?? existing.onboarding ?? {};
+    const { subjects, targetScore, studyHours } = req.body;
 
-    const subjects = req.body.subjects;
-    if (subjects && Array.isArray(subjects)) {
-      // Freemium Guard: Subject limit
-      FreemiumGuard.checkSubjectLimit(subjects.length, req.user);
+    if (subjects !== undefined) {
+      if (subjects && Array.isArray(subjects)) {
+        // Freemium Guard: Subject limit
+        FreemiumGuard.checkSubjectLimit(subjects.length, req.user);
 
-      if (subjects.length > 6) {
-        throw new AppError("You can select a maximum of 6 subjects", 400);
+        if (subjects.length > 6) {
+          throw new AppError("You can select a maximum of 6 subjects", 400);
+        }
       }
+      if (!user.onboarding) user.onboarding = {};
+      user.onboarding.subjectsSelected = true;
+      user.onboarding.subjects = subjects;
+      user.selectedSubjects = subjects;
+      user.lastSubjectUpdate = new Date();
     }
 
-    const updated = await userRepository.updateUser(userId, {
-      onboarding: {
-        ...currentOnboarding,
-        ...req.body,
-        completedAt: req.body.studyIntensity ? new Date().toISOString() : currentOnboarding.completedAt,
-      },
-      ...(subjects ? { selectedSubjects: subjects, lastSubjectUpdate: new Date() } : {}),
-      ...(req.body.targetScore
-        ? { stats: { ...(existing.stats?.toObject?.() ?? existing.stats ?? {}), predictedScore: req.body.targetScore } }
-        : {}),
-    });
+    if (targetScore !== undefined) {
+      if (!user.onboarding) user.onboarding = {};
+      user.onboarding.targetScoreSet = true;
+      user.onboarding.targetScore = targetScore;
+      if (!user.stats) user.stats = {};
+      user.stats.predictedScore = targetScore;
+    }
+
+    if (studyHours !== undefined) {
+      if (!user.onboarding) user.onboarding = {};
+      user.onboarding.studyHoursSet = true;
+      user.onboarding.studyHoursPerDay = studyHours;
+    }
+
+    // Check completion
+    const o = user.onboarding || {};
+    const emailVerified = user.emailVerified === true || o.emailVerified === true;
+    if (emailVerified && o.subjectsSelected && o.targetScoreSet && o.studyHoursSet) {
+      user.onboarding.completed = true;
+    }
+
+    user.markModified("onboarding");
+    const updated = await user.save();
+
     return sendSuccess(res, {
       message: "Onboarding saved",
       data: toUserDTO(updated),
@@ -93,7 +111,7 @@ class StudentController {
       throw new AppError("You can select a maximum of 6 subjects", 400);
     }
 
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "_id lastSubjectUpdate" });
     if (!user) throw new AppError("User not found", 404);
 
     // Check if the user has updated subjects in the last week
@@ -126,10 +144,15 @@ class StudentController {
     const user = req.user;
     if (!user) throw new AppError("Unauthorized", 401);
 
-    // Fetch last 50 sessions for richer analytics
+    // Fetch last 50 sessions for richer analytics (lean & project required fields only)
     const sessions = await practiceRepository.find(
       { userId: user.id },
-      { sort: { createdAt: -1 }, limit: 50 },
+      { 
+        sort: { createdAt: -1 }, 
+        limit: 50, 
+        lean: true,
+        select: "score subjectId totalQuestions createdAt sessionType responses.timeTaken responses.selectedOption"
+      },
     );
 
     // ── Core score metrics ──────────────────────────────────
@@ -170,7 +193,7 @@ class StudentController {
     const allSubjectIds = Array.from(new Set([...subjectIds, ...onboardingSubjectIds])).filter(Boolean);
 
     const subjectDocs = allSubjectIds.length
-      ? await Subject.find({ _id: { $in: allSubjectIds } }).lean()
+      ? await Subject.find({ _id: { $in: allSubjectIds } }).select("_id name").lean()
       : [];
     const subjectNameMap = {};
     subjectDocs.forEach((d) => {
@@ -191,10 +214,12 @@ class StudentController {
     const dailyTasks = Array.isArray(user.onboarding?.studyPlan)
       ? user.onboarding.studyPlan.map((task, i) => ({
         id: task.id || String(i),
+        topic: task.topic || task.title || "Study Session",   // frontend reads task.topic
         title: task.topic || task.title || "Study Session",
         subject: task.subject || "General",
-        duration: task.duration || null,
+        duration: Number(task.duration) || 20,               // never send null — default 20 min
         subjectId: task.subjectId || null,
+        type: task.type || "Practice",
         completed: Boolean(task.completed),
       }))
       : [];

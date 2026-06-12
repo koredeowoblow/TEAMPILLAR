@@ -1,6 +1,7 @@
 import express from "express";
 import AIController from "../controllers/AIController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
+import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
@@ -11,6 +12,7 @@ const router = express.Router();
 router.post(
   "/explain",
   protectUser,
+  onboardingGuard,
   body("questionId").notEmpty().withMessage("questionId is required"),
   body("context")
     .optional()
@@ -24,6 +26,7 @@ router.post(
 router.post(
   "/study-plan",
   protectUser,
+  onboardingGuard,
   body("weakTopics")
     .optional()
     .isArray()
@@ -35,6 +38,7 @@ router.post(
 router.post(
   "/question-insight",
   protectUser,
+  onboardingGuard,
   body("id").notEmpty().withMessage("id is required"),
   body("failRate").isNumeric().withMessage("failRate must be numeric"),
   body("topic").optional().isString(),
@@ -46,6 +50,7 @@ router.post(
 router.post(
   "/chat",
   protectUser,
+  onboardingGuard,
   body("message").notEmpty().withMessage("message is required"),
   body("subject").optional().isString(),
   body("sessionId").optional().isString(),

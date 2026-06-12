@@ -3,6 +3,7 @@ import Subject from "../models/SubjectModel.js";
 import Question from "../models/QuestionModel.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
 import { escapeRegex } from "../utils/stringUtils.js";
+import cache from "../utils/cache.js";
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -81,7 +82,7 @@ class AdminService {
     });
 
     const subjects = allSubjectIds.size > 0 
-      ? await Subject.find({ _id: { $in: Array.from(allSubjectIds) } }).lean() 
+      ? await Subject.find({ _id: { $in: Array.from(allSubjectIds) } }).select("_id name").lean() 
       : [];
     
     const subjectMap = {};
@@ -154,12 +155,13 @@ class AdminService {
     const sessions = await PracticeSession.find({ userId: id })
       .sort({ createdAt: -1 })
       .limit(50)
+      .select("score subjectId analytics.topMistakeTopic analytics.accuracy sessionType startTime endTime createdAt questionLimit")
       .lean();
 
     // Build subject map for name lookups
     const subjectIds = [...new Set(sessions.map((s) => String(s.subjectId)).filter(Boolean))];
     const subjects = subjectIds.length
-      ? await Subject.find({ _id: { $in: subjectIds } }).lean()
+      ? await Subject.find({ _id: { $in: subjectIds } }).select("_id name").lean()
       : [];
     const subjectMap = {};
     subjects.forEach((s) => { subjectMap[String(s._id)] = s.name; });
@@ -255,11 +257,13 @@ class AdminService {
 
   static async updateStudent(id, data) {
     const updated = await User.findByIdAndUpdate(id, data, { new: true });
+    await cache.del("admin:dashboard:stats");
     return updated;
   }
 
   static async deleteStudent(id) {
     await User.findByIdAndDelete(id);
+    await cache.del("admin:dashboard:stats");
     return { success: true };
   }
 
@@ -274,6 +278,10 @@ class AdminService {
   }
 
   static async getDashboardStats() {
+    const cacheKey = "admin:dashboard:stats";
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
     const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
     const TopicPerformance = (await import("../models/TopicPerformanceModel.js")).default;
 
@@ -386,7 +394,7 @@ class AdminService {
       progress: `${Math.round(((u.stats?.predictedScore || 0) / 400) * 100)}%`,
     }));
 
-    return {
+    const result = {
       totalStudents,
       studentsTrend: "+5% vs last week", // trend requires time-series; kept as label
       avgScore,
@@ -396,6 +404,8 @@ class AdminService {
       subjectHeatmap,
       needsAttention,
     };
+    await cache.set(cacheKey, result, 60); // Cache for 60 seconds
+    return result;
   }
 
 
@@ -403,6 +413,7 @@ class AdminService {
     const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
     const activeSessionCount = await PracticeSession.countDocuments({ sessionStatus: "ACTIVE" });
     const activeSessionsRaw = await PracticeSession.find({ sessionStatus: "ACTIVE" })
+      .select("userId subjectId startTime sessionType questionLimit questionIds")
       .populate("userId", "name email")
       .populate("subjectId", "name")
       .sort({ startTime: -1 })
@@ -432,6 +443,7 @@ class AdminService {
     if (difficulty) filter["metadata.difficulty"] = difficulty;
 
     const questions = await Question.find(filter)
+      .select("subjectId metadata.topic metadata.difficulty content.text metadata.year options")
       .populate("subjectId", "name")
       .sort({ createdAt: -1 })
       .skip(skip)

@@ -98,6 +98,7 @@ auth.post(
 );
 
 auth.get("/me", protectUser, tryCatch(AuthController.getProfile));
+auth.get("/onboarding-status", protectUser, tryCatch(AuthController.getOnboardingStatus));
 auth.patch(
   "/profile",
   protectUser,

@@ -70,4 +70,19 @@ const getRedisClient = async () => {
 
 const isRedisAvailable = () => redisAvailable;
 
-export { getRedisClient, initializeRedis, isRedisAvailable };
+const closeRedis = async () => {
+  if (redisClient) {
+    try {
+      if (redisClient.isOpen) {
+        await redisClient.quit();
+      }
+    } catch (err) {
+      console.error("Error closing Redis connection:", err.message);
+    } finally {
+      redisClient = null;
+      redisAvailable = false;
+    }
+  }
+};
+
+export { getRedisClient, initializeRedis, isRedisAvailable, closeRedis };

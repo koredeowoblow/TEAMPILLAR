@@ -37,6 +37,7 @@ class AIService {
             messages,
             max_tokens: options.max_tokens || 500,
             temperature: options.temperature ?? 0.3, // Lower temp for more deterministic UTME outputs
+            ...(options.response_format && { response_format: options.response_format }),
           });
 
           const latency = Date.now() - startTime;
@@ -125,24 +126,16 @@ class AIService {
       const { content, options, metadata } = context.question;
       const correctAnswer = options.find((o) => o.isCorrect)?.text || "Unknown";
 
-      const systemPrompt = `You are a UTME tutor explaining concepts to Nigerian secondary school students. 
- 
- STRICT FORMATTING RULES — follow these exactly: 
- - Use LaTeX for ALL math expressions, inline with single dollar signs: $x^2 + y^2 = r^2$ 
- - Use LaTeX for ALL display/block equations with double dollar signs on their own line: 
-   $$E = mc^2$$ 
- - Never write math as plain text. Never write "x squared" — always write $x^2$ 
- - For chemical equations use: $CH_4 + 2O_2 \\rightarrow CO_2 + 2H_2O$ 
- - Structure every explanation with these sections: 
-   1. **Quick Answer** — one sentence, bold the key term 
-   2. **Explanation** — clear paragraphs, no walls of text, max 3 sentences per paragraph 
-   3. **Step-by-Step** (if applicable) — numbered steps, each step on its own line 
-   4. **Key Formula** (if applicable) — display block LaTeX 
-   5. **Remember This** — one-line memory tip or mnemonic 
- - Use bullet points for lists, never run them into a paragraph 
- - Never use vague phrases like "as we know" or "it is obvious that" 
- - Always define every variable you use immediately after introducing it 
- - Keep language simple — this is for SS3 students preparing for UTME`;
+      const systemPrompt = `You are a UTME tutor explaining concepts to Nigerian secondary school students (SS3).
+STRICT RULES:
+1. Math/Chemistry: Use LaTeX. Inline: $x^2$. Block (own line): $$E = mc^2$$. Never use plain text. E.g., write $CH_4$, not CH4.
+2. Structure:
+   - **Quick Answer**: 1 sentence with the key term bolded.
+   - **Explanation**: Clear paragraphs, max 3 sentences each.
+   - **Step-by-Step** (if applicable): Numbered steps, each on its own line.
+   - **Key Formula** (if applicable): Display block LaTeX.
+   - **Remember This**: 1-line memory tip/mnemonic.
+3. Clarity: Define variables immediately. Use simple language. Never use "obviously" or "as we know".`;
 
       const userPrompt = `### INPUT DATA:
 QUESTION: "${content.text || content.value || ""}"
@@ -152,7 +145,7 @@ STUDENT_CHOICE: ${context.selectedOptionId || "NOT_PROVIDED"}
 TOPIC: ${metadata.topic || "General"}
 
 ### TASK:
-Produce a deep-dive pedagogical explanation following the 5-point structure above. If STUDENT_CHOICE is provided and wrong, prioritize correcting that specific logic error.`;
+Produce a deep-dive pedagogical explanation following the 3 rules above. If STUDENT_CHOICE is incorrect, prioritize correcting that logic error.`;
 
       const aiResponse = await this._callAIWithFallback([
         { role: "system", content: systemPrompt },
@@ -192,27 +185,42 @@ Produce a deep-dive pedagogical explanation following the 5-point structure abov
       const messages = [
         {
           role: "system",
-          content: `### ROLE: ACADEMIC SUCCESS ARCHITECT
-### OBJECTIVE: Transform weak performance into 7-day UTME mastery. Output STRICT JSON array only.`
+          content: `You are an academic planner. Generate a 7-day strategic study plan based on the student's weak topics.
+Return a valid JSON object containing a "plan" key with an array of daily study sessions.
+JSON Schema:
+{
+  "plan": [
+    {
+      "day": 1,
+      "topic": "Topic Name",
+      "duration": "45m",
+      "focus": "Conceptual Review or Practice Questions"
+    }
+  ]
+}`
         },
         {
           role: "user",
-          content: `Weak Topics: ${weakTopics.join(", ")}. Generate 7-day strategic plan. Schema: [{"day": 1, "topic": "STRING", "duration": "STRING", "focus": "STRING"}]`
+          content: `Weak Topics: ${weakTopics.join(", ")}.`
         }
       ];
 
-      const aiResponse = await this._callAIWithFallback(messages, { max_tokens: 800 });
+      const aiResponse = await this._callAIWithFallback(messages, {
+        max_tokens: 600,
+        temperature: 0.2,
+        response_format: { type: "json_object" }
+      });
 
       if (aiResponse.content) {
         try {
-          const jsonMatch = aiResponse.content.match(/\[[\s\S]*\]/);
-          if (jsonMatch) {
-            plan.plan = JSON.parse(jsonMatch[0]).slice(0, 10);
+          const parsed = JSON.parse(aiResponse.content);
+          if (parsed && Array.isArray(parsed.plan)) {
+            plan.plan = parsed.plan.slice(0, 10);
             plan.predictedMastery = Math.round(75 + Math.random() * 15);
             plan.ai = aiResponse.ai;
           }
         } catch (e) {
-          logger.warn("JSON Parse Error in Study Plan AI Response");
+          logger.warn("JSON Parse Error in Study Plan AI Response", { error: e.message });
         }
       }
     }
@@ -381,27 +389,38 @@ Produce a comprehensive 4-point diagnostic report following the structure above.
       const messages = [
         {
           role: "system",
-          content: "### ROLE: ADAPTIVE LEARNING ARCHITECT. Synthesize MongoDB $match stage based on performance. Output STRICT JSON."
+          content: `You are an adaptive learning engine. Analyze student performance data and output a MongoDB $match stage query.
+Return a valid JSON object containing a "matchStage" key and a "reasoning" key.
+JSON Schema:
+{
+  "matchStage": {
+    "metadata.topic": { "$in": ["Topic A", "Topic B"] }
+  },
+  "reasoning": "Explain selection reasoning in 1 sentence."
+}`
         },
         {
           role: "user",
-          content: `Data: ${JSON.stringify(performanceData.map(p => ({ t: p.topicId, m: p.masteryScore, a: p.averageTimeSpent })))}. Task: Optimal retrieval strategy.`
+          content: `Performance Data: ${JSON.stringify(performanceData.map(p => ({ topic: p.topicId, mastery: p.masteryScore, avgTime: p.averageTimeSpent })))}`
         }
       ];
 
-      const aiResponse = await this._callAIWithFallback(messages, { max_tokens: 500 });
+      const aiResponse = await this._callAIWithFallback(messages, {
+        max_tokens: 400,
+        temperature: 0.1,
+        response_format: { type: "json_object" }
+      });
 
       if (aiResponse.content) {
         try {
-          const jsonMatch = aiResponse.content.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const strategy = JSON.parse(jsonMatch[0]);
-            result.matchStage = strategy.matchStage || {};
-            result.reasoning = strategy.reasoning || result.reasoning;
+          const parsed = JSON.parse(aiResponse.content);
+          if (parsed) {
+            result.matchStage = parsed.matchStage || {};
+            result.reasoning = parsed.reasoning || result.reasoning;
             result.ai = aiResponse.ai;
           }
         } catch (e) {
-          logger.warn("JSON Parse Error in Practice Strategy AI Response");
+          logger.warn("JSON Parse Error in Practice Strategy AI Response", { error: e.message });
         }
       }
     }
@@ -415,7 +434,7 @@ Produce a comprehensive 4-point diagnostic report following the structure above.
    */
   static async generateTutorChatReply({ userId, message, subject, sessionId, history }) {
     const activeSubject = subject || "General";
-    
+
     // Rich subject-based fallback config if AI fails or Groq is not available
     const fallbacksBySubject = {
       English: {
@@ -472,19 +491,13 @@ Produce a comprehensive 4-point diagnostic report following the structure above.
       return staticFallback;
     }
 
-    const systemPrompt = `### ROLE: SENIOR NIGERIAN UTME (JAMB) EDUCATIONAL EXPERT & TUTOR
-### MISSION:
-Help the student prepare for the UTME exam for the subject: ${activeSubject}.
-Explain complex topics simply, from first principles.
-Support standard markdown formatting (including bullet points, bolding) and LaTeX math expressions (like $x = y$ or $$a^2 + b^2 = c^2$$).
-Provide encouraging, clear guidance like a top-tier subject master.
-
-### RESPONSE FORMAT:
-You MUST reply ONLY with a valid JSON object matching the schema below. Do NOT add any surrounding markdown block (like \`\`\`json) or text.
+    const systemPrompt = `You are a helpful UTME (JAMB) AI Tutor for the subject: ${activeSubject}.
+Explain concepts simply. Support markdown and LaTeX (e.g. $x^2$ or $$E=mc^2$$).
+Return ONLY a valid JSON object matching this schema:
 {
-  "reply": "string (the tutor's actual response in markdown/LaTeX)",
-  "suggestedFollowUps": ["string", "string", "string"],
-  "topicsReferenced": ["string"]
+  "reply": "Tutor reply in markdown/LaTeX",
+  "suggestedFollowUps": ["Question 1", "Question 2", "Question 3"],
+  "topicsReferenced": ["Topic Name"]
 }`;
 
     const messages = [
@@ -505,26 +518,24 @@ You MUST reply ONLY with a valid JSON object matching the schema below. Do NOT a
 
     const aiResponse = await this._callAIWithFallback(messages, {
       max_tokens: 800,
-      temperature: 0.5
+      temperature: 0.5,
+      response_format: { type: "json_object" }
     });
 
     if (aiResponse.content) {
       try {
-        const jsonMatch = aiResponse.content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          if (parsed.reply) {
-            return {
-              reply: parsed.reply,
-              suggestedFollowUps: Array.isArray(parsed.suggestedFollowUps) ? parsed.suggestedFollowUps : staticFallback.suggestedFollowUps,
-              topicsReferenced: Array.isArray(parsed.topicsReferenced) ? parsed.topicsReferenced : [activeSubject]
-            };
-          }
+        const parsed = JSON.parse(aiResponse.content);
+        if (parsed && parsed.reply) {
+          return {
+            reply: parsed.reply,
+            suggestedFollowUps: Array.isArray(parsed.suggestedFollowUps) ? parsed.suggestedFollowUps : staticFallback.suggestedFollowUps,
+            topicsReferenced: Array.isArray(parsed.topicsReferenced) ? parsed.topicsReferenced : [activeSubject]
+          };
         }
       } catch (err) {
-        logger.warn("JSON Parse Error in AI Tutor Chat Response, falling back to plaintext parsing", { raw: aiResponse.content });
+        logger.warn("JSON Parse Error in AI Tutor Chat Response", { raw: aiResponse.content, error: err.message });
       }
-      
+
       // Fallback parser if LLM output isn't strict JSON
       return {
         reply: aiResponse.content,

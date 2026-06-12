@@ -35,7 +35,7 @@ const planSchema = Joi.object({
 
 class AdminPricingController {
   static async listPlans(req, res) {
-    const plans = await PricingPlan.find().sort({ displayOrder: 1 });
+    const plans = await PricingPlan.find().sort({ displayOrder: 1 }).lean();
     return sendSuccess(res, { data: plans });
   }
 
@@ -82,7 +82,7 @@ class AdminPricingController {
   static async getPublicPlans(req, res) {
     const plans = await PricingPlan.find({ isActive: true }).sort({
       displayOrder: 1,
-    });
+    }).lean();
     return sendSuccess(res, { data: plans });
   }
 }

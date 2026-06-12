@@ -16,7 +16,7 @@ class AdaptiveEngineService {
       let matchStage = { subjectId, ...filters };
       if (!userId) return matchStage;
 
-      const userPerformance = await TopicPerformance.find({ userId, subjectId });
+      const userPerformance = await TopicPerformance.find({ userId, subjectId }).lean();
 
       if (!userPerformance || userPerformance.length === 0) {
         return matchStage;
@@ -60,17 +60,17 @@ class AdaptiveEngineService {
    */
   static async recalculateMidSession(sessionId, userId, subjectId, filters = {}) {
     try {
-      const session = await practiceRepository.findById(sessionId);
+      const session = await practiceRepository.findById(sessionId, [], { lean: true });
       if (!userId || !session || !session.responses || session.responses.length === 0) {
         return await this.buildWeightedPool(userId, subjectId, filters);
       }
 
       // Fetch existing performance for these topics
-      const topicPerf = await TopicPerformance.find({ userId, subjectId });
+      const topicPerf = await TopicPerformance.find({ userId, subjectId }).lean();
 
       // Fetch questions to calculate mid-session correctness
       const questionIds = session.responses.map(r => r.questionId);
-      const questions = await questionRepository.find({ _id: { $in: questionIds } });
+      const questions = await questionRepository.find({ _id: { $in: questionIds } }, { lean: true, select: "_id metadata.topic options.id options.isCorrect" });
       const questionMap = new Map(questions.map(q => [String(q._id), q]));
 
       // Live mid-session recalculation of mastery
@@ -141,60 +141,13 @@ class AdaptiveEngineService {
     try {
       if (!userId || !sessionResponses || sessionResponses.length === 0) return;
 
-      const user = await userRepository.findById(userId);
-      if (!user) return;
+      const userExists = await userRepository.findById(userId, { select: "_id", lean: true });
+      if (!userExists) return;
 
       const questionIds = sessionResponses.map(r => r.questionId);
-      const questions = await questionRepository.find({ _id: { $in: questionIds } });
+      const questions = await questionRepository.find({ _id: { $in: questionIds } }, { lean: true, select: "_id metadata.topic options.id options.isCorrect" });
       const qMap = new Map(questions.map(q => [String(q._id), q]));
 
-      const topicPerfMap = new Map();
-      if (user.topicPerformance) {
-        user.topicPerformance.forEach(t => topicPerfMap.set(String(t.topicId), t.toObject ? t.toObject() : t));
-      }
-
-      for (const r of sessionResponses) {
-        const q = qMap.get(String(r.questionId));
-        if (!q) continue;
-
-        const opt = q.options.find(o => o.id === r.selectedOption);
-        const isCorrect = opt ? opt.isCorrect : false;
-        const topicStr = q.metadata?.topic;
-        if (!topicStr) continue;
-
-        // topicId is stored as a plain string (topic name from question metadata)
-        const topicIdToStore = topicStr;
-
-        let entry = topicPerfMap.get(topicStr);
-        if (!entry) {
-          entry = {
-            topicId: topicIdToStore,
-            subjectId: subjectId,
-            totalAttempted: 0,
-            totalCorrect: 0,
-            averageTimeSpent: 0,
-            recentAccuracy: [],
-            masteryScore: CONSTANTS.ADAPTIVE_ENGINE.DEFAULT_TOPIC_MASTERY
-          };
-        }
-
-        const prevTotalTime = entry.averageTimeSpent * entry.totalAttempted;
-        entry.totalAttempted += 1;
-        if (isCorrect) entry.totalCorrect += 1;
-
-        const newTime = Number(r.timeTaken || 0);
-        entry.averageTimeSpent = (prevTotalTime + newTime) / entry.totalAttempted;
-        entry.lastAttemptedAt = new Date();
-        entry.masteryScore = entry.totalAttempted > 0
-          ? (entry.totalCorrect / entry.totalAttempted) * 100
-          : 0;
-
-        topicPerfMap.set(topicStr, entry);
-      }
-
-      // Now calculate recent accuracy (last 5 sessions)
-      // Here we can just push the session's overall accuracy for that topic
-      // A more precise way is to group by topic in the current session
       const currentSessionTopics = {};
       for (const r of sessionResponses) {
         const q = qMap.get(String(r.questionId));
@@ -213,37 +166,46 @@ class AdaptiveEngineService {
         currentSessionTopics[topicStr].totalTime += Number(r.timeTaken || 0);
       }
 
-      for (const [topicStr, stats] of Object.entries(currentSessionTopics)) {
-        const isCorrect = stats.correct > 0; // Simplified for bulk update
-        const avgTime = stats.totalTime / stats.attempted;
-        const sessionAcc = (stats.correct / stats.attempted) * 100;
+      const topicIds = Object.keys(currentSessionTopics);
+      if (topicIds.length === 0) return;
 
-        await TopicPerformance.findOneAndUpdate(
-          { userId, topicId: topicStr },
-          {
-            $set: {
-              subjectId,
-              lastAttemptedAt: new Date(),
-            },
-            $inc: {
-              totalAttempted: stats.attempted,
-              totalCorrect: stats.correct
-            },
-            $push: {
-              recentAccuracy: {
-                $each: [sessionAcc],
-                $slice: -5
-              }
-            },
-          },
-          { upsert: true, new: true }
-        ).then(async (updated) => {
-          // Recalculate mastery and avg time (Mongoose middleman style or post-update)
-          updated.masteryScore = (updated.totalCorrect / updated.totalAttempted) * 100;
-          // Simplified avg time update - in real PRD we'd store totalTimeSpent as a field
-          await updated.save();
-        });
-      }
+      // Fetch existing topic performance documents in one query
+      const existingPerfs = await TopicPerformance.find({ userId, topicId: { $in: topicIds } });
+      const perfMap = new Map(existingPerfs.map(p => [p.topicId, p]));
+
+      const savePromises = Object.entries(currentSessionTopics).map(async ([topicStr, stats]) => {
+        let doc = perfMap.get(topicStr);
+        const sessionAcc = (stats.correct / stats.attempted) * 100;
+        const avgTime = stats.totalTime / stats.attempted;
+
+        if (!doc) {
+          doc = new TopicPerformance({
+            userId,
+            topicId: topicStr,
+            subjectId,
+            totalAttempted: stats.attempted,
+            totalCorrect: stats.correct,
+            averageTimeSpent: avgTime,
+            recentAccuracy: [sessionAcc],
+            lastAttemptedAt: new Date(),
+          });
+        } else {
+          const prevTotalTime = doc.averageTimeSpent * doc.totalAttempted;
+          doc.subjectId = subjectId;
+          doc.totalAttempted += stats.attempted;
+          doc.totalCorrect += stats.correct;
+          doc.averageTimeSpent = (prevTotalTime + stats.totalTime) / doc.totalAttempted;
+          doc.recentAccuracy.push(sessionAcc);
+          if (doc.recentAccuracy.length > 5) {
+            doc.recentAccuracy = doc.recentAccuracy.slice(-5);
+          }
+          doc.lastAttemptedAt = new Date();
+        }
+        doc.masteryScore = doc.totalAttempted > 0 ? (doc.totalCorrect / doc.totalAttempted) * 100 : 0;
+        return doc.save();
+      });
+
+      await Promise.all(savePromises);
     } catch (error) {
       throw new Error(`Failed to update topic performance: ${error.message}`);
     }

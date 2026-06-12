@@ -14,6 +14,13 @@ import {
 
 const authRepository = new AuthRepository();
 
+// Minimal user projection — only fields needed for auth checks and attaching to req.user
+const USER_AUTH_SELECT =
+  "_id name username email photoUrl photo language role isAdmin isActive isPro emailVerified onboarding stats notificationPreferences privacySettings subscription subscriptionStatus proExpiresAt selectedSubjects lastSubjectUpdate createdAt";
+
+// Map to track lookups in progress to deduplicate concurrent requests for the same token
+const pendingLookups = new Map();
+
 /**
  * Middleware to protect routes and ensure the user is authenticated.
  */
@@ -56,10 +63,24 @@ export const protectUser = async (req, res, next) => {
     }
 
     if (!session || !user) {
-      [session, user] = await Promise.all([
-        authRepository.findSessionByToken(tokenHash),
-        userRepository.findById(decoded.id),
-      ]);
+      // Deduplicate concurrent lookups for the same session token
+      let lookupPromise = pendingLookups.get(tokenHash);
+      if (!lookupPromise) {
+        lookupPromise = Promise.all([
+          authRepository.findSessionByToken(tokenHash),
+          userRepository.findById(decoded.id, {
+            lean: true,
+            select: USER_AUTH_SELECT,
+          }),
+        ]);
+        pendingLookups.set(tokenHash, lookupPromise);
+        
+        lookupPromise.finally(() => {
+          pendingLookups.delete(tokenHash);
+        });
+      }
+
+      [session, user] = await lookupPromise;
 
       if (!isMutationMethod && session && user) {
         setCachedSessionUser(tokenHash, { session, user });
@@ -210,35 +231,37 @@ export const requirePro = (req, res, next) => {
     upgradeUrl: "/pricing",
   });
 };
-/**
- * Middleware to restrict access based on user roles.
- * Usage: authorize('admin', 'manager')
- */
-// export const authorize = (...allowedRoles) => {
-//   return async (req, res, next) => {
-//     try {
-//       if (!req.user) {
-//         return res.status(401).json({
-//           status: 'error',
-//           message: 'User not authenticated',
-//         });
-//       }
 
-//       const userRoleId = req.user.role_id;
+export const optionalProtectUser = async (req, res, next) => {
+  try {
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
 
-//       // Fetch role from DB
-//       const dbRole = await role.findOne({ where: { id: userRoleId } });
+    if (!token) {
+      return next();
+    }
 
-//       if (!dbRole || !allowedRoles.includes(dbRole.name)) {
-//         return res.status(403).json({
-//           status: 'error',
-//           message: `Role '${dbRole?.name || 'unknown'}' is not authorized to access this route`,
-//         });
-//       }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: ["HS256"],
+    });
 
-//       next();
-//     } catch (err) {
-//       return next(err);
-//     }
-//   };
-// };
+    const tokenHash = AuthService.hashToken(token);
+    const session = await authRepository.findSessionByToken(tokenHash);
+    const user = await userRepository.findById(decoded.id, {
+      lean: true,
+      select: USER_AUTH_SELECT,
+    });
+
+    if (session && !session.isLoggedOut && user && user.isActive !== false) {
+      req.user = user;
+    }
+    next();
+  } catch (error) {
+    next();
+  }
+};

@@ -10,8 +10,11 @@ class QuestionRepository {
     return await Question.insertMany(docs);
   }
 
-  async findById(id) {
-    return await Question.findById(id).exec();
+  async findById(id, options = {}) {
+    const query = Question.findById(id);
+    if (options.select) query.select(options.select);
+    if (options.lean) query.lean();
+    return await query.exec();
   }
 
   async find(filter = {}, options = {}) {
@@ -19,6 +22,8 @@ class QuestionRepository {
     if (options.limit) query.limit(options.limit);
     if (options.skip) query.skip(options.skip);
     if (options.sort) query.sort(options.sort);
+    if (options.select) query.select(options.select);
+    if (options.lean) query.lean();
     return await query.exec();
   }
 

@@ -73,7 +73,7 @@ class AuthService {
 
     this.validatePassword(password);
 
-    const existingUser = await userRepository.findByEmail(email);
+    const existingUser = await userRepository.findByEmail(email, { lean: true, select: "_id" });
     if (existingUser) {
       throw new AppError("Email already registered", 400);
     }
@@ -129,10 +129,72 @@ class AuthService {
     };
   }
 
+  // ================= EMAIL VERIFICATION =================
+  static async verifyEmail(email, otp) {
+    const verification = await OTPService.verifyOTP(email, otp, "email_verification");
+    if (!verification.valid) {
+      throw new AppError(verification.message || "Invalid or expired verification code", 400);
+    }
+
+    const userDoc = await userRepository.findByEmail(email);
+    if (!userDoc) {
+      throw new AppError("User not found", 404);
+    }
+
+    userDoc.emailVerified = true;
+    userDoc.emailVerifiedAt = new Date();
+    if (!userDoc.onboarding) {
+      userDoc.onboarding = {};
+    }
+    userDoc.onboarding.emailVerified = true;
+    await userDoc.save();
+
+    // Generate tokens immediately so user is logged in
+    const { token, expiresAt } = this.generateToken(userDoc._id);
+    const { refreshToken, expiresAt: refreshExpiresAt } = this.generateRefreshToken(userDoc._id);
+
+    await authRepository.createSession({
+      userId: userDoc._id,
+      tokenHash: this.hashToken(token),
+      refreshTokenHash: this.hashToken(refreshToken),
+      refreshTokenExpiresAt: refreshExpiresAt,
+    });
+
+    const user = typeof userDoc.toObject === "function" ? userDoc.toObject() : { ...userDoc };
+    delete user.password;
+
+    return {
+      user,
+      token,
+      refreshToken,
+      expiresAt,
+      message: "Email verified successfully",
+    };
+  }
+
+  static async resendEmailVerification(email) {
+    const userDoc = await userRepository.findByEmail(email);
+    if (!userDoc) {
+      throw new AppError("User not found", 404);
+    }
+
+    if (userDoc.emailVerified || userDoc.onboarding?.emailVerified) {
+      throw new AppError("Email already verified", 400);
+    }
+
+    const otp = await OTPService.storeOTP(email, "email_verification", 10);
+    await EmailService.sendEmailVerificationOTP(email, otp, userDoc.name || "");
+
+    return {
+      message: "Verification code resent! Check your email.",
+    };
+  }
+
   // ================= LOGIN =================
   static async login(email, password, meta = {}) {
     const user = await userRepository.findByEmail(email, {
       includePassword: true,
+      lean: true
     });
     console.log("Login attempt for", email, "User found:", !!user);
     if (!user)
@@ -232,7 +294,7 @@ class AuthService {
 
   // ================= PASSWORD RESET =================
   static async forgotPassword(email) {
-    const user = await userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email, { lean: true, select: "_id" });
     if (!user) throw new AppError("Request failed", 404);
 
     const otp = await OTPService.storeOTP(email, "password_reset", 15);
@@ -279,7 +341,8 @@ class AuthService {
     const users = await User.find(filter)
       .skip(skip)
       .limit(limit)
-      .select("-password");
+      .select("-password")
+      .lean();
 
     const total = await User.countDocuments(filter);
 
@@ -295,13 +358,9 @@ class AuthService {
   }
 
   static async getUserById(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "-password" });
     if (!user) throw new AppError("Not found", 404);
-
-    const safe = user.toObject();
-    delete safe.password;
-
-    return safe;
+    return user;
   }
 
   // Convenience: controller expects getProfile()
@@ -310,14 +369,14 @@ class AuthService {
   }
 
   static async createOrUpdateProfile(userId, profileData) {
-    const user = await userRepository.findById(userId);
-    if (!user) throw new AppError("Not found", 404);
+    const userExists = await userRepository.findById(userId, { lean: true, select: "_id" });
+    if (!userExists) throw new AppError("Not found", 404);
 
     return await userRepository.updateUser(userId, profileData);
   }
 
   static async toggleAdminStatus(userId) {
-    const user = await userRepository.findById(userId);
+    const user = await userRepository.findById(userId, { lean: true, select: "isAdmin" });
     if (!user) throw new AppError("Not found", 404);
 
     return await userRepository.updateUser(userId, {

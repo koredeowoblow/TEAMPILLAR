@@ -16,6 +16,7 @@ class ClassesController {
       skip,
       limit,
       sort: { createdAt: -1 },
+      lean: true,
     });
 
     const data = classes.map(toClassDTO);
@@ -39,7 +40,7 @@ class ClassesController {
 
   static async get(req, res) {
     const { id } = req.params;
-    const found = await classRepository.findById(id);
+    const found = await classRepository.findById(id, { lean: true });
     return sendSuccess(res, {
       message: "Class retrieved",
       data: toClassDTO(found),

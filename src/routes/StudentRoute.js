@@ -1,6 +1,7 @@
 import express from "express";
 import StudentController from "../controllers/StudentController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
+import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { requireRole } from "../middleware/rbac.js"
 
@@ -20,6 +21,7 @@ router.get(
   "/me/dashboard",
   protectUser,
   requireRole("STUDENT"),  //RBAC added
+  onboardingGuard,
   tryCatch(StudentController.getDashboard),
 );
 
