@@ -263,6 +263,9 @@ class StudentController {
       targetScore,
       progressPercent,
       questionsAttempted,
+      highestMockScore: user.stats?.highestMockScore || 0,
+      totalMocksTaken: user.stats?.totalMocksTaken || 0,
+      avgMockScore: user.stats?.avgMockScore || 0,
 
       // Time
       streak,

@@ -57,19 +57,28 @@ export function toPracticeSessionResultDTO(session) {
     (s.questions ?? []).map((q) => [String(q._id ?? q.id), q])
   );
 
-  const enrichedResponses = (s.responses ?? []).map((r) => {
-    const qId = r.questionId?._id || r.questionId?.id || r.questionId;
-    const q = questionsMap.get(String(qId));
+  const enrichedResponses = (s.questions ?? []).map((q) => {
+    const qIdStr = String(q._id ?? q.id);
+    
+    // Find if user answered it
+    const r = (s.responses ?? []).find(resp => {
+      const respQId = resp.questionId?._id || resp.questionId?.id || resp.questionId;
+      return String(respQId) === qIdStr;
+    });
 
-     // Cross response + question to compute derived fields
-    const selectedOpt = q?.options?.find(o => o.id === r.selectedOption);
+    // Cross response + question to compute derived fields
+    // Mock tests store selectedOption as option.key OR option.id, practice uses option.id
+    const selectedOpt = r ? (
+      q?.options?.find(o => o.id === r.selectedOption) ||
+      q?.options?.find(o => o.key === r.selectedOption)
+    ) : null;
     const correctOpt  = q?.options?.find(o => o.isCorrect);
-    const isCorrect   = selectedOpt?.isCorrect === true;
+    const isCorrect   = r ? selectedOpt?.isCorrect === true : false;
 
     return {
-      questionId:     qId ? String(qId) : null,
-      selectedOption: r.selectedOption ?? null,
-      timeTaken:      r.timeTaken      ?? 0,
+      questionId:     qIdStr,
+      selectedOption: r?.selectedOption ?? null,
+      timeTaken:      r?.timeTaken      ?? 0,
 
       // Derived from crossing response + question
       isCorrect,
@@ -84,6 +93,11 @@ export function toPracticeSessionResultDTO(session) {
   return {
     ...toPracticeSessionSummaryDTO(session),
     responses: enrichedResponses,
+    // Mock test specific fields
+    isMockTest:     s.isMockTest     ?? false,
+    compositeScore: s.compositeScore ?? null,
+    subjectScores:  s.subjectScores  ?? [],
+    sessionType:    s.sessionType    ?? 'standard',
     // Expose tab-switch count to the student (they already know they switched)
     // but never expose the stored ipAddress
     tabSwitches: s.security?.tabSwitches ?? 0,

@@ -736,25 +736,47 @@ class PracticeService {
   }
 
   static async getSessionResult(sessionId, userId) {
-    const session = await (await import("../models/PracticeSessionModel.js")).default.findById(sessionId)
+    const PracticeSessionModel = (await import("../models/PracticeSessionModel.js")).default;
+
+    // Fetch the session — populate subjectId for display, but NOT questionIds/responses.questionId
+    // since mock sessions store questionId as plain strings (not ObjectId refs)
+    const session = await PracticeSessionModel.findById(sessionId)
       .populate("subjectId")
-      .populate("responses.questionId")
       .lean();
 
     if (!session) throw new AppError("Not found", 404);
 
-    // Authorization Check: Ensure user owns the session
     if (userId && String(session.userId) !== String(userId)) {
       throw new AppError("Access denied: You do not own this session.", 403);
     }
 
-    // Convert to plain JS object so we can attach computed fields
     const result = { ...session };
 
-    // Map populated questionId back to questions array for DTO compatibility
-    result.questions = (result.responses ?? [])
-      .map(r => r.questionId)
-      .filter(Boolean);
+    // Collect all question IDs — from questionIds array (preferred) or from responses
+    let rawQuestionIds = [];
+    if (Array.isArray(session.questionIds) && session.questionIds.length > 0) {
+      rawQuestionIds = session.questionIds.map(id => String(id));
+    } else if (Array.isArray(session.responses) && session.responses.length > 0) {
+      rawQuestionIds = session.responses
+        .map(r => String(r.questionId?._id || r.questionId?.id || r.questionId))
+        .filter(Boolean);
+    }
+
+    // Manually fetch all questions with full explanation data
+    if (rawQuestionIds.length > 0) {
+      const mongoose = (await import("mongoose")).default;
+      const validIds = rawQuestionIds
+        .filter(id => mongoose.Types.ObjectId.isValid(id))
+        .map(id => new mongoose.Types.ObjectId(id));
+
+      result.questions = validIds.length > 0
+        ? await (await import("../models/QuestionModel.js")).default
+            .find({ _id: { $in: validIds } })
+            .lean()
+        : [];
+    } else {
+      result.questions = [];
+    }
 
     return result;
   }

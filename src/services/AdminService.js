@@ -72,10 +72,16 @@ class AdminService {
     const totalCount = await User.countDocuments(matchStage);
 
     // Extract all unique subject IDs across the current page of users
+    // Include both practice-session derived IDs and onboarding.subjects IDs
     const allSubjectIds = new Set();
     users.forEach(user => {
       if (Array.isArray(user.derivedSubjects)) {
         user.derivedSubjects.forEach(id => {
+          if (id) allSubjectIds.add(String(id));
+        });
+      }
+      if (Array.isArray(user.onboarding?.subjects)) {
+        user.onboarding.subjects.forEach(id => {
           if (id) allSubjectIds.add(String(id));
         });
       }
@@ -109,8 +115,18 @@ class AdminService {
         )
       ];
 
-      const subjectsList = Array.isArray(user.onboarding?.subjects) && user.onboarding.subjects.length > 0
-        ? user.onboarding.subjects
+      // Resolve onboarding.subjects IDs → names via subjectMap
+      const onboardingSubjectNames = [
+        ...new Set(
+          (user.onboarding?.subjects || [])
+            .map(id => subjectMap[String(id)] || null)
+            .filter(Boolean)
+        )
+      ];
+
+      // Prefer onboarding subject names; fall back to subjects derived from practice sessions
+      const subjectsList = onboardingSubjectNames.length > 0
+        ? onboardingSubjectNames
         : derivedSubjectNames;
 
       const progressRaw = Number(user.stats?.progress || user.onboarding?.progress || 0);

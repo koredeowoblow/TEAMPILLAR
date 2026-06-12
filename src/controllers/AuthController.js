@@ -504,6 +504,25 @@ class AuthController {
   static async getOnboardingStatus(req, res) {
     const user = req.user;
     if (!user) throw new AppError("Unauthorized", 401);
+
+    // Admins have no student onboarding flow — always treat as complete
+    if (user.isAdmin === true || (user.role || '').toUpperCase() !== 'STUDENT') {
+      return sendSuccess(res, {
+        message: "Onboarding status retrieved",
+        data: {
+          completed: true,
+          currentStep: "completed",
+          steps: {
+            emailVerified: true,
+            subjectsSelected: true,
+            targetScoreSet: true,
+            studyHoursSet: true,
+          },
+        },
+        statusCode: 200,
+      });
+    }
+
     const o = user.onboarding || {};
     const emailVerified = user.emailVerified === true || o.emailVerified === true;
     let currentStep = "verify-email";
