@@ -4,6 +4,7 @@ import Question from "../models/QuestionModel.js";
 import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utils/AppError.js";
 
+class MockTestService {
   static async startMockTest(user, requestedSubjectIds = null) {
     let mockSubjects = requestedSubjectIds;
 

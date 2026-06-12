@@ -57,19 +57,24 @@ export function toPracticeSessionResultDTO(session) {
     (s.questions ?? []).map((q) => [String(q._id ?? q.id), q])
   );
 
-  const enrichedResponses = (s.responses ?? []).map((r) => {
-    const qId = r.questionId?._id || r.questionId?.id || r.questionId;
-    const q = questionsMap.get(String(qId));
+  const enrichedResponses = (s.questions ?? []).map((q) => {
+    const qIdStr = String(q._id ?? q.id);
+    
+    // Find if user answered it
+    const r = (s.responses ?? []).find(resp => {
+      const respQId = resp.questionId?._id || resp.questionId?.id || resp.questionId;
+      return String(respQId) === qIdStr;
+    });
 
-     // Cross response + question to compute derived fields
-    const selectedOpt = q?.options?.find(o => o.id === r.selectedOption);
+    // Cross response + question to compute derived fields
+    const selectedOpt = r ? q?.options?.find(o => o.id === r.selectedOption) : null;
     const correctOpt  = q?.options?.find(o => o.isCorrect);
-    const isCorrect   = selectedOpt?.isCorrect === true;
+    const isCorrect   = r ? selectedOpt?.isCorrect === true : false;
 
     return {
-      questionId:     qId ? String(qId) : null,
-      selectedOption: r.selectedOption ?? null,
-      timeTaken:      r.timeTaken      ?? 0,
+      questionId:     qIdStr,
+      selectedOption: r?.selectedOption ?? null,
+      timeTaken:      r?.timeTaken      ?? 0,
 
       // Derived from crossing response + question
       isCorrect,

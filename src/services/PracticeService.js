@@ -738,6 +738,7 @@ class PracticeService {
   static async getSessionResult(sessionId, userId) {
     const session = await (await import("../models/PracticeSessionModel.js")).default.findById(sessionId)
       .populate("subjectId")
+      .populate("questionIds")
       .populate("responses.questionId")
       .lean();
 
@@ -751,10 +752,14 @@ class PracticeService {
     // Convert to plain JS object so we can attach computed fields
     const result = { ...session };
 
-    // Map populated questionId back to questions array for DTO compatibility
-    result.questions = (result.responses ?? [])
-      .map(r => r.questionId)
-      .filter(Boolean);
+    // Use populated questionIds array, fallback to populated responses if missing
+    if (result.questionIds && result.questionIds.length > 0 && typeof result.questionIds[0] === 'object') {
+      result.questions = result.questionIds;
+    } else {
+      result.questions = (result.responses ?? [])
+        .map(r => r.questionId)
+        .filter(Boolean);
+    }
 
     return result;
   }
