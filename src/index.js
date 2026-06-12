@@ -25,6 +25,7 @@ import classes from "./routes/ClassesRoute.js";
 import ai from "./routes/AIRoute.js";
 import exams from "./routes/ExamRoute.js";
 import smartMock from "./routes/SmartMockRoute.js";
+import mockTest from "./routes/MockTestRoute.js";
 import achievements from "./routes/AchievementRoute.js";
 import notifications from "./routes/NotificationRoute.js";
 import planner from "./routes/PlannerRoute.js";
@@ -174,6 +175,7 @@ apiRouter.use("/ai", ai);
 apiRouter.use("/ai-tutor", ai);
 apiRouter.use("/exams", exams);
 apiRouter.use("/practice/smart-mock", smartMock);
+apiRouter.use("/mock", mockTest);
 apiRouter.use("/", achievements); // registers /achievements, /streaks, /leaderboard under /api/v1/
 apiRouter.use("/notifications", notifications);
 apiRouter.use("/planner", planner);

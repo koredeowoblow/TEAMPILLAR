@@ -57,6 +57,16 @@ const PracticeSessionSchema = new mongoose.Schema(
     score: { type: Number, default: 0 },
     questionLimit: { type: Number, default: 20 },
     topic: { type: String, default: null },
+    isMockTest: { type: Boolean, default: false },
+    compositeScore: { type: Number, default: null },
+    subjectScores: [{
+      subjectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject' },
+      subjectName: { type: String },
+      score: { type: Number },
+      correct: { type: Number },
+      total: { type: Number },
+    }],
+    totalDuration: { type: Number, default: 7200 },
   },
   { timestamps: true },
 );
