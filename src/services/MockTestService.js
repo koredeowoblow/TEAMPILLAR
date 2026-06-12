@@ -96,7 +96,7 @@ class MockTestService {
     };
   }
 
-  static async submitMockTest(user, sessionId, responses) {
+  static async submitMockTest(user, sessionId, responses, options = {}) {
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
     const session = await PracticeSessionModel.findOne({ _id: sessionId, userId: user._id });
 
@@ -123,6 +123,7 @@ class MockTestService {
     // Evaluate responses
     const processedResponses = [];
     let totalTimeTaken = 0;
+    const topics = {};
 
     for (const r of responses) {
       const q = questionMap[r.questionId];
@@ -138,6 +139,11 @@ class MockTestService {
       if (correctOption && (correctOption.id === r.selectedOption || correctOption.key === r.selectedOption || correctOption.text === r.selectedOption)) {
         isCorrect = true;
         if (subjectScoresMap[sid]) subjectScoresMap[sid].correct += 1;
+      }
+
+      const topic = q.metadata?.topic || "unknown";
+      if (!isCorrect) {
+        topics[topic] = (topics[topic] || 0) + 1; // Count mistakes per topic
       }
 
       processedResponses.push({
@@ -176,11 +182,35 @@ class MockTestService {
       });
     }
 
+    const { tabSwitches = 0, ipAddress = null } = options;
+    const flagged = tabSwitches > 3;
+
+    let totalQuestions = session.questionIds.length || 1;
+    let totalCorrect = 0;
+
+    for (const [sid, stats] of Object.entries(subjectScoresMap)) {
+      totalCorrect += stats.correct;
+    }
+
+    const accuracy = (totalCorrect / totalQuestions) * 100;
+
+    const analytics = {
+      accuracy: Math.round(accuracy),
+      speedPerQuestion: totalQuestions > 0 ? Math.round(totalTimeTaken / totalQuestions) : 0,
+      topMistakeTopic: Object.keys(topics).sort((a, b) => topics[a] - topics[b])[0] || null,
+    };
+
     session.sessionStatus = "COMPLETED";
     session.responses = processedResponses;
     session.compositeScore = compositeScore;
     session.subjectScores = subjectScores;
     session.score = compositeScore;
+    session.analytics = analytics;
+    session.security = {
+      tabSwitches,
+      ipAddress,
+      flagged
+    };
     session.endTime = new Date();
     await session.save();
 
@@ -198,6 +228,32 @@ class MockTestService {
         'stats.highestMockScore': Math.max(prevHigh, compositeScore),
       }
     });
+
+    try {
+      const { default: AdaptiveEngineService } = await import("./AdaptiveEngineService.js");
+      for (const sid of session.subjectIds) {
+        await AdaptiveEngineService.updateTopicPerformance(user._id, processedResponses, sid);
+      }
+    } catch (err) {
+      console.warn("Failed to update adaptive engine in mock test:", err.message);
+    }
+
+    try {
+      const { addAnalyticsJob } = await import("../queues/AnalyticsQueue.js");
+      addAnalyticsJob(user._id, session._id);
+    } catch (err) {
+      console.warn("Failed to queue analytics job in mock test:", err.message);
+    }
+
+    try {
+      const { default: cache } = await import("../core/cache.js");
+      await Promise.all([
+        cache.del("admin:dashboard:stats", "analytics:summary"),
+        cache.invalidatePattern("analytics:reports:*")
+      ]);
+    } catch (err) {
+      console.warn("Failed to invalidate analytics caches:", err.message);
+    }
 
     return {
       compositeScore,

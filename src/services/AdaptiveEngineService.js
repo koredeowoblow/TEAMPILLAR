@@ -155,7 +155,7 @@ class AdaptiveEngineService {
         const topicStr = q.metadata?.topic;
         if (!topicStr) continue;
 
-        const opt = q.options.find(o => o.id === r.selectedOption);
+        const opt = q.options.find(o => o.id === r.selectedOption || o.key === r.selectedOption || o.text === r.selectedOption);
         const isCorrect = opt ? opt.isCorrect : false;
 
         if (!currentSessionTopics[topicStr]) {

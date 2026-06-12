@@ -13,8 +13,12 @@ class MockTestController {
   }
 
   static async submitMockTest(req, res) {
-    const { sessionId, responses } = req.body;
-    const data = await MockTestService.submitMockTest(req.user, sessionId, responses);
+    const { sessionId, responses, tabSwitches, ipAddress } = req.body;
+    const submissionOptions = {
+      tabSwitches: tabSwitches || 0,
+      ipAddress: ipAddress || req.ip || null
+    };
+    const data = await MockTestService.submitMockTest(req.user, sessionId, responses, submissionOptions);
     return sendSuccess(res, {
       message: "Mock test submitted successfully",
       data,
