@@ -65,7 +65,7 @@ class AuthController {
       data: {
         ...toSessionDTO({ user, token, refreshToken, expiresAt }),
         onboarding: {
-          completed: o.completed ?? false,
+          completed: currentStep === "completed",
           currentStep,
         },
       },
@@ -397,7 +397,7 @@ class AuthController {
       data: {
         ...toSessionDTO(result),
         onboarding: {
-          completed: o.completed ?? false,
+          completed: currentStep === "completed",
           currentStep,
         },
       },
@@ -443,7 +443,7 @@ class AuthController {
       data: {
         ...toSessionDTO(result),
         onboarding: {
-          completed: o2.completed ?? false,
+          completed: currentStep2 === "completed",
           currentStep: currentStep2,
         },
       },
