@@ -44,33 +44,50 @@ class StudentController {
     const userId = req.user?.id;
     if (!userId) throw new AppError("Unauthorized", 401);
 
-    const existing = await userRepository.findById(userId, { lean: true, select: "_id onboarding stats" });
-    if (!existing) throw new AppError("User not found", 404);
+    const user = await userRepository.findById(userId);
+    if (!user) throw new AppError("User not found", 404);
 
-    const currentOnboarding =
-      existing.onboarding?.toObject?.() ?? existing.onboarding ?? {};
+    const { subjects, targetScore, studyHours } = req.body;
 
-    const subjects = req.body.subjects;
-    if (subjects && Array.isArray(subjects)) {
-      // Freemium Guard: Subject limit
-      FreemiumGuard.checkSubjectLimit(subjects.length, req.user);
+    if (subjects !== undefined) {
+      if (subjects && Array.isArray(subjects)) {
+        // Freemium Guard: Subject limit
+        FreemiumGuard.checkSubjectLimit(subjects.length, req.user);
 
-      if (subjects.length > 6) {
-        throw new AppError("You can select a maximum of 6 subjects", 400);
+        if (subjects.length > 6) {
+          throw new AppError("You can select a maximum of 6 subjects", 400);
+        }
       }
+      if (!user.onboarding) user.onboarding = {};
+      user.onboarding.subjectsSelected = true;
+      user.onboarding.subjects = subjects;
+      user.selectedSubjects = subjects;
+      user.lastSubjectUpdate = new Date();
     }
 
-    const updated = await userRepository.updateUser(userId, {
-      onboarding: {
-        ...currentOnboarding,
-        ...req.body,
-        completedAt: req.body.studyIntensity ? new Date().toISOString() : currentOnboarding.completedAt,
-      },
-      ...(subjects ? { selectedSubjects: subjects, lastSubjectUpdate: new Date() } : {}),
-      ...(req.body.targetScore
-        ? { stats: { ...(existing.stats?.toObject?.() ?? existing.stats ?? {}), predictedScore: req.body.targetScore } }
-        : {}),
-    });
+    if (targetScore !== undefined) {
+      if (!user.onboarding) user.onboarding = {};
+      user.onboarding.targetScoreSet = true;
+      user.onboarding.targetScore = targetScore;
+      if (!user.stats) user.stats = {};
+      user.stats.predictedScore = targetScore;
+    }
+
+    if (studyHours !== undefined) {
+      if (!user.onboarding) user.onboarding = {};
+      user.onboarding.studyHoursSet = true;
+      user.onboarding.studyHoursPerDay = studyHours;
+    }
+
+    // Check completion
+    const o = user.onboarding || {};
+    if (o.emailVerified && o.subjectsSelected && o.targetScoreSet && o.studyHoursSet) {
+      user.onboarding.completed = true;
+    }
+
+    user.markModified("onboarding");
+    const updated = await user.save();
+
     return sendSuccess(res, {
       message: "Onboarding saved",
       data: toUserDTO(updated),

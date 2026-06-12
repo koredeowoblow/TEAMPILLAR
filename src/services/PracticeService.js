@@ -24,6 +24,7 @@ class PracticeService {
       filters = {},
       deterministic = false,
       isAdmin = false,
+      topic,
     } = {},
   ) {
     try {
@@ -51,6 +52,8 @@ class PracticeService {
       if (sessionId) {
         session = await practiceRepository.findById(sessionId, [], { lean: true });
       }
+
+      const sessionTopic = topic || session?.topic || null;
 
       // If the session already has questions saved, retrieve and return them directly
       if (session && session.questionIds && session.questionIds.length > 0) {
@@ -131,12 +134,13 @@ class PracticeService {
               currentSubId,
               filters,
             );
-            if (adaptiveMatch["metadata.topic"])
+            if (adaptiveMatch["metadata.topic"] && !sessionTopic)
               subMatchStage["metadata.topic"] = adaptiveMatch["metadata.topic"];
             if (adaptiveMatch["metadata.difficulty"])
               subMatchStage["metadata.difficulty"] = adaptiveMatch["metadata.difficulty"];
           }
 
+          if (sessionTopic) subMatchStage["metadata.topic"] = sessionTopic;
           if (topicId) subMatchStage["metadata.topic"] = topicId;
           if (difficulty) subMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
           if (year) subMatchStage["metadata.year"] = Number(year);
@@ -152,6 +156,7 @@ class PracticeService {
           if (subQuestions.length < currentLimit) {
             let fallbackLimit = currentLimit - subQuestions.length;
             let fallbackMatchStage = { subjectId: currentSubId };
+            if (sessionTopic) fallbackMatchStage["metadata.topic"] = sessionTopic;
             if (difficulty) fallbackMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
             if (year) fallbackMatchStage["metadata.year"] = Number(year);
 
@@ -173,6 +178,7 @@ class PracticeService {
               fallbackLimit = currentLimit - subQuestions.length;
               foundIds = subQuestions.map(q => q._id);
               fallbackMatchStage = { subjectId: currentSubId };
+              if (sessionTopic) fallbackMatchStage["metadata.topic"] = sessionTopic;
               if (foundIds.length > 0) {
                 fallbackMatchStage._id = { $nin: foundIds };
               }
@@ -218,6 +224,7 @@ class PracticeService {
       }
 
       if (resolvedSubjectId) matchStage.subjectId = resolvedSubjectId;
+      if (sessionTopic) matchStage["metadata.topic"] = sessionTopic;
       if (topicId) matchStage["metadata.topic"] = topicId;
       if (difficulty)
         matchStage["metadata.difficulty"] = difficulty.toLowerCase();
@@ -307,7 +314,7 @@ class PracticeService {
           resolvedSubjectId,
           filters,
         );
-        if (adaptiveMatch["metadata.topic"])
+        if (adaptiveMatch["metadata.topic"] && !sessionTopic)
           matchStage["metadata.topic"] = adaptiveMatch["metadata.topic"];
         if (adaptiveMatch["metadata.difficulty"])
           matchStage["metadata.difficulty"] =
@@ -315,6 +322,7 @@ class PracticeService {
       }
 
       // Override with explicit query params if provided
+      if (sessionTopic) matchStage["metadata.topic"] = sessionTopic;
       if (topicId) matchStage["metadata.topic"] = topicId;
       if (difficulty)
         matchStage["metadata.difficulty"] = difficulty.toLowerCase();
@@ -333,6 +341,7 @@ class PracticeService {
         let fallbackLimit = limit - questions.length;
         let foundIds = questions.map((q) => q._id);
         let fallbackMatchStage = { subjectId: resolvedSubjectId };
+        if (sessionTopic) fallbackMatchStage["metadata.topic"] = sessionTopic;
         if (difficulty)
           fallbackMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
         if (year) fallbackMatchStage["metadata.year"] = Number(year);
@@ -366,6 +375,7 @@ class PracticeService {
           fallbackLimit = limit - questions.length;
           foundIds = questions.map((q) => q._id);
           fallbackMatchStage = { subjectId: resolvedSubjectId };
+          if (sessionTopic) fallbackMatchStage["metadata.topic"] = sessionTopic;
 
           if (foundIds.length > 0) {
             fallbackMatchStage._id = {
@@ -491,7 +501,7 @@ class PracticeService {
     };
   }
 
-  static async startSession(userId, subjectId, questionLimit = 20, subjectIds = []) {
+  static async startSession(userId, subjectId, questionLimit = 20, subjectIds = [], topic = null) {
     const user = await userRepository.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
@@ -506,6 +516,7 @@ class PracticeService {
       sessionStatus: "ACTIVE",
       startTime: new Date(),
       questionLimit: Math.max(1, Number(questionLimit) || 20),
+      topic: topic || null,
     });
     return session;
   }
@@ -701,6 +712,14 @@ class PracticeService {
         user.stats = { ...(user.stats || {}), predictedScore };
         await user.save();
       }
+    }
+
+    // Trigger background queue to update user diagnostics
+    try {
+      const { addAnalyticsJob } = await import("../queues/AnalyticsQueue.js");
+      addAnalyticsJob(session.userId, sessionId);
+    } catch (queueErr) {
+      console.warn("Failed to queue analytics job:", queueErr.message);
     }
 
     // Invalidate cached reports and dashboard stats

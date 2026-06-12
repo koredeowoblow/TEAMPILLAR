@@ -129,6 +129,67 @@ class AuthService {
     };
   }
 
+  // ================= EMAIL VERIFICATION =================
+  static async verifyEmail(email, otp) {
+    const verification = await OTPService.verifyOTP(email, otp, "email_verification");
+    if (!verification.valid) {
+      throw new AppError(verification.message || "Invalid or expired verification code", 400);
+    }
+
+    const userDoc = await userRepository.findByEmail(email);
+    if (!userDoc) {
+      throw new AppError("User not found", 404);
+    }
+
+    userDoc.emailVerified = true;
+    userDoc.emailVerifiedAt = new Date();
+    if (!userDoc.onboarding) {
+      userDoc.onboarding = {};
+    }
+    userDoc.onboarding.emailVerified = true;
+    await userDoc.save();
+
+    // Generate tokens immediately so user is logged in
+    const { token, expiresAt } = this.generateToken(userDoc._id);
+    const { refreshToken, expiresAt: refreshExpiresAt } = this.generateRefreshToken(userDoc._id);
+
+    await authRepository.createSession({
+      userId: userDoc._id,
+      tokenHash: this.hashToken(token),
+      refreshTokenHash: this.hashToken(refreshToken),
+      refreshTokenExpiresAt: refreshExpiresAt,
+    });
+
+    const user = typeof userDoc.toObject === "function" ? userDoc.toObject() : { ...userDoc };
+    delete user.password;
+
+    return {
+      user,
+      token,
+      refreshToken,
+      expiresAt,
+      message: "Email verified successfully",
+    };
+  }
+
+  static async resendEmailVerification(email) {
+    const userDoc = await userRepository.findByEmail(email);
+    if (!userDoc) {
+      throw new AppError("User not found", 404);
+    }
+
+    if (userDoc.emailVerified || userDoc.onboarding?.emailVerified) {
+      throw new AppError("Email already verified", 400);
+    }
+
+    const otp = await OTPService.storeOTP(email, "email_verification", 10);
+    await EmailService.sendEmailVerificationOTP(email, otp, userDoc.name || "");
+
+    return {
+      message: "Verification code resent! Check your email.",
+    };
+  }
+
   // ================= LOGIN =================
   static async login(email, password, meta = {}) {
     const user = await userRepository.findByEmail(email, {

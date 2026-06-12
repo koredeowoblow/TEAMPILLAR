@@ -6,6 +6,7 @@ import cache from "../utils/cache.js";
 import AIService from "./AIService.js";
 import { CONSTANTS } from "../config/constants.js";
 import FocusAreaAnalysisService from "./FocusAreaAnalysisService.js";
+import UserAnalytics from "../models/UserAnalyticsModel.js";
 
 const monthLabels = [
   "Jan",
@@ -373,15 +374,32 @@ class AnalyticsService {
       : 0;
     const averageTimePerQuestion = `${avgSpeedVal}s`;
 
-    const aiRecommendations = await AIService.generateStudentInsights({
-      userId,
-      averageScore: avgScore,
-      targetScore: user.onboarding?.targetScore || 280,
-      weakTopics: weakTopicsList,
-    });
+    // Try to load pre-calculated background analytics
+    const preGenerated = await UserAnalytics.findOne({ userId }).lean();
 
-    const focusAreas = await FocusAreaAnalysisService.getOrCreateFocusAreas(userId);
-    const priorityRecommendations = FocusAreaAnalysisService.getRecommendations(userId, focusAreas);
+    let aiRecommendations;
+    let focusAreas;
+    let priorityRecommendations;
+
+    if (preGenerated) {
+      aiRecommendations = {
+        tips: preGenerated.tips,
+        generatedAt: preGenerated.updatedAt,
+        ai: { used: true, model: "groq", fallback: false }
+      };
+      focusAreas = preGenerated.focusAreas || [];
+      priorityRecommendations = preGenerated.priorityRecommendations || [];
+    } else {
+      aiRecommendations = await AIService.generateStudentInsights({
+        userId,
+        averageScore: avgScore,
+        targetScore: user.onboarding?.targetScore || 280,
+        weakTopics: weakTopicsList,
+      });
+
+      focusAreas = await FocusAreaAnalysisService.getOrCreateFocusAreas(userId);
+      priorityRecommendations = FocusAreaAnalysisService.getRecommendations(userId, focusAreas);
+    }
 
     return {
       targetScore: user.onboarding?.targetScore || 280,

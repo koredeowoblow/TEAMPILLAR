@@ -21,6 +21,7 @@ export const validateStartSession = [
     }
     return true;
   }),
+  body("topic").optional().custom((val) => val === null || val === "" || typeof val === "string").withMessage("topic must be a string or null"),
 ];
 
 export const validateSubmitSession = [

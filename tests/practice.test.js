@@ -135,4 +135,23 @@ describe("PracticeService deterministic selection and scoring", () => {
     questionRepository.aggregate = origAggregate;
     questionRepository.find = origFind;
   });
+
+  test("topic selection passes correct match stage filters including metadata.topic", async () => {
+    const origAggregate = questionRepository.aggregate;
+    questionRepository.aggregate = jest.fn().mockResolvedValue([]);
+
+    const validSubjectId = "5f8d0a92d2b5880017a8e5f2";
+    await PracticeService.getQuestionsForSubject(validSubjectId, {
+      limit: 5,
+      topic: "Matrices",
+      deterministic: true,
+    });
+
+    expect(questionRepository.aggregate).toHaveBeenCalled();
+    const calls = questionRepository.aggregate.mock.calls;
+    const matchStage = calls[0][0][0].$match;
+    expect(matchStage["metadata.topic"]).toBe("Matrices");
+
+    questionRepository.aggregate = origAggregate;
+  });
 });

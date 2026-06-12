@@ -1,6 +1,7 @@
 import express from "express";
 import PlannerController from "../controllers/PlannerController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
+import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
@@ -11,6 +12,7 @@ const router = express.Router();
 router.get(
   "/schedule",
   protectUser,
+  onboardingGuard,
   tryCatch(PlannerController.getSchedule),
 );
 
@@ -18,6 +20,7 @@ router.get(
 router.post(
   "/generate",
   protectUser,
+  onboardingGuard,
   body("targetScore").isNumeric().withMessage("targetScore must be a number"),
   body("hoursPerDay").isNumeric().withMessage("hoursPerDay must be a number"),
   body("examDate").notEmpty().withMessage("examDate is required"),
@@ -31,6 +34,7 @@ router.post(
 router.post(
   "/reschedule-day",
   protectUser,
+  onboardingGuard,
   body("date").notEmpty().withMessage("date is required (YYYY-MM-DD)"),
   handleValidationErrors,
   tryCatch(PlannerController.rescheduleDay),
@@ -40,6 +44,7 @@ router.post(
 router.patch(
   "/session/:id/complete",
   protectUser,
+  onboardingGuard,
   tryCatch(PlannerController.markComplete),
 );
 

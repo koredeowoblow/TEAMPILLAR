@@ -2,6 +2,7 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import SmartMockController from "../controllers/SmartMockController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
+import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
 import {
@@ -27,6 +28,7 @@ router.post(
   "/generate",
   smartMockLimiter,
   protectUser,
+  onboardingGuard,
   validateStartSession,
   handleValidationErrors,
   tryCatch(SmartMockController.generateSmartMock)
@@ -41,6 +43,7 @@ router.post(
   "/submit",
   smartMockLimiter,
   protectUser,
+  onboardingGuard,
   validateSubmitSession,
   handleValidationErrors,
   tryCatch(SmartMockController.submitSmartMock)
