@@ -4,11 +4,25 @@ import Question from "../models/QuestionModel.js";
 import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utils/AppError.js";
 
-class MockTestService {
-  static async startMockTest(user) {
+  static async startMockTest(user, requestedSubjectIds = null) {
+    let mockSubjects = requestedSubjectIds;
+
+    // Use requested subjects if provided, otherwise default to all selected subjects
+    if (!mockSubjects || mockSubjects.length === 0) {
+      mockSubjects = user.selectedSubjects || [];
+    }
+
     // Validate 4 subjects selected
-    if (!user.selectedSubjects || user.selectedSubjects.length !== 4) {
-      throw new AppError("Please complete your subject combination before taking a mock test", 400);
+    if (mockSubjects.length !== 4) {
+      throw new AppError("A UTME mock test requires exactly 4 subjects. Please select 4 subjects.", 400);
+    }
+
+    // Verify requested subjects are among user's selected subjects
+    const userSubjectsStr = (user.selectedSubjects || []).map(id => id.toString());
+    for (const sid of mockSubjects) {
+      if (!userSubjectsStr.includes(sid.toString())) {
+        throw new AppError("You can only take a mock test for subjects you have selected in your profile.", 403);
+      }
     }
 
     // Check freemium limits
@@ -20,14 +34,14 @@ class MockTestService {
     const questionsBySubject = [];
     const allQuestionIds = [];
 
-    const subjects = await Subject.find({ _id: { $in: user.selectedSubjects } }).lean();
+    const subjects = await Subject.find({ _id: { $in: mockSubjects } }).lean();
     const subjectMap = subjects.reduce((acc, s) => {
       acc[s._id.toString()] = s;
       return acc;
     }, {});
 
     // Query 40 questions per subject
-    for (const subjectId of user.selectedSubjects) {
+    for (const subjectId of mockSubjects) {
       const questions = await Question.aggregate([
         { $match: { subjectId: new mongoose.Types.ObjectId(subjectId), "metadata.difficulty": { $in: ["easy", "medium", "hard"] } } },
         { $sample: { size: 40 } }
@@ -61,7 +75,7 @@ class MockTestService {
 
     const session = await PracticeSessionModel.create({
       userId: user._id,
-      subjectIds: user.selectedSubjects,
+      subjectIds: mockSubjects,
       isMockTest: true,
       sessionType: "smart-mock", 
       sessionStatus: "ACTIVE",

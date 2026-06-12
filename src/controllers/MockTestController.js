@@ -3,7 +3,8 @@ import { sendSuccess } from "../core/response.js";
 
 class MockTestController {
   static async startMockTest(req, res) {
-    const data = await MockTestService.startMockTest(req.user);
+    const { subjectIds } = req.body || {};
+    const data = await MockTestService.startMockTest(req.user, subjectIds);
     return sendSuccess(res, {
       message: "Mock test generated successfully",
       data,
