@@ -49,9 +49,8 @@ class MockTestService {
       ]);
       
       const formattedQuestions = questions.map(q => {
-        const { isCorrect, ...optionsWithoutCorrect } = q.options || {}; 
-        const safeOptions = Array.isArray(q.options) 
-          ? q.options.map(o => ({ key: o.key, text: o.text, image: o.image })) 
+        const safeOptions = Array.isArray(q.options)
+          ? q.options.map(o => ({ key: o.id || o.key, text: o.text, image: o.image }))
           : [];
 
         return {
@@ -61,8 +60,9 @@ class MockTestService {
             _id: q.subjectId,
             name: subjectMap[q.subjectId.toString()] ? subjectMap[q.subjectId.toString()].name : 'Unknown'
           },
+          // Flatten content.text → text so CBTExam can render it with question?.text
+          text: q.content?.text || q.text || '',
           content: q.content,
-          text: q.text,
           options: safeOptions,
           metadata: q.metadata
         };
