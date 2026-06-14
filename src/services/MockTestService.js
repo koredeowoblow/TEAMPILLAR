@@ -135,8 +135,13 @@ class MockTestService {
       }
 
       let isCorrect = false;
+      const selectedOpt = Array.isArray(q.options) ? (
+        q.options.find(o => o.id === r.selectedOption || o.key === r.selectedOption)
+      ) : null;
+      
       const correctOption = Array.isArray(q.options) ? q.options.find(o => o.isCorrect) : null;
-      if (correctOption && (correctOption.id === r.selectedOption || correctOption.key === r.selectedOption || correctOption.text === r.selectedOption)) {
+
+      if (selectedOpt && selectedOpt.isCorrect) {
         isCorrect = true;
         if (subjectScoresMap[sid]) subjectScoresMap[sid].correct += 1;
       }
