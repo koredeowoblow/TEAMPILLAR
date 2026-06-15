@@ -3,8 +3,10 @@ import StudentController from "../controllers/StudentController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
 import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
+import { generalLimiter } from "../middleware/rateLimiters.js";
 
 const router = express.Router();
+router.use(generalLimiter);
 
 router.post(
   "/me/onboarding",

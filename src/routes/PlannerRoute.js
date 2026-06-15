@@ -5,8 +5,10 @@ import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
+import { generalLimiter } from "../middleware/rateLimiters.js";
 
 const router = express.Router();
+router.use(generalLimiter);
 
 // GET /planner/schedule — fetch existing schedule
 router.get(

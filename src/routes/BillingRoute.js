@@ -4,8 +4,10 @@ import { protectUser } from "../middleware/authMiddleware.js";
 import { tryCatch } from "../utils/try-catch.js";
 
 import AdminPricingController from "../controllers/AdminPricingController.js";
+import { paymentLimiter } from "../middleware/rateLimiters.js";
 
 const router = express.Router();
+router.use(paymentLimiter);
 
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";

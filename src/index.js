@@ -3,7 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import compression from "compression";
 import mongoSanitize from "express-mongo-sanitize";
-import { apiLimiter } from "./middleware/rateLimiter.js";
+
 import cron from "node-cron";
 import { logger } from "./core/logger.js";
 import "./config/env.js";
@@ -161,9 +161,7 @@ app.get("/health", healthCheckHandler);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// API Router
 const apiRouter = express.Router();
-apiRouter.use(apiLimiter);
 apiRouter.use(checkMaintenance);
 app.use("/api/v1", apiRouter);
 

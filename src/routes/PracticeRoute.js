@@ -13,7 +13,9 @@ import {
   validateNextQuestions,
 } from "../middleware/Validation/practiceValidation.js";
 import { requireEntitlement } from "../middleware/entitlement.js";
+import { generalLimiter } from "../middleware/rateLimiters.js";
 const router = express.Router();
+router.use(generalLimiter);
 
 // Public: get questions for a subject (user must be authenticated in PRD, but allow auth optional)
 router.get(

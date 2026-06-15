@@ -11,12 +11,7 @@ import {
 } from "../middleware/Validation/authValidation.js";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
 import { protectUser, protectAdmin } from "../middleware/authMiddleware.js";
-import {
-  authLimiter,
-  registrationLimiter,
-  otpLimiter,
-  passwordResetLimiter,
-} from "../middleware/rateLimiter.js";
+import { authLimiter } from "../middleware/rateLimiters.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { logger } from "../core/logger.js";
 import upload from "../config/multer.js";
@@ -37,7 +32,7 @@ const logLoginRequest = (req, _res, next) => {
 
 auth.post(
   "/register",
-  registrationLimiter,
+  authLimiter,
   validateUserRegistration,
   handleValidationErrors,
   tryCatch(AuthController.register),
@@ -55,14 +50,14 @@ auth.post("/logout", protectUser, tryCatch(AuthController.logout));
 auth.post("/refresh", authLimiter, tryCatch(AuthController.refreshToken));
 auth.post(
   "/forgot-password",
-  passwordResetLimiter,
+  authLimiter,
   validateForgotPassword,
   handleValidationErrors,
   tryCatch(AuthController.forgotPassword),
 );
 auth.post(
   "/reset-password",
-  otpLimiter,
+  authLimiter,
   validateResetPassword,
   handleValidationErrors,
   tryCatch(AuthController.resetPassword),
@@ -76,14 +71,14 @@ auth.post(
 );
 auth.post(
   "/verify-otp",
-  otpLimiter,
+  authLimiter,
   validateEmailVerification,
   handleValidationErrors,
   tryCatch(AuthController.verifyEmail),
 );
 auth.post(
   "/verify-email",
-  otpLimiter,
+  authLimiter,
   validateEmailVerification,
   handleValidationErrors,
   tryCatch(AuthController.verifyEmail),
@@ -91,7 +86,7 @@ auth.post(
 
 auth.post(
   "/resend-otp",
-  passwordResetLimiter,
+  authLimiter,
   validateResendVerification,
   handleValidationErrors,
   tryCatch(AuthController.resendEmailVerification),
