@@ -72,7 +72,7 @@ const supportTicketSchema = new mongoose.Schema(
 );
 
 // Auto-generate ticketId before saving if it doesn't exist
-supportTicketSchema.pre("save", async function (next) {
+supportTicketSchema.pre("save", async function () {
   if (this.isNew && !this.ticketId) {
     let isUnique = false;
     while (!isUnique) {
@@ -93,8 +93,6 @@ supportTicketSchema.pre("save", async function (next) {
   } else if (this.isModified("status") && this.status !== "resolved" && this.status !== "closed") {
     this.resolvedAt = undefined;
   }
-  
-  next();
 });
 
 const SupportTicket = mongoose.model("SupportTicket", supportTicketSchema);
