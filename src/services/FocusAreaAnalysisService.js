@@ -107,7 +107,7 @@ class FocusAreaAnalysisService {
 
       // Check cache for AI Insights using the pre-fetched map
       let insight = insightsMap.get(topicName);
-      
+
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
