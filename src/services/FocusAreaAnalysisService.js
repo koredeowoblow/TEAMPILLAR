@@ -190,6 +190,7 @@ Generate conceptual insight and estimated score gain (number in marks, max 25).`
 
       focusAreas.push({
         topic: topicName,
+        subjectId: perf.subjectId,
         accuracy,
         attempted,
         correct,
@@ -224,6 +225,7 @@ Generate conceptual insight and estimated score gain (number in marks, max 25).`
       return {
         priority: idx + 1,
         topic: item.topic,
+        subjectId: item.subjectId,
         reason: `${item.accuracy}% accuracy over ${item.attempted} attempts indicates significant room for mastery.`,
         potentialGain: `+${item.estimatedScoreGain} marks`,
         recommendedQuestionCount: recommendedCount
