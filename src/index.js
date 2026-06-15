@@ -34,6 +34,8 @@ import { checkMaintenance } from "./middleware/maintenanceMiddleware.js";
 import PlatformSettings from "./models/PlatformSettingsModel.js";
 import { timingMiddleware } from "./middleware/timing.middleware.js";
 import { startHealthMonitor } from "./utils/healthMonitor.js";
+import { initSocket } from "./config/socket.js";
+import "./queues/supportQueue.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";
@@ -266,6 +268,8 @@ async function bootstrap() {
       logger.info(`Server running on port ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV}`);
     });
+
+    initSocket(server);
 
     server.setTimeout(SOCKET_TIMEOUT_MS);
     server.requestTimeout = REQUEST_TIMEOUT_MS;

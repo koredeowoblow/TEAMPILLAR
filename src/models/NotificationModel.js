@@ -18,6 +18,7 @@ const NotificationSchema = new mongoose.Schema(
         "pro",           // Subscription / upgrade
         "system",        // Platform announcements
         "leaderboard",   // Rank changes
+        "support",       // Ticketing and chat system
       ],
       default: "system",
     },
