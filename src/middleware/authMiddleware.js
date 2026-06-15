@@ -16,7 +16,7 @@ const authRepository = new AuthRepository();
 
 // Minimal user projection — only fields needed for auth checks and attaching to req.user
 const USER_AUTH_SELECT =
-  "_id name username email photoUrl photo language role isAdmin isActive isPro emailVerified onboarding stats notificationPreferences privacySettings subscription subscriptionStatus proExpiresAt selectedSubjects lastSubjectUpdate createdAt";
+  "_id name username email photoUrl photo language role isAdmin isActive emailVerified onboarding stats notificationPreferences privacySettings subscriptionStatus proExpiresAt selectedSubjects lastSubjectUpdate createdAt";
 
 // Map to track lookups in progress to deduplicate concurrent requests for the same token
 const pendingLookups = new Map();
@@ -208,7 +208,7 @@ export const protectAdmin = async (req, res, next) => {
  * Middleware to ensure the user has a pro subscription.
  */
 export const requirePro = (req, res, next) => {
-  if (req.user && req.user.subscription === "pro") {
+  if (req.user && (req.user.subscriptionStatus === "active" || req.user.subscriptionStatus === "paid")) {
     return next();
   }
 

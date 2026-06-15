@@ -1,5 +1,6 @@
 import SmartMockService from "../services/SmartMockService.js";
-import PracticeService from "../services/PracticeService.js";
+import PracticeService from "../services/practice/index.js";
+import { resolveUserTier } from "../middleware/entitlement.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
@@ -32,10 +33,7 @@ class SmartMockController {
     );
 
     // Enforce question count restriction for free-tier users
-    const isPro = req.user?.isPro === true || 
-                 req.user?.subscription === "pro" || 
-                 req.user?.subscriptionStatus === "active" || 
-                 ["ADMIN", "TUTOR"].includes(req.user?.role);
+    const isPro = resolveUserTier(req.user) === "pro";
     
     // Check subject limit for free users
     const requestedSubjects = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];

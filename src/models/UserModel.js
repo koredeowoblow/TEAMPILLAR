@@ -1,6 +1,17 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
+/**
+ * SCHEMA CONSOLIDATION DECISIONS:
+ * 
+ * - Subscription source of truth: `subscriptionStatus` (String enum: "free", "active", "expired", "cancelled", "paid").
+ *   This is the ONLY field that determines access level. `resolveUserTier()` in `entitlement.js` derives tier from this field.
+ *   The legacy `isPro` (Boolean) and `subscription` (String enum) fields have been removed.
+ * 
+ * - Email verification source of truth: `emailVerified` (Boolean) at the top level.
+ *   The legacy `onboarding.emailVerified` field has been removed.
+ */
+
 
 
 const UserSchema = new mongoose.Schema(
@@ -22,7 +33,6 @@ const UserSchema = new mongoose.Schema(
       enum: ["STUDENT", "ADMIN", "TUTOR"],
       default: "STUDENT",
     },
-    isPro: { type: Boolean, default: false },
     subscriptionStatus: {
       type: String,
       enum: ["free", "active", "expired", "cancelled", "paid"],
@@ -33,11 +43,6 @@ const UserSchema = new mongoose.Schema(
     deactivatedAt: { type: Date, default: null },
     selectedSubjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subject" }],
     lastSubjectUpdate: { type: Date, default: null },
-    subscription: {
-      type: String,
-      enum: ["free", "pro"],
-      default: "free",
-    },
     subscriptionDetails: {
       paystackSubscriptionCode: String,
       nextPaymentDate: Date,
@@ -49,7 +54,6 @@ const UserSchema = new mongoose.Schema(
       totalMockTests: { type: Number, default: 0 },
     },
     onboarding: {
-      emailVerified:    { type: Boolean, default: false },
       subjectsSelected: { type: Boolean, default: false },
       targetScoreSet:   { type: Boolean, default: false },
       studyHoursSet:    { type: Boolean, default: false },

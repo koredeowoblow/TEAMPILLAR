@@ -96,12 +96,12 @@ class BillingController {
 
     setImmediate(async () => {
       try {
-        const user = await User.findOne({ email }).select("_id name email subscription isPro subscriptionDetails");
+        const user = await User.findOne({ email }).select("_id name email subscriptionStatus subscriptionDetails");
         if (!user) return;
 
         // If it was a one-time payment that should upgrade them
         if (metadata?.tier === "pro") {
-          user.subscription = "pro";
+          user.subscriptionStatus = "paid";
           await user.save();
         }
 
@@ -129,10 +129,10 @@ class BillingController {
     const email = customer.email;
 
     try {
-      const user = await User.findOne({ email }).select("_id name email subscription subscriptionDetails");
+      const user = await User.findOne({ email }).select("_id name email subscriptionStatus subscriptionDetails");
       if (!user) return;
 
-      user.subscription = "pro";
+      user.subscriptionStatus = "active";
       user.subscriptionDetails = {
         paystackSubscriptionCode: subscription_code,
         nextPaymentDate: new Date(next_payment_date),
@@ -154,10 +154,10 @@ class BillingController {
     const email = customer.email;
 
     try {
-      const user = await User.findOne({ email }).select("_id subscription");
+      const user = await User.findOne({ email }).select("_id subscriptionStatus");
       if (!user) return;
 
-      user.subscription = "free";
+      user.subscriptionStatus = "free";
       await user.save();
 
       await EmailService.sendEmail(
@@ -178,10 +178,10 @@ class BillingController {
     const email = customer.email;
 
     try {
-      const user = await User.findOne({ email }).select("_id subscription");
+      const user = await User.findOne({ email }).select("_id subscriptionStatus");
       if (!user) return;
 
-      user.subscription = "free";
+      user.subscriptionStatus = "cancelled";
       await user.save();
 
       logger.info(`Subscription disabled for ${email}`);
@@ -212,11 +212,11 @@ class BillingController {
     const { customer, metadata, subscription: paystackSubCode, amount, currency } = data.data;
     const email = customer.email;
 
-    const user = await User.findOne({ email }).select("_id name email subscription subscriptionDetails subscriptionStatus isPro");
+    const user = await User.findOne({ email }).select("_id name email subscriptionDetails subscriptionStatus");
     if (!user) throw new AppError("User not found", 404);
 
     // Update user subscription
-    user.subscription = "pro";
+    user.subscriptionStatus = "active";
     if (paystackSubCode) {
       user.subscriptionDetails = {
         paystackSubscriptionCode: paystackSubCode,
@@ -248,7 +248,7 @@ class BillingController {
       message: "Payment verified successfully",
       data: {
         status: "success",
-        subscription: user.subscription,
+        subscription: user.subscriptionStatus,
       },
     });
   }

@@ -27,8 +27,7 @@ class PaymentService {
         { _id: { $in: userIds } },
         { 
           $set: { 
-            subscriptionStatus: "expired",
-            isPro: false 
+            subscriptionStatus: "expired"
           } 
         }
       );

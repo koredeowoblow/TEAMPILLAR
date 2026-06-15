@@ -47,16 +47,16 @@ class SettingsService {
   static buildSubscription(user) {
     const now = new Date();
     const expiresAt = user.proExpiresAt ? new Date(user.proExpiresAt) : null;
-    let status = user.subscriptionStatus || (user.isPro ? "active" : "free");
+    let status = user.subscriptionStatus || "free";
 
-    if (user.isPro && expiresAt && expiresAt < now) {
+    if (status === "active" && expiresAt && expiresAt < now) {
       status = "expired";
     }
 
     return {
-      plan: user.isPro ? "pro" : "free",
+      plan: status === "active" || status === "paid" ? "pro" : "free",
       status,
-      isPro: user.isPro ?? false,
+      isPro: status === "active" || status === "paid",
       expiresAt,
     };
   }

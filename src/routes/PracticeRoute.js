@@ -12,6 +12,7 @@ import {
   validateSessionVisibility,
   validateNextQuestions,
 } from "../middleware/Validation/practiceValidation.js";
+import { requireEntitlement } from "../middleware/entitlement.js";
 const router = express.Router();
 
 // Public: get questions for a subject (user must be authenticated in PRD, but allow auth optional)
@@ -45,6 +46,8 @@ router.get("/topics", protectUser, onboardingGuard, tryCatch(PracticeController.
 router.post(
   "/session/start",
   protectUser,
+  requireEntitlement("practice:multi_subject"),
+  requireEntitlement("practice:unlimited_questions"),
   onboardingGuard,
   validateStartSession,
   handleValidationErrors,
