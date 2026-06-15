@@ -2,6 +2,8 @@ import User from "../models/UserModel.js";
 import Subject from "../models/SubjectModel.js";
 import Question from "../models/QuestionModel.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
+import EmailService from "./emailService.js";
+import NotificationService from "./NotificationService.js";
 import { escapeRegex } from "../utils/stringUtils.js";
 import cache from "../utils/cache.js";
 
@@ -526,6 +528,32 @@ class AdminService {
   static async deleteQuestion(id) {
     await Question.findByIdAndDelete(id);
     return { success: true };
+  }
+
+  static async sendReminder(ids) {
+    if (!ids || !Array.isArray(ids) || ids.length === 0) return { count: 0 };
+    
+    const users = await User.find({ _id: { $in: ids } });
+    
+    let count = 0;
+    for (const user of users) {
+      if (!user.email) continue;
+      
+      // Send Email
+      await EmailService.sendNudgeEmail(user.email, user.name || "Student");
+      
+      // Send In-App Notification
+      await NotificationService.create({
+        userId: user._id,
+        type: "system",
+        title: "Time to Study!",
+        message: "We noticed you haven't been practicing lately. Jump back in to keep your streak alive and achieve your target score!"
+      });
+      
+      count++;
+    }
+    
+    return { count };
   }
 }
 

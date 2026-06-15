@@ -414,6 +414,44 @@ class EmailService {
 
     return this.sendEmail(to, "Payment Confirmation - Team Pillar", html, null, "payment");
   }
+
+  /**
+   * Send a study nudge email
+   * @param {string} to - Recipient email
+   * @param {string} name - User name
+   * @returns {Promise<boolean>}
+   */
+  static async sendNudgeEmail(to, name) {
+    const content = `
+      <h1>Time to level up! 🚀</h1>
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>We noticed you haven't been practicing lately. Consistency is the key to acing your exams, and Team Pillar is here to help you stay on track!</p>
+      
+      <p>Jump back in for a quick 15-minute practice session or catch up on your study planner. Every minute counts towards your academic goals.</p>
+
+      <div style="text-align: center;">
+          <a href="${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard" class="button">Resume Studying</a>
+      </div>
+      
+      <p>You've got this! Let's get back to crushing those goals.</p>
+    `;
+
+    const html = this._getBaseTemplate(
+      content,
+      "Keep the momentum going! - Team Pillar",
+      "We missed you! Jump back in and crush your goals.",
+    );
+
+    const textContent = `
+      Hello ${name},
+      We noticed you haven't been practicing lately. Consistency is the key to acing your exams!
+      Jump back in for a quick practice session.
+      Resume Studying: ${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard
+      Team Pillar
+    `;
+
+    return this.sendEmail(to, "Keep the momentum going! - Team Pillar", html, textContent, "nudge");
+  }
 }
 
 export default EmailService;
