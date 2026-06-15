@@ -2,7 +2,7 @@
 import mongoose from '../src/config/mongodb.js';
 import { connectMongoDB } from '../src/config/mongodb.js';
 
-const collections = ['users', 'questions', 'examresults', 'subscriptions', 'sessions', 'notifications'];
+const collections = ['users', 'questions', 'examresults', 'subscriptions', 'sessions', 'notifications','Exam'];
 
 async function run() {
   try {

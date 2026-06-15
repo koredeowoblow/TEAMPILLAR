@@ -77,12 +77,12 @@ class AdminService {
     users.forEach(user => {
       if (Array.isArray(user.derivedSubjects)) {
         user.derivedSubjects.forEach(id => {
-          if (id) allSubjectIds.add(String(id));
+          if (id && String(id) !== "undefined" && String(id) !== "null") allSubjectIds.add(String(id));
         });
       }
       if (Array.isArray(user.onboarding?.subjects)) {
         user.onboarding.subjects.forEach(id => {
-          if (id) allSubjectIds.add(String(id));
+          if (id && String(id) !== "undefined" && String(id) !== "null") allSubjectIds.add(String(id));
         });
       }
     });
@@ -175,7 +175,7 @@ class AdminService {
       .lean();
 
     // Build subject map for name lookups
-    const subjectIds = [...new Set(sessions.map((s) => String(s.subjectId)).filter(Boolean))];
+    const subjectIds = [...new Set(sessions.map((s) => s.subjectId && String(s.subjectId) !== "undefined" && String(s.subjectId) !== "null" ? String(s.subjectId) : null).filter(Boolean))];
     const subjects = subjectIds.length
       ? await Subject.find({ _id: { $in: subjectIds } }).select("_id name").lean()
       : [];
