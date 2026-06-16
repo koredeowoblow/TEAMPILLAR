@@ -29,23 +29,25 @@ router.get(
 router.post(
   "/questions/next",
   protectUser,
+  requireRole("STUDENT"), //RBAC added
   onboardingGuard,
   validateNextQuestions,
   handleValidationErrors,
   tryCatch(PracticeController.getNextQuestions),
 );
-router.get("/sessions", protectUser, onboardingGuard, tryCatch(PracticeController.getSessions));
+router.get("/sessions", protectUser, requireRole("STUDENT"), onboardingGuard, tryCatch(PracticeController.getSessions));
 
 // Subjects
-router.get("/subjects", protectUser, tryCatch(PracticeController.getSubjects));
+router.get("/subjects", protectUser, requireRole("STUDENT"), tryCatch(PracticeController.getSubjects));
 
 // Topics
-router.get("/topics", protectUser, onboardingGuard, tryCatch(PracticeController.getTopicsForSubject));
+router.get("/topics", protectUser, requireRole("STUDENT"), onboardingGuard, tryCatch(PracticeController.getTopicsForSubject));
 
 // Session Lifecycle
 router.post(
   "/session/start",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   validateStartSession,
   handleValidationErrors,
@@ -55,6 +57,7 @@ router.post(
 router.post(
   "/session/submit",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   validateSubmitSession,
   handleValidationErrors,
@@ -64,12 +67,13 @@ router.post(
 router.post(
   "/session/visibility",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   validateSessionVisibility,
   handleValidationErrors,
   tryCatch(PracticeController.recordVisibility),
 );
 
-router.get("/session/result/:id", protectUser, onboardingGuard, tryCatch(PracticeController.getResult));
+router.get("/session/result/:id", protectUser, requireRole("STUDENT"),onboardingGuard, tryCatch(PracticeController.getResult));
 
 export default router;

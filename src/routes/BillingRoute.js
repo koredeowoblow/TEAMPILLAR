@@ -2,6 +2,7 @@ import express from "express";
 import BillingController from "../controllers/BillingController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
 import { tryCatch } from "../utils/try-catch.js";
+import { requireRole } from "../middleware/rbac.js"; //student role added here, might be removed in the future when guardians are implemented
 
 import AdminPricingController from "../controllers/AdminPricingController.js";
 
@@ -14,6 +15,7 @@ router.get("/plans", tryCatch(AdminPricingController.getPublicPlans));
 router.post(
   "/initialize",
   protectUser,
+  requireRole("STUDENT"),
   body("planId").notEmpty().withMessage("planId is required"),
   body("billingCycle").notEmpty().withMessage("billingCycle is required"),
   handleValidationErrors,
@@ -22,12 +24,13 @@ router.post(
 router.post(
   "/subscribe",
   protectUser,
+  requireRole("STUDENT"),
   body("planId").notEmpty().withMessage("planId is required"),
   body("billingCycle").notEmpty().withMessage("billingCycle is required"),
   handleValidationErrors,
   tryCatch(BillingController.initializeSubscription),
 );
-router.get("/verify", protectUser, tryCatch(BillingController.verify));
+router.get("/verify", protectUser,requireRole("STUDENT"), tryCatch(BillingController.verify));
 router.post("/webhook", tryCatch(BillingController.webhook));
 
 export default router;

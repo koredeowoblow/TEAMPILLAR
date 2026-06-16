@@ -5,6 +5,7 @@ import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
+import { requireRole } from "../middleware/rbac.js";
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ const router = express.Router();
 router.get(
   "/schedule",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   tryCatch(PlannerController.getSchedule),
 );
@@ -20,6 +22,7 @@ router.get(
 router.post(
   "/generate",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   body("targetScore").isNumeric().withMessage("targetScore must be a number"),
   body("hoursPerDay").isNumeric().withMessage("hoursPerDay must be a number"),
@@ -34,6 +37,7 @@ router.post(
 router.post(
   "/reschedule-day",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   body("date").notEmpty().withMessage("date is required (YYYY-MM-DD)"),
   handleValidationErrors,
@@ -44,6 +48,7 @@ router.post(
 router.patch(
   "/session/:id/complete",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   tryCatch(PlannerController.markComplete),
 );

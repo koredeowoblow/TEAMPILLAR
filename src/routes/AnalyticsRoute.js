@@ -8,6 +8,7 @@ import {
   validateStudentAnalytics,
 } from "../middleware/Validation/analyticsValidation.js";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
+import { requireRole } from "../middleware/rbac.js";
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ router.get(
 router.get(
   "/student/:id",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   validateStudentAnalytics,
   handleValidationErrors,
@@ -37,10 +39,10 @@ router.get(
 );
 
 // Student Portal Analytics
-router.get("/overview", protectUser, onboardingGuard, tryCatch(AnalyticsController.getOverviewStats));
-router.get("/subjects", protectUser, onboardingGuard, tryCatch(AnalyticsController.getSubjectPerformance));
-router.get("/topics", protectUser, onboardingGuard, tryCatch(AnalyticsController.getTopicPerformance));
-router.get("/trends", protectUser, onboardingGuard, tryCatch(AnalyticsController.getPerformanceTrends));
-router.get("/trend", protectUser, onboardingGuard, tryCatch(AnalyticsController.getSessionTrend));
+router.get("/overview", protectUser, requireRole("STUDENT"), onboardingGuard, tryCatch(AnalyticsController.getOverviewStats));
+router.get("/subjects", protectUser, requireRole("STUDENT"), onboardingGuard, tryCatch(AnalyticsController.getSubjectPerformance));
+router.get("/topics", protectUser, requireRole("STUDENT"), onboardingGuard, tryCatch(AnalyticsController.getTopicPerformance));
+router.get("/trends", protectUser, requireRole("STUDENT"),  onboardingGuard, tryCatch(AnalyticsController.getPerformanceTrends));
+router.get("/trend", protectUser, requireRole("STUDENT"), onboardingGuard, tryCatch(AnalyticsController.getSessionTrend));
 
 export default router;

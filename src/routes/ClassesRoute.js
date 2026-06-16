@@ -2,12 +2,13 @@ import express from "express";
 import ClassesController from "../controllers/ClassesController.js";
 import { protectUser, protectAdmin } from "../middleware/authMiddleware.js";
 import { tryCatch } from "../utils/try-catch.js";
+import { requireRole } from "../middleware/rbac.js";
 
 const router = express.Router();
 
-router.get("/", protectUser, tryCatch(ClassesController.list));
+router.get("/", protectUser, requireRole("STUDENT"), tryCatch(ClassesController.list));
 router.post("/", protectUser, protectAdmin, tryCatch(ClassesController.create));
-router.get("/:id", protectUser, tryCatch(ClassesController.get));
+router.get("/:id", protectUser, requireRole("STUDENT"), tryCatch(ClassesController.get));
 router.put(
   "/:id",
   protectUser,

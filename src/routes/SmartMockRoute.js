@@ -9,6 +9,7 @@ import {
   validateStartSession,
   validateSubmitSession,
 } from "../middleware/Validation/practiceValidation.js";
+import { requireRole } from "../middleware/rbac.js";
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.post(
   "/generate",
   smartMockLimiter,
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   validateStartSession,
   handleValidationErrors,
@@ -43,6 +45,7 @@ router.post(
   "/submit",
   smartMockLimiter,
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   validateSubmitSession,
   handleValidationErrors,

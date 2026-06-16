@@ -10,11 +10,13 @@ const router = express.Router();
 router.post(
   "/me/onboarding",
   protectUser,
+  requireRole("STUDENT"),
   tryCatch(StudentController.updateOnboarding),
 );
 router.post(
   "/me/subjects",
   protectUser,
+  requireRole("STUDENT"),
   tryCatch(StudentController.updateSelectedSubjects),
 );
 router.get(

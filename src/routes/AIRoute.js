@@ -5,6 +5,7 @@ import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
+import { requireRole } from "../middleware/rbac.js";
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ const router = express.Router();
 router.post(
   "/explain",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   body("questionId").notEmpty().withMessage("questionId is required"),
   body("context")
@@ -26,6 +28,7 @@ router.post(
 router.post(
   "/study-plan",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   body("weakTopics")
     .optional()
@@ -38,6 +41,7 @@ router.post(
 router.post(
   "/question-insight",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   body("id").notEmpty().withMessage("id is required"),
   body("failRate").isNumeric().withMessage("failRate must be numeric"),
@@ -50,6 +54,7 @@ router.post(
 router.post(
   "/chat",
   protectUser,
+  requireRole("STUDENT"),
   onboardingGuard,
   body("message").notEmpty().withMessage("message is required"),
   body("subject").optional().isString(),
