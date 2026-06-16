@@ -5,7 +5,7 @@ export const onboardingGuard = (req, res, next) => {
     return next();
   }
   const o = req.user?.onboarding || {};
-  const emailVerified = req.user?.emailVerified === true || o.emailVerified === true;
+  const emailVerified = req.user?.emailVerified === true;
 
   // Dynamically compute the current step — never trust the stale `completed` DB field
   let currentStep = "verify-email";

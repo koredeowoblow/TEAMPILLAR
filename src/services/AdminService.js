@@ -2,6 +2,8 @@ import User from "../models/UserModel.js";
 import Subject from "../models/SubjectModel.js";
 import Question from "../models/QuestionModel.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
+import EmailService from "./emailService.js";
+import NotificationService from "./NotificationService.js";
 import { escapeRegex } from "../utils/stringUtils.js";
 import cache from "../utils/cache.js";
 
@@ -77,12 +79,12 @@ class AdminService {
     users.forEach(user => {
       if (Array.isArray(user.derivedSubjects)) {
         user.derivedSubjects.forEach(id => {
-          if (id) allSubjectIds.add(String(id));
+          if (id && String(id) !== "undefined" && String(id) !== "null") allSubjectIds.add(String(id));
         });
       }
       if (Array.isArray(user.onboarding?.subjects)) {
         user.onboarding.subjects.forEach(id => {
-          if (id) allSubjectIds.add(String(id));
+          if (id && String(id) !== "undefined" && String(id) !== "null") allSubjectIds.add(String(id));
         });
       }
     });
@@ -175,7 +177,7 @@ class AdminService {
       .lean();
 
     // Build subject map for name lookups
-    const subjectIds = [...new Set(sessions.map((s) => String(s.subjectId)).filter(Boolean))];
+    const subjectIds = [...new Set(sessions.map((s) => s.subjectId && String(s.subjectId) !== "undefined" && String(s.subjectId) !== "null" ? String(s.subjectId) : null).filter(Boolean))];
     const subjects = subjectIds.length
       ? await Subject.find({ _id: { $in: subjectIds } }).select("_id name").lean()
       : [];
@@ -526,6 +528,32 @@ class AdminService {
   static async deleteQuestion(id) {
     await Question.findByIdAndDelete(id);
     return { success: true };
+  }
+
+  static async sendReminder(ids) {
+    if (!ids || !Array.isArray(ids) || ids.length === 0) return { count: 0 };
+    
+    const users = await User.find({ _id: { $in: ids } });
+    
+    let count = 0;
+    for (const user of users) {
+      if (!user.email) continue;
+      
+      // Send Email
+      await EmailService.sendNudgeEmail(user.email, user.name || "Student");
+      
+      // Send In-App Notification
+      await NotificationService.create({
+        userId: user._id,
+        type: "system",
+        title: "Time to Study!",
+        message: "We noticed you haven't been practicing lately. Jump back in to keep your streak alive and achieve your target score!"
+      });
+      
+      count++;
+    }
+    
+    return { count };
   }
 }
 

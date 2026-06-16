@@ -1,4 +1,5 @@
 import AchievementService from "../services/AchievementService.js";
+import { userRepository } from "../repository/UserRepository.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
 import {
@@ -40,15 +41,26 @@ class AchievementController {
   }
 
   static async updateStreak(req, res) {
-    const { userId, streakCount } = req.body;
+    const userId = req.body.userId || req.user?.id;
 
-    // In many implementations, updating own streak shouldn't require userId in body (could use req.user.id),
-    // but the prompt explicitly states "Accepts userId and streakCount in the request body".
-    if (!userId || streakCount === undefined) {
-      throw new AppError("userId and streakCount are required", 400);
+    if (!userId) {
+      throw new AppError("Authentication required", 401);
     }
 
-    // Usually you'd confirm the auth user matches userId or is admin, but keeping it simple as per prompt
+    let streakCount = req.body.streakCount;
+
+    if (streakCount === undefined) {
+      const user = await userRepository.findById(userId);
+      streakCount = (user?.analytics?.streak || 0) + 1;
+      
+      if (user) {
+        if (!user.analytics) user.analytics = {};
+        user.analytics.streak = streakCount;
+        user.markModified('analytics');
+        await user.save();
+      }
+    }
+
     const updatedStreak = await AchievementService.updateStreak(
       userId,
       streakCount,

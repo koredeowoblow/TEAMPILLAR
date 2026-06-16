@@ -1,5 +1,5 @@
 import express from "express";
-import rateLimit from "express-rate-limit";
+import { generalLimiter } from "../middleware/rateLimiters.js";
 import SmartMockController from "../controllers/SmartMockController.js";
 import { protectUser } from "../middleware/authMiddleware.js";
 import { onboardingGuard } from "../middleware/onboardingGuard.js";
@@ -13,12 +13,7 @@ import { requireRole } from "../middleware/rbac.js";
 
 const router = express.Router();
 
-const smartMockLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30, // limit each user/IP to 30 requests per window
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+
 
 /**
  * @route POST /api/v1/practice/smart-mock/generate
@@ -27,7 +22,7 @@ const smartMockLimiter = rateLimit({
  */
 router.post(
   "/generate",
-  smartMockLimiter,
+  generalLimiter,
   protectUser,
   requireRole("STUDENT"),
   onboardingGuard,
@@ -43,7 +38,7 @@ router.post(
  */
 router.post(
   "/submit",
-  smartMockLimiter,
+  generalLimiter,
   protectUser,
   requireRole("STUDENT"),
   onboardingGuard,

@@ -6,8 +6,10 @@ import { tryCatch } from "../utils/try-catch.js";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
 import { requireRole } from "../middleware/rbac.js";
+import { generalLimiter } from "../middleware/rateLimiters.js";
 
 const router = express.Router();
+router.use(generalLimiter);
 
 // Generate explanation for a question
 router.post(

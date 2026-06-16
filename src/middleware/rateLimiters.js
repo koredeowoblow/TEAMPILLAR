@@ -15,15 +15,13 @@ const getStore = async (prefix) => {
 };
 
 // Initialize stores asynchronously
-let authStore, otpStore, apiStore, passwordResetStore;
+let authStore, paymentStore, chatStore, generalStore, adminStore;
 let hasWarnedFallback = false;
 
 const warnFallbackOnce = () => {
   if (hasWarnedFallback) return;
   hasWarnedFallback = true;
-  logger.warn(
-    "Rate limiter is using in-memory fallback store until Redis is ready",
-  );
+  logger.warn("Rate limiter is using in-memory fallback store until Redis is ready");
 };
 
 const attachStoresWhenRedisReady = async () => {
@@ -36,9 +34,10 @@ const attachStoresWhenRedisReady = async () => {
 
     const attach = async () => {
       authStore = await getStore("auth");
-      otpStore = await getStore("otp");
-      apiStore = await getStore("api");
-      passwordResetStore = await getStore("pwreset");
+      paymentStore = await getStore("payment");
+      chatStore = await getStore("chat");
+      generalStore = await getStore("general");
+      adminStore = await getStore("admin");
       logger.info("Rate limiter Redis stores attached");
     };
 
@@ -48,9 +47,7 @@ const attachStoresWhenRedisReady = async () => {
       client.once("ready", () => {
         attach().catch((err) => {
           warnFallbackOnce();
-          logger.error("Failed to attach rate limiter Redis stores", {
-            message: err.message,
-          });
+          logger.error("Failed to attach rate limiter Redis stores", { message: err.message });
         });
       });
       warnFallbackOnce();
@@ -58,9 +55,10 @@ const attachStoresWhenRedisReady = async () => {
 
     client.on("end", () => {
       authStore = undefined;
-      otpStore = undefined;
-      apiStore = undefined;
-      passwordResetStore = undefined;
+      paymentStore = undefined;
+      chatStore = undefined;
+      generalStore = undefined;
+      adminStore = undefined;
       warnFallbackOnce();
     });
   } catch (_err) {
@@ -73,20 +71,24 @@ const attachStoresWhenRedisReady = async () => {
 })();
 
 const handler = (req, res, _next, options) => {
+  // Add Retry-After header based on windowMs
+  const retryAfter = Math.ceil(options.windowMs / 1000);
+  res.setHeader("Retry-After", retryAfter);
+  
   res.status(options.statusCode).json({
     success: false,
     message: options.message,
+    retryAfter: retryAfter
   });
 };
 
-// Strict rate limiter for login
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // 10 attempts per window
-  message: "Too many attempts from this IP, please try again after 15 minutes",
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: "Too many failed attempts. Please try again in 15 minutes.",
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: false,
+  skipSuccessfulRequests: true,
   skip: () => process.env.NODE_ENV === "test",
   handler,
   get store() {
@@ -95,64 +97,62 @@ export const authLimiter = rateLimit({
   },
 });
 
-// Rate limiter for user registration (strict)
-export const registrationLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // 5 attempts per window
-  message: "Too many registration attempts, please try again after an hour",
+export const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: "Too many failed payment attempts. Please try again in 15 minutes.",
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: false,
+  skipSuccessfulRequests: true,
   skip: () => process.env.NODE_ENV === "test",
   handler,
   get store() {
-    if (!authStore) warnFallbackOnce();
-    return authStore;
+    if (!paymentStore) warnFallbackOnce();
+    return paymentStore;
   },
 });
 
-// Rate limiter for OTP verification (stricter)
-export const otpLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 3, // 3 attempts per window
-  message: "Too many verification attempts, please try again after 15 minutes",
+export const chatLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 60,
+  message: "Too many messages sent. Please slow down.",
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: false,
+  skipSuccessfulRequests: true,
   skip: () => process.env.NODE_ENV === "test",
   handler,
   get store() {
-    if (!otpStore) warnFallbackOnce();
-    return otpStore;
+    if (!chatStore) warnFallbackOnce();
+    return chatStore;
   },
 });
 
-// General API rate limiter
-export const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requests per 15 mins
-  message: "Too many requests from this IP, please slow down",
+export const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many failed requests. Please try again in 15 minutes.",
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true,
   skip: () => process.env.NODE_ENV === "test",
   handler,
   get store() {
-    if (!apiStore) warnFallbackOnce();
-    return apiStore;
+    if (!generalStore) warnFallbackOnce();
+    return generalStore;
   },
 });
 
-// Password reset rate limiter (prevent abuse)
-export const passwordResetLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // 5 password reset requests per hour
-  message: "Too many password reset requests, please try again later",
+export const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: "Too many failed admin requests. Please try again in 15 minutes.",
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true,
   skip: () => process.env.NODE_ENV === "test",
   handler,
   get store() {
-    if (!passwordResetStore) warnFallbackOnce();
-    return passwordResetStore;
+    if (!adminStore) warnFallbackOnce();
+    return adminStore;
   },
 });

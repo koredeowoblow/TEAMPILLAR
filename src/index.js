@@ -3,7 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import compression from "compression";
 import mongoSanitize from "express-mongo-sanitize";
-import { apiLimiter } from "./middleware/rateLimiter.js";
+
 import cron from "node-cron";
 import { logger } from "./core/logger.js";
 import "./config/env.js";
@@ -34,6 +34,8 @@ import { checkMaintenance } from "./middleware/maintenanceMiddleware.js";
 import PlatformSettings from "./models/PlatformSettingsModel.js";
 import { timingMiddleware } from "./middleware/timing.middleware.js";
 import { startHealthMonitor } from "./utils/healthMonitor.js";
+import { initSocket } from "./config/socket.js";
+import "./queues/supportQueue.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";
@@ -159,9 +161,7 @@ app.get("/health", healthCheckHandler);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// API Router
 const apiRouter = express.Router();
-apiRouter.use(apiLimiter);
 apiRouter.use(checkMaintenance);
 app.use("/api/v1", apiRouter);
 
@@ -266,6 +266,8 @@ async function bootstrap() {
       logger.info(`Server running on port ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV}`);
     });
+
+    initSocket(server);
 
     server.setTimeout(SOCKET_TIMEOUT_MS);
     server.requestTimeout = REQUEST_TIMEOUT_MS;

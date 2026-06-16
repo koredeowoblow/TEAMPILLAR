@@ -2,8 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { escapeRegex } from "../utils/stringUtils.js";
-import EmailService from "./emailService.js";
-import OTPService from "./OTPService.js";
+import NotificationOrchestrator from "./NotificationOrchestrator.js";
 import { AppError } from "../utils/AppError.js";
 import { userRepository } from "../repository/UserRepository.js";
 import AuthRepository from "../repository/AuthRepository.js";
@@ -92,15 +91,14 @@ class AuthService {
     });
 
     try {
-      const otp = await OTPService.storeOTP(email, "email_verification", 10);
-      await EmailService.sendEmailVerificationOTP(email, otp, displayName);
+      await NotificationOrchestrator.sendEmailVerification(email, displayName);
     } catch (err) {
       logger.error("OTP send failed", { message: err.message });
     }
 
     setImmediate(async () => {
       try {
-        await EmailService.sendWelcomeEmail(newUser.email, newUser.name);
+        await NotificationOrchestrator.sendWelcomeEmail(newUser.email, newUser.name);
       } catch (err) {
         logger.error("Welcome email failed", { message: err.message });
       }
@@ -131,7 +129,7 @@ class AuthService {
 
   // ================= EMAIL VERIFICATION =================
   static async verifyEmail(email, otp) {
-    const verification = await OTPService.verifyOTP(email, otp, "email_verification");
+    const verification = await NotificationOrchestrator.verifyEmailOTP(email, otp);
     if (!verification.valid) {
       throw new AppError(verification.message || "Invalid or expired verification code", 400);
     }
@@ -143,10 +141,6 @@ class AuthService {
 
     userDoc.emailVerified = true;
     userDoc.emailVerifiedAt = new Date();
-    if (!userDoc.onboarding) {
-      userDoc.onboarding = {};
-    }
-    userDoc.onboarding.emailVerified = true;
     await userDoc.save();
 
     // Generate tokens immediately so user is logged in
@@ -178,12 +172,11 @@ class AuthService {
       throw new AppError("User not found", 404);
     }
 
-    if (userDoc.emailVerified || userDoc.onboarding?.emailVerified) {
+    if (userDoc.emailVerified) {
       throw new AppError("Email already verified", 400);
     }
 
-    const otp = await OTPService.storeOTP(email, "email_verification", 10);
-    await EmailService.sendEmailVerificationOTP(email, otp, userDoc.name || "");
+    await NotificationOrchestrator.sendEmailVerification(email, userDoc.name || "");
 
     return {
       message: "Verification code resent! Check your email.",
@@ -297,8 +290,7 @@ class AuthService {
     const user = await userRepository.findByEmail(email, { lean: true, select: "_id" });
     if (!user) throw new AppError("Request failed", 404);
 
-    const otp = await OTPService.storeOTP(email, "password_reset", 15);
-    await EmailService.sendTokenEmail(email, otp, "Password Reset");
+    await NotificationOrchestrator.sendPasswordResetOTP(email);
 
     return { message: "Reset code sent" };
   }
@@ -309,11 +301,7 @@ class AuthService {
     const user = await userRepository.findByEmail(email);
     if (!user) throw new AppError("Request failed", 404);
 
-    const verification = await OTPService.verifyOTP(
-      email,
-      otp,
-      "password_reset",
-    );
+    const verification = await NotificationOrchestrator.verifyPasswordOTP(email, otp);
 
     if (!verification.valid) {
       throw new AppError(verification.message, 400);

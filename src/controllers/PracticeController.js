@@ -1,4 +1,4 @@
-import PracticeService from "../services/PracticeService.js";
+import PracticeService from "../services/practice/index.js";
 import AdaptiveEngineService from "../services/AdaptiveEngineService.js";
 import { questionRepository } from "../repository/QuestionRepository.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
@@ -200,26 +200,7 @@ class PracticeController {
       CONSTANTS.PAGINATION.MAX_LIMIT,
     );
 
-    // Enforce question count restriction for free-tier users
-    const isPro = req.user?.isPro === true || 
-                 req.user?.subscription === "pro" || 
-                 req.user?.subscriptionStatus === "active" || 
-                 ["ADMIN", "TUTOR"].includes(req.user?.role);
-    
-    // Check subject limit for free users
-    const requestedSubjects = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
-    if (!isPro && requestedSubjects.length > 2) {
-      throw new AppError(`Subject Limit Reached: Free users can select up to 2 subjects (you selected ${requestedSubjects.length}). Upgrade to Pro for all subjects!`, 403);
-    }
 
-    // Check TOTAL question limit for free users
-    const totalRequestedQuestions = questionLimit * requestedSubjects.length;
-    if (!isPro && totalRequestedQuestions > 40) {
-      throw new AppError(
-        `Question Limit Reached: Free users are limited to 40 questions total for multi-subject sessions. You requested ${totalRequestedQuestions}. Upgrade to Pro!`,
-        403,
-      );
-    }
 
     const session = await PracticeService.startSession(userId, subjectId, questionLimit, subjectIds, topic);
 

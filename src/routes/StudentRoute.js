@@ -4,8 +4,10 @@ import { protectUser } from "../middleware/authMiddleware.js";
 import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { requireRole } from "../middleware/rbac.js"
+import { generalLimiter } from "../middleware/rateLimiters.js";
 
 const router = express.Router();
+router.use(generalLimiter);
 
 router.post(
   "/me/onboarding",

@@ -53,7 +53,7 @@ class AuthController {
     });
 
     const o = user.onboarding || {};
-    const emailVerified = user.emailVerified === true || o.emailVerified === true;
+    const emailVerified = user.emailVerified === true;
     let currentStep = "verify-email";
     if (emailVerified)      currentStep = "subject-selection";
     if (o.subjectsSelected) currentStep = "target-score";
@@ -385,7 +385,7 @@ class AuthController {
     }
 
     const o = result.user?.onboarding || {};
-    const emailVerified = result.user?.emailVerified === true || o.emailVerified === true;
+    const emailVerified = result.user?.emailVerified === true;
     let currentStep = "verify-email";
     if (emailVerified)      currentStep = "subject-selection";
     if (o.subjectsSelected) currentStep = "target-score";
@@ -431,7 +431,7 @@ class AuthController {
     }
 
     const o2 = result.user?.onboarding || {};
-    const emailVerified2 = result.user?.emailVerified === true || o2.emailVerified === true;
+    const emailVerified2 = result.user?.emailVerified === true;
     let currentStep2 = "verify-email";
     if (emailVerified2)      currentStep2 = "subject-selection";
     if (o2.subjectsSelected) currentStep2 = "target-score";
@@ -524,7 +524,7 @@ class AuthController {
     }
 
     const o = user.onboarding || {};
-    const emailVerified = user.emailVerified === true || o.emailVerified === true;
+    const emailVerified = user.emailVerified === true;
     let currentStep = "verify-email";
     if (emailVerified)      currentStep = "subject-selection";
     if (o.subjectsSelected) currentStep = "target-score";
