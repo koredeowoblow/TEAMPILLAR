@@ -73,7 +73,7 @@ if (process.env.NODE_ENV === "production") {
 const app = express();
 app.use(timingMiddleware);
 
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 app.use(enforceSecureTransport);
 app.use(applySecurityHeaders);
 
