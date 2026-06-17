@@ -4,6 +4,7 @@ import { AI_MODELS } from "../config/aiModels.js";
 import { logger } from "../core/logger.js";
 import AITutorSession from "../models/AITutorSessionModel.js";
 import AITutorMessage from "../models/AITutorMessageModel.js";
+import mongoose from "mongoose";
 
 const groq = process.env.GROQ_API_KEY
   ? new Groq({ apiKey: process.env.GROQ_API_KEY })
@@ -489,7 +490,7 @@ JSON Schema:
     const staticFallback = fallbacksBySubject[activeSubject] || fallbacksBySubject.General;
 
     let session;
-    if (sessionId) {
+    if (sessionId && mongoose.Types.ObjectId.isValid(sessionId)) {
       session = await AITutorSession.findById(sessionId);
     }
     
