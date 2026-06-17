@@ -45,20 +45,23 @@ class MockTestService {
     const redisClient = await getRedisClient();
     const sessionAnswers = {};
 
-    // Query 40 questions per subject
+    // Query 60 questions for English, 40 for other subjects
     for (const subjectId of mockSubjects) {
       let questions = [];
+      const isEnglish = subjectMap[subjectId.toString()]?.name?.toLowerCase().includes("english");
+      const requiredQuestions = isEnglish ? 60 : 40;
+
       const poolKeys = await redisClient.keys(`pool:subject:${subjectId}:*`);
       if (poolKeys && poolKeys.length > 0) {
         const randomKey = poolKeys[Math.floor(Math.random() * poolKeys.length)];
         const poolData = await redisClient.get(randomKey);
-        if (poolData) questions = JSON.parse(poolData).slice(0, 40);
+        if (poolData) questions = JSON.parse(poolData).slice(0, requiredQuestions);
       }
 
-      if (questions.length < 40) {
+      if (questions.length < requiredQuestions) {
         questions = await Question.aggregate([
           { $match: { subjectId: new mongoose.Types.ObjectId(subjectId), "metadata.difficulty": { $in: ["easy", "medium", "hard"] } } },
-          { $sample: { size: 40 } }
+          { $sample: { size: requiredQuestions } }
         ]);
       }
       
