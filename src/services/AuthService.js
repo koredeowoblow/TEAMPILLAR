@@ -295,6 +295,15 @@ class AuthService {
     return { message: "Reset code sent" };
   }
 
+  static async adminTriggerPasswordReset(userId) {
+    const user = await userRepository.findById(userId, { lean: true, select: "email" });
+    if (!user) throw new AppError("User not found", 404);
+
+    await NotificationOrchestrator.sendPasswordResetOTP(user.email);
+
+    return { message: "Reset code sent" };
+  }
+
   static async resetPassword(email, otp, newPassword) {
     this.validatePassword(newPassword);
 
