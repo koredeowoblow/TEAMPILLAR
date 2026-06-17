@@ -207,11 +207,14 @@ class AdminService {
     // Score history — deduplicated by date, most recent last
     const scoreHistory = [...sessions]
       .reverse()
-      .map((s) => ({
-        date: new Date(s.createdAt).toISOString().split("T")[0],
-        score: s.score || 0,
-        subject: subjectMap[String(s.subjectId)] || "Unknown",
-      }));
+      .map((s) => {
+        const isMock = s.sessionType === "smart-mock" || !s.subjectId;
+        return {
+          date: new Date(s.createdAt).toISOString().split("T")[0],
+          score: s.score || 0,
+          subject: isMock ? "Full Mock" : (subjectMap[String(s.subjectId)] || "Unknown"),
+        };
+      });
 
     // Weak topics — ranked by frequency of topMistakeTopic across sessions
     const topicCounts = {};
@@ -234,12 +237,15 @@ class AdminService {
 
     // Recent sessions — last 10, formatted for the UI table
     const recentSessions = sessions.slice(0, 10).map((s) => {
-      const accuracy = s.analytics?.accuracy ?? null;
+      const isMock = s.sessionType === "smart-mock" || !s.subjectId;
       const score = s.score || 0;
+      const maxScore = isMock ? 400 : 100;
+      const pct = (score / maxScore) * 100;
+      
       let status = "On Track";
       let statusColor = "bg-green-50 text-green-600";
-      if (score < 40) { status = "Needs Review"; statusColor = "bg-amber-50 text-amber-600"; }
-      if (score >= 80) { status = "Excellent"; statusColor = "bg-green-50 text-green-600"; }
+      if (pct < 40) { status = "Needs Review"; statusColor = "bg-amber-50 text-amber-600"; }
+      if (pct >= 80) { status = "Excellent"; statusColor = "bg-green-50 text-green-600"; }
 
       const durationMs = s.endTime && s.startTime
         ? new Date(s.endTime) - new Date(s.startTime)
@@ -250,9 +256,9 @@ class AdminService {
 
       return {
         date: new Date(s.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
-        subject: subjectMap[String(s.subjectId)] || "Practice",
+        subject: isMock ? "Full Mock" : (subjectMap[String(s.subjectId)] || "Practice"),
         sessionType: s.sessionType || "standard",
-        score: `${score}/100`,
+        score: `${score}/${maxScore}`,
         timeSpent,
         status,
         statusColor,
@@ -262,11 +268,17 @@ class AdminService {
     // Subject performance averages
     const subjectScores = {};
     for (const s of sessions) {
-      const subjId = String(s.subjectId || "Unknown");
+      const isMock = s.sessionType === "smart-mock" || !s.subjectId;
+      const subjId = isMock ? "mock" : String(s.subjectId || "Unknown");
+      const name = isMock ? "Full Mock" : (subjectMap[subjId] || subjId);
+      
       if (!subjectScores[subjId]) {
-        subjectScores[subjId] = { scores: [], name: subjectMap[subjId] || subjId };
+        subjectScores[subjId] = { scores: [], name };
       }
-      subjectScores[subjId].scores.push(s.score || 0);
+      
+      // Normalize mock scores to percentage (out of 100) for the subject performance bars
+      const normalizedScore = isMock ? Math.round(((s.score || 0) / 400) * 100) : (s.score || 0);
+      subjectScores[subjId].scores.push(normalizedScore);
     }
     const subjectPerformance = Object.values(subjectScores).map((data) => {
       const avg = data.scores.length
