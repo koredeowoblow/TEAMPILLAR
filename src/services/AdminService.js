@@ -193,28 +193,57 @@ class AdminService {
     const sessions = await PracticeSession.find({ userId: id })
       .sort({ createdAt: -1 })
       .limit(50)
-      .select("score subjectId analytics.topMistakeTopic analytics.accuracy sessionType startTime endTime createdAt questionLimit")
+      .select("score subjectId subjectIds subjectScores analytics.topMistakeTopic analytics.accuracy sessionType startTime endTime createdAt questionLimit")
       .lean();
 
     // Build subject map for name lookups
-    const subjectIds = [...new Set(sessions.map((s) => s.subjectId && String(s.subjectId) !== "undefined" && String(s.subjectId) !== "null" ? String(s.subjectId) : null).filter(Boolean))];
-    const subjects = subjectIds.length
-      ? await Subject.find({ _id: { $in: subjectIds } }).select("_id name").lean()
+    const subjectIdSet = new Set();
+    sessions.forEach((s) => {
+      if (s.subjectId && String(s.subjectId) !== "undefined" && String(s.subjectId) !== "null") {
+        subjectIdSet.add(String(s.subjectId));
+      }
+      if (Array.isArray(s.subjectIds)) {
+        s.subjectIds.forEach(id => {
+          if (id && String(id) !== "undefined" && String(id) !== "null") subjectIdSet.add(String(id));
+        });
+      }
+      if (Array.isArray(s.subjectScores)) {
+        s.subjectScores.forEach(sub => {
+          if (sub.subjectId && String(sub.subjectId) !== "undefined" && String(sub.subjectId) !== "null") {
+            subjectIdSet.add(String(sub.subjectId));
+          }
+        });
+      }
+    });
+    
+    const subjects = subjectIdSet.size
+      ? await Subject.find({ _id: { $in: Array.from(subjectIdSet) } }).select("_id name").lean()
       : [];
     const subjectMap = {};
     subjects.forEach((s) => { subjectMap[String(s._id)] = s.name; });
 
     // Score history — deduplicated by date, most recent last
-    const scoreHistory = [...sessions]
-      .reverse()
-      .map((s) => {
-        const isMock = s.sessionType === "smart-mock" || !s.subjectId;
-        return {
-          date: new Date(s.createdAt).toISOString().split("T")[0],
+    const scoreHistory = [];
+    [...sessions].reverse().forEach((s) => {
+      const date = new Date(s.createdAt).toISOString().split("T")[0];
+      const isMock = s.sessionType === "smart-mock" || !s.subjectId;
+      
+      if (isMock && Array.isArray(s.subjectScores) && s.subjectScores.length > 0) {
+        s.subjectScores.forEach((sub) => {
+          scoreHistory.push({
+            date,
+            score: sub.score || 0,
+            subject: subjectMap[String(sub.subjectId)] || sub.subjectName || "Unknown",
+          });
+        });
+      } else {
+        scoreHistory.push({
+          date,
           score: s.score || 0,
           subject: isMock ? "Full Mock" : (subjectMap[String(s.subjectId)] || "Unknown"),
-        };
-      });
+        });
+      }
+    });
 
     // Weak topics — ranked by frequency of topMistakeTopic across sessions
     const topicCounts = {};
@@ -266,21 +295,29 @@ class AdminService {
     });
 
     // Subject performance averages
-    const subjectScores = {};
+    const subjectScoresMap = {};
     for (const s of sessions) {
       const isMock = s.sessionType === "smart-mock" || !s.subjectId;
-      const subjId = isMock ? "mock" : String(s.subjectId || "Unknown");
-      const name = isMock ? "Full Mock" : (subjectMap[subjId] || subjId);
       
-      if (!subjectScores[subjId]) {
-        subjectScores[subjId] = { scores: [], name };
+      if (isMock && Array.isArray(s.subjectScores) && s.subjectScores.length > 0) {
+        for (const sub of s.subjectScores) {
+          const subjId = String(sub.subjectId || "Unknown");
+          const name = subjectMap[subjId] || sub.subjectName || "Unknown";
+          if (!subjectScoresMap[subjId]) {
+            subjectScoresMap[subjId] = { scores: [], name };
+          }
+          subjectScoresMap[subjId].scores.push(sub.score || 0);
+        }
+      } else {
+        const subjId = String(s.subjectId || "Unknown");
+        const name = subjectMap[subjId] || subjId;
+        if (!subjectScoresMap[subjId]) {
+          subjectScoresMap[subjId] = { scores: [], name };
+        }
+        subjectScoresMap[subjId].scores.push(s.score || 0);
       }
-      
-      // Normalize mock scores to percentage (out of 100) for the subject performance bars
-      const normalizedScore = isMock ? Math.round(((s.score || 0) / 400) * 100) : (s.score || 0);
-      subjectScores[subjId].scores.push(normalizedScore);
     }
-    const subjectPerformance = Object.values(subjectScores).map((data) => {
+    const subjectPerformance = Object.values(subjectScoresMap).map((data) => {
       const avg = data.scores.length
         ? Math.round(data.scores.reduce((a, b) => a + b, 0) / data.scores.length)
         : 0;
