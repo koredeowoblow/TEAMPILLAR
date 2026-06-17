@@ -299,20 +299,28 @@ Synthesize complex platform metrics into a high-impact executive briefing for th
       ai: { used: false, model: "none", fallback: true }
     };
 
-    if (data.weakTopics?.length > 0 || data.averageScore > 0) {
-      const topics = data.weakTopics.map(t => t.name || t.topic).join(", ");
+    if (data.priorityRecommendations?.length > 0 || data.averageScore > 0) {
+      const topPriorities = (data.priorityRecommendations || []).slice(0, 3).map(p => `${p.topic} (Gain: ${p.potentialGain})`).join(", ");
+      
+      const systemPrompt = `You are a UTME (JAMB) academic strategist.
+Your task is to write a 2-paragraph motivational and tactical summary for a student.
+Explain WHY focusing on the provided top 3 priority topics will mathematically bridge the gap from their current score to their target score.
+DO NOT invent new metrics or hallucinate topics. Use only the data provided. Use markdown for bolding key terms.`;
+
+      const userPrompt = `### STUDENT PROFILE:
+Current Average Score: ${data.averageScore}%
+Target UTME Score: ${data.targetScore}
+Top 3 Priority Topics: ${topPriorities || 'None identified yet'}
+
+### TASK:
+Write the 2-paragraph tactical summary.`;
+
       const messages = [
-        {
-          role: "system",
-          content: "### ROLE: SENIOR PSYCHOMETRIC ANALYST. Identify strengths/weaknesses and provide 1% Rule strategy."
-        },
-        {
-          role: "user",
-          content: `Current Avg: ${data.averageScore}% | Target: ${data.targetScore} | Topics: ${topics}. Structure: 1. Summary, 2. Priority Topics, 3. Strategy Shift.`
-        }
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
       ];
 
-      const aiResponse = await this._callAIWithFallback(messages, { max_tokens: 300 });
+      const aiResponse = await this._callAIWithFallback(messages, { max_tokens: 400 });
 
       if (aiResponse.content) {
         result.tips = aiResponse.content;

@@ -390,15 +390,16 @@ class AnalyticsService {
       focusAreas = preGenerated.focusAreas || [];
       priorityRecommendations = preGenerated.priorityRecommendations || [];
     } else {
+      focusAreas = await FocusAreaAnalysisService.getOrCreateFocusAreas(userId);
+      priorityRecommendations = FocusAreaAnalysisService.getRecommendations(userId, focusAreas);
+
       aiRecommendations = await AIService.generateStudentInsights({
         userId,
         averageScore: avgScore,
         targetScore: user.onboarding?.targetScore || 280,
         weakTopics: weakTopicsList,
+        priorityRecommendations,
       });
-
-      focusAreas = await FocusAreaAnalysisService.getOrCreateFocusAreas(userId);
-      priorityRecommendations = FocusAreaAnalysisService.getRecommendations(userId, focusAreas);
     }
 
     return {

@@ -93,6 +93,9 @@ class FocusAreaAnalysisService {
       const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
       const averageTime = Math.round(perf.averageTimeSpent || 0);
 
+      const confidence = Math.min(1.0, attempted / 10);
+      const estimatedScoreGain = Math.round( ((100 - accuracy) / 100) * 12 * confidence );
+
       // Get programmatic weak subtopics (Weak Concepts)
       const subTopicCounts = incorrectSubTopicsMap[topicName] || {};
       const topicsToReview = Object.entries(subTopicCounts)
@@ -117,8 +120,7 @@ class FocusAreaAnalysisService {
 
       let aiAnalysis = {
         commonWeakness: `Difficulty applying formula/core concepts in ${topicName}.`,
-        recommendation: `Complete a practice set of 15 questions in ${topicName}.`,
-        estimatedScoreGain: accuracy < 50 ? 15 : 8
+        recommendation: `Complete a practice set of 15 questions in ${topicName}.`
       };
 
       if (needsRegeneration) {
@@ -130,8 +132,7 @@ Do NOT wrap your JSON response in markdown blocks like \`\`\`json. Output raw JS
 Your response MUST be a single valid JSON object containing exactly the following keys:
 {
   "commonWeakness": "A single sentence explaining the conceptual weakness (e.g. 'Struggling to relate voltage and current in series circuits').",
-  "recommendation": "A specific practice action (e.g. 'Complete 15 practice questions focused on Ohm\\'s Law formula').",
-  "estimatedScoreGain": 12
+  "recommendation": "A specific practice action (e.g. 'Complete 15 practice questions focused on Ohm\\'s Law formula')."
 }`;
 
           const userPrompt = `### INPUT METRICS:
@@ -143,7 +144,7 @@ AVERAGE TIME SPENT: ${averageTime} seconds
 WEAK CONCEPTS FOUND: ${topicsToReview.join(", ")}
 
 ### TASK:
-Generate conceptual insight and estimated score gain (number in marks, max 25).`;
+Generate conceptual insight and specific practice recommendation.`;
 
           const response = await AIService._callAIWithFallback([
             { role: "system", content: systemPrompt },
@@ -161,8 +162,7 @@ Generate conceptual insight and estimated score gain (number in marks, max 25).`
 
             aiAnalysis = {
               commonWeakness: parsed.commonWeakness || aiAnalysis.commonWeakness,
-              recommendation: parsed.recommendation || aiAnalysis.recommendation,
-              estimatedScoreGain: Number(parsed.estimatedScoreGain) || aiAnalysis.estimatedScoreGain
+              recommendation: parsed.recommendation || aiAnalysis.recommendation
             };
 
             // Save to DB
@@ -183,8 +183,7 @@ Generate conceptual insight and estimated score gain (number in marks, max 25).`
       } else {
         aiAnalysis = {
           commonWeakness: insight.analysis.commonWeakness || aiAnalysis.commonWeakness,
-          recommendation: insight.analysis.recommendation || aiAnalysis.recommendation,
-          estimatedScoreGain: insight.analysis.estimatedScoreGain || aiAnalysis.estimatedScoreGain
+          recommendation: insight.analysis.recommendation || aiAnalysis.recommendation
         };
       }
 
@@ -199,7 +198,8 @@ Generate conceptual insight and estimated score gain (number in marks, max 25).`
         commonWeakness: aiAnalysis.commonWeakness,
         topicsToReview,
         recommendation: aiAnalysis.recommendation,
-        estimatedScoreGain: aiAnalysis.estimatedScoreGain
+        estimatedScoreGain,
+        lowConfidence: attempted < 3
       });
     }
 
@@ -222,13 +222,20 @@ Generate conceptual insight and estimated score gain (number in marks, max 25).`
     return ranked.map((item, idx) => {
       // Recommend a question limit proportional to weakness level
       const recommendedCount = item.accuracy < 40 ? 25 : (item.accuracy < 60 ? 15 : 10);
+      
+      let potentialGainString = `+${item.estimatedScoreGain} marks`;
+      if (item.attempted < 3) {
+        potentialGainString = `+${item.estimatedScoreGain} marks (need more data)`;
+      }
+
       return {
         priority: idx + 1,
         topic: item.topic,
         subjectId: item.subjectId,
         reason: `${item.accuracy}% accuracy over ${item.attempted} attempts indicates significant room for mastery.`,
-        potentialGain: `+${item.estimatedScoreGain} marks`,
-        recommendedQuestionCount: recommendedCount
+        potentialGain: potentialGainString,
+        recommendedQuestionCount: recommendedCount,
+        lowConfidence: item.attempted < 3
       };
     });
   }
