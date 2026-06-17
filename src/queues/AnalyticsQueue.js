@@ -5,29 +5,37 @@ import Question from "../models/QuestionModel.js";
 import UserAnalytics from "../models/UserAnalyticsModel.js";
 import AIService from "../services/AIService.js";
 import { logger } from "../core/logger.js";
+import { Queue, Worker } from "bullmq";
+import "../config/env.js";
 
-const queue = [];
-let isProcessing = false;
+const hostParts = process.env.REDIS_HOST ? process.env.REDIS_HOST.split(":") : ["127.0.0.1"];
+const host = hostParts[0];
+const port = process.env.REDIS_PORT || hostParts[1] || 6379;
+const password = process.env.REDIS_PASSWORD || undefined;
+
+const connection = { host, port, password };
+
+export const analyticsQueue = new Queue("analytics", { connection });
 
 function addAnalyticsJob(userId, sessionId) {
-  // Prevent duplicate user jobs in the queue to avoid redundant API hits
-  if (queue.some(job => String(job.userId) === String(userId))) {
-    logger.info(`Analytics job for user ${userId} already in queue. Skipping duplicate.`);
-    return;
-  }
-  queue.push({ userId, sessionId, addedAt: new Date() });
-  logger.info(`Queued analytics job for user ${userId}, session ${sessionId}. Current queue length: ${queue.length}`);
+  // Using jobId based on userId ensures we don't have duplicate analytics jobs running concurrently for the same user
+  analyticsQueue.add("analytics.process", { userId, sessionId }, {
+    jobId: `analytics-${userId}`,
+    removeOnComplete: true,
+    removeOnFail: false,
+    attempts: 3,
+    backoff: { type: "exponential", delay: 5000 }
+  }).catch((err) => {
+    logger.error(`Failed to queue analytics job for user ${userId}:`, { error: err.message });
+  });
+  logger.info(`Queued analytics job for user ${userId}, session ${sessionId}.`);
 }
 
-async function processQueue() {
-  if (isProcessing || queue.length === 0) return;
-
-  isProcessing = true;
-  const job = queue.shift();
-  logger.info(`Processing analytics job for user ${job.userId}...`);
+export const analyticsWorker = new Worker("analytics", async (job) => {
+  logger.info(`Processing analytics job for user ${job.data.userId}...`);
 
   try {
-    const { userId } = job;
+    const { userId } = job.data;
     
     // 1. Fetch user & target score
     const user = await User.findById(userId).lean();
@@ -243,18 +251,18 @@ Please generate the tips, fill in the AI-generated fields for the focusAreas (co
     }
 
   } catch (error) {
-    logger.error(`Error processing analytics job for user ${job.userId}: ${error.message}`);
-  } finally {
-    isProcessing = false;
-    // Schedule next processing check immediately to clear the queue
-    setTimeout(processQueue, 100);
+    logger.error(`Error processing analytics job for user ${job.data.userId}: ${error.message}`);
+    throw error; // Throw so BullMQ can retry
   }
-}
+}, { 
+  connection,
+  concurrency: 5 // Rate limit Groq API concurrency
+});
 
-// Run queue processor loop every 12 seconds
-const queueInterval = setInterval(processQueue, 12000);
-if (queueInterval && typeof queueInterval.unref === "function") {
-  queueInterval.unref();
-}
+analyticsWorker.on('failed', (job, err) => {
+  logger.error(`Analytics job ${job?.id} failed: ${err.message}`);
+});
 
-export { addAnalyticsJob, processQueue };
+logger.info("Analytics BullMQ worker initialized");
+
+export { addAnalyticsJob };

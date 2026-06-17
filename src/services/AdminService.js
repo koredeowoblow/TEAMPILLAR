@@ -6,6 +6,8 @@ import EmailService from "./emailService.js";
 import NotificationService from "./NotificationService.js";
 import { escapeRegex } from "../utils/stringUtils.js";
 import cache from "../utils/cache.js";
+import AITutorSession from "../models/AITutorSessionModel.js";
+import AITutorMessage from "../models/AITutorMessageModel.js";
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -33,14 +35,32 @@ class AdminService {
           pipeline: [
             { $match: { $expr: { $eq: ["$userId", "$$userId"] } } },
             { $sort: { createdAt: -1 } },
+            { $limit: 50 },
             { $project: { score: 1, subjectId: 1 } } // Fetch only required fields
           ],
           as: "sessions"
         }
       },
       {
+        $lookup: {
+          from: "practicesessions",
+          let: { userId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$userId", "$$userId"] } } },
+            { $count: "total" }
+          ],
+          as: "sessionCountArray"
+        }
+      },
+      {
         $addFields: {
-          sessionCount: { $size: "$sessions" },
+          sessionCount: { 
+            $cond: { 
+              if: { $gt: [{ $size: "$sessionCountArray" }, 0] }, 
+              then: { $arrayElemAt: ["$sessionCountArray.total", 0] }, 
+              else: 0 
+            } 
+          },
           avgPercent: {
             $cond: {
               if: { $gt: [{ $size: "$sessions" }, 0] },
@@ -89,10 +109,10 @@ class AdminService {
       }
     });
 
-    const subjects = allSubjectIds.size > 0 
-      ? await Subject.find({ _id: { $in: Array.from(allSubjectIds) } }).select("_id name").lean() 
+    const subjects = allSubjectIds.size > 0
+      ? await Subject.find({ _id: { $in: Array.from(allSubjectIds) } }).select("_id name").lean()
       : [];
-    
+
     const subjectMap = {};
     subjects.forEach((subject) => {
       subjectMap[String(subject._id)] = subject.name;
@@ -219,7 +239,7 @@ class AdminService {
       let status = "On Track";
       let statusColor = "bg-green-50 text-green-600";
       if (score < 40) { status = "Needs Review"; statusColor = "bg-amber-50 text-amber-600"; }
-      if (score >= 80) { status = "Excellent";   statusColor = "bg-green-50 text-green-600"; }
+      if (score >= 80) { status = "Excellent"; statusColor = "bg-green-50 text-green-600"; }
 
       const durationMs = s.endTime && s.startTime
         ? new Date(s.endTime) - new Date(s.startTime)
@@ -277,6 +297,98 @@ class AdminService {
     const updated = await User.findByIdAndUpdate(id, data, { new: true });
     await cache.del("admin:dashboard:stats");
     return updated;
+  }
+
+  static async getStudentPracticeSetup(studentId) {
+    const user = await User.findById(studentId).lean();
+    if (!user) throw new Error("Student not found");
+
+    const isPro = user.subscription?.status === "active" || user.role === "PRO"; // Adjust based on your pro logic
+
+    // Find all subjects
+    const allSubjects = await Subject.find().select("_id name code description questionCount").lean();
+
+    // Determine the student's enrolled subjects
+    const onboardingSubjects = user.onboarding?.subjects || user.selectedSubjects || [];
+    const onboardingSubjectIds = (Array.isArray(onboardingSubjects) ? onboardingSubjects : [])
+      .map(s => String(typeof s === "object" ? s._id || s.id : s))
+      .filter(Boolean);
+
+    let enrolledSubjects = allSubjects;
+    if (onboardingSubjectIds.length > 0) {
+      enrolledSubjects = allSubjects.filter(s => onboardingSubjectIds.includes(String(s._id)));
+    }
+
+    // Group distinct topics by subjectId in a single query
+    const subjectIds = enrolledSubjects.map(s => s._id);
+    const topicsAggregation = await Question.aggregate([
+      { 
+        $match: { 
+          subjectId: { $in: subjectIds }, 
+          "metadata.topic": { $exists: true, $ne: "" } 
+        } 
+      },
+      { 
+        $group: { 
+          _id: "$subjectId", 
+          topics: { $addToSet: "$metadata.topic" } 
+        } 
+      }
+    ]);
+
+    // Map aggregated topics back to enrolledSubjects
+    const topicsMap = {};
+    for (const item of topicsAggregation) {
+      topicsMap[String(item._id)] = item.topics.filter(Boolean).sort((a, b) => a.localeCompare(b));
+    }
+
+    const subjectsWithTopics = enrolledSubjects.map(subj => ({
+      id: subj._id,
+      name: subj.name,
+      code: subj.code,
+      topics: topicsMap[String(subj._id)] || []
+    }));
+
+    return {
+      studentId: String(user._id),
+      studentName: user.name,
+      isPro,
+      maxSubjects: isPro ? 6 : 2,
+      maxQuestionLimit: isPro ? 100 : 20,
+      availableSubjects: subjectsWithTopics,
+      allSubjectsCount: allSubjects.length
+    };
+  }
+
+  static async getStudentAISessions(studentId, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const filter = { studentId };
+
+    const sessions = await AITutorSession.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit))
+      .lean();
+
+    const total = await AITutorSession.countDocuments(filter);
+
+    return {
+      sessions,
+      total,
+      totalPages: Math.ceil(total / limit),
+      page: Number(page)
+    };
+  }
+
+  static async getStudentAISessionMessages(sessionId) {
+    const session = await AITutorSession.findById(sessionId).lean();
+    if (!session) throw new Error("AI Session not found");
+
+    const messages = await AITutorMessage.find({ sessionId })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    return { session, messages };
   }
 
   static async deleteStudent(id) {
@@ -532,16 +644,16 @@ class AdminService {
 
   static async sendReminder(ids) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) return { count: 0 };
-    
+
     const users = await User.find({ _id: { $in: ids } });
-    
+
     let count = 0;
     for (const user of users) {
       if (!user.email) continue;
-      
+
       // Send Email
       await EmailService.sendNudgeEmail(user.email, user.name || "Student");
-      
+
       // Send In-App Notification
       await NotificationService.create({
         userId: user._id,
@@ -549,10 +661,10 @@ class AdminService {
         title: "Time to Study!",
         message: "We noticed you haven't been practicing lately. Jump back in to keep your streak alive and achieve your target score!"
       });
-      
+
       count++;
     }
-    
+
     return { count };
   }
 }

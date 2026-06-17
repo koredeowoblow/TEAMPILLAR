@@ -2,6 +2,8 @@ import cache from "../utils/cache.js";
 import Groq from "groq-sdk";
 import { AI_MODELS } from "../config/aiModels.js";
 import { logger } from "../core/logger.js";
+import AITutorSession from "../models/AITutorSessionModel.js";
+import AITutorMessage from "../models/AITutorMessageModel.js";
 
 const groq = process.env.GROQ_API_KEY
   ? new Groq({ apiKey: process.env.GROQ_API_KEY })
@@ -38,7 +40,7 @@ class AIService {
             max_tokens: options.max_tokens || 500,
             temperature: options.temperature ?? 0.3, // Lower temp for more deterministic UTME outputs
             ...(options.response_format && { response_format: options.response_format }),
-          });
+          }, { timeout: 15000 }); // 15s timeout to prevent hanging
 
           const latency = Date.now() - startTime;
           const content = response.choices[0].message.content;
@@ -486,9 +488,38 @@ JSON Schema:
 
     const staticFallback = fallbacksBySubject[activeSubject] || fallbacksBySubject.General;
 
+    let session;
+    if (sessionId) {
+      session = await AITutorSession.findById(sessionId);
+    }
+    
+    if (!session) {
+      session = await AITutorSession.create({
+        studentId: userId,
+        topic: activeSubject
+      });
+    }
+
+    // Persist incoming message synchronously
+    await AITutorMessage.create({
+      sessionId: session._id,
+      role: "user",
+      content: message
+    });
+
+    // Retrieve full history from database (limit to last 15 messages to stay within context window)
+    const storedHistory = await AITutorMessage.find({ sessionId: session._id })
+      .sort({ createdAt: 1 })
+      .limit(15);
+
     if (!groq) {
       logger.info(`Groq API Key not found. Using static fallback for subject: ${activeSubject}`);
-      return staticFallback;
+      AITutorMessage.create({
+        sessionId: session._id,
+        role: "assistant",
+        content: staticFallback.reply,
+      }).catch(e => logger.error("Failed to persist AI response", { error: e.message }));
+      return { ...staticFallback, sessionId: session._id };
     }
 
     const systemPrompt = `You are a helpful UTME (JAMB) AI Tutor for the subject: ${activeSubject}.
@@ -505,17 +536,10 @@ Return ONLY a valid JSON object matching this schema:
       { role: "system", content: systemPrompt }
     ];
 
-    // Append history context for continuity
-    if (Array.isArray(history)) {
-      history.slice(-8).forEach(msg => {
-        if (msg.role && msg.content) {
-          messages.push({ role: msg.role === "user" ? "user" : "assistant", content: msg.content });
-        }
-      });
-    }
-
-    // Append the latest user query
-    messages.push({ role: "user", content: message });
+    // Use DB history (this includes the user message we just persisted)
+    storedHistory.forEach(msg => {
+      messages.push({ role: msg.role === "user" ? "user" : "assistant", content: msg.content });
+    });
 
     const aiResponse = await this._callAIWithFallback(messages, {
       max_tokens: 800,
@@ -523,30 +547,42 @@ Return ONLY a valid JSON object matching this schema:
       response_format: { type: "json_object" }
     });
 
+    let replyText = staticFallback.reply;
+    let suggestedFollowUps = staticFallback.suggestedFollowUps;
+    let topicsReferenced = [activeSubject];
+    let tokensUsed = aiResponse.ai?.tokens || null;
+    let latencyMs = aiResponse.ai?.latency || null;
+
     if (aiResponse.content) {
       try {
         const parsed = JSON.parse(aiResponse.content);
         if (parsed && parsed.reply) {
-          return {
-            reply: parsed.reply,
-            suggestedFollowUps: Array.isArray(parsed.suggestedFollowUps) ? parsed.suggestedFollowUps : staticFallback.suggestedFollowUps,
-            topicsReferenced: Array.isArray(parsed.topicsReferenced) ? parsed.topicsReferenced : [activeSubject]
-          };
+          replyText = parsed.reply;
+          suggestedFollowUps = Array.isArray(parsed.suggestedFollowUps) ? parsed.suggestedFollowUps : staticFallback.suggestedFollowUps;
+          topicsReferenced = Array.isArray(parsed.topicsReferenced) ? parsed.topicsReferenced : [activeSubject];
         }
       } catch (err) {
         logger.warn("JSON Parse Error in AI Tutor Chat Response", { raw: aiResponse.content, error: err.message });
+        replyText = aiResponse.content;
       }
-
-      // Fallback parser if LLM output isn't strict JSON
-      return {
-        reply: aiResponse.content,
-        suggestedFollowUps: staticFallback.suggestedFollowUps,
-        topicsReferenced: [activeSubject]
-      };
+    } else {
+      logger.warn(`AI Chat model failed. Returning subject fallback.`);
     }
 
-    logger.warn(`AI Chat model failed. Returning subject fallback.`);
-    return staticFallback;
+    // Fire-and-forget the assistant message write
+    AITutorMessage.create({
+      sessionId: session._id,
+      role: "assistant",
+      content: replyText,
+      metadata: { tokensUsed, latencyMs }
+    }).catch(e => logger.error("Failed to persist AI response", { error: e.message }));
+
+    return {
+      reply: replyText,
+      suggestedFollowUps,
+      topicsReferenced,
+      sessionId: session._id
+    };
   }
 }
 

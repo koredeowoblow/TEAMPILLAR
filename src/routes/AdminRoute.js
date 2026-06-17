@@ -12,7 +12,7 @@ import {
   validateAnalyticsReports,
 } from "../middleware/Validation/adminValidation.js";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
-
+import AdminLogController from "../controllers/AdminLogController.js";
 
 const router = express.Router();
 
@@ -41,6 +41,30 @@ router.get(
   protectUser,
   protectAdmin,
   tryCatch(AdminController.getStudentAchievements),
+);
+router.get(
+  "/students/:studentId/sessions/:sessionId/results",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getStudentSessionResult),
+);
+router.get(
+  "/students/:studentId/practice-setup",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getStudentPracticeSetup),
+);
+router.get(
+  "/students/:studentId/ai-sessions",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getStudentAISessions),
+);
+router.get(
+  "/students/:studentId/ai-sessions/:sessionId/messages",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminController.getStudentAISessionMessages),
 );
 router.patch(
   "/students/:id",
@@ -140,6 +164,27 @@ router.get(
   protectUser,
   protectAdmin,
   tryCatch(AdminController.liveMonitorData),
+);
+
+/* ─────────────────── LOGS & AUDIT ─────────────────── */
+
+router.get(
+  "/logs",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminLogController.getLogs),
+);
+router.get(
+  "/logs/:id",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminLogController.getLogDetail),
+);
+router.get(
+  "/logs/user/:userId",
+  protectUser,
+  protectAdmin,
+  tryCatch(AdminLogController.getUserTimeline),
 );
 
 /* ─────────────────── TUTORS ─────────────────── */

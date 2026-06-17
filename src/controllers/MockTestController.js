@@ -1,10 +1,21 @@
 import MockTestService from "../services/MockTestService.js";
 import { sendSuccess } from "../core/response.js";
+import LogService from "../services/LogService.js";
 
 class MockTestController {
   static async startMockTest(req, res) {
     const { subjectIds } = req.body || {};
     const data = await MockTestService.startMockTest(req.user, subjectIds);
+    LogService.logAction({
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      category: "mock_test",
+      action: "mock_test_started",
+      description: "Mock test generated",
+      metadata: { sessionId: data.sessionId },
+      req,
+    });
+
     return sendSuccess(res, {
       message: "Mock test generated successfully",
       data,
@@ -19,6 +30,16 @@ class MockTestController {
       ipAddress: ipAddress || req.ip || null
     };
     const data = await MockTestService.submitMockTest(req.user, sessionId, responses, submissionOptions);
+    LogService.logAction({
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      category: "mock_test",
+      action: "mock_test_submitted",
+      description: `Mock test ${sessionId} submitted`,
+      metadata: { sessionId, score: data.score },
+      req,
+    });
+
     return sendSuccess(res, {
       message: "Mock test submitted successfully",
       data,

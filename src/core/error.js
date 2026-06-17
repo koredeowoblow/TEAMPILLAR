@@ -1,6 +1,7 @@
 import { AppError } from "../utils/AppError.js";
 import { logger } from "./logger.js";
 import { sendError } from "./response.js";
+import LogService from "../services/LogService.js";
 
 export { AppError };
 
@@ -78,6 +79,9 @@ const sendErrorProd = (err, res) => {
 export const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
+
+  // Capture every error to the central log system
+  LogService.logError(err, { req });
 
   // Handle JSON Syntax Errors specifically and early
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {

@@ -2,6 +2,7 @@ import ExamService from "../services/ExamService.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
 import { toExamDTO } from "../dto/index.js";
+import LogService from "../services/LogService.js";
 
 class ExamController {
   static async create(req, res) {
@@ -25,6 +26,16 @@ class ExamController {
       questionCount,
       instructions,
       createdBy,
+    });
+
+    LogService.logAction({
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      category: "exam",
+      action: "exam_scheduled",
+      description: `Exam scheduled for subject ${subject}`,
+      metadata: { examId: exam._id, subject, classGroup },
+      req,
     });
 
     return sendSuccess(res, {

@@ -36,6 +36,7 @@ import { timingMiddleware } from "./middleware/timing.middleware.js";
 import { startHealthMonitor } from "./utils/healthMonitor.js";
 import { initSocket } from "./config/socket.js";
 import "./queues/supportQueue.js";
+import "./queues/logQueue.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";

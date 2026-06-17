@@ -4,6 +4,7 @@ import { questionRepository } from "../repository/QuestionRepository.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import Subject from "../models/SubjectModel.js";
 import Question from "../models/QuestionModel.js";
+import LogService from "../services/LogService.js";
 import { resolveSubjectId } from "../utils/subjectResolver.js";
 import mongoose from "mongoose";
 import { sendSuccess, sendError } from "../core/response.js";
@@ -128,6 +129,16 @@ class PracticeController {
       ipAddress,
     });
 
+    LogService.logAction({
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      category: "practice",
+      action: "practice_submitted",
+      description: `Practice session ${sessionId} submitted`,
+      metadata: { sessionId, score: result.utmeScore, flagged: result.flagged },
+      req,
+    });
+
     return sendSuccess(res, {
       message: "Session graded",
       data: {
@@ -220,6 +231,16 @@ class PracticeController {
     } catch (qErr) {
       // Non-fatal: frontend will show "No questions" screen with retry option
     }
+
+    LogService.logAction({
+      userId,
+      userRole: req.user?.role,
+      category: "practice",
+      action: "practice_started",
+      description: "Started practice session",
+      metadata: { sessionId: String(session._id), subjectId, questionLimit },
+      req,
+    });
 
     return sendSuccess(res, {
       message: "Session started",

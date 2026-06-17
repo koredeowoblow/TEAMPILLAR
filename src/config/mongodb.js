@@ -16,7 +16,7 @@ export const connectMongoDB = async () => {
         connectTimeoutMS: 10000,
         socketTimeoutMS: 45000,
         heartbeatFrequencyMS: 10000,
-        maxPoolSize: parseInt(process.env.MONGO_POOL_SIZE) || 20,
+        maxPoolSize: parseInt(process.env.MONGO_POOL_SIZE) || 100,
         minPoolSize: 2,
         // Disable automatic index creation in production to avoid blocking queries on startup
         autoIndex: process.env.NODE_ENV !== "production",

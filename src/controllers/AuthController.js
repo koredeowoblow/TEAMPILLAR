@@ -1,5 +1,6 @@
 import AuthService from "../services/AuthService.js";
 import CloudinaryService from "../services/CloudinaryService.js";
+import LogService from "../services/LogService.js";
 import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
 import { toUserDTO, toAdminUserDTO, toSessionDTO } from "../dto/index.js";
@@ -18,6 +19,15 @@ class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
     }
+
+    LogService.logAction({
+      userId: result.user._id,
+      userRole: result.user.role,
+      category: "auth",
+      action: "register_success",
+      description: "User registered successfully",
+      req,
+    });
 
     return sendSuccess(res, {
       message: result.message || "User registered successfully",
@@ -50,6 +60,15 @@ class AuthController {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    LogService.logAction({
+      userId: user._id,
+      userRole: user.role,
+      category: "auth",
+      action: "login_success",
+      description: "User logged in successfully",
+      req,
     });
 
     const o = user.onboarding || {};
@@ -121,6 +140,15 @@ class AuthController {
     // Clear HttpOnly cookie
     res.clearCookie("refreshToken");
 
+    LogService.logAction({
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      category: "auth",
+      action: "logout_success",
+      description: "User logged out successfully",
+      req,
+    });
+
     return sendSuccess(res, {
       message: "Logged out successfully",
       data: {},
@@ -131,6 +159,14 @@ class AuthController {
   // Forgot Password — send token
   static async forgotPassword(req, res) {
     await AuthService.forgotPassword(req.body.email);
+
+    LogService.logAction({
+      category: "auth",
+      action: "password_reset_requested",
+      description: `Password reset requested for ${req.body.email}`,
+      metadata: { email: req.body.email },
+      req,
+    });
     return sendSuccess(res, {
       message: "Password reset token sent to your email",
       data: {},
@@ -142,6 +178,14 @@ class AuthController {
   static async resetPassword(req, res) {
     const otp = req.body.otp || req.body.token;
     await AuthService.resetPassword(req.body.email, otp, req.body.newPassword);
+
+    LogService.logAction({
+      category: "auth",
+      action: "password_reset_success",
+      description: `Password reset successful for ${req.body.email}`,
+      metadata: { email: req.body.email },
+      req,
+    });
     return sendSuccess(res, {
       message: "Password reset successfully",
       data: {},

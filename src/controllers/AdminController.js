@@ -12,7 +12,9 @@ import AdminService from "../services/AdminService.js";
 import { sanitizeQuestion } from "../utils/sanitizers.js";
 import mongoose from "mongoose";
 import AchievementService from "../services/AchievementService.js";
-import { toAdminUserDTO, toAdminQuestionDTO, toAdminClassDTO, toAchievementDTO, toLeaderboardDTO } from "../dto/index.js";
+import { toAdminUserDTO, toAdminQuestionDTO, toAdminClassDTO, toAchievementDTO, toLeaderboardDTO, toPracticeSessionResultDTO } from "../dto/index.js";
+import LogService from "../services/LogService.js";
+import PracticeService from "../services/practice/index.js";
 
 /* ── Inline CSV serialiser (zero external deps) ── */
 function toCSV(rows, headers) {
@@ -58,6 +60,35 @@ class AdminController {
     const { id } = req.params;
     const data = await AdminService.updateStudent(id, req.body);
     return sendSuccess(res, { data, message: "Student updated" });
+  }
+
+  static async getStudentPracticeSetup(req, res) {
+    const { studentId } = req.params;
+    const data = await AdminService.getStudentPracticeSetup(studentId);
+    return sendSuccess(res, { data, message: "Student practice setup retrieved" });
+  }
+
+  static async getStudentSessionResult(req, res) {
+    const { studentId, sessionId } = req.params;
+    const session = await PracticeService.getSessionResult(sessionId, studentId);
+    return sendSuccess(res, {
+      message: "Session result retrieved",
+      data: toPracticeSessionResultDTO(session),
+      statusCode: 200,
+    });
+  }
+
+  static async getStudentAISessions(req, res) {
+    const { studentId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+    const data = await AdminService.getStudentAISessions(studentId, page, limit);
+    return sendSuccess(res, { data, message: "AI sessions retrieved" });
+  }
+
+  static async getStudentAISessionMessages(req, res) {
+    const { studentId, sessionId } = req.params;
+    const data = await AdminService.getStudentAISessionMessages(sessionId);
+    return sendSuccess(res, { data, message: "AI session messages retrieved" });
   }
 
   static async deleteStudent(req, res) {
@@ -124,6 +155,17 @@ class AdminController {
   static async toggleAdminStatus(req, res) {
     const { userId } = req.params;
     const result = await AuthService.toggleAdminStatus(userId);
+
+    LogService.logAction({
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      category: "admin_action",
+      action: "toggle_admin_status",
+      description: `Toggled admin status for user ${userId}`,
+      metadata: { targetUserId: userId, newStatus: result.isAdmin },
+      req,
+    });
+
     return sendSuccess(res, {
       message: "Admin status toggled successfully",
       data: toAdminUserDTO(result),
@@ -143,6 +185,17 @@ class AdminController {
       (key) => allowedUpdates[key] === undefined && delete allowedUpdates[key],
     );
     const result = await AuthService.updateUserByAdmin(userId, allowedUpdates);
+
+    LogService.logAction({
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      category: "admin_action",
+      action: "update_user",
+      description: `Updated user profile for ${userId}`,
+      metadata: { targetUserId: userId, updates: allowedUpdates },
+      req,
+    });
+
     return sendSuccess(res, {
       message: "User updated successfully (Admin)",
       data: toAdminUserDTO(result),
@@ -340,6 +393,17 @@ class AdminController {
       { $set: update },
       { new: true, upsert: true },
     ).lean();
+
+    LogService.logAction({
+      userId: req.user?.id,
+      userRole: req.user?.role,
+      category: "system",
+      action: "update_settings",
+      description: "Platform settings updated",
+      metadata: { updates: update },
+      req,
+    });
+
     return sendSuccess(res, { data: settings, message: "Settings updated" });
   }
 

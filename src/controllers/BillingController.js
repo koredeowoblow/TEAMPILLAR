@@ -3,6 +3,7 @@ import { AppError } from "../utils/AppError.js";
 import fetch from "node-fetch";
 import crypto from "crypto";
 import EmailService from "../services/emailService.js";
+import LogService from "../services/LogService.js";
 import { logger } from "../core/logger.js";
 import User from "../models/UserModel.js";
 
@@ -41,10 +42,21 @@ class BillingController {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000), // 10s timeout
     });
 
     const data = await initRes.json();
     if (!initRes.ok) throw new AppError("Payment initialization failed", 400);
+
+    LogService.logAction({
+      userId: req.user.id,
+      userRole: req.user.role,
+      category: "billing",
+      action: "payment_initialized",
+      description: `User initialized payment for plan ${planId}`,
+      metadata: { planId, billingCycle, reference: data.data?.reference },
+      req,
+    });
 
     return sendSuccess(res, { data });
   }
@@ -82,6 +94,13 @@ class BillingController {
         await this.handleSubscriptionDisabled(event.data);
         break;
     }
+
+    LogService.logAction({
+      category: "billing",
+      action: "webhook_received",
+      description: `Received Paystack webhook: ${event.event}`,
+      metadata: { event: event.event, reference: event.data?.reference || event.data?.id },
+    });
 
     return sendSuccess(res, {
       message: "Webhook received",
@@ -165,6 +184,14 @@ class BillingController {
         "Subscription Payment Failed",
         "<p>Your subscription payment failed. Your account has been reverted to the free tier.</p>"
       );
+
+      LogService.logAction({
+        userId: user._id,
+        category: "billing",
+        action: "payment_failed",
+        description: `Subscription payment failed for ${email}`,
+        metadata: { reference: customer.customer_code },
+      });
     } catch (err) {
       logger.error("Failed to handle payment failed", {
         email,
