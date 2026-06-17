@@ -303,17 +303,21 @@ Synthesize complex platform metrics into a high-impact executive briefing for th
       const topPriorities = (data.priorityRecommendations || []).slice(0, 3).map(p => `${p.topic} (Gain: ${p.potentialGain})`).join(", ");
       
       const systemPrompt = `You are a UTME (JAMB) academic strategist.
-Your task is to write a 2-paragraph motivational and tactical summary for a student.
-Explain WHY focusing on the provided top 3 priority topics will mathematically bridge the gap from their current score to their target score.
-DO NOT invent new metrics or hallucinate topics. Use only the data provided. Use markdown for bolding key terms.`;
+Your task is to write a detailed, tactical study roadmap for a student based on their data.
+Structure your response strictly using markdown:
+- **Executive Summary**: 1 paragraph summarizing their current standing relative to their target score.
+- **Priority Bottlenecks**: Explain WHY focusing on the provided top 3 priority topics will mathematically bridge the gap.
+- **Action Plan**: 3 concrete, actionable bullet points they should do next.
+
+DO NOT invent new metrics or hallucinate topics. Use only the data provided. Write in an encouraging but authoritative tone.`;
 
       const userPrompt = `### STUDENT PROFILE:
 Current Average Score: ${data.averageScore}%
 Target UTME Score: ${data.targetScore}
-Top 3 Priority Topics: ${topPriorities || 'None identified yet'}
+Top Priority Topics: ${topPriorities || 'None identified yet'}
 
 ### TASK:
-Write the 2-paragraph tactical summary.`;
+Write the detailed tactical summary using the requested structure.`;
 
       const messages = [
         { role: "system", content: systemPrompt },
