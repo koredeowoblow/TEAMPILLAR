@@ -76,6 +76,8 @@ const UserSchema = new mongoose.Schema(
     },
     stats: {
       predictedScore: { type: Number, default: 0 },
+      isPredictedScoreConfident: { type: Boolean, default: false },
+      predictedScoreDetails: { type: mongoose.Schema.Types.Mixed, default: {} },
       highestMockScore: { type: Number, default: 0 },
       totalMocksTaken:  { type: Number, default: 0 },
       avgMockScore:     { type: Number, default: 0 },

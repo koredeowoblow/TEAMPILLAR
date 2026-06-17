@@ -266,7 +266,7 @@ class MockTestService {
 
     for (const qid of session.questionIds) {
       const qAnswer = sessionAnswers[qid.toString()];
-      if (qAnswer && !responses.find(r => r.questionId === qid.toString())) {
+      if (qAnswer && !responses.find(r => r.questionId.toString() === qid.toString())) {
          const sid = qAnswer.subjectId;
          if (subjectScoresMap[sid]) {
            subjectScoresMap[sid].total += 1;
@@ -278,6 +278,18 @@ class MockTestService {
     const subjectScores = [];
 
     for (const [sid, stats] of Object.entries(subjectScoresMap)) {
+      let expectedTotal = 0;
+      for (const qid of session.questionIds) {
+        if (sessionAnswers[qid.toString()]?.subjectId === sid) {
+          expectedTotal++;
+        }
+      }
+
+      if (stats.total > expectedTotal) {
+        logger.error(`Scoring Bug Detected: stats.total (${stats.total}) exceeds actual questions (${expectedTotal}) for subject ${sid} in session ${sessionId}`);
+        stats.total = expectedTotal; // Safety fallback
+      }
+
       const score = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
       compositeScore += score;
       subjectScores.push({
@@ -344,7 +356,7 @@ class MockTestService {
     }
 
     try {
-      const { default: cache } = await import("../core/cache.js");
+      const { default: cache } = await import("../utils/cache.js");
       await Promise.all([
         cache.del("admin:dashboard:stats", "analytics:summary"),
         cache.invalidatePattern("analytics:reports:*")

@@ -13,5 +13,9 @@ export const CONSTANTS = {
   CACHE: {
     ANALYTICS_SUMMARY_TTL: 60 * 15, // 15 minutes
     ANALYTICS_REPORTS_TTL: 60 * 60, // 1 hour
+  },
+  PREDICTION: {
+    MIN_QUESTIONS_PER_SUBJECT: 30,
+    MIN_TOPICS_PER_SUBJECT: 5
   }
 };

@@ -259,7 +259,9 @@ class StudentController {
 
       // Score metrics
       avgScore,
-      predictedScore: avgScore,
+      predictedScore: user.stats?.predictedScore || 0,
+      isPredictedScoreConfident: user.stats?.isPredictedScoreConfident || false,
+      predictedScoreDetails: user.stats?.predictedScoreDetails || null,
       targetScore,
       progressPercent,
       questionsAttempted,

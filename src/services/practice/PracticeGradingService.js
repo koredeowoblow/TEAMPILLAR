@@ -94,7 +94,11 @@ class PracticeGradingService {
       topics[topic] = (topics[topic] || 0) + (opt && opt.isCorrect ? 1 : 0);
     }
 
-    const totalQuestions = questions.length || submission.responses.length || 1;
+    // Fix: Use total questions in the session, not just the ones answered, to avoid inflating score
+    const totalQuestions = (session.questionIds && session.questionIds.length > 0) 
+      ? session.questionIds.length 
+      : (questions.length || submission.responses.length || 1);
+      
     const accuracy = (correct / totalQuestions) * 100;
 
     const flagged =
@@ -150,7 +154,7 @@ class PracticeGradingService {
     if (user) {
       const userPerformance = await TopicPerformance.find({
         userId: session.userId,
-      }).select("subjectId masteryScore").lean();
+      }).select("subjectId masteryScore totalAttempted").lean();
 
       if (userPerformance && userPerformance.length > 0) {
         const subjectMastery = {};
@@ -158,25 +162,56 @@ class PracticeGradingService {
           if (!t.subjectId) return;
           const sid = String(t.subjectId);
           if (!subjectMastery[sid])
-            subjectMastery[sid] = { total: 0, count: 0 };
-          subjectMastery[sid].total += t.masteryScore || 0;
-          subjectMastery[sid].count += 1;
+            subjectMastery[sid] = { totalMastery: 0, distinctTopics: 0, totalAttempted: 0 };
+          subjectMastery[sid].totalMastery += t.masteryScore || 0;
+          subjectMastery[sid].distinctTopics += 1;
+          subjectMastery[sid].totalAttempted += t.totalAttempted || 0;
         });
 
         const userSubjectScores = {};
+        const predictedScoreDetails = { subjects: [] };
+        let confidentSubjectsCount = 0;
+
+        const MIN_QUESTIONS = CONSTANTS.PREDICTION?.MIN_QUESTIONS_PER_SUBJECT || 30;
+        const MIN_TOPICS = CONSTANTS.PREDICTION?.MIN_TOPICS_PER_SUBJECT || 5;
+
         const userSubjects = await Subject.find({
           _id: { $in: Object.keys(subjectMastery) },
         }).select("name").lean();
+
         userSubjects.forEach((s) => {
           const sid = String(s._id);
-          if (subjectMastery[sid]) {
-            userSubjectScores[s.name] =
-              subjectMastery[sid].total / subjectMastery[sid].count;
+          const mastery = subjectMastery[sid];
+          if (mastery) {
+            const rawScore = mastery.totalMastery / mastery.distinctTopics;
+            const isConfident = mastery.totalAttempted >= MIN_QUESTIONS && mastery.distinctTopics >= MIN_TOPICS;
+            
+            if (isConfident) {
+              userSubjectScores[s.name] = rawScore;
+              confidentSubjectsCount++;
+            }
+
+            predictedScoreDetails.subjects.push({
+              name: s.name,
+              score: Math.round(rawScore),
+              status: isConfident ? "calculated" : "insufficient_data",
+              questionsAttempted: mastery.totalAttempted,
+              topicsAttempted: mastery.distinctTopics,
+              questionsNeeded: Math.max(0, MIN_QUESTIONS - mastery.totalAttempted),
+              topicsNeeded: Math.max(0, MIN_TOPICS - mastery.distinctTopics)
+            });
           }
         });
 
         const predictedScore = PracticeGradingService.computeUTMEScoreFromMap(userSubjectScores);
-        user.stats = { ...(user.stats || {}), predictedScore };
+        const isPredictedScoreConfident = confidentSubjectsCount >= 4;
+
+        user.stats = { 
+          ...(user.stats || {}), 
+          predictedScore,
+          isPredictedScoreConfident,
+          predictedScoreDetails 
+        };
         await user.save();
       }
     }

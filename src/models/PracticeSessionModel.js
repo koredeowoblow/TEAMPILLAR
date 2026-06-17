@@ -40,7 +40,7 @@ const PracticeSessionSchema = new mongoose.Schema(
     }],
     sessionStatus: {
       type: String,
-      enum: ["ACTIVE", "COMPLETED", "EXPIRED", "ABANDONED"],
+      enum: ["ACTIVE", "COMPLETED", "PENDING_GRADING", "EXPIRED", "ABANDONED"],
       default: "ACTIVE",
     },
     sessionType: {
