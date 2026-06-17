@@ -72,5 +72,7 @@ const PracticeSessionSchema = new mongoose.Schema(
 );
 
 PracticeSessionSchema.index({ userId: 1, createdAt: -1 });
+PracticeSessionSchema.index({ userId: 1, sessionStatus: 1 });
+PracticeSessionSchema.index({ sessionStatus: 1 });
 
 export default mongoose.model("PracticeSession", PracticeSessionSchema);

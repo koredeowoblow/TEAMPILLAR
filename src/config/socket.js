@@ -1,4 +1,7 @@
 import { Server } from "socket.io";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { getRedisClient } from "./redis.js";
+import { getCachedSessionUser, setCachedSessionUser } from "../utils/authSessionCache.js";
 import jwt from "jsonwebtoken";
 import { userRepository } from "../repository/UserRepository.js";
 import AuthRepository from "../repository/AuthRepository.js";
@@ -9,13 +12,20 @@ const authRepository = new AuthRepository();
 
 let io;
 
-export function initSocket(server) {
+export async function initSocket(server) {
   io = new Server(server, {
     cors: {
       origin: "*", // Allowing all origins for socket.io temporarily or mirror Express CORS
       methods: ["GET", "POST"]
     }
   });
+
+  const pubClient = await getRedisClient();
+  if (pubClient) {
+    const subClient = pubClient.duplicate();
+    await subClient.connect();
+    io.adapter(createAdapter(pubClient, subClient));
+  }
 
   // Middleware for authentication
   io.use(async (socket, next) => {
@@ -26,10 +36,22 @@ export function initSocket(server) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ["HS256"] });
       const tokenHash = AuthService.hashToken(token);
       
-      const [session, user] = await Promise.all([
-        authRepository.findSessionByToken(tokenHash),
-        userRepository.findById(decoded.id, { lean: true, select: "_id name email role isAdmin" })
-      ]);
+      let session;
+      let user;
+
+      const cached = await getCachedSessionUser(tokenHash);
+      if (cached) {
+        session = cached.session;
+        user = cached.user;
+      } else {
+        [session, user] = await Promise.all([
+          authRepository.findSessionByToken(tokenHash),
+          userRepository.findById(decoded.id, { lean: true, select: "_id name email role isAdmin" })
+        ]);
+        if (session && user) {
+          await setCachedSessionUser(tokenHash, { session, user });
+        }
+      }
 
       if (!session || session.isLoggedOut) return next(new Error("Authentication error: Invalid session"));
       if (!user) return next(new Error("Authentication error: User not found"));

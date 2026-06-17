@@ -10,6 +10,8 @@ const router = express.Router();
 router.use(generalLimiter);
 
 router.post("/start", protectUser, onboardingGuard, tryCatch(MockTestController.startMockTest));
+router.get("/active", protectUser, onboardingGuard, tryCatch(MockTestController.getActiveSession));
+router.patch("/:sessionId/progress", protectUser, tryCatch(MockTestController.saveProgress));
 router.post("/submit", protectUser, onboardingGuard, tryCatch(MockTestController.submitMockTest));
 router.get("/history", protectUser, onboardingGuard, tryCatch(MockTestController.getMockHistory));
 router.get("/stats", protectUser, onboardingGuard, tryCatch(MockTestController.getMockStats));

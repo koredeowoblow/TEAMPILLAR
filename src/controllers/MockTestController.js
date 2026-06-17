@@ -23,6 +23,25 @@ class MockTestController {
     });
   }
 
+  static async getActiveSession(req, res) {
+    const data = await MockTestService.getActiveSession(req.user);
+    return sendSuccess(res, {
+      message: "Active session retrieved",
+      data,
+      statusCode: 200
+    });
+  }
+
+  static async saveProgress(req, res) {
+    const { sessionId } = req.params;
+    const { responses, timeRemaining } = req.body;
+    await MockTestService.saveProgress(req.user, sessionId, responses, timeRemaining);
+    return sendSuccess(res, {
+      message: "Progress saved",
+      statusCode: 200
+    });
+  }
+
   static async submitMockTest(req, res) {
     const { sessionId, responses, tabSwitches, ipAddress } = req.body;
     const submissionOptions = {

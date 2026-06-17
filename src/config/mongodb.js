@@ -16,7 +16,10 @@ export const connectMongoDB = async () => {
         connectTimeoutMS: 10000,
         socketTimeoutMS: 45000,
         heartbeatFrequencyMS: 10000,
-        maxPoolSize: parseInt(process.env.MONGO_POOL_SIZE) || 100,
+        // Based on Atlas M10/M20 constraints (1500-3000 max cluster connections)
+        // Assuming ~4 Node.js instances behind load balancer. 1500 / 4 = 375.
+        // We set 300 to leave headroom for other services/DB ops.
+        maxPoolSize: parseInt(process.env.MONGO_POOL_SIZE) || 300,
         minPoolSize: 2,
         // Disable automatic index creation in production to avoid blocking queries on startup
         autoIndex: process.env.NODE_ENV !== "production",

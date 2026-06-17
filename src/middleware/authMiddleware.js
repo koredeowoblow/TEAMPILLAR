@@ -47,19 +47,14 @@ export const protectUser = async (req, res, next) => {
 
     // Check if token exists in Auth DB (Session Check)
     const tokenHash = AuthService.hashToken(token);
-    const isMutationMethod = ["POST", "PUT", "PATCH", "DELETE"].includes(
-      req.method,
-    );
 
     let session;
     let user;
 
-    if (!isMutationMethod) {
-      const cached = getCachedSessionUser(tokenHash);
-      if (cached) {
-        session = cached.session;
-        user = cached.user;
-      }
+    const cached = await getCachedSessionUser(tokenHash);
+    if (cached) {
+      session = cached.session;
+      user = cached.user;
     }
 
     if (!session || !user) {
@@ -82,13 +77,13 @@ export const protectUser = async (req, res, next) => {
 
       [session, user] = await lookupPromise;
 
-      if (!isMutationMethod && session && user) {
-        setCachedSessionUser(tokenHash, { session, user });
+      if (session && user) {
+        await setCachedSessionUser(tokenHash, { session, user });
       }
     }
 
     if (!session || session.isLoggedOut) {
-      invalidateCachedSessionUser(tokenHash);
+      await invalidateCachedSessionUser(tokenHash);
       return next(new AppError("Unauthorized", 401));
     }
 
@@ -133,7 +128,7 @@ export const protectUser = async (req, res, next) => {
         if (nowMs > expiresAt.getTime()) {
           // Mark session as logged out to prevent reuse
           await authRepository.invalidateSession(tokenHash);
-          invalidateCachedSessionUser(tokenHash);
+          await invalidateCachedSessionUser(tokenHash);
           return next(
             new AppError("Unauthorized", 401, {
               reason: "session_timeout",
@@ -149,20 +144,19 @@ export const protectUser = async (req, res, next) => {
             nowMs - lastUsedAt.getTime() >= touchIntervalSeconds * 1000;
           if (shouldTouch) {
             const sessionId = (session?._id || tokenHash).toString();
-            if (!shouldSkipSessionTouch(sessionId)) {
-              markSessionTouch(sessionId);
+            const skipTouch = await shouldSkipSessionTouch(sessionId);
+            if (!skipTouch) {
+              await markSessionTouch(sessionId);
               // Keep cached session activity fresh so timeout checks do not use stale lastLogin.
-              if (!isMutationMethod) {
-                setCachedSessionUser(tokenHash, {
-                  session: {
-                    ...(typeof session?.toObject === "function"
-                      ? session.toObject()
-                      : session),
-                    lastLogin: new Date(nowMs),
-                  },
-                  user,
-                });
-              }
+              await setCachedSessionUser(tokenHash, {
+                session: {
+                  ...(typeof session?.toObject === "function"
+                    ? session.toObject()
+                    : session),
+                  lastLogin: new Date(nowMs),
+                },
+                user,
+              });
               setImmediate(async () => {
                 try {
                   await Promise.all([

@@ -1,4 +1,4 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
 import { getRedisClient, isRedisAvailable } from "../config/redis.js";
 import { logger } from "../core/logger.js";
@@ -130,11 +130,14 @@ export const chatLimiter = rateLimit({
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 2000,
-  message: "Too many requests from this IP. Please try again in 15 minutes.",
+  message: "Too many requests. Please try again in 15 minutes.",
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true,
   skip: () => process.env.NODE_ENV === "test",
+  keyGenerator: (req, res) => {
+    return req.user ? req.user._id.toString() : ipKeyGenerator(req, res);
+  },
   handler,
   get store() {
     if (!generalStore) warnFallbackOnce();

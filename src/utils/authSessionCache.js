@@ -1,34 +1,60 @@
-import { LRUCache } from "lru-cache";
-
-const sessionCache = new LRUCache({
-  max: 2000,
-  ttl: 5 * 1000, // Reduced from 60s to 5s for near-instant revocation
-  updateAgeOnGet: false,
-});
-
-const touchThrottleCache = new LRUCache({
-  max: 5000,
-  ttl: 30 * 1000,
-  updateAgeOnGet: false,
-});
+import { getRedisClient } from "../config/redis.js";
+import { logger } from "../core/logger.js";
 
 const sessionCacheKey = (tokenHash) => `auth:${tokenHash}`;
 const touchCacheKey = (sessionId) => `touch:${sessionId}`;
 
-export const getCachedSessionUser = (tokenHash) =>
-  sessionCache.get(sessionCacheKey(tokenHash));
-
-export const setCachedSessionUser = (tokenHash, payload) => {
-  sessionCache.set(sessionCacheKey(tokenHash), payload);
+export const getCachedSessionUser = async (tokenHash) => {
+  try {
+    const client = await getRedisClient();
+    if (!client) return null;
+    const data = await client.get(sessionCacheKey(tokenHash));
+    if (!data) return null;
+    
+    // Refresh TTL on valid read (sliding expiration)
+    await client.expire(sessionCacheKey(tokenHash), 600); // 10 minutes
+    return JSON.parse(data);
+  } catch (err) {
+    logger.warn(`Redis session read failed: ${err.message}`);
+    return null;
+  }
 };
 
-export const invalidateCachedSessionUser = (tokenHash) => {
-  sessionCache.delete(sessionCacheKey(tokenHash));
+export const setCachedSessionUser = async (tokenHash, payload) => {
+  try {
+    const client = await getRedisClient();
+    if (!client) return;
+    await client.setEx(sessionCacheKey(tokenHash), 600, JSON.stringify(payload)); // 10 minutes
+  } catch (err) {
+    logger.warn(`Redis session write failed: ${err.message}`);
+  }
 };
 
-export const shouldSkipSessionTouch = (sessionId) =>
-  touchThrottleCache.has(touchCacheKey(sessionId));
+export const invalidateCachedSessionUser = async (tokenHash) => {
+  try {
+    const client = await getRedisClient();
+    if (!client) return;
+    await client.del(sessionCacheKey(tokenHash));
+  } catch (err) {
+    logger.warn(`Redis session delete failed: ${err.message}`);
+  }
+};
 
-export const markSessionTouch = (sessionId) => {
-  touchThrottleCache.set(touchCacheKey(sessionId), true);
+export const shouldSkipSessionTouch = async (sessionId) => {
+  try {
+    const client = await getRedisClient();
+    if (!client) return false;
+    const exists = await client.exists(touchCacheKey(sessionId));
+    return exists === 1;
+  } catch (err) {
+    return false;
+  }
+};
+
+export const markSessionTouch = async (sessionId) => {
+  try {
+    const client = await getRedisClient();
+    if (!client) return;
+    await client.setEx(touchCacheKey(sessionId), 30, "1"); // 30 seconds debounce
+  } catch (err) {}
 };

@@ -41,17 +41,39 @@ class MockTestService {
       return acc;
     }, {});
 
+    const { getRedisClient } = await import("../config/redis.js");
+    const redisClient = await getRedisClient();
+    const sessionAnswers = {};
+
     // Query 40 questions per subject
     for (const subjectId of mockSubjects) {
-      const questions = await Question.aggregate([
-        { $match: { subjectId: new mongoose.Types.ObjectId(subjectId), "metadata.difficulty": { $in: ["easy", "medium", "hard"] } } },
-        { $sample: { size: 40 } }
-      ]);
+      let questions = [];
+      const poolKeys = await redisClient.keys(`pool:subject:${subjectId}:*`);
+      if (poolKeys && poolKeys.length > 0) {
+        const randomKey = poolKeys[Math.floor(Math.random() * poolKeys.length)];
+        const poolData = await redisClient.get(randomKey);
+        if (poolData) questions = JSON.parse(poolData).slice(0, 40);
+      }
+
+      if (questions.length < 40) {
+        questions = await Question.aggregate([
+          { $match: { subjectId: new mongoose.Types.ObjectId(subjectId), "metadata.difficulty": { $in: ["easy", "medium", "hard"] } } },
+          { $sample: { size: 40 } }
+        ]);
+      }
       
       const formattedQuestions = questions.map(q => {
         const safeOptions = Array.isArray(q.options)
           ? q.options.map(o => ({ key: o.id || o.key, text: o.text, image: o.image }))
           : [];
+
+        // Save correct answer for fast grading
+        const correctOpt = Array.isArray(q.options) ? q.options.find(o => o.isCorrect) : null;
+        sessionAnswers[q._id.toString()] = {
+          subjectId: q.subjectId.toString(),
+          correctAnswer: correctOpt ? (correctOpt.id || correctOpt.key) : null,
+          topic: q.metadata?.topic || "unknown"
+        };
 
         return {
           _id: q._id,
@@ -60,7 +82,6 @@ class MockTestService {
             _id: q.subjectId,
             name: subjectMap[q.subjectId.toString()] ? subjectMap[q.subjectId.toString()].name : 'Unknown'
           },
-          // Flatten content.text → text so CBTExam can render it with question?.text
           text: q.content?.text || q.text || '',
           content: q.content,
           options: safeOptions,
@@ -90,6 +111,9 @@ class MockTestService {
       $inc: { 'limits.totalMockTests': 1 }
     });
 
+    // Cache correct answers for grading (TTL: 4 hours)
+    await redisClient.setEx(`session:${session._id}:answers`, 14400, JSON.stringify(sessionAnswers));
+
     return {
       sessionId: session._id,
       questions: questionsBySubject
@@ -101,13 +125,95 @@ class MockTestService {
     const session = await PracticeSessionModel.findOne({ _id: sessionId, userId: user._id });
 
     if (!session) throw new AppError("Session not found", 404);
-    if (session.sessionStatus !== "ACTIVE") throw new AppError("Session already submitted", 400);
 
-    const questions = await Question.find({ _id: { $in: session.questionIds } }).lean();
-    const questionMap = questions.reduce((acc, q) => {
-      acc[q._id.toString()] = q;
-      return acc;
-    }, {});
+    if (session.sessionStatus === "COMPLETED" || session.sessionStatus === "PENDING_GRADING") {
+      return {
+        compositeScore: session.compositeScore || session.score || 0,
+        subjectScores: session.subjectScores || [],
+        sessionId: session._id,
+        timeTaken: session.timeTaken || 0,
+        status: session.sessionStatus
+      };
+    }
+    
+    if (session.sessionStatus !== "ACTIVE") throw new AppError("Session is not active", 400);
+
+    const { getRedisClient } = await import("../config/redis.js");
+    const redisClient = await getRedisClient();
+    
+    let finalResponses = [];
+    const progressData = await redisClient.get(`session:${sessionId}:progress`);
+    
+    if (progressData) {
+      finalResponses = JSON.parse(progressData).responses || [];
+    } else if (responses && responses.length > 0) {
+      console.warn(`[MockTestService] Redis cache missing for session ${sessionId}, falling back to full client payload.`);
+      finalResponses = responses;
+    } else if (options.isSweeper) {
+      console.warn(`[MockTestService] Sweeper finalizing session ${sessionId} with zero responses.`);
+      finalResponses = [];
+    } else {
+      console.warn(`[MockTestService] Redis cache missing and no fallback payload provided for session ${sessionId}. Requesting full payload.`);
+      throw new AppError("requiresFullPayload", 400);
+    }
+
+    const { tabSwitches = 0, ipAddress = null } = options;
+    const flagged = tabSwitches > 3;
+
+    session.sessionStatus = "PENDING_GRADING";
+    session.responses = finalResponses;
+    session.security = {
+      tabSwitches,
+      ipAddress,
+      flagged
+    };
+    session.endTime = new Date();
+    await session.save();
+
+    try {
+      const { addScoreJob } = await import("../queues/GradingQueue.js");
+      addScoreJob(user._id, session._id, finalResponses, options);
+    } catch (err) {
+      console.warn("Failed to queue score job in mock test:", err.message);
+    }
+
+    return {
+      sessionId: session._id,
+      status: "PENDING_GRADING"
+    };
+  }
+
+  static async processScoring(userId, sessionId, responses, options = {}) {
+    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+    const { default: User } = await import("../models/UserModel.js");
+    
+    const session = await PracticeSessionModel.findById(sessionId);
+    if (!session || session.sessionStatus !== "PENDING_GRADING") return;
+
+    const user = await User.findById(userId).lean();
+    if (!user) return;
+
+    const { getRedisClient } = await import("../config/redis.js");
+    const redisClient = await getRedisClient();
+
+    let sessionAnswers = {};
+    const cachedAnswersData = await redisClient.get(`session:${sessionId}:answers`);
+    
+    if (cachedAnswersData) {
+      sessionAnswers = JSON.parse(cachedAnswersData);
+    } else {
+      // Fallback to DB if cache expired
+      const questions = await Question.find({ _id: { $in: session.questionIds } }).lean();
+      sessionAnswers = questions.reduce((acc, q) => {
+        const correct = Array.isArray(q.options) ? q.options.find(o => o.isCorrect) : null;
+        acc[q._id.toString()] = {
+           subjectId: q.subjectId.toString(),
+           correctAnswer: correct ? (correct.id || correct.key) : null,
+           topic: q.metadata?.topic || "unknown"
+        };
+        return acc;
+      }, {});
+    }
 
     const subjects = await Subject.find({ _id: { $in: session.subjectIds } }).lean();
     const subjectMap = subjects.reduce((acc, s) => {
@@ -126,27 +232,23 @@ class MockTestService {
     const topics = {};
 
     for (const r of responses) {
-      const q = questionMap[r.questionId];
-      if (!q) continue;
+      const qAnswer = sessionAnswers[r.questionId];
+      if (!qAnswer) continue;
 
-      const sid = q.subjectId.toString();
+      const sid = qAnswer.subjectId;
       if (subjectScoresMap[sid]) {
         subjectScoresMap[sid].total += 1;
       }
 
       let isCorrect = false;
-      const selectedOpt = Array.isArray(q.options) ? (
-        q.options.find(o => o.id === r.selectedOption || o.key === r.selectedOption)
-      ) : null;
-      
-      const correctOption = Array.isArray(q.options) ? q.options.find(o => o.isCorrect) : null;
+      const correctOptionId = qAnswer.correctAnswer;
 
-      if (selectedOpt && selectedOpt.isCorrect) {
+      if (r.selectedOption && (r.selectedOption === correctOptionId)) {
         isCorrect = true;
         if (subjectScoresMap[sid]) subjectScoresMap[sid].correct += 1;
       }
 
-      const topic = q.metadata?.topic || "unknown";
+      const topic = qAnswer.topic;
       if (!isCorrect) {
         topics[topic] = (topics[topic] || 0) + 1; // Count mistakes per topic
       }
@@ -156,16 +258,16 @@ class MockTestService {
         selectedOption: r.selectedOption,
         timeTaken: r.timeTaken || 0,
         isCorrect, 
-        correctAnswer: correctOption ? (correctOption.id || correctOption.key) : null,
+        correctAnswer: correctOptionId,
       });
 
       totalTimeTaken += (r.timeTaken || 0);
     }
 
     for (const qid of session.questionIds) {
-      const q = questionMap[qid.toString()];
-      if (q && !responses.find(r => r.questionId === qid.toString())) {
-         const sid = q.subjectId.toString();
+      const qAnswer = sessionAnswers[qid.toString()];
+      if (qAnswer && !responses.find(r => r.questionId === qid.toString())) {
+         const sid = qAnswer.subjectId;
          if (subjectScoresMap[sid]) {
            subjectScoresMap[sid].total += 1;
          }
@@ -186,9 +288,6 @@ class MockTestService {
         total: stats.total
       });
     }
-
-    const { tabSwitches = 0, ipAddress = null } = options;
-    const flagged = tabSwitches > 3;
 
     let totalQuestions = session.questionIds.length || 1;
     let totalCorrect = 0;
@@ -211,22 +310,18 @@ class MockTestService {
     session.subjectScores = subjectScores;
     session.score = compositeScore;
     session.analytics = analytics;
-    session.security = {
-      tabSwitches,
-      ipAddress,
-      flagged
-    };
-    session.endTime = new Date();
+    
     await session.save();
 
-    // Update user stats atomically (req.user is a plain object, not a Mongoose doc)
+    // Update user stats atomically
     const prevTotal = user.stats?.totalMocksTaken || 0;
     const prevAvg   = user.stats?.avgMockScore    || 0;
     const newTotal  = prevTotal + 1;
     const newAvg    = Math.round(((prevAvg * prevTotal) + compositeScore) / newTotal);
     const prevHigh  = user.stats?.highestMockScore || 0;
 
-    await User.findByIdAndUpdate(user._id, {
+    const UserModel = (await import("../models/UserModel.js")).default;
+    await UserModel.findByIdAndUpdate(userId, {
       $set: {
         'stats.totalMocksTaken':  newTotal,
         'stats.avgMockScore':     newAvg,
@@ -235,17 +330,15 @@ class MockTestService {
     });
 
     try {
-      const { default: AdaptiveEngineService } = await import("./AdaptiveEngineService.js");
-      for (const sid of session.subjectIds) {
-        await AdaptiveEngineService.updateTopicPerformance(user._id, processedResponses, sid);
-      }
+      const { addGradingJob } = await import("../queues/GradingQueue.js");
+      addGradingJob(userId, session.subjectIds, processedResponses);
     } catch (err) {
-      console.warn("Failed to update adaptive engine in mock test:", err.message);
+      console.warn("Failed to queue AI grading job in mock test:", err.message);
     }
 
     try {
       const { addAnalyticsJob } = await import("../queues/AnalyticsQueue.js");
-      addAnalyticsJob(user._id, session._id);
+      addAnalyticsJob(userId, session._id);
     } catch (err) {
       console.warn("Failed to queue analytics job in mock test:", err.message);
     }
@@ -259,13 +352,78 @@ class MockTestService {
     } catch (err) {
       console.warn("Failed to invalidate analytics caches:", err.message);
     }
+  }
+
+  static async getActiveSession(user) {
+    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+    const { getRedisClient } = await import("../config/redis.js");
+    
+    const session = await PracticeSessionModel.findOne({
+      userId: user._id,
+      isMockTest: true,
+      sessionStatus: "ACTIVE"
+    }).lean();
+
+    if (!session) return null;
+
+    const redisClient = await getRedisClient();
+    const progressData = await redisClient.get(`session:${session._id}:progress`);
+    let responses = [];
+    let timeRemaining = session.totalDuration;
+
+    if (progressData) {
+      const parsed = JSON.parse(progressData);
+      responses = parsed.responses || [];
+      timeRemaining = parsed.timeRemaining !== undefined ? parsed.timeRemaining : timeRemaining;
+    } else {
+       const elapsed = Math.floor((Date.now() - session.createdAt.getTime()) / 1000);
+       timeRemaining = Math.max(0, session.totalDuration - elapsed);
+    }
+
+    const questions = await Question.find({ _id: { $in: session.questionIds } }).lean();
+    const subjects = await Subject.find({ _id: { $in: session.subjectIds } }).lean();
+    const subjectMap = subjects.reduce((acc, s) => {
+      acc[s._id.toString()] = s.name;
+      return acc;
+    }, {});
+
+    const formattedQuestions = questions.map(q => {
+      const safeOptions = Array.isArray(q.options)
+        ? q.options.map(o => ({ key: o.id || o.key, text: o.text, image: o.image }))
+        : [];
+      return {
+        _id: q._id,
+        subjectId: q.subjectId,
+        subject: {
+          _id: q.subjectId,
+          name: subjectMap[q.subjectId.toString()] || 'Unknown'
+        },
+        text: q.content?.text || q.text || '',
+        content: q.content,
+        options: safeOptions,
+        metadata: q.metadata
+      };
+    });
 
     return {
-      compositeScore,
-      subjectScores,
       sessionId: session._id,
-      timeTaken: totalTimeTaken
+      questions: formattedQuestions,
+      responses,
+      timeRemaining,
+      totalDuration: session.totalDuration
     };
+  }
+
+  static async saveProgress(user, sessionId, responses, timeRemaining) {
+    const { getRedisClient } = await import("../config/redis.js");
+    const redisClient = await getRedisClient();
+    
+    // TTL matches max exam duration (2 hours) plus 1 hour grace period
+    await redisClient.setEx(
+      `session:${sessionId}:progress`,
+      10800,
+      JSON.stringify({ responses, timeRemaining })
+    );
   }
 
   static async getMockHistory(user, page = 1, limit = 10) {

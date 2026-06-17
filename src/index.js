@@ -37,6 +37,7 @@ import { startHealthMonitor } from "./utils/healthMonitor.js";
 import { initSocket } from "./config/socket.js";
 import "./queues/supportQueue.js";
 import "./queues/logQueue.js";
+import "./queues/GradingQueue.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";
@@ -159,8 +160,8 @@ const healthCheckHandler = measurePerformance(async (_req, res) => {
 app.get("/health", healthCheckHandler);
 
 // Parsers
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: "512kb" }));
+app.use(express.urlencoded({ extended: true, limit: "512kb" }));
 
 const apiRouter = express.Router();
 apiRouter.use(checkMaintenance);
@@ -252,10 +253,10 @@ async function bootstrap() {
     });
 
     try {
-      // EventCleanupWorker.start("0 2 * * *");
-      // logger.info("Event cleanup worker scheduled");
+      const { startExamSweeper } = await import("./jobs/examSweeper.js");
+      startExamSweeper();
     } catch (err) {
-      logger.error("Failed to start event cleanup worker", {
+      logger.error("Failed to start exam sweeper", {
         message: err.message,
       });
     }
@@ -268,7 +269,7 @@ async function bootstrap() {
       logger.info(`Environment: ${process.env.NODE_ENV}`);
     });
 
-    initSocket(server);
+    await initSocket(server);
 
     server.setTimeout(SOCKET_TIMEOUT_MS);
     server.requestTimeout = REQUEST_TIMEOUT_MS;
