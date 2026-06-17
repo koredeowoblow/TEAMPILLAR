@@ -3,14 +3,11 @@ import LogEntry from "../models/LogEntryModel.js";
 import { logger } from "../core/logger.js";
 import "../config/env.js";
 
-const hostParts = process.env.REDIS_HOST ? process.env.REDIS_HOST.split(":") : ["127.0.0.1"];
-const host = hostParts[0];
-const port = process.env.REDIS_PORT || hostParts[1] || 6379;
-const password = process.env.REDIS_PASSWORD || undefined;
+import { sharedQueueConnection, connectionConfig } from "../config/bullmqConnection.js";
 
-const connection = { host, port, password };
+export const logQueue = new Queue("logs", { connection: sharedQueueConnection });
 
-export const logQueue = new Queue("logs", { connection });
+logQueue.on("error", (err) => logger.warn(`[BullMQ] logQueue error: ${err.message}`));
 
 export const logWorker = new Worker(
   "logs",
@@ -23,7 +20,9 @@ export const logWorker = new Worker(
       logger.error(`Error processing job ${job.name} in logQueue:`, { message: error.message });
     }
   },
-  { connection }
+  { connection: connectionConfig }
 );
+
+logWorker.on("error", (err) => logger.warn(`[BullMQ] logWorker connection error: ${err.message}`));
 
 logger.info("Log BullMQ worker initialized");

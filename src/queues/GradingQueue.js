@@ -2,15 +2,13 @@ import { Queue, Worker } from "bullmq";
 import { logger } from "../core/logger.js";
 import "../config/env.js";
 
-const hostParts = process.env.REDIS_HOST ? process.env.REDIS_HOST.split(":") : ["127.0.0.1"];
-const host = hostParts[0];
-const port = process.env.REDIS_PORT || hostParts[1] || 6379;
-const password = process.env.REDIS_PASSWORD || undefined;
+import { sharedQueueConnection, connectionConfig } from "../config/bullmqConnection.js";
 
-const connection = { host, port, password };
+export const gradingQueue = new Queue("grading", { connection: sharedQueueConnection });
+export const scoreQueue = new Queue("scoring", { connection: sharedQueueConnection });
 
-export const gradingQueue = new Queue("grading", { connection });
-export const scoreQueue = new Queue("scoring", { connection });
+gradingQueue.on("error", (err) => logger.warn(`[BullMQ] gradingQueue error: ${err.message}`));
+scoreQueue.on("error", (err) => logger.warn(`[BullMQ] scoreQueue error: ${err.message}`));
 
 export function addScoreJob(userId, sessionId, responses, options) {
   scoreQueue.add("scoring.process", { userId, sessionId, responses, options }, {
@@ -52,9 +50,11 @@ export const gradingWorker = new Worker("grading", async (job) => {
     throw error;
   }
 }, { 
-  connection,
+  connection: connectionConfig,
   concurrency: 10 // High throughput for DB operations
 });
+
+gradingWorker.on("error", (err) => logger.warn(`[BullMQ] gradingWorker connection error: ${err.message}`));
 
 gradingWorker.on('failed', (job, err) => {
   logger.error(`Grading job ${job?.id} failed: ${err.message}`);
@@ -74,12 +74,14 @@ export const scoreWorker = new Worker("scoring", async (job) => {
     throw error;
   }
 }, { 
-  connection,
+  connection: connectionConfig,
   concurrency: 50 // High concurrency since it's mostly computation and DB writes
 });
 
 scoreWorker.on('failed', (job, err) => {
   logger.error(`Score job ${job?.id} failed: ${err.message}`);
 });
+
+scoreWorker.on("error", (err) => logger.warn(`[BullMQ] scoreWorker connection error: ${err.message}`));
 
 logger.info("Scoring BullMQ worker initialized");

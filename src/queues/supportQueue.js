@@ -4,14 +4,11 @@ import { getIO } from "../config/socket.js";
 import { logger } from "../core/logger.js";
 import "../config/env.js";
 
-const hostParts = process.env.REDIS_HOST ? process.env.REDIS_HOST.split(":") : ["127.0.0.1"];
-const host = hostParts[0];
-const port = process.env.REDIS_PORT || hostParts[1] || 6379;
-const password = process.env.REDIS_PASSWORD || undefined;
+import { sharedQueueConnection, connectionConfig } from "../config/bullmqConnection.js";
 
-const connection = { host, port, password };
+export const supportQueue = new Queue("support", { connection: sharedQueueConnection });
 
-export const supportQueue = new Queue("support", { connection });
+supportQueue.on("error", (err) => logger.warn(`[BullMQ] supportQueue error: ${err.message}`));
 
 export const supportWorker = new Worker("support", async (job) => {
   try {
@@ -72,7 +69,9 @@ export const supportWorker = new Worker("support", async (job) => {
     logger.error(`Error processing job ${job.name} in supportQueue:`, { message: error.message });
     throw error;
   }
-}, { connection });
+}, { connection: connectionConfig });
+
+supportWorker.on("error", (err) => logger.warn(`[BullMQ] supportWorker connection error: ${err.message}`));
 
 // Schedule auto-close to run every hour
 supportQueue.add("ticket.auto_close", {}, {

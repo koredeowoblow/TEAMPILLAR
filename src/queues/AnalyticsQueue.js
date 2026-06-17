@@ -8,14 +8,13 @@ import { logger } from "../core/logger.js";
 import { Queue, Worker } from "bullmq";
 import "../config/env.js";
 
-const hostParts = process.env.REDIS_HOST ? process.env.REDIS_HOST.split(":") : ["127.0.0.1"];
-const host = hostParts[0];
-const port = process.env.REDIS_PORT || hostParts[1] || 6379;
-const password = process.env.REDIS_PASSWORD || undefined;
+import { sharedQueueConnection, connectionConfig } from "../config/bullmqConnection.js";
 
-const connection = { host, port, password };
+export const analyticsQueue = new Queue("analytics", { connection: sharedQueueConnection });
 
-export const analyticsQueue = new Queue("analytics", { connection });
+analyticsQueue.on("error", (err) => {
+  logger.warn(`[BullMQ] analyticsQueue error: ${err.message}`);
+});
 
 function addAnalyticsJob(userId, sessionId) {
   // Using jobId based on userId ensures we don't have duplicate analytics jobs running concurrently for the same user
@@ -257,6 +256,10 @@ Please generate the tips, fill in the AI-generated fields for the focusAreas (co
 }, { 
   connection,
   concurrency: 5 // Rate limit Groq API concurrency
+});
+
+analyticsWorker.on("error", (err) => {
+  logger.warn(`[BullMQ] analyticsWorker connection error: ${err.message}`);
 });
 
 analyticsWorker.on('failed', (job, err) => {
