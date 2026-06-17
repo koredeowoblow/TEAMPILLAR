@@ -50,7 +50,7 @@ export const gradingWorker = new Worker("grading", async (job) => {
     throw error;
   }
 }, { 
-  connection: connectionConfig,
+  connection: sharedQueueConnection,
   concurrency: 10 // High throughput for DB operations
 });
 
@@ -74,7 +74,7 @@ export const scoreWorker = new Worker("scoring", async (job) => {
     throw error;
   }
 }, { 
-  connection: connectionConfig,
+  connection: sharedQueueConnection,
   concurrency: 50 // High concurrency since it's mostly computation and DB writes
 });
 

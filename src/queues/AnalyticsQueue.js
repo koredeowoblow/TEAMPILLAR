@@ -254,7 +254,7 @@ Please generate the tips, fill in the AI-generated fields for the focusAreas (co
     throw error; // Throw so BullMQ can retry
   }
 }, { 
-  connection,
+  connection: sharedQueueConnection,
   concurrency: 5 // Rate limit Groq API concurrency
 });
 

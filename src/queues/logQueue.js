@@ -20,7 +20,7 @@ export const logWorker = new Worker(
       logger.error(`Error processing job ${job.name} in logQueue:`, { message: error.message });
     }
   },
-  { connection: connectionConfig }
+  { connection: sharedQueueConnection }
 );
 
 logWorker.on("error", (err) => logger.warn(`[BullMQ] logWorker connection error: ${err.message}`));

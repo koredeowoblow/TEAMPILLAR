@@ -69,7 +69,7 @@ export const supportWorker = new Worker("support", async (job) => {
     logger.error(`Error processing job ${job.name} in supportQueue:`, { message: error.message });
     throw error;
   }
-}, { connection: connectionConfig });
+}, { connection: sharedQueueConnection });
 
 supportWorker.on("error", (err) => logger.warn(`[BullMQ] supportWorker connection error: ${err.message}`));
 
