@@ -41,6 +41,11 @@ class MockTestService {
       return acc;
     }, {});
 
+    const hasEnglish = subjects.some(s => s.name?.toLowerCase().includes("english"));
+    if (!hasEnglish) {
+      throw new AppError("English Language is compulsory for UTME mock tests. Please include English in your subjects.", 400);
+    }
+
     const { getRedisClient } = await import("../config/redis.js");
     const redisClient = await getRedisClient();
     const sessionAnswers = {};
@@ -64,7 +69,7 @@ class MockTestService {
           { $sample: { size: requiredQuestions } }
         ]);
       }
-      
+
       const formattedQuestions = questions.map(q => {
         const safeOptions = Array.isArray(q.options)
           ? q.options.map(o => ({ key: o.id || o.key, text: o.text, image: o.image }))
@@ -102,7 +107,7 @@ class MockTestService {
       userId: user._id,
       subjectIds: mockSubjects,
       isMockTest: true,
-      sessionType: "smart-mock", 
+      sessionType: "smart-mock",
       sessionStatus: "ACTIVE",
       questionIds: allQuestionIds,
       totalDuration: 7200,
@@ -138,15 +143,15 @@ class MockTestService {
         status: session.sessionStatus
       };
     }
-    
+
     if (session.sessionStatus !== "ACTIVE") throw new AppError("Session is not active", 400);
 
     const { getRedisClient } = await import("../config/redis.js");
     const redisClient = await getRedisClient();
-    
+
     let finalResponses = [];
     const progressData = await redisClient.get(`session:${sessionId}:progress`);
-    
+
     if (progressData) {
       finalResponses = JSON.parse(progressData).responses || [];
     } else if (responses && responses.length > 0) {
@@ -189,7 +194,7 @@ class MockTestService {
   static async processScoring(userId, sessionId, responses, options = {}) {
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
     const { default: User } = await import("../models/UserModel.js");
-    
+
     const session = await PracticeSessionModel.findById(sessionId);
     if (!session || session.sessionStatus !== "PENDING_GRADING") return;
 
@@ -201,7 +206,7 @@ class MockTestService {
 
     let sessionAnswers = {};
     const cachedAnswersData = await redisClient.get(`session:${sessionId}:answers`);
-    
+
     if (cachedAnswersData) {
       sessionAnswers = JSON.parse(cachedAnswersData);
     } else {
@@ -210,9 +215,9 @@ class MockTestService {
       sessionAnswers = questions.reduce((acc, q) => {
         const correct = Array.isArray(q.options) ? q.options.find(o => o.isCorrect) : null;
         acc[q._id.toString()] = {
-           subjectId: q.subjectId.toString(),
-           correctAnswer: correct ? (correct.id || correct.key) : null,
-           topic: q.metadata?.topic || "unknown"
+          subjectId: q.subjectId.toString(),
+          correctAnswer: correct ? (correct.id || correct.key) : null,
+          topic: q.metadata?.topic || "unknown"
         };
         return acc;
       }, {});
@@ -260,7 +265,7 @@ class MockTestService {
         questionId: r.questionId,
         selectedOption: r.selectedOption,
         timeTaken: r.timeTaken || 0,
-        isCorrect, 
+        isCorrect,
         correctAnswer: correctOptionId,
       });
 
@@ -270,10 +275,10 @@ class MockTestService {
     for (const qid of session.questionIds) {
       const qAnswer = sessionAnswers[qid.toString()];
       if (qAnswer && !responses.find(r => r.questionId.toString() === qid.toString())) {
-         const sid = qAnswer.subjectId;
-         if (subjectScoresMap[sid]) {
-           subjectScoresMap[sid].total += 1;
-         }
+        const sid = qAnswer.subjectId;
+        if (subjectScoresMap[sid]) {
+          subjectScoresMap[sid].total += 1;
+        }
       }
     }
 
@@ -325,21 +330,21 @@ class MockTestService {
     session.subjectScores = subjectScores;
     session.score = compositeScore;
     session.analytics = analytics;
-    
+
     await session.save();
 
     // Update user stats atomically
     const prevTotal = user.stats?.totalMocksTaken || 0;
-    const prevAvg   = user.stats?.avgMockScore    || 0;
-    const newTotal  = prevTotal + 1;
-    const newAvg    = Math.round(((prevAvg * prevTotal) + compositeScore) / newTotal);
-    const prevHigh  = user.stats?.highestMockScore || 0;
+    const prevAvg = user.stats?.avgMockScore || 0;
+    const newTotal = prevTotal + 1;
+    const newAvg = Math.round(((prevAvg * prevTotal) + compositeScore) / newTotal);
+    const prevHigh = user.stats?.highestMockScore || 0;
 
     const UserModel = (await import("../models/UserModel.js")).default;
     await UserModel.findByIdAndUpdate(userId, {
       $set: {
-        'stats.totalMocksTaken':  newTotal,
-        'stats.avgMockScore':     newAvg,
+        'stats.totalMocksTaken': newTotal,
+        'stats.avgMockScore': newAvg,
         'stats.highestMockScore': Math.max(prevHigh, compositeScore),
       }
     });
@@ -372,7 +377,7 @@ class MockTestService {
   static async getActiveSession(user) {
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
     const { getRedisClient } = await import("../config/redis.js");
-    
+
     const session = await PracticeSessionModel.findOne({
       userId: user._id,
       isMockTest: true,
@@ -391,8 +396,8 @@ class MockTestService {
       responses = parsed.responses || [];
       timeRemaining = parsed.timeRemaining !== undefined ? parsed.timeRemaining : timeRemaining;
     } else {
-       const elapsed = Math.floor((Date.now() - session.createdAt.getTime()) / 1000);
-       timeRemaining = Math.max(0, session.totalDuration - elapsed);
+      const elapsed = Math.floor((Date.now() - session.createdAt.getTime()) / 1000);
+      timeRemaining = Math.max(0, session.totalDuration - elapsed);
     }
 
     const questions = await Question.find({ _id: { $in: session.questionIds } }).lean();
@@ -432,7 +437,7 @@ class MockTestService {
   static async saveProgress(user, sessionId, responses, timeRemaining) {
     const { getRedisClient } = await import("../config/redis.js");
     const redisClient = await getRedisClient();
-    
+
     // TTL matches max exam duration (2 hours) plus 1 hour grace period
     await redisClient.setEx(
       `session:${sessionId}:progress`,
@@ -450,11 +455,11 @@ class MockTestService {
       isMockTest: true,
       sessionStatus: "COMPLETED"
     })
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .populate("subjectIds", "name")
-    .lean();
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("subjectIds", "name")
+      .lean();
 
     const total = await PracticeSessionModel.countDocuments({
       userId: user._id,
@@ -469,7 +474,7 @@ class MockTestService {
         compositeScore: s.compositeScore,
         subjectScores: s.subjectScores,
         totalDuration: s.totalDuration,
-        responses: s.responses 
+        responses: s.responses
       })),
       total,
       page,
