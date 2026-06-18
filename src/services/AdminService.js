@@ -542,7 +542,7 @@ class AdminService {
         const key = (s.name || "general").toLowerCase();
         if (!subjMap[key] || s.mastery < subjMap[key]) subjMap[key] = s.mastery;
       }
-      const pct = (v) => (v != null ? `${Math.round(v)}%` : "N/A");
+      const pct = (v) => (v != null ? `${Math.round(100 - v)}%` : "N/A");
       return {
         topic: row._id,
         english: pct(subjMap["english"]),
@@ -573,6 +573,36 @@ class AdminService {
       progress: `${Math.round(((u.stats?.predictedScore || 0) / 400) * 100)}%`,
     }));
 
+    // ── Most Struggled Subject ───────────────────────────────────────────────
+    const struggledSubjectAgg = await TopicPerformance.aggregate([
+      { $match: { totalAttempted: { $gt: 0 } } },
+      {
+        $group: {
+          _id: "$subjectId",
+          avgMastery: { $avg: "$masteryScore" }
+        }
+      },
+      { $sort: { avgMastery: 1 } },
+      { $limit: 1 },
+      {
+        $lookup: {
+          from: "subjects",
+          localField: "_id",
+          foreignField: "_id",
+          as: "subject"
+        }
+      },
+      { $unwind: { path: "$subject", preserveNullAndEmptyArrays: true } }
+    ]);
+    let mostStruggledSubject = null;
+    if (struggledSubjectAgg.length > 0) {
+      const subj = struggledSubjectAgg[0];
+      mostStruggledSubject = {
+        name: subj.subject?.name || "Unknown",
+        percent: Math.round(100 - (subj.avgMastery || 0))
+      };
+    }
+
     const result = {
       totalStudents,
       studentsTrend: "+5% vs last week", // trend requires time-series; kept as label
@@ -582,6 +612,7 @@ class AdminService {
       topPerformers,
       subjectHeatmap,
       needsAttention,
+      mostStruggledSubject,
     };
     await cache.set(cacheKey, result, 60); // Cache for 60 seconds
     return result;
