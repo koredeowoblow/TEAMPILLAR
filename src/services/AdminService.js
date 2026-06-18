@@ -645,6 +645,7 @@ class AdminService {
       .select("name stats.predictedScore")
       .lean();
     const needsAttention = needsAttentionRaw.map((u) => ({
+      id: String(u._id),
       name: u.name || "Student",
       score: `${u.stats?.predictedScore || 0}/400`,
       progress: `${Math.round(((u.stats?.predictedScore || 0) / 400) * 100)}%`,
