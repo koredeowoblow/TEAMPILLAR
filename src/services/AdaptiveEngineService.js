@@ -145,7 +145,7 @@ class AdaptiveEngineService {
       if (!userExists) return;
 
       const questionIds = sessionResponses.map(r => r.questionId);
-      const questions = await questionRepository.find({ _id: { $in: questionIds } }, { lean: true, select: "_id metadata.topic options.id options.isCorrect" });
+      const questions = await questionRepository.find({ _id: { $in: questionIds } }, { lean: true, select: "_id metadata.topic options.id options.isCorrect subjectId" });
       const qMap = new Map(questions.map(q => [String(q._id), q]));
 
       const currentSessionTopics = {};
@@ -157,32 +157,41 @@ class AdaptiveEngineService {
 
         const opt = q.options.find(o => o.id === r.selectedOption || o.key === r.selectedOption || o.text === r.selectedOption);
         const isCorrect = opt ? opt.isCorrect : false;
+        
+        const qSubjectId = q.subjectId ? String(q.subjectId) : subjectId;
+        const topicKey = `${qSubjectId}_${topicStr}`;
 
-        if (!currentSessionTopics[topicStr]) {
-          currentSessionTopics[topicStr] = { attempted: 0, correct: 0, totalTime: 0 };
+        if (!currentSessionTopics[topicKey]) {
+          currentSessionTopics[topicKey] = { attempted: 0, correct: 0, totalTime: 0, topicStr, subjectId: qSubjectId };
         }
-        currentSessionTopics[topicStr].attempted += 1;
-        if (isCorrect) currentSessionTopics[topicStr].correct += 1;
-        currentSessionTopics[topicStr].totalTime += Number(r.timeTaken || 0);
+        currentSessionTopics[topicKey].attempted += 1;
+        if (isCorrect) currentSessionTopics[topicKey].correct += 1;
+        currentSessionTopics[topicKey].totalTime += Number(r.timeTaken || 0);
       }
 
-      const topicIds = Object.keys(currentSessionTopics);
+      const topicIds = Object.values(currentSessionTopics).map(t => t.topicStr);
       if (topicIds.length === 0) return;
 
       // Fetch existing topic performance documents in one query
-      const existingPerfs = await TopicPerformance.find({ userId, topicId: { $in: topicIds } });
-      const perfMap = new Map(existingPerfs.map(p => [p.topicId, p]));
+      // Also match by subjectId to avoid cross-contamination
+      const subjectIds = Object.values(currentSessionTopics).map(t => t.subjectId);
+      const existingPerfs = await TopicPerformance.find({ 
+        userId, 
+        topicId: { $in: topicIds },
+        subjectId: { $in: subjectIds }
+      });
+      const perfMap = new Map(existingPerfs.map(p => [`${p.subjectId}_${p.topicId}`, p]));
 
-      const savePromises = Object.entries(currentSessionTopics).map(async ([topicStr, stats]) => {
-        let doc = perfMap.get(topicStr);
+      const savePromises = Object.entries(currentSessionTopics).map(async ([topicKey, stats]) => {
+        let doc = perfMap.get(topicKey);
         const sessionAcc = (stats.correct / stats.attempted) * 100;
         const avgTime = stats.totalTime / stats.attempted;
 
         if (!doc) {
           doc = new TopicPerformance({
             userId,
-            topicId: topicStr,
-            subjectId,
+            topicId: stats.topicStr,
+            subjectId: stats.subjectId,
             totalAttempted: stats.attempted,
             totalCorrect: stats.correct,
             averageTimeSpent: avgTime,
@@ -191,7 +200,6 @@ class AdaptiveEngineService {
           });
         } else {
           const prevTotalTime = doc.averageTimeSpent * doc.totalAttempted;
-          doc.subjectId = subjectId;
           doc.totalAttempted += stats.attempted;
           doc.totalCorrect += stats.correct;
           doc.averageTimeSpent = (prevTotalTime + stats.totalTime) / doc.totalAttempted;
