@@ -16,6 +16,9 @@ export const validateListStudents = [
     .optional()
     .isIn(["STUDENT", "TUTOR", "ADMIN"])
     .withMessage("invalid role"),
+  query("classArm").optional().isString().trim(),
+  query("subjectFilter").optional().isString().trim(),
+  query("scoreRange").optional().isString().trim(),
 ];
 
 // Get single student

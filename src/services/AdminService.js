@@ -14,7 +14,7 @@ function clamp(value, min, max) {
 }
 
 class AdminService {
-  static async listStudents({ page = 1, limit = 50, search = "" }) {
+  static async listStudents({ page = 1, limit = 50, search = "", classArm, subjectFilter, scoreRange }) {
     const skip = (page - 1) * limit;
 
     const matchStage = { role: "STUDENT" };
@@ -22,12 +22,23 @@ class AdminService {
       const regex = new RegExp(escapeRegex(search), "i");
       matchStage.$or = [{ name: regex }, { email: regex }];
     }
+    
+    if (classArm && classArm !== "All") {
+      matchStage["onboarding.courseOfStudy"] = classArm;
+    }
+    
+    if (subjectFilter && subjectFilter !== "All") {
+      const subj = await Subject.findOne({ name: subjectFilter });
+      if (subj) {
+        matchStage["onboarding.subjects"] = subj._id;
+      } else {
+        matchStage["onboarding.subjects"] = null;
+      }
+    }
 
     const pipeline = [
       { $match: matchStage },
       { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limit },
       {
         $lookup: {
           from: "practicesessions",
@@ -85,13 +96,52 @@ class AdminService {
           avgPercent: 1,
           recentScores: 1,
           previousScores: 1,
-          derivedSubjects: 1
+          derivedSubjects: 1,
+          avgScoreUTME: {
+            $cond: {
+              if: { $gt: [{ $multiply: ["$avgPercent", 4] }, 400] },
+              then: 400,
+              else: { $multiply: ["$avgPercent", 4] }
+            }
+          }
         }
       }
     ];
 
+    if (scoreRange && scoreRange !== "All") {
+      const [minScoreStr, maxScoreStr] = scoreRange.split("-");
+      const minScore = parseInt(minScoreStr, 10);
+      const maxScore = parseInt(maxScoreStr, 10);
+      if (!isNaN(minScore) && !isNaN(maxScore)) {
+        pipeline.push({
+          $match: {
+            avgScoreUTME: { $gte: minScore, $lte: maxScore }
+          }
+        });
+      }
+    }
+    
+    // Add pagination after all filters
+    pipeline.push(
+      { $skip: skip },
+      { $limit: limit }
+    );
+
     const users = await User.aggregate(pipeline);
-    const totalCount = await User.countDocuments(matchStage);
+    
+    // Calculate total count respecting scoreRange (which is computed)
+    let totalCount = 0;
+    if (scoreRange && scoreRange !== "All") {
+      const countPipeline = [...pipeline];
+      // remove skip and limit from count pipeline
+      countPipeline.pop();
+      countPipeline.pop();
+      countPipeline.push({ $count: "total" });
+      const countRes = await User.aggregate(countPipeline);
+      totalCount = countRes.length > 0 ? countRes[0].total : 0;
+    } else {
+      totalCount = await User.countDocuments(matchStage);
+    }
 
     // Extract all unique subject IDs across the current page of users
     // Include both practice-session derived IDs and onboarding.subjects IDs

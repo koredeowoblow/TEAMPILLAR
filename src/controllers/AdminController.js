@@ -41,11 +41,14 @@ class AdminController {
   /* ─────────────────── STUDENTS ─────────────────── */
 
   static async listStudents(req, res) {
-    const { page, limit, search } = req.query;
+    const { page, limit, search, classArm, subjectFilter, scoreRange } = req.query;
     const data = await AdminService.listStudents({
       page: Number.parseInt(page) || 1,
       limit: Number.parseInt(limit) || 10,
       search,
+      classArm,
+      subjectFilter,
+      scoreRange,
     });
     return sendSuccess(res, { data, message: "Students retrieved" });
   }
