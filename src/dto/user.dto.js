@@ -50,6 +50,7 @@ export function toAdminUserDTO(user) {
   return {
     ...toUserDTO(user),
     isAdmin:   u.isAdmin ?? false,
+    subscriptionDetails: u.subscriptionDetails ?? null,
     updatedAt: u.updatedAt,
   };
 }
