@@ -22,11 +22,11 @@ class AdminService {
       const regex = new RegExp(escapeRegex(search), "i");
       matchStage.$or = [{ name: regex }, { email: regex }];
     }
-    
+
     if (classArm && classArm !== "All") {
       matchStage["onboarding.courseOfStudy"] = classArm;
     }
-    
+
     if (subjectFilter && subjectFilter !== "All") {
       const subj = await Subject.findOne({ name: subjectFilter });
       if (subj) {
@@ -65,12 +65,12 @@ class AdminService {
       },
       {
         $addFields: {
-          sessionCount: { 
-            $cond: { 
-              if: { $gt: [{ $size: "$sessionCountArray" }, 0] }, 
-              then: { $arrayElemAt: ["$sessionCountArray.total", 0] }, 
-              else: 0 
-            } 
+          sessionCount: {
+            $cond: {
+              if: { $gt: [{ $size: "$sessionCountArray" }, 0] },
+              then: { $arrayElemAt: ["$sessionCountArray.total", 0] },
+              else: 0
+            }
           },
           avgPercent: {
             $cond: {
@@ -120,7 +120,7 @@ class AdminService {
         });
       }
     }
-    
+
     // Add pagination after all filters
     pipeline.push(
       { $skip: skip },
@@ -128,7 +128,7 @@ class AdminService {
     );
 
     const users = await User.aggregate(pipeline);
-    
+
     // Calculate total count respecting scoreRange (which is computed)
     let totalCount = 0;
     if (scoreRange && scoreRange !== "All") {
@@ -265,7 +265,7 @@ class AdminService {
         });
       }
     });
-    
+
     const subjects = subjectIdSet.size
       ? await Subject.find({ _id: { $in: Array.from(subjectIdSet) } }).select("_id name").lean()
       : [];
@@ -277,7 +277,7 @@ class AdminService {
     [...sessions].reverse().forEach((s) => {
       const date = new Date(s.createdAt).toISOString().split("T")[0];
       const isMock = s.sessionType === "smart-mock" || !s.subjectId;
-      
+
       if (isMock && Array.isArray(s.subjectScores) && s.subjectScores.length > 0) {
         s.subjectScores.forEach((sub) => {
           scoreHistory.push({
@@ -320,7 +320,7 @@ class AdminService {
       const score = s.score || 0;
       const maxScore = isMock ? 400 : 100;
       const pct = (score / maxScore) * 100;
-      
+
       let status = "On Track";
       let statusColor = "bg-green-50 text-green-600";
       if (pct < 40) { status = "Needs Review"; statusColor = "bg-amber-50 text-amber-600"; }
@@ -348,7 +348,7 @@ class AdminService {
     const subjectScoresMap = {};
     for (const s of sessions) {
       const isMock = s.sessionType === "smart-mock" || !s.subjectId;
-      
+
       if (isMock && Array.isArray(s.subjectScores) && s.subjectScores.length > 0) {
         for (const sub of s.subjectScores) {
           const subjId = String(sub.subjectId || "Unknown");
@@ -421,17 +421,17 @@ class AdminService {
     // Group distinct topics by subjectId in a single query
     const subjectIds = enrolledSubjects.map(s => s._id);
     const topicsAggregation = await Question.aggregate([
-      { 
-        $match: { 
-          subjectId: { $in: subjectIds }, 
-          "metadata.topic": { $exists: true, $ne: "" } 
-        } 
+      {
+        $match: {
+          subjectId: { $in: subjectIds },
+          "metadata.topic": { $exists: true, $ne: "" }
+        }
       },
-      { 
-        $group: { 
-          _id: "$subjectId", 
-          topics: { $addToSet: "$metadata.topic" } 
-        } 
+      {
+        $group: {
+          _id: "$subjectId",
+          topics: { $addToSet: "$metadata.topic" }
+        }
       }
     ]);
 
@@ -502,8 +502,29 @@ class AdminService {
   }
 
   static async sendReminder(ids) {
-    // Logic for sending notifications/emails
-    return { sent: ids.length };
+    if (!ids || !Array.isArray(ids) || ids.length === 0) return { count: 0 };
+
+    const users = await User.find({ _id: { $in: ids } });
+
+    let count = 0;
+    for (const user of users) {
+      if (!user.email) continue;
+
+      // Send Email
+      await EmailService.sendNudgeEmail(user.email, user.name || "Student");
+
+      // Send In-App Notification
+      await NotificationService.create({
+        userId: user._id,
+        type: "system",
+        title: "Time to Study!",
+        message: "We noticed you haven't been practicing lately. Jump back in to keep your streak alive and achieve your target score!"
+      });
+
+      count++;
+    }
+
+    return { count };
   }
 
   static async getDashboardStats() {
@@ -776,32 +797,6 @@ class AdminService {
   static async deleteQuestion(id) {
     await Question.findByIdAndDelete(id);
     return { success: true };
-  }
-
-  static async sendReminder(ids) {
-    if (!ids || !Array.isArray(ids) || ids.length === 0) return { count: 0 };
-
-    const users = await User.find({ _id: { $in: ids } });
-
-    let count = 0;
-    for (const user of users) {
-      if (!user.email) continue;
-
-      // Send Email
-      await EmailService.sendNudgeEmail(user.email, user.name || "Student");
-
-      // Send In-App Notification
-      await NotificationService.create({
-        userId: user._id,
-        type: "system",
-        title: "Time to Study!",
-        message: "We noticed you haven't been practicing lately. Jump back in to keep your streak alive and achieve your target score!"
-      });
-
-      count++;
-    }
-
-    return { count };
   }
 }
 
