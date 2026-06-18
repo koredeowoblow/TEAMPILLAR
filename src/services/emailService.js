@@ -344,7 +344,7 @@ class EmailService {
       </ul>
 
       <div style="text-align: center;">
-          <a href="${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard" class="button">Go to Dashboard</a>
+          <a href="${process.env.FRONTEND_URL || "https://team-pillar-frontend.onrender.com"}/student/dashboard" class="button">Go to Dashboard</a>
       </div>
       
       <p>We're here to support you every step of the way. If you have any questions, just reply to this email.</p>
@@ -360,7 +360,7 @@ class EmailService {
       Hello ${name},
       Welcome to Team Pillar! We're excited to have you on board.
       Your account has been successfully created. You can now start using all our features to boost your academic performance.
-      Visit your dashboard at: ${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard
+      Visit your dashboard at: ${process.env.FRONTEND_URL || "https://team-pillar-frontend.onrender.com"}/student/dashboard
       The Team Pillar Team
     `;
 
@@ -400,7 +400,7 @@ class EmailService {
       </div>
 
       <div style="text-align: center;">
-          <a href="${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard" class="button">Start Learning Now</a>
+          <a href="${process.env.FRONTEND_URL || "https://team-pillar-frontend.onrender.com"}/student/dashboard" class="button">Start Learning Now</a>
       </div>
       
       <p>Thank you for choosing Team Pillar to help you reach your academic goals!</p>
@@ -430,7 +430,7 @@ class EmailService {
       <p>Jump back in for a quick 15-minute practice session or catch up on your study planner. Every minute counts towards your academic goals.</p>
 
       <div style="text-align: center;">
-          <a href="${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard" class="button">Resume Studying</a>
+          <a href="${process.env.FRONTEND_URL || "https://team-pillar-frontend.onrender.com"}/student/dashboard" class="button">Resume Studying</a>
       </div>
       
       <p>You've got this! Let's get back to crushing those goals.</p>
@@ -446,7 +446,7 @@ class EmailService {
       Hello ${name},
       We noticed you haven't been practicing lately. Consistency is the key to acing your exams!
       Jump back in for a quick practice session.
-      Resume Studying: ${process.env.FRONTEND_URL || "https://teampillar.app"}/student/dashboard
+      Resume Studying: ${process.env.FRONTEND_URL || "https://team-pillar-frontend.onrender.com"}/student/dashboard
       Team Pillar
     `;
 
