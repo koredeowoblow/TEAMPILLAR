@@ -129,11 +129,13 @@ class AdminController {
       limit: parsedLimit,
       search: search || undefined,
     });
+    const mappedUsers = users.data.map(toAdminUserDTO);
     return sendSuccess(res, {
       message: "Users retrieved successfully",
       data: {
         ...users,
-        items: users.data.map(toAdminUserDTO),
+        data: mappedUsers,
+        items: mappedUsers,
       },
       statusCode: 200,
     });
