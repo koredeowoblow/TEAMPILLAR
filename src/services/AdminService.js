@@ -511,9 +511,15 @@ class AdminService {
     const heatmapAgg = await TopicPerformance.aggregate([
       { $match: { totalAttempted: { $gt: 0 } } },
       {
+        $group: {
+          _id: { topicId: "$topicId", subjectId: "$subjectId" },
+          avgMasterySubject: { $avg: "$masteryScore" }
+        }
+      },
+      {
         $lookup: {
           from: "subjects",
-          localField: "subjectId",
+          localField: "_id.subjectId",
           foreignField: "_id",
           as: "subject",
         },
@@ -521,12 +527,12 @@ class AdminService {
       { $unwind: { path: "$subject", preserveNullAndEmptyArrays: true } },
       {
         $group: {
-          _id: "$topicId",
-          avgMastery: { $avg: "$masteryScore" },
+          _id: "$_id.topicId",
+          avgMastery: { $avg: "$avgMasterySubject" },
           subjects: {
             $push: {
               name: { $ifNull: ["$subject.name", "General"] },
-              mastery: "$masteryScore",
+              mastery: "$avgMasterySubject",
             },
           },
         },
@@ -540,7 +546,7 @@ class AdminService {
       const subjMap = {};
       for (const s of row.subjects) {
         const key = (s.name || "general").toLowerCase();
-        if (!subjMap[key] || s.mastery < subjMap[key]) subjMap[key] = s.mastery;
+        subjMap[key] = s.mastery;
       }
       const pct = (v) => (v != null ? `${Math.round(100 - v)}%` : "N/A");
       return {
