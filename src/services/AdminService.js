@@ -509,7 +509,7 @@ class AdminService {
 
     // ── Subject heatmap (top 5 topics by failure rate, pivoted by subject) ──
     const heatmapAgg = await TopicPerformance.aggregate([
-      { $match: { totalAttempted: { $gt: 0 } } },
+      { $match: { totalAttempted: { $gte: 3 } } },
       {
         $group: {
           _id: { topicId: "$topicId", subjectId: "$subjectId" },
