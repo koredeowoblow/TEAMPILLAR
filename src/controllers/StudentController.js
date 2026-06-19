@@ -5,6 +5,7 @@ import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utils/AppError.js";
 import { toUserDTO } from "../dto/index.js";
 import FreemiumGuard from "../services/FreemiumGuard.js";
+import { invalidateCachedSessionUser } from "../utils/authSessionCache.js";
 
 /* ── UTME exam date: set UTME_DATE in .env as YYYY-MM-DD ── */
 function getDaysToExam() {
@@ -94,6 +95,10 @@ class StudentController {
     user.markModified("onboarding");
     const updated = await user.save();
 
+    if (req.tokenHash) {
+      await invalidateCachedSessionUser(req.tokenHash);
+    }
+
     return sendSuccess(res, {
       message: "Onboarding saved",
       data: toUserDTO(updated),
@@ -142,6 +147,10 @@ class StudentController {
       selectedSubjects: subjects,
       lastSubjectUpdate: new Date(),
     });
+
+    if (req.tokenHash) {
+      await invalidateCachedSessionUser(req.tokenHash);
+    }
 
     return sendSuccess(res, {
       message: "Subjects updated successfully",

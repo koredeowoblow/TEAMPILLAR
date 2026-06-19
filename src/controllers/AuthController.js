@@ -4,6 +4,8 @@ import LogService from "../services/LogService.js";
 import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
 import { toUserDTO, toAdminUserDTO, toSessionDTO } from "../dto/index.js";
+import { userRepository } from "../repository/UserRepository.js";
+import { invalidateCachedSessionUser } from "../utils/authSessionCache.js";
 
 class AuthController {
   // Register
@@ -284,6 +286,11 @@ class AuthController {
       data.photoUrl = url;
     }
     const profile = await AuthService.createOrUpdateProfile(userId, data);
+
+    if (req.tokenHash) {
+      await invalidateCachedSessionUser(req.tokenHash);
+    }
+
     return sendSuccess(res, {
       message: "Profile saved successfully",
       data: toUserDTO(profile),
@@ -546,8 +553,15 @@ class AuthController {
 
   // ─── GET /auth/onboarding-status ───────────────────────────────────────────
   static async getOnboardingStatus(req, res) {
-    const user = req.user;
-    if (!user) throw new AppError("Unauthorized", 401);
+    if (!req.user) throw new AppError("Unauthorized", 401);
+    
+    // Fetch fresh user data from DB so we don't rely on the cached session user
+    // which might not have the latest onboarding updates
+    const user = await userRepository.findById(req.user.id, { 
+      lean: true, 
+      select: "_id role isAdmin emailVerified onboarding" 
+    });
+    if (!user) throw new AppError("User not found", 404);
 
     // Admins have no student onboarding flow — always treat as complete
     if (user.isAdmin === true || (user.role || '').toUpperCase() !== 'STUDENT') {

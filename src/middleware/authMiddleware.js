@@ -177,6 +177,7 @@ export const protectUser = async (req, res, next) => {
 
     // Attach user to request object
     req.user = user;
+    req.tokenHash = tokenHash;
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
