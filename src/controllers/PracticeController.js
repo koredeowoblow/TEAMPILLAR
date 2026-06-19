@@ -78,8 +78,9 @@ class PracticeController {
     const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
     const limit = Math.max(Number.parseInt(req.query.limit, 10) || 50, 1);
     const userId = req.user?.id;
+    const isAdmin = req.user?.role === "ADMIN";
 
-    const result = await PracticeService.getSubjects({ page, limit, userId });
+    const result = await PracticeService.getSubjects({ page, limit, userId, isAdmin });
     return sendSuccess(res, {
       message: "Subjects retrieved",
       data: { ...result, data: result.data.map(toSubjectDTO) },
@@ -297,6 +298,7 @@ class PracticeController {
     if (code) subj.code = code;
     if (description !== undefined) subj.description = description;
     if (questionCount !== undefined) subj.questionCount = Number(questionCount);
+    if (req.body.isActive !== undefined) subj.isActive = Boolean(req.body.isActive);
     await subj.save();
     return sendSuccess(res, {
       message: "Subject updated",

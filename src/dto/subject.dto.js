@@ -21,6 +21,7 @@ export function toSubjectDTO(subject) {
     code:          s.code,
     description:   s.description ?? null,
     questionCount: s.questionCount ?? 0,
+    isActive:      s.isActive ?? true,
     createdAt:     s.createdAt,
   };
   // NEVER include: raw metadata object

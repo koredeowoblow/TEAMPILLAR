@@ -415,14 +415,18 @@ class PracticeQuestionService {
     }
   }
 
-  static async getSubjects({ page = 1, limit = 50, userId = null } = {}) {
+  static async getSubjects({ page = 1, limit = 50, userId = null, isAdmin = false } = {}) {
     const skip = (page - 1) * limit;
     let query = {};
+
+    if (!isAdmin) {
+      query.isActive = { $ne: false };
+    }
 
     if (userId) {
       const user = await userRepository.findById(userId, { lean: true, select: "selectedSubjects" });
       if (user && user.selectedSubjects && user.selectedSubjects.length > 0) {
-        query = { _id: { $in: user.selectedSubjects } };
+        query._id = { $in: user.selectedSubjects };
       }
     }
 

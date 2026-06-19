@@ -17,11 +17,13 @@
   "scripts": {
     "test": "jest --runInBand",
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "clean:generator": "node -e \"const fs=require('fs'); ['master_unique_questions_certified.json', 'generation_state.json', 'rejection_breakdown.json', 'rejection_summary.json', 'duplicate_audit_report.json', 'confidence_audit.json', 'drift_detection_report.json', 'human_review_sample.json'].forEach(f => { if(fs.existsSync(f)) fs.unlinkSync(f); console.log('Cleaned ' + f); });\""
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",
     "@socket.io/redis-adapter": "^8.3.0",
+    "@xenova/transformers": "^2.17.2",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.78.1",
     "cloudinary": "^2.10.0",

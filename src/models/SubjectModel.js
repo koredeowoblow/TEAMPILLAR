@@ -6,6 +6,7 @@ const SubjectSchema = new mongoose.Schema(
     code: { type: String, required: true, unique: true, index: true },
     description: { type: String },
     questionCount: { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true },
     metadata: { type: Object, default: {} },
   },
   { timestamps: true },

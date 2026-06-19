@@ -46,7 +46,7 @@ class AnalyticsService {
       { sort: { createdAt: 1 }, limit: 5000, lean: true, select: "createdAt" },
     );
 
-    const subjects = await Subject.find({}).select("_id name").lean();
+    const subjects = await Subject.find({ isActive: { $ne: false } }).select("_id name").lean();
     const subjectMap = {};
     subjects.forEach((subject) => {
       subjectMap[String(subject._id)] = subject.name;
@@ -314,7 +314,7 @@ class AnalyticsService {
       ? Math.max(...sessions.map((s) => s.score || 0))
       : 0;
 
-    const subjects = await Subject.find({}).select("_id name").lean();
+    const subjects = await Subject.find({ isActive: { $ne: false } }).select("_id name").lean();
     const subjectMap = {};
     subjects.forEach((subj) => {
       subjectMap[subj._id.toString()] = subj.name;

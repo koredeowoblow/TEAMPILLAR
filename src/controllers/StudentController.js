@@ -57,6 +57,11 @@ class StudentController {
         if (subjects.length > 6) {
           throw new AppError("You can select a maximum of 6 subjects", 400);
         }
+
+        const validSubjects = await Subject.find({ _id: { $in: subjects }, isActive: { $ne: false } }).lean();
+        if (validSubjects.length !== subjects.length) {
+          throw new AppError("One or more of the selected subjects are currently unavailable.", 400);
+        }
       }
       if (!user.onboarding) user.onboarding = {};
       user.onboarding.subjectsSelected = true;
@@ -109,6 +114,11 @@ class StudentController {
 
     if (subjects.length > 6) {
       throw new AppError("You can select a maximum of 6 subjects", 400);
+    }
+
+    const validSubjects = await Subject.find({ _id: { $in: subjects }, isActive: { $ne: false } }).lean();
+    if (validSubjects.length !== subjects.length) {
+      throw new AppError("One or more of the selected subjects are currently unavailable.", 400);
     }
 
     const user = await userRepository.findById(userId, { lean: true, select: "_id lastSubjectUpdate" });
@@ -193,17 +203,20 @@ class StudentController {
     const allSubjectIds = Array.from(new Set([...subjectIds, ...onboardingSubjectIds])).filter(Boolean);
 
     const subjectDocs = allSubjectIds.length
-      ? await Subject.find({ _id: { $in: allSubjectIds } }).select("_id name").lean()
+      ? await Subject.find({ _id: { $in: allSubjectIds }, isActive: { $ne: false } }).select("_id name").lean()
       : [];
     const subjectNameMap = {};
+    const activeSubjectIds = [];
     subjectDocs.forEach((d) => {
-      subjectNameMap[String(d._id)] = d.name;
+      const idStr = String(d._id);
+      subjectNameMap[idStr] = d.name;
+      activeSubjectIds.push(idStr);
     });
 
-    const subjectMastery = allSubjectIds.map((sId) => {
+    const subjectMastery = activeSubjectIds.map((sId) => {
       const scores = subjectScoreMap[sId]?.scores || [];
       return {
-        subject: subjectNameMap[sId] || "General",
+        subject: subjectNameMap[sId],
         score: scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0,
         fullMark: 100,
       };

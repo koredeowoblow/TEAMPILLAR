@@ -35,7 +35,11 @@ class MockTestService {
     const questionsBySubject = [];
     const allQuestionIds = [];
 
-    const subjects = await Subject.find({ _id: { $in: mockSubjects } }).lean();
+    const subjects = await Subject.find({ _id: { $in: mockSubjects }, isActive: { $ne: false } }).lean();
+    if (subjects.length !== mockSubjects.length) {
+      throw new AppError("One or more of your selected subjects are currently unavailable. Please update your subjects in your profile.", 400);
+    }
+
     const subjectMap = subjects.reduce((acc, s) => {
       acc[s._id.toString()] = s;
       return acc;

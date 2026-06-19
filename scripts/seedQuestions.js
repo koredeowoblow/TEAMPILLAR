@@ -15,7 +15,7 @@ dotenv.config({
 // DNS override for SRV resolution
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
-const JSON_PATH = resolve(process.cwd(), "jamb_questions.json");
+const JSON_PATH = resolve(process.cwd(), "master_unique_questions_certified.json");
 
 function toTitleCase(str) {
   if (!str) return "";
@@ -80,11 +80,20 @@ async function seed() {
     const rawData = fs.readFileSync(JSON_PATH, "utf8");
     const data = JSON.parse(rawData);
 
-    if (!data.subjects) {
-      throw new Error("No subjects found in JSON file");
+    const subjectsMap = {};
+    if (Array.isArray(data)) {
+      data.forEach(q => {
+        if (!q.subject) return;
+        if (!subjectsMap[q.subject]) subjectsMap[q.subject] = [];
+        subjectsMap[q.subject].push(q);
+      });
+    } else if (data.subjects) {
+      Object.assign(subjectsMap, data.subjects);
+    } else {
+      throw new Error("Invalid JSON format. Expected flat array or data.subjects object.");
     }
 
-    for (const [subjectName, questions] of Object.entries(data.subjects)) {
+    for (const [subjectName, questions] of Object.entries(subjectsMap)) {
       console.log(
         `\n📚 Processing ${subjectName} (${questions.length} questions)`
       );
@@ -116,8 +125,13 @@ async function seed() {
           options: Object.entries(q.options || {}).map(([key, text]) => ({
             id: key,
             text,
-            isCorrect: key === q.answer,
+            isCorrect: key === (q.correctAnswer || q.answer),
           })),
+
+          explanation: q.explanation,
+          explanationStatus: q.explanation ? "generated" : "pending",
+          explanationSource: q.explanation ? "ai" : "manual",
+          explanationGeneratedAt: q.explanation ? new Date() : null,
 
           metadata: {
             topic: q.topic || "General",
