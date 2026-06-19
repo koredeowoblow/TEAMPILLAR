@@ -438,6 +438,7 @@ class PracticeQuestionService {
       code: s.code,
       description: s.description,
       questionCount: Number(s.questionCount || 0),
+      isActive: s.isActive,
     }));
     return {
       data: mapped,
