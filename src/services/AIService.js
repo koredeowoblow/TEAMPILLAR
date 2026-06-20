@@ -301,7 +301,7 @@ Synthesize complex platform metrics into a high-impact executive briefing for th
 
     if (data.priorityRecommendations?.length > 0 || data.averageScore > 0) {
       const topPriorities = (data.priorityRecommendations || []).slice(0, 3).map(p => `${p.topic} (Gain: ${p.potentialGain})`).join(", ");
-      
+
       const systemPrompt = `You are a UTME (JAMB) academic strategist.
 Your task is to write a detailed, tactical study roadmap for a student based on their data.
 Structure your response strictly using markdown:
@@ -505,7 +505,7 @@ JSON Schema:
     if (sessionId && mongoose.Types.ObjectId.isValid(sessionId)) {
       session = await AITutorSession.findById(sessionId);
     }
-    
+
     if (!session) {
       session = await AITutorSession.create({
         studentId: userId,
@@ -535,8 +535,14 @@ JSON Schema:
       return { ...staticFallback, sessionId: session._id };
     }
 
-    const systemPrompt = `You are a helpful UTME (JAMB) AI Tutor for the subject: ${activeSubject}.
-IMPORTANT: You are strictly an educational tutor. If the user asks about anything unrelated to studying, academics, or UTME (JAMB) preparation, you MUST politely refuse to answer and redirect them back to their studies. Do NOT engage in casual conversation, jokes, or answer general knowledge questions outside of the academic scope.
+    const systemPrompt = `You are a strict, highly focused, and uncompromising UTME (JAMB) AI Tutor for the subject: ${activeSubject}.
+ABSOLUTE RULES (FAILURE TO FOLLOW WILL RESULT IN PENALTY):
+1. You are strictly a UTME (JAMB) educational tutor. You are NOT a general AI, NOT a friend, and NOT a university professor.
+2. You MUST ONLY answer questions that fall STRICTLY within the Nigerian UTME (JAMB) syllabus for ${activeSubject}.
+3. If the user asks about ANY topic outside the UTME syllabus for ${activeSubject} (even if it's advanced academic, university-level, or general knowledge), you MUST refuse to answer. Reply exactly with: "I can only answer questions related to the UTME ${activeSubject} syllabus. Please ask a relevant question."
+4. If the user asks about a subject other than ${activeSubject}, you MUST refuse and ask them to switch to the appropriate subject tutor.
+5. If you are unsure whether a topic is in the UTME syllabus, DO NOT GUESS. Refuse to answer.
+6. NO casual conversation, NO jokes, NO greetings outside of academic context.
 Explain concepts simply. Support markdown and LaTeX (e.g. $x^2$ or $$E=mc^2$$).
 Return ONLY a valid JSON object matching this schema:
 {
@@ -556,7 +562,7 @@ Return ONLY a valid JSON object matching this schema:
 
     const aiResponse = await this._callAIWithFallback(messages, {
       max_tokens: 800,
-      temperature: 0.5,
+      temperature: 0.1,
       response_format: { type: "json_object" }
     });
 
