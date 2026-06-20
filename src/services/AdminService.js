@@ -420,7 +420,7 @@ class AdminService {
     const user = await User.findById(studentId).lean();
     if (!user) throw new Error("Student not found");
 
-    const isPro = user.subscription?.status === "active" || user.role === "PRO"; // Adjust based on your pro logic
+    const isPro = ["active", "paid"].includes(user.subscriptionStatus);
 
     // Find all subjects
     const allSubjects = await Subject.find().select("_id name code description questionCount").lean();
