@@ -82,8 +82,8 @@ app.use(applySecurityHeaders);
 // CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean)
+    .map((origin) => origin.trim())
+    .filter(Boolean)
   : [];
 
 const corsOptions = {
@@ -104,8 +104,8 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   maxAge: 86400,
 };
-
-app.use(cors(corsOptions));
+//  pauesed it for the frontend to work on it for now
+// app.use(cors(corsOptions));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("tiny"));
