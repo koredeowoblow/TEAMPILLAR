@@ -7,6 +7,7 @@ import AIService from "./AIService.js";
 import { CONSTANTS } from "../config/constants.js";
 import FocusAreaAnalysisService from "./FocusAreaAnalysisService.js";
 import UserAnalytics from "../models/UserAnalyticsModel.js";
+import mongoose from "mongoose";
 
 const monthLabels = [
   "Jan",

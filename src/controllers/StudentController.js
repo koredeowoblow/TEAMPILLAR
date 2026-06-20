@@ -6,6 +6,7 @@ import { AppError } from "../utils/AppError.js";
 import { toUserDTO } from "../dto/index.js";
 import FreemiumGuard from "../services/FreemiumGuard.js";
 import { invalidateCachedSessionUser } from "../utils/authSessionCache.js";
+import mongoose from "mongoose";
 
 /* ── UTME exam date: set UTME_DATE in .env as YYYY-MM-DD ── */
 function getDaysToExam() {
