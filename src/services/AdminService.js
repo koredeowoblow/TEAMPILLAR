@@ -351,6 +351,7 @@ class AdminService {
       const timeSpent = minutes != null ? `${minutes}m ${String(seconds).padStart(2, "0")}s` : "—";
 
       return {
+        id: String(s._id),
         date: new Date(s.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
         subject: isMock ? "Full Mock" : (subjectMap[String(s.subjectId)] || "Practice"),
         sessionType: s.sessionType || "standard",
