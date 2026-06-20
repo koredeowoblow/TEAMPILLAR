@@ -297,85 +297,106 @@ class AnalyticsService {
   static async getStudentAnalytics(userId) {
     const user = await userRepository.findById(userId, { lean: true, select: "onboarding.targetScore" });
     if (!user) return { error: "User not found" };
-    const sessions = await practiceRepository.find(
-      { userId },
-      {
-        sort: { createdAt: -1 },
-        limit: 100,
-        lean: true,
-        select: "score createdAt subjectId analytics.topMistakeTopic sessionStatus analytics.speedPerQuestion"
-      },
+
+    const objectId = new mongoose.Types.ObjectId(userId);
+
+    // 1. Aggregation for overall stats (avg score, max score, total sessions, avg speed)
+    const statsAgg = await practiceRepository.aggregate([
+      { $match: { userId: objectId } },
+      { 
+        $group: { 
+          _id: null, 
+          totalSessions: { $sum: 1 },
+          averageScore: { $avg: "$score" },
+          overallScore: { $max: "$score" },
+          avgSpeed: { 
+            $avg: { 
+              $cond: [ { $eq: ["$sessionStatus", "COMPLETED"] }, "$analytics.speedPerQuestion", null ] 
+            } 
+          }
+        } 
+      }
+    ]);
+
+    const stats = statsAgg[0] || { totalSessions: 0, averageScore: 0, overallScore: 0, avgSpeed: 0 };
+    const avgScore = Math.round(stats.averageScore || 0);
+    const overallScore = Math.round(stats.overallScore || 0);
+    const total = stats.totalSessions || 0;
+    const averageTimePerQuestion = `${Math.round(stats.avgSpeed || 0)}s`;
+
+    // 2. Score History (limit 100)
+    const scoreHistoryDocs = await practiceRepository.find(
+      { userId: objectId },
+      { sort: { createdAt: -1 }, limit: 100, lean: true, select: "score createdAt" }
     );
-    const total = sessions.length;
-    const avgScore = total
-      ? Math.round(sessions.reduce((s, x) => s + (x.score || 0), 0) / total)
-      : 0;
-    const overallScore = total
-      ? Math.max(...sessions.map((s) => s.score || 0))
-      : 0;
-
-    const subjects = await Subject.find({ isActive: { $ne: false } }).select("_id name").lean();
-    const subjectMap = {};
-    subjects.forEach((subj) => {
-      subjectMap[subj._id.toString()] = subj.name;
-    });
-
-    const scoreHistory = sessions
+    const scoreHistory = scoreHistoryDocs
       .map((s) => ({
         date: new Date(s.createdAt).toISOString().split("T")[0],
         score: s.score || 0,
       }))
       .reverse();
 
-    const subjectScores = {};
-    for (const s of sessions) {
-      const subjId = String(s.subjectId || "Unknown");
-      if (!subjectScores[subjId]) {
-        subjectScores[subjId] = {
-          scores: [],
-          count: 0,
-          name: subjectMap[subjId] || subjId,
-        };
+    // 3. Subject Performance
+    const subjectAgg = await practiceRepository.aggregate([
+      { $match: { userId: objectId, score: { $ne: null } } },
+      {
+        $group: {
+          _id: "$subjectId",
+          score: { $avg: "$score" }
+        }
+      },
+      {
+        $lookup: {
+          from: "subjects",
+          localField: "_id",
+          foreignField: "_id",
+          as: "subjectDetails"
+        }
+      },
+      { $unwind: { path: "$subjectDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 0,
+          name: { $ifNull: ["$subjectDetails.name", "Unknown"] },
+          score: { $round: ["$score", 0] }
+        }
       }
-      subjectScores[subjId].scores.push(s.score || 0);
-      subjectScores[subjId].count += 1;
-    }
-    const subjectPerformance = Object.entries(subjectScores).map(([, data]) => {
-      const avgSubj = data.scores.length
-        ? Math.round(
-          data.scores.reduce((a, b) => a + b, 0) / data.scores.length,
-        )
-        : 0;
-      return { name: data.name, score: avgSubj };
-    });
+    ]);
+    const subjectPerformance = subjectAgg;
 
-    const topicCounts = {};
-    const topicSubjectMap = {};
-    for (const s of sessions) {
-      const topMistake = s.analytics?.topMistakeTopic;
-      if (topMistake) {
-        topicCounts[topMistake] = (topicCounts[topMistake] || 0) + 1;
-        const subjId = String(s.subjectId || "Unknown");
-        topicSubjectMap[topMistake] = subjectMap[subjId] || subjId;
+    // 4. Weak Topics
+    const weakTopicsAgg = await practiceRepository.aggregate([
+      { $match: { userId: objectId, "analytics.topMistakeTopic": { $exists: true, $ne: null } } },
+      {
+        $group: {
+          _id: { topic: "$analytics.topMistakeTopic", subjectId: "$subjectId" },
+          frequency: { $sum: 1 }
+        }
+      },
+      { $sort: { frequency: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: "subjects",
+          localField: "_id.subjectId",
+          foreignField: "_id",
+          as: "subjectDetails"
+        }
+      },
+      { $unwind: { path: "$subjectDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id.topic",
+          subject: { $ifNull: ["$subjectDetails.name", "Unknown"] },
+          frequency: 1
+        }
       }
-    }
-    const weakTopicsList = Object.keys(topicCounts)
-      .sort((a, b) => topicCounts[b] - topicCounts[a])
-      .slice(0, 5)
-      .map((topic) => ({
-        name: topic,
-        subject: topicSubjectMap[topic],
-        frequency: topicCounts[topic],
-      }));
-
-    const completedSessions = sessions.filter((s) => s.sessionStatus === "COMPLETED" && s.analytics?.speedPerQuestion);
-    const avgSpeedVal = completedSessions.length
-      ? Math.round(completedSessions.reduce((sum, s) => sum + (s.analytics.speedPerQuestion || 0), 0) / completedSessions.length)
-      : 0;
-    const averageTimePerQuestion = `${avgSpeedVal}s`;
+    ]);
+    const weakTopicsList = weakTopicsAgg;
 
     // Try to load pre-calculated background analytics
-    const preGenerated = await UserAnalytics.findOne({ userId }).lean();
+    const preGenerated = await UserAnalytics.findOne({ userId: objectId }).lean();
 
     let aiRecommendations;
     let focusAreas;

@@ -256,7 +256,7 @@ class AdminController {
     if (!userId) {
       return sendError(res, { message: "User ID is required", statusCode: 400 });
     }
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).lean();
     if (!user) {
       return sendError(res, { message: "User not found", statusCode: 404 });
     }

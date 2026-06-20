@@ -40,23 +40,32 @@ export const analyticsWorker = new Worker("analytics", async (job) => {
     const user = await User.findById(userId).lean();
     if (!user) {
       logger.warn(`User ${userId} not found, skipping job.`);
-      isProcessing = false;
       return;
     }
     const targetScore = user.onboarding?.targetScore || 280;
 
-    // 2. Fetch completed practice sessions
-    const sessions = await PracticeSession.find({ userId, sessionStatus: "COMPLETED" }).lean();
-    if (sessions.length === 0) {
+    // 2 & 3. Calculate overview metrics using Aggregation
+    const objectId = new mongoose.Types.ObjectId(userId);
+    const aggResult = await PracticeSession.aggregate([
+      { $match: { userId: objectId, sessionStatus: "COMPLETED" } },
+      { 
+        $group: { 
+          _id: null, 
+          totalSessions: { $sum: 1 }, 
+          avgScore: { $avg: "$score" }, 
+          overallAccuracy: { $avg: "$analytics.accuracy" } 
+        } 
+      }
+    ]);
+
+    if (!aggResult || aggResult.length === 0) {
       logger.info(`No completed sessions for user ${userId}, skipping job.`);
-      isProcessing = false;
       return;
     }
 
-    // 3. Calculate overview metrics
-    const totalSessions = sessions.length;
-    const avgScore = sessions.reduce((sum, s) => sum + (s.score || 0), 0) / totalSessions;
-    const overallAccuracy = sessions.reduce((sum, s) => sum + (s.analytics?.accuracy || 0), 0) / totalSessions;
+    const totalSessions = aggResult[0].totalSessions || 0;
+    const avgScore = aggResult[0].avgScore || 0;
+    const overallAccuracy = aggResult[0].overallAccuracy || 0;
 
     // 4. Fetch TopicPerformance
     const performances = await TopicPerformance.find({ userId }).lean();

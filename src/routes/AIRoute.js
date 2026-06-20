@@ -5,10 +5,10 @@ import { onboardingGuard } from "../middleware/onboardingGuard.js";
 import { tryCatch } from "../utils/try-catch.js";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/Validation/handleValidationErrors.js";
-import { generalLimiter } from "../middleware/rateLimiters.js";
+import { aiLimiter } from "../middleware/rateLimiters.js";
 
 const router = express.Router();
-router.use(generalLimiter);
+router.use(aiLimiter);
 
 // Generate explanation for a question
 router.post(

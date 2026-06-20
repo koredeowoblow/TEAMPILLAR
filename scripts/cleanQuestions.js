@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { resolve } from "path";
 import dns from "node:dns";
+import fs from "fs";
 
 import Subject from "../src/models/SubjectModel.js";
 import Question from "../src/models/QuestionModel.js";
@@ -68,8 +69,22 @@ async function clean() {
     // 2. Find and update years
     console.log("\n🔍 Extracting years using AI...");
     
-    // Fetch all questions to check for years
-    const questions = await Question.find({}).lean();
+    const stateCollection = mongoose.connection.db.collection("worker_states");
+    let lastProcessedId = null;
+    
+    try {
+      const state = await stateCollection.findOne({ _id: "cleanQuestions" });
+      if (state && state.lastProcessedId) {
+        lastProcessedId = state.lastProcessedId;
+        console.log(`\n♻️ Resuming after question ID ${lastProcessedId}`);
+      }
+    } catch (e) {
+      console.warn("Could not read state from MongoDB, starting from beginning");
+    }
+
+    // Fetch remaining questions to check for years
+    const query = lastProcessedId ? { _id: { $gt: new mongoose.Types.ObjectId(lastProcessedId) } } : {};
+    const questions = await Question.find(query).sort({ _id: 1 }).lean();
     let yearUpdates = 0;
     const yearRegex = /\b(19\d{2}|20[0-2]\d)\b/g;
 
@@ -88,7 +103,7 @@ async function clean() {
         try {
           const aiResponse = await AIService._callAIWithFallback([{
             role: "system",
-            content: `You are a UTME (JAMB) expert. Examine the question and determine the EXACT year it appeared in past exams. If you DO NOT know the precise year for a fact, return { "year": null }. DO NOT guess or estimate.`
+            content: `You are a UTME (JAMB) expert. Examine the question and determine the EXACT year it appeared in past exams. If you DO NOT know the precise year for a fact, return { "year": null }. DO NOT guess or estimate. Output strictly in JSON.`
           }, {
             role: "user",
             content: `Question: ${q.content?.text || "N/A"}`
@@ -116,8 +131,21 @@ async function clean() {
         await Question.updateOne({ _id: q._id }, { $unset: { "metadata.year": "" } });
         console.log(`[${i+1}/${questions.length}] Cleared fake year for Question ${q._id}`);
       }
+
+      // Save state to MongoDB
+      if ((i + 1) % 10 === 0 || i === questions.length - 1) {
+        await stateCollection.updateOne(
+          { _id: "cleanQuestions" },
+          { $set: { lastProcessedId: String(q._id), updatedAt: new Date() } },
+          { upsert: true }
+        );
+      }
     }
-    console.log(`✅ AI assigned years for ${yearUpdates} questions.`);
+    
+    // Clear state when done
+    await stateCollection.deleteOne({ _id: "cleanQuestions" });
+    
+    console.log(`✅ AI assigned years for ${yearUpdates} questions in this run.`);
 
 
 

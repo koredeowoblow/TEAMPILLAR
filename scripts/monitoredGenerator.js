@@ -85,9 +85,20 @@ let generationState = {
   currentTopic: null
 };
 
-if (fs.existsSync(STATE_PATH)) {
+import { getRedisClient } from "../src/config/redis.js";
+const redisClient = await getRedisClient();
+
+const redisState = await redisClient.get("monitored_generator_state");
+if (redisState) {
+  try {
+    generationState = JSON.parse(redisState);
+    console.log(`♻️ Resuming generation from Redis state. Accepted so far: ${generationState.acceptedQuestions}`);
+  } catch (e) {
+    console.warn("Could not parse Redis state", e);
+  }
+} else if (fs.existsSync(STATE_PATH)) {
   generationState = JSON.parse(fs.readFileSync(STATE_PATH, "utf8"));
-  console.log(`♻️ Resuming generation from state. Accepted so far: ${generationState.acceptedQuestions}`);
+  console.log(`♻️ Resuming generation from legacy file state. Accepted so far: ${generationState.acceptedQuestions}`);
 }
 
 function cosineSimilarity(vecA, vecB) {
@@ -370,7 +381,7 @@ Example format: {"questions": [{"question":"","options":{"A":"","B":"","C":"","D
     const avgConf = batchAccepted > 0 ? (totalConf / batchAccepted) : 0;
 
     generationState.lastBatchId = `BATCH_${Date.now()}`;
-    fs.writeFileSync(STATE_PATH, JSON.stringify(generationState, null, 2));
+    await redisClient.set("monitored_generator_state", JSON.stringify(generationState));
 
     const batchReport = {
       batchId: generationState.lastBatchId,

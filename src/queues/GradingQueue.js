@@ -40,9 +40,10 @@ export const gradingWorker = new Worker("grading", async (job) => {
     const { userId, subjectIds, processedResponses } = job.data;
     const { default: AdaptiveEngineService } = await import("../services/AdaptiveEngineService.js");
 
-    for (const sid of subjectIds) {
-      await AdaptiveEngineService.updateTopicPerformance(userId, processedResponses, sid);
-    }
+    const updatePromises = subjectIds.map(sid => 
+      AdaptiveEngineService.updateTopicPerformance(userId, processedResponses, sid)
+    );
+    await Promise.all(updatePromises);
     
     logger.info(`Successfully processed grading job for user ${userId}`);
   } catch (error) {

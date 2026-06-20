@@ -15,7 +15,7 @@ const getStore = async (prefix) => {
 };
 
 // Initialize stores asynchronously
-let authStore, paymentStore, chatStore, generalStore, adminStore;
+let authStore, paymentStore, chatStore, generalStore, adminStore, aiStore;
 let hasWarnedFallback = false;
 
 const warnFallbackOnce = () => {
@@ -38,6 +38,7 @@ const attachStoresWhenRedisReady = async () => {
       chatStore = await getStore("chat");
       generalStore = await getStore("general");
       adminStore = await getStore("admin");
+      aiStore = await getStore("ai");
       logger.info("Rate limiter Redis stores attached");
     };
 
@@ -59,6 +60,7 @@ const attachStoresWhenRedisReady = async () => {
       chatStore = undefined;
       generalStore = undefined;
       adminStore = undefined;
+      aiStore = undefined;
       warnFallbackOnce();
     });
   } catch (_err) {
@@ -157,5 +159,23 @@ export const adminLimiter = rateLimit({
   get store() {
     if (!adminStore) warnFallbackOnce();
     return adminStore;
+  },
+});
+
+export const aiLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 100, // 100 AI requests per hour per user/IP
+  message: "Too many AI requests. Please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+  skip: () => process.env.NODE_ENV === "test",
+  keyGenerator: (req, res) => {
+    return req.user ? req.user._id.toString() : ipKeyGenerator(req, res);
+  },
+  handler,
+  get store() {
+    if (!aiStore) warnFallbackOnce();
+    return aiStore;
   },
 });

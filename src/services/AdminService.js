@@ -656,7 +656,7 @@ class AdminService {
     const needsAttentionRaw = await User.find({
       role: "STUDENT",
       _id: { $in: recentActiveIds },
-      "stats.predictedScore": { $gt: 0 },
+      "stats.predictedScore": { $gt: 0, $lt: 200 },
     })
       .sort({ "stats.predictedScore": 1 })
       .limit(5)

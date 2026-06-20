@@ -3,6 +3,7 @@ import User from "../models/UserModel.js";
 import Question from "../models/QuestionModel.js";
 import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utils/AppError.js";
+import QuestionPoolService from "./QuestionPoolService.js";
 
 class MockTestService {
   static async startMockTest(user, requestedSubjectIds = null) {
@@ -55,39 +56,31 @@ class MockTestService {
     const sessionAnswers = {};
 
     // Query 60 questions for English, 40 for other subjects
-    for (const subjectId of mockSubjects) {
+    // Query 60 questions for English, 40 for other subjects concurrently
+    const subjectPromises = mockSubjects.map(async (subjectId) => {
       let questions = [];
       const isEnglish = subjectMap[subjectId.toString()]?.name?.toLowerCase().includes("english");
       const requiredQuestions = isEnglish ? 60 : 40;
 
-      const poolKeys = await redisClient.keys(`pool:subject:${subjectId}:*`);
-      if (poolKeys && poolKeys.length > 0) {
-        const randomKey = poolKeys[Math.floor(Math.random() * poolKeys.length)];
-        const poolData = await redisClient.get(randomKey);
-        if (poolData) questions = JSON.parse(poolData).slice(0, requiredQuestions);
-      }
+      questions = await QuestionPoolService.getRandomQuestionsBySubject(subjectId, requiredQuestions);
 
-      if (questions.length < requiredQuestions) {
-        questions = await Question.aggregate([
-          { $match: { subjectId: new mongoose.Types.ObjectId(subjectId), "metadata.difficulty": { $in: ["easy", "medium", "hard"] } } },
-          { $sample: { size: requiredQuestions } }
-        ]);
-      }
+      const formattedQuestions = [];
+      const localAnswers = {};
 
-      const formattedQuestions = questions.map(q => {
+      questions.forEach(q => {
         const safeOptions = Array.isArray(q.options)
           ? q.options.map(o => ({ key: o.id || o.key, text: o.text, image: o.image }))
           : [];
 
         // Save correct answer for fast grading
         const correctOpt = Array.isArray(q.options) ? q.options.find(o => o.isCorrect) : null;
-        sessionAnswers[q._id.toString()] = {
+        localAnswers[q._id.toString()] = {
           subjectId: q.subjectId.toString(),
           correctAnswer: correctOpt ? (correctOpt.id || correctOpt.key) : null,
           topic: q.metadata?.topic || "unknown"
         };
 
-        return {
+        formattedQuestions.push({
           _id: q._id,
           subjectId: q.subjectId,
           subject: {
@@ -98,11 +91,17 @@ class MockTestService {
           content: q.content,
           options: safeOptions,
           metadata: q.metadata
-        };
+        });
       });
 
-      questionsBySubject.push(...formattedQuestions);
-      allQuestionIds.push(...formattedQuestions.map(q => q._id));
+      return { formattedQuestions, localAnswers };
+    });
+
+    const results = await Promise.all(subjectPromises);
+    for (const res of results) {
+      questionsBySubject.push(...res.formattedQuestions);
+      allQuestionIds.push(...res.formattedQuestions.map(q => q._id));
+      Object.assign(sessionAnswers, res.localAnswers);
     }
 
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
@@ -134,25 +133,10 @@ class MockTestService {
 
   static async submitMockTest(user, sessionId, responses, options = {}) {
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
-    const session = await PracticeSessionModel.findOne({ _id: sessionId, userId: user._id });
-
-    if (!session) throw new AppError("Session not found", 404);
-
-    if (session.sessionStatus === "COMPLETED" || session.sessionStatus === "PENDING_GRADING") {
-      return {
-        compositeScore: session.compositeScore || session.score || 0,
-        subjectScores: session.subjectScores || [],
-        sessionId: session._id,
-        timeTaken: session.timeTaken || 0,
-        status: session.sessionStatus
-      };
-    }
-
-    if (session.sessionStatus !== "ACTIVE") throw new AppError("Session is not active", 400);
-
     const { getRedisClient } = await import("../config/redis.js");
     const redisClient = await getRedisClient();
 
+    // 1. Resolve responses
     let finalResponses = [];
     const progressData = await redisClient.get(`session:${sessionId}:progress`);
 
@@ -165,22 +149,39 @@ class MockTestService {
       console.warn(`[MockTestService] Sweeper finalizing session ${sessionId} with zero responses.`);
       finalResponses = [];
     } else {
-      console.warn(`[MockTestService] Redis cache missing and no fallback payload provided for session ${sessionId}. Requesting full payload.`);
       throw new AppError("requiresFullPayload", 400);
     }
 
     const { tabSwitches = 0, ipAddress = null } = options;
     const flagged = tabSwitches > 3;
 
-    session.sessionStatus = "PENDING_GRADING";
-    session.responses = finalResponses;
-    session.security = {
-      tabSwitches,
-      ipAddress,
-      flagged
-    };
-    session.endTime = new Date();
-    await session.save();
+    // 2. Atomic Transition (Idempotency Lock)
+    const session = await PracticeSessionModel.findOneAndUpdate(
+      { _id: sessionId, userId: user._id, sessionStatus: "ACTIVE" },
+      { 
+        $set: { 
+          sessionStatus: "PENDING_GRADING", 
+          responses: finalResponses, 
+          endTime: new Date(),
+          security: { tabSwitches, ipAddress, flagged }
+        } 
+      },
+      { new: true }
+    );
+
+    if (!session) {
+      // It's either missing, or already submitted. Fetch to return safe state.
+      const existing = await PracticeSessionModel.findOne({ _id: sessionId, userId: user._id });
+      if (!existing) throw new AppError("Session not found", 404);
+      
+      return {
+        compositeScore: existing.compositeScore || existing.score || 0,
+        subjectScores: existing.subjectScores || [],
+        sessionId: existing._id,
+        timeTaken: existing.timeTaken || 0,
+        status: existing.sessionStatus
+      };
+    }
 
     try {
       const { addScoreJob } = await import("../queues/GradingQueue.js");

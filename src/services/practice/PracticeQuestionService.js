@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import AdaptiveEngineService from "../AdaptiveEngineService.js";
 import { AppError } from "../../utils/AppError.js";
 import { resolveSubjectId } from "../../utils/subjectResolver.js";
-
+import QuestionPoolService from "../QuestionPoolService.js";
 class PracticeQuestionService {
   static async getQuestionsForSubject(
     subjectId,
@@ -136,48 +136,22 @@ class PracticeQuestionService {
           if (difficulty) subMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
           if (year) subMatchStage["metadata.year"] = Number(year);
 
-          const subPipeline = [
-            { $match: subMatchStage },
-            { $sample: { size: currentLimit } },
-            projectionStage
-          ];
-          let subQuestions = await questionRepository.aggregate(subPipeline);
+          const poolFilters = {};
+          if (subMatchStage["metadata.topic"]) poolFilters.topic = subMatchStage["metadata.topic"];
+          if (subMatchStage["metadata.difficulty"]) poolFilters.difficulty = subMatchStage["metadata.difficulty"];
 
+          let subQuestions = await QuestionPoolService.getRandomFilteredQuestions(currentSubId, poolFilters, currentLimit);
+
+          // Fallback if we didn't get enough questions
           if (subQuestions.length < currentLimit) {
-            let fallbackLimit = currentLimit - subQuestions.length;
-            let fallbackMatchStage = { subjectId: currentSubId };
-            if (sessionTopic) fallbackMatchStage["metadata.topic"] = sessionTopic;
-            if (difficulty) fallbackMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
-            if (year) fallbackMatchStage["metadata.year"] = Number(year);
-
-            let foundIds = subQuestions.map(q => q._id);
-            if (foundIds.length > 0) {
-              fallbackMatchStage._id = { $nin: foundIds };
-            }
-
-            let fallbackPipeline = [
-              { $match: fallbackMatchStage },
-              { $sample: { size: fallbackLimit } },
-              projectionStage
-            ];
-            let fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
-            subQuestions = subQuestions.concat(fallbackQuestions);
-
-            if (subQuestions.length < currentLimit) {
-              fallbackLimit = currentLimit - subQuestions.length;
-              foundIds = subQuestions.map(q => q._id);
-              fallbackMatchStage = { subjectId: currentSubId };
-              if (sessionTopic) fallbackMatchStage["metadata.topic"] = sessionTopic;
-              if (foundIds.length > 0) {
-                fallbackMatchStage._id = { $nin: foundIds };
+            const extraCount = currentLimit - subQuestions.length;
+            const extraQuestions = await QuestionPoolService.getRandomQuestionsBySubject(currentSubId, extraCount);
+            
+            const existingIds = new Set(subQuestions.map(q => q._id.toString()));
+            for (const eq of extraQuestions) {
+              if (!existingIds.has(eq._id.toString())) {
+                subQuestions.push(eq);
               }
-              fallbackPipeline = [
-                { $match: fallbackMatchStage },
-                { $sample: { size: fallbackLimit } },
-                projectionStage
-              ];
-              fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
-              subQuestions = subQuestions.concat(fallbackQuestions);
             }
           }
 
@@ -306,69 +280,27 @@ class PracticeQuestionService {
         matchStage["metadata.difficulty"] = difficulty.toLowerCase();
       if (year) matchStage["metadata.year"] = Number(year);
 
-      const pipeline = [
-        { $match: matchStage },
-        { $sample: { size: Number(limit) } },
-        projectionStage
-      ];
+      const poolFilters = {};
+      if (matchStage["metadata.topic"]) poolFilters.topic = matchStage["metadata.topic"];
+      if (matchStage["metadata.difficulty"]) poolFilters.difficulty = matchStage["metadata.difficulty"];
 
-      let questions = await questionRepository.aggregate(pipeline);
+      let questions = await QuestionPoolService.getRandomFilteredQuestions(resolvedSubjectId, poolFilters, Number(limit));
+
+      // Filter out excluded IDs in memory
+      if (excludedIds.size > 0) {
+        questions = questions.filter(q => !excludedIds.has(q._id.toString()));
+      }
 
       if (!deterministic && questions.length < limit) {
         let fallbackLimit = limit - questions.length;
-        let foundIds = questions.map((q) => q._id);
-        let fallbackMatchStage = { subjectId: resolvedSubjectId };
-        if (sessionTopic) fallbackMatchStage["metadata.topic"] = sessionTopic;
-        if (difficulty)
-          fallbackMatchStage["metadata.difficulty"] = difficulty.toLowerCase();
-        if (year) fallbackMatchStage["metadata.year"] = Number(year);
-
-        let allExcluded = [
-          ...Array.from(excludedIds),
-          ...foundIds.map(id => String(id)),
-        ]
-          .filter((id, idx, arr) => arr.indexOf(id) === idx)
-          .filter(id => mongoose.Types.ObjectId.isValid(id))
-          .map(id => new mongoose.Types.ObjectId(id));
-
-        if (allExcluded.length > 0) {
-          fallbackMatchStage._id = { $nin: allExcluded };
-        }
-
-        let fallbackPipeline = [
-          { $match: fallbackMatchStage },
-          { $sample: { size: fallbackLimit } },
-          projectionStage
-        ];
-        let fallbackQuestions =
-          await questionRepository.aggregate(fallbackPipeline);
-        questions = questions.concat(fallbackQuestions);
-
-        if (questions.length < limit) {
-          fallbackLimit = limit - questions.length;
-          foundIds = questions.map((q) => q._id);
-          fallbackMatchStage = { subjectId: resolvedSubjectId };
-          if (sessionTopic) fallbackMatchStage["metadata.topic"] = sessionTopic;
-
-          if (foundIds.length > 0) {
-            fallbackMatchStage._id = {
-              $nin: foundIds
-                .map(id => String(id))
-                .filter((id, idx, arr) => arr.indexOf(id) === idx)
-                .filter(id => mongoose.Types.ObjectId.isValid(id))
-                .map(id => new mongoose.Types.ObjectId(id)),
-            };
+        let extraQuestions = await QuestionPoolService.getRandomQuestionsBySubject(resolvedSubjectId, fallbackLimit);
+        
+        let existingIds = new Set(questions.map(q => q._id.toString()));
+        for (const eq of extraQuestions) {
+          if (!existingIds.has(eq._id.toString()) && !excludedIds.has(eq._id.toString())) {
+            questions.push(eq);
           }
-
-          fallbackPipeline = [
-            { $match: fallbackMatchStage },
-            { $sample: { size: fallbackLimit } },
-            projectionStage
-          ];
-          fallbackQuestions = await questionRepository.aggregate(fallbackPipeline);
-          questions = questions.concat(fallbackQuestions);
         }
-
       }
 
       const safe = questions.map((q) => {

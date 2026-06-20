@@ -444,62 +444,60 @@ JSON Schema:
     return result;
   }
 
+  static TUTOR_FALLBACKS_BY_SUBJECT = {
+    English: {
+      reply: "Welcome to English UTME prep! In JAMB English, Lexis and Structure, Concord, and Comprehension are heavily tested. For instance, did you know that when singular subjects are connected by 'or' or 'nor', they take a singular verb? E.g., 'Neither the teacher nor the student is here.' How can I help you excel in English today?",
+      suggestedFollowUps: [
+        "Explain the rules of Concord.",
+        "Give me a practice question on synonyms.",
+        "Explain the difference between active and passive voice."
+      ],
+      topicsReferenced: ["Concord", "Grammar"]
+    },
+    Mathematics: {
+      reply: "Let's master Mathematics! From algebra and trigonometry to calculus, we can break down any formula step-by-step. For example, to find the roots of a quadratic equation $ax^2 + bx + c = 0$, we use the formula:\n\n$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$\n\nWhat concept or formula should we tackle first?",
+      suggestedFollowUps: [
+        "Show me how to solve a quadratic equation.",
+        "Explain differentiation from first principles.",
+        "Solve a probability question."
+      ],
+      topicsReferenced: ["Quadratic Equations", "Algebra"]
+    },
+    Physics: {
+      reply: "Physics is all about understanding the physical laws of nature. Whether it's mechanics, waves, electricity, or modern physics, we can make it simple. For instance, the equations of linear motion are:\n\n1. $v = u + at$\n2. $s = ut + \\frac{1}{2}at^2$\n3. $v^2 = u^2 + 2as$\n\nWhere $u$ is initial velocity, $v$ is final velocity, $a$ is acceleration, and $t$ is time. What topic are you working on?",
+      suggestedFollowUps: [
+        "Derive the equations of motion.",
+        "Explain Newton's laws of motion.",
+        "How does electromagnetic induction work?"
+      ],
+      topicsReferenced: ["Equations of Motion", "Mechanics"]
+    },
+    Chemistry: {
+      reply: "Let's explore Chemistry! Understanding the periodic table, chemical bonding, stoichiometry, and organic chemistry is key to scoring 90+ in Chemistry. For example, to calculate the number of moles ($n$), we use:\n\n$$n = \\frac{\\text{mass (g)}}{\\text{molar mass (g/mol)}}$$\n\nWhat chemical reactions or formulas are puzzling you today?",
+      suggestedFollowUps: [
+        "Explain balancing chemical equations.",
+        "What is Faraday's first law of electrolysis?",
+        "Explain the difference between alkanes and alkenes."
+      ],
+      topicsReferenced: ["Stoichiometry", "Basic Concepts"]
+    },
+    General: {
+      reply: "Hello! I am your Pillar AI Tutor. I can help you prepare for all your UTME core subjects. We can solve equations, analyze texts, study chemical reactions, or go through physics derivations. What subject are we focusing on today?",
+      suggestedFollowUps: [
+        "Give me study tips for UTME.",
+        "How do I manage my time during the exam?",
+        "Create a study schedule for my 4 subjects."
+      ],
+      topicsReferenced: ["UTME Strategy", "General Study"]
+    }
+  };
+
   /**
    * Generates a conversational AI Tutor reply customized for the Nigerian UTME context.
    */
   static async generateTutorChatReply({ userId, message, subject, sessionId, history }) {
     const activeSubject = subject || "General";
-
-    // Rich subject-based fallback config if AI fails or Groq is not available
-    const fallbacksBySubject = {
-      English: {
-        reply: "Welcome to English UTME prep! In JAMB English, Lexis and Structure, Concord, and Comprehension are heavily tested. For instance, did you know that when singular subjects are connected by 'or' or 'nor', they take a singular verb? E.g., 'Neither the teacher nor the student is here.' How can I help you excel in English today?",
-        suggestedFollowUps: [
-          "Explain the rules of Concord.",
-          "Give me a practice question on synonyms.",
-          "Explain the difference between active and passive voice."
-        ],
-        topicsReferenced: ["Concord", "Grammar"]
-      },
-      Mathematics: {
-        reply: "Let's master Mathematics! From algebra and trigonometry to calculus, we can break down any formula step-by-step. For example, to find the roots of a quadratic equation $ax^2 + bx + c = 0$, we use the formula:\n\n$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$\n\nWhat concept or formula should we tackle first?",
-        suggestedFollowUps: [
-          "Show me how to solve a quadratic equation.",
-          "Explain differentiation from first principles.",
-          "Solve a probability question."
-        ],
-        topicsReferenced: ["Quadratic Equations", "Algebra"]
-      },
-      Physics: {
-        reply: "Physics is all about understanding the physical laws of nature. Whether it's mechanics, waves, electricity, or modern physics, we can make it simple. For instance, the equations of linear motion are:\n\n1. $v = u + at$\n2. $s = ut + \\frac{1}{2}at^2$\n3. $v^2 = u^2 + 2as$\n\nWhere $u$ is initial velocity, $v$ is final velocity, $a$ is acceleration, and $t$ is time. What topic are you working on?",
-        suggestedFollowUps: [
-          "Derive the equations of motion.",
-          "Explain Newton's laws of motion.",
-          "How does electromagnetic induction work?"
-        ],
-        topicsReferenced: ["Equations of Motion", "Mechanics"]
-      },
-      Chemistry: {
-        reply: "Let's explore Chemistry! Understanding the periodic table, chemical bonding, stoichiometry, and organic chemistry is key to scoring 90+ in Chemistry. For example, to calculate the number of moles ($n$), we use:\n\n$$n = \\frac{\\text{mass (g)}}{\\text{molar mass (g/mol)}}$$\n\nWhat chemical reactions or formulas are puzzling you today?",
-        suggestedFollowUps: [
-          "Explain balancing chemical equations.",
-          "What is Faraday's first law of electrolysis?",
-          "Explain the difference between alkanes and alkenes."
-        ],
-        topicsReferenced: ["Stoichiometry", "Basic Concepts"]
-      },
-      General: {
-        reply: "Hello! I am your Pillar AI Tutor. I can help you prepare for all your UTME core subjects. We can solve equations, analyze texts, study chemical reactions, or go through physics derivations. What subject are we focusing on today?",
-        suggestedFollowUps: [
-          "Give me study tips for UTME.",
-          "How do I manage my time during the exam?",
-          "Create a study schedule for my 4 subjects."
-        ],
-        topicsReferenced: ["UTME Strategy", "General Study"]
-      }
-    };
-
-    const staticFallback = fallbacksBySubject[activeSubject] || fallbacksBySubject.General;
+    const staticFallback = AIService.TUTOR_FALLBACKS_BY_SUBJECT[activeSubject] || AIService.TUTOR_FALLBACKS_BY_SUBJECT.General;
 
     let session;
     if (sessionId && mongoose.Types.ObjectId.isValid(sessionId)) {
@@ -513,17 +511,17 @@ JSON Schema:
       });
     }
 
-    // Persist incoming message synchronously
-    await AITutorMessage.create({
-      sessionId: session._id,
-      role: "user",
-      content: message
-    });
-
-    // Retrieve full history from database (limit to last 15 messages to stay within context window)
-    const storedHistory = await AITutorMessage.find({ sessionId: session._id })
-      .sort({ createdAt: 1 })
-      .limit(15);
+    // Persist incoming message AND retrieve history concurrently for lower latency
+    const [_, previousHistory] = await Promise.all([
+      AITutorMessage.create({
+        sessionId: session._id,
+        role: "user",
+        content: message
+      }),
+      AITutorMessage.find({ sessionId: session._id })
+        .sort({ createdAt: 1 })
+        .limit(14) // Leave room for the current message
+    ]);
 
     if (!groq) {
       logger.info(`Groq API Key not found. Using static fallback for subject: ${activeSubject}`);
@@ -552,13 +550,10 @@ Return ONLY a valid JSON object matching this schema:
 }`;
 
     const messages = [
-      { role: "system", content: systemPrompt }
+      { role: "system", content: systemPrompt },
+      ...previousHistory.map(msg => ({ role: msg.role === "user" ? "user" : "assistant", content: msg.content })),
+      { role: "user", content: message }
     ];
-
-    // Use DB history (this includes the user message we just persisted)
-    storedHistory.forEach(msg => {
-      messages.push({ role: msg.role === "user" ? "user" : "assistant", content: msg.content });
-    });
 
     const aiResponse = await this._callAIWithFallback(messages, {
       max_tokens: 800,
@@ -575,7 +570,7 @@ Return ONLY a valid JSON object matching this schema:
     if (aiResponse.content) {
       try {
         const parsed = JSON.parse(aiResponse.content);
-        if (parsed && parsed.reply) {
+        if (parsed?.reply) {
           replyText = parsed.reply;
           suggestedFollowUps = Array.isArray(parsed.suggestedFollowUps) ? parsed.suggestedFollowUps : staticFallback.suggestedFollowUps;
           topicsReferenced = Array.isArray(parsed.topicsReferenced) ? parsed.topicsReferenced : [activeSubject];

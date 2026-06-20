@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+import { autoClearCachePlugin } from "../utils/cachePlugin.js";
+
+// Apply the auto clear cache plugin globally to all schemas
+mongoose.plugin(autoClearCachePlugin);
+
 import "./env.js";
 import dns from "node:dns";
 

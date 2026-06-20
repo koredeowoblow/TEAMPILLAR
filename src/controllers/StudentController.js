@@ -163,22 +163,79 @@ class StudentController {
     const user = req.user;
     if (!user) throw new AppError("Unauthorized", 401);
 
-    // Fetch last 50 sessions for richer analytics (lean & project required fields only)
-    const sessions = await practiceRepository.find(
-      { userId: user.id },
-      { 
-        sort: { createdAt: -1 }, 
-        limit: 50, 
-        lean: true,
-        select: "score subjectId totalQuestions createdAt sessionType responses.timeTaken responses.selectedOption"
-      },
-    );
+    const objectId = new mongoose.Types.ObjectId(user.id);
 
+    // ── Single MongoDB Aggregation for all Dashboard Metrics ─────────────────
+    const dashboardMetrics = await practiceRepository.aggregate([
+      { $match: { userId: objectId } },
+      { 
+        $facet: {
+          globalStats: [
+            { 
+              $group: { 
+                _id: null, 
+                totalSessions: { $sum: 1 },
+                avgScore: { $avg: "$score" },
+                questionsAttempted: { $sum: "$totalQuestions" }
+              }
+            }
+          ],
+          subjectMastery: [
+            { $group: { _id: "$subjectId", score: { $avg: "$score" } } },
+            {
+              $lookup: {
+                from: "subjects",
+                localField: "_id",
+                foreignField: "_id",
+                as: "subjectDetails"
+              }
+            },
+            { $unwind: { path: "$subjectDetails", preserveNullAndEmptyArrays: true } },
+            {
+              $project: {
+                _id: 0,
+                subject: { $ifNull: ["$subjectDetails.name", "General"] },
+                score: { $round: ["$score", 0] },
+                fullMark: { $literal: 100 }
+              }
+            }
+          ],
+          recentMocks: [
+            { $sort: { createdAt: -1 } },
+            { $limit: 5 },
+            {
+              $lookup: {
+                from: "subjects",
+                localField: "subjectId",
+                foreignField: "_id",
+                as: "subjectDetails"
+              }
+            },
+            { $unwind: { path: "$subjectDetails", preserveNullAndEmptyArrays: true } },
+            {
+              $project: {
+                id: { $toString: "$_id" },
+                score: { $ifNull: ["$score", 0] },
+                subject: { $ifNull: ["$subjectDetails.name", "General"] },
+                createdAt: 1,
+                sessionType: { $ifNull: ["$sessionType", "Practice Sprint"] },
+                questionsCount: { $size: { $ifNull: ["$responses", []] } },
+                durationMinutes: {
+                  $max: [1, { $round: [ { $divide: [ { $sum: "$responses.timeTaken" }, 60 ] }, 0 ] }]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]);
+
+    const metrics = dashboardMetrics[0] || {};
+    const globalStats = (metrics.globalStats && metrics.globalStats[0]) || { totalSessions: 0, avgScore: 0, questionsAttempted: 0 };
+    
     // ── Core score metrics ──────────────────────────────────
-    const total = sessions.length;
-    const avgPercent = total
-      ? Math.round(sessions.reduce((s, x) => s + (x.score || 0), 0) / total)
-      : 0;
+    const total = globalStats.totalSessions;
+    const avgPercent = Math.round(globalStats.avgScore || 0);
     const avgScore = Math.round(avgPercent * 4); // % → /400 UTME scale
     const targetScore = user.onboarding?.targetScore || 300;
     const progressPercent = Math.min(
@@ -195,41 +252,10 @@ class StudentController {
     const questionsAttempted =
       user.analytics?.questionsAttempted
       ?? user.analytics?.total_questions
-      ?? sessions.reduce((acc, s) => acc + (s.totalQuestions || 0), 0);
+      ?? (globalStats.questionsAttempted || 0);
 
-    // ── Subject mastery from sessions ───────────────────────
-    const subjectScoreMap = {};
-    for (const s of sessions) {
-      const sId = String(s.subjectId?._id || s.subjectId?.id || s.subjectId || "unknown");
-      if (!subjectScoreMap[sId]) subjectScoreMap[sId] = { scores: [] };
-      subjectScoreMap[sId].scores.push(s.score || 0);
-    }
-
-    const subjectIds = Object.keys(subjectScoreMap).filter((id) => id !== "unknown");
-    const onboardingSubjectIds = Array.isArray(user.onboarding?.subjects)
-      ? user.onboarding.subjects.map(String)
-      : [];
-    const allSubjectIds = Array.from(new Set([...subjectIds, ...onboardingSubjectIds])).filter(Boolean);
-
-    const subjectDocs = allSubjectIds.length
-      ? await Subject.find({ _id: { $in: allSubjectIds }, isActive: { $ne: false } }).select("_id name").lean()
-      : [];
-    const subjectNameMap = {};
-    const activeSubjectIds = [];
-    subjectDocs.forEach((d) => {
-      const idStr = String(d._id);
-      subjectNameMap[idStr] = d.name;
-      activeSubjectIds.push(idStr);
-    });
-
-    const subjectMastery = activeSubjectIds.map((sId) => {
-      const scores = subjectScoreMap[sId]?.scores || [];
-      return {
-        subject: subjectNameMap[sId],
-        score: scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0,
-        fullMark: 100,
-      };
-    });
+    const subjectMastery = metrics.subjectMastery || [];
+    const recentMockTests = metrics.recentMocks || [];
 
     // ── Daily tasks from study plan ──────────────────────────
     // The study plan is saved during onboarding. Each item: { id, topic, subject, duration, completed }
@@ -259,20 +285,6 @@ class StudentController {
 
     // ── Next badge ───────────────────────────────────────────
     const nextBadge = deriveNextBadge(streak, total);
-
-    const recentMockTests = sessions.slice(0, 5).map((s) => {
-      const sId = String(s.subjectId?._id || s.subjectId?.id || s.subjectId || "unknown");
-      const subjectName = subjectNameMap[sId] || "General";
-      return {
-        id: String(s._id),
-        score: s.score || 0,
-        subject: subjectName,
-        createdAt: s.createdAt,
-        sessionType: s.sessionType || "Practice Sprint",
-        durationMinutes: Math.round((s.responses?.reduce((acc, r) => acc + Number(r.timeTaken || 0), 0) || 0) / 60) || 15,
-        questionsCount: s.responses?.length || 20,
-      };
-    });
 
     // ── Build response ───────────────────────────────────────
     const dashboard = {

@@ -6,6 +6,7 @@ import { AI_MODELS } from "../config/aiModels.js";
 import Groq from "groq-sdk";
 import { logger } from "../core/logger.js";
 import mongoose from "mongoose";
+import QuestionPoolService from "./QuestionPoolService.js";
 
 const groq = process.env.GROQ_API_KEY
   ? new Groq({ apiKey: process.env.GROQ_API_KEY })
@@ -64,40 +65,27 @@ class SmartMockService {
         matchStage._id = { $nin: seenIdSet };
       }
 
-      // 5. Retrieve candidate questions: get enough candidates (at least 2x limit, min 30) to re-rank
-      const totalAvailable = await questionRepository.count({ subjectId: safeSubjectId });
-      const poolSize = Math.min(
-        Math.max(Number(limit) * 2, 30),
-        totalAvailable
-      );
+      // 5. Retrieve candidate questions from Redis
+      const poolSize = Math.max(Number(limit) * 2, 30);
+      let pool = [];
 
-      const projectionStage = {
-        $project: {
-          _id: 1,
-          subjectId: 1,
-          content: { text: 1, image: 1, equation: 1 },
-          metadata: 1,
-          options: { id: 1, text: 1 }
-        }
-      };
+      if (weakTopics.length > 0) {
+        // Fetch from weak topics
+        const promises = weakTopics.map(t => QuestionPoolService.getRandomQuestionsByTopic(subjectId, t, Math.ceil(poolSize / weakTopics.length)));
+        const results = await Promise.all(promises);
+        pool = results.flat();
+      }
 
-      const pipeline = [
-        { $match: matchStage },
-        { $sample: { size: poolSize } },
-        projectionStage
-      ];
+      if (pool.length < poolSize) {
+        // Fill the rest with general subject questions
+        const extra = await QuestionPoolService.getRandomQuestionsBySubject(subjectId, poolSize - pool.length);
+        pool = pool.concat(extra);
+      }
 
-      const pool = await questionRepository.aggregate(pipeline);
-      
-      const targetMin = Math.max(Math.round(Number(limit) / 2), 10);
-      if (pool.length < targetMin) {
-        delete matchStage["metadata.topic"];
-        const fallbackPipeline = [
-          { $match: matchStage },
-          { $sample: { size: poolSize } },
-          projectionStage
-        ];
-        return await questionRepository.aggregate(fallbackPipeline);
+      // 6. Filter out seen questions in Node
+      if (seenIdSet.length > 0) {
+        const seenStrSet = new Set(seenIdSet.map(id => id.toString()));
+        pool = pool.filter(q => !seenStrSet.has(q._id.toString()));
       }
 
       return pool;
@@ -187,12 +175,11 @@ Select the best ${targetLimit} questions that will most effectively target this 
     const subjectNameMap = {};
     subjectDocs.forEach(d => { subjectNameMap[String(d._id)] = d.name; });
 
-    for (let i = 0; i < ids.length; i++) {
-      const currentId = ids[i];
-      if (!mongoose.Types.ObjectId.isValid(currentId)) continue;
+    const subjectPromises = ids.map(async (currentId) => {
+      if (!mongoose.Types.ObjectId.isValid(currentId)) return [];
       
       const safeSubjectId = new mongoose.Types.ObjectId(currentId);
-      const currentLimit = Number(limit); // Fetch full limit for each subject
+      const currentLimit = Number(limit);
 
       const totalAvailableQuestions = await questionRepository.count({ subjectId: safeSubjectId });
       const actualLimit = Math.min(Number(currentLimit), totalAvailableQuestions);
@@ -202,12 +189,15 @@ Select the best ${targetLimit} questions that will most effectively target this 
       const selected = await this.selectWithAI(safeUserId, safeSubjectId, pool, userPerformance, actualLimit);
       
       // Attach subject name
-      const enrichedSelected = selected.map(q => ({
+      return selected.map(q => ({
         ...q,
         subjectName: subjectNameMap[String(currentId)] || "Subject"
       }));
-      
-      allSelected = allSelected.concat(enrichedSelected);
+    });
+
+    const results = await Promise.all(subjectPromises);
+    for (const res of results) {
+      allSelected = allSelected.concat(res);
     }
 
     return allSelected;

@@ -16,7 +16,7 @@ class BillingController {
     const { planId, billingCycle } = req.body;
     const email = req.user.email;
 
-    const plan = await PricingPlan.findById(planId);
+    const plan = await PricingPlan.findById(planId).lean();
     if (!plan) throw new AppError("Plan not found", 404);
 
     const cycle = plan.billingCycles.find((c) => c.label === billingCycle);
