@@ -88,16 +88,8 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow server-to-server or requests without Origin
-    if (!origin) return callback(null, true);
-
-    const isLocalhost =
-      /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin);
-
-    if (allowedOrigins.includes(origin) || isLocalhost) {
-      return callback(null, true);
-    }
-    return callback(new Error("CORS policy violation: Origin not allowed"));
+    // Allow everyone for now
+    return callback(null, true);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -105,7 +97,7 @@ const corsOptions = {
   maxAge: 86400,
 };
 //  pauesed it for the frontend to work on it for now
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("tiny"));
