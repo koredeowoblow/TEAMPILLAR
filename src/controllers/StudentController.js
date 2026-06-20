@@ -327,7 +327,7 @@ class StudentController {
       // Global rank (from analytics if available)
       globalRank: user.analytics?.globalRank ?? user.analytics?.global_rank ?? null,
       avgAccuracy: avgPercent,
-      mockTestsCount: sessions.filter((s) => s.sessionType === "smart-mock").length,
+      mockTestsCount: user.stats?.totalMocksTaken || 0,
       weakTopicsCount: subjectMastery.filter((m) => m.score < 60).length,
     };
 
