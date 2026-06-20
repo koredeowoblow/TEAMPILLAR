@@ -30,7 +30,7 @@ async function clean() {
     });
     console.log("✅ Connected to MongoDB");
 
-    // 2. Remove duplicates
+    // 1. Remove duplicates
     console.log("\n🧹 Checking for duplicates...");
     let deletedCount = 0;
     
@@ -65,7 +65,7 @@ async function clean() {
     
     console.log(`✅ Deleted ${deletedCount} duplicate questions.`);
 
-    // 1. Find and update years
+    // 2. Find and update years
     console.log("\n🔍 Extracting years using AI...");
     
     // Fetch all questions to check for years
