@@ -40,6 +40,48 @@ class PracticeController {
     });
   }
 
+  static async getYearsForSubject(req, res) {
+    const { subjectId } = req.query;
+    if (!subjectId) {
+      throw new AppError("subjectId is required", 400);
+    }
+    const resolvedSubjectId = await resolveSubjectId(subjectId);
+    
+    // Fast Redis caching for years
+    const cacheKey = `years:subject:${resolvedSubjectId.toString()}`;
+    const { getRedisClient } = await import("../config/redis.js");
+    const redis = await getRedisClient();
+    
+    let sortedYears;
+    if (redis) {
+      try {
+        const cached = await redis.get(cacheKey);
+        if (cached) sortedYears = JSON.parse(cached);
+      } catch (err) {
+        LogService.logAction({ category: "error", action: "redis_years_cache", description: err.message });
+      }
+    }
+
+    if (!sortedYears) {
+      const years = await Question.distinct("metadata.year", {
+        subjectId: resolvedSubjectId,
+        "metadata.year": { $exists: true, $ne: null },
+      });
+      sortedYears = years.filter(Boolean).map(Number).sort((a, b) => b - a);
+      if (redis) {
+        try {
+          await redis.setEx(cacheKey, 86400, JSON.stringify(sortedYears));
+        } catch (e) {}
+      }
+    }
+
+    return sendSuccess(res, {
+      message: "Years retrieved successfully",
+      data: sortedYears,
+      statusCode: 200,
+    });
+  }
+
   static async getQuestions(req, res) {
     const { subjectId, limit, difficulty, year, sessionId } = req.query;
     

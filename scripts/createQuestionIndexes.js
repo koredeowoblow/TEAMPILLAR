@@ -19,6 +19,7 @@ async function createQuestionIndexes() {
     await Question.collection.createIndex({ subjectId: 1, "metadata.topic": 1 }, { background: true });
     await Question.collection.createIndex({ subjectId: 1, "metadata.difficulty": 1 }, { background: true });
     await Question.collection.createIndex({ subjectId: 1, "metadata.topic": 1, "metadata.difficulty": 1 }, { background: true });
+    await Question.collection.createIndex({ subjectId: 1, "metadata.year": 1 }, { background: true });
     await Question.collection.createIndex({ _id: 1, subjectId: 1 }, { background: true });
     
     logger.info("Question Indexes created successfully.");

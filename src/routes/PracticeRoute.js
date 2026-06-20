@@ -41,8 +41,9 @@ router.get("/sessions", protectUser, onboardingGuard, tryCatch(PracticeControlle
 // Subjects
 router.get("/subjects", protectUser, tryCatch(PracticeController.getSubjects));
 
-// Topics
+// Topics & Years
 router.get("/topics", protectUser, onboardingGuard, tryCatch(PracticeController.getTopicsForSubject));
+router.get("/years", protectUser, onboardingGuard, tryCatch(PracticeController.getYearsForSubject));
 
 // Session Lifecycle
 router.post(
