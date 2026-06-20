@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { getRedisClient } from "../config/redis.js";
 import Question from "../models/QuestionModel.js";
 import { logger } from "../core/logger.js";
