@@ -47,7 +47,25 @@ class AdminService {
             { $match: { $expr: { $eq: ["$userId", "$$userId"] } } },
             { $sort: { createdAt: -1 } },
             { $limit: 50 },
-            { $project: { score: 1, subjectId: 1 } } // Fetch only required fields
+            { 
+              $project: { 
+                score: 1, 
+                subjectId: 1,
+                sessionType: 1,
+                scaledScore: {
+                  $cond: {
+                    if: { 
+                      $or: [
+                        { $eq: ["$sessionType", "smart-mock"] },
+                        { $eq: ["$subjectId", null] }
+                      ] 
+                    },
+                    then: "$score",
+                    else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
+                  }
+                }
+              } 
+            }
           ],
           as: "sessions"
         }
@@ -75,12 +93,12 @@ class AdminService {
           avgPercent: {
             $cond: {
               if: { $gt: [{ $size: "$sessions" }, 0] },
-              then: { $round: [{ $avg: "$sessions.score" }, 0] },
+              then: { $round: [{ $avg: "$sessions.scaledScore" }, 0] },
               else: 0
             }
           },
-          recentScores: { $slice: ["$sessions.score", 0, 3] },
-          previousScores: { $slice: ["$sessions.score", 3, 3] },
+          recentScores: { $slice: ["$sessions.scaledScore", 0, 3] },
+          previousScores: { $slice: ["$sessions.scaledScore", 3, 3] },
           derivedSubjects: {
             $map: { input: "$sessions", as: "s", in: "$$s.subjectId" }
           }
@@ -99,9 +117,9 @@ class AdminService {
           derivedSubjects: 1,
           avgScoreUTME: {
             $cond: {
-              if: { $gt: [{ $multiply: ["$avgPercent", 4] }, 400] },
+              if: { $gt: ["$avgPercent", 400] },
               then: 400,
-              else: { $multiply: ["$avgPercent", 4] }
+              else: "$avgPercent"
             }
           }
         }
@@ -169,13 +187,12 @@ class AdminService {
     });
 
     const students = users.map(user => {
-      const avgPercent = user.avgPercent || 0;
-      const avgScore = clamp(avgPercent * 4, 0, 400);
+      const avgScore = clamp(user.avgScoreUTME || 0, 0, 400);
 
       const recent = user.recentScores || [];
       const previous = user.previousScores || [];
-      const recentAvg = recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : avgPercent;
-      const previousAvg = previous.length ? previous.reduce((a, b) => a + b, 0) / previous.length : avgPercent;
+      const recentAvg = recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : avgScore;
+      const previousAvg = previous.length ? previous.reduce((a, b) => a + b, 0) / previous.length : avgScore;
       const trend = recentAvg >= previousAvg ? "up" : "down";
 
       // Map subject IDs to names
