@@ -41,7 +41,7 @@ class AdminController {
   /* ─────────────────── STUDENTS ─────────────────── */
 
   static async listStudents(req, res) {
-    const { page, limit, search, classArm, subjectFilter, scoreRange } = req.query;
+    const { page, limit, search, classArm, subjectFilter, scoreRange, sortField, sortDir, columnFilters } = req.query;
     const data = await AdminService.listStudents({
       page: Number.parseInt(page) || 1,
       limit: Number.parseInt(limit) || 10,
@@ -49,6 +49,9 @@ class AdminController {
       classArm,
       subjectFilter,
       scoreRange,
+      sortField,
+      sortDir,
+      columnFilters: columnFilters ? JSON.parse(columnFilters) : [],
     });
     return sendSuccess(res, { data, message: "Students retrieved" });
   }
@@ -271,13 +274,16 @@ class AdminController {
   /* ─────────────────── QUESTIONS ─────────────────── */
 
   static async listQuestions(req, res) {
-    const { page, limit, subjectId, topic, difficulty } = req.query;
+    const { page, limit, subjectId, topic, difficulty, sortField, sortDir, columnFilters } = req.query;
     const data = await AdminService.listQuestions({
       page: Number.parseInt(page) || 1,
       limit: Number.parseInt(limit) || 10,
       subjectId,
       topic,
       difficulty,
+      sortField,
+      sortDir,
+      columnFilters: columnFilters ? JSON.parse(columnFilters) : [],
     });
     return sendSuccess(res, { data, message: "Questions retrieved" });
   }

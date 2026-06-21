@@ -14,7 +14,7 @@ function clamp(value, min, max) {
 }
 
 class AdminService {
-  static async listStudents({ page = 1, limit = 50, search = "", classArm, subjectFilter, scoreRange }) {
+  static async listStudents({ page = 1, limit = 50, search = "", classArm, subjectFilter, scoreRange, sortField, sortDir, columnFilters = [] }) {
     const skip = (page - 1) * limit;
 
     const matchStage = { role: "STUDENT" };
@@ -36,9 +36,34 @@ class AdminService {
       }
     }
 
+    // Apply column filters
+    for (const filter of columnFilters) {
+      if (filter.id === "name") {
+        matchStage.name = new RegExp(escapeRegex(filter.value), "i");
+      }
+      if (filter.id === "email") {
+        matchStage.email = new RegExp(escapeRegex(filter.value), "i");
+      }
+      if (filter.id === "code") {
+        matchStage.code = new RegExp(escapeRegex(filter.value), "i");
+      }
+    }
+
+    let initialSort = { createdAt: -1 };
+    let finalSort = null;
+
+    if (sortField) {
+      const direction = sortDir === "desc" ? -1 : 1;
+      if (["name", "email", "createdAt", "lastSession"].includes(sortField)) {
+        initialSort = { [sortField]: direction };
+      } else if (["avgScore", "trend"].includes(sortField)) {
+        finalSort = { [sortField]: direction };
+      }
+    }
+
     const pipeline = [
       { $match: matchStage },
-      { $sort: { createdAt: -1 } },
+      { $sort: initialSort },
       {
         $lookup: {
           from: "practicesessions",
@@ -137,6 +162,10 @@ class AdminService {
           }
         });
       }
+    }
+
+    if (finalSort) {
+      pipeline.push({ $sort: finalSort });
     }
 
     // Add pagination after all filters
@@ -741,16 +770,33 @@ class AdminService {
     };
   }
 
-  static async listQuestions({ page = 1, limit = 50, subjectId, topic, difficulty }) {
+  static async listQuestions({ page = 1, limit = 50, subjectId, topic, difficulty, sortField, sortDir, columnFilters = [] }) {
     const skip = (page - 1) * limit;
     const filter = {};
     if (subjectId) filter.subjectId = subjectId;
     if (topic) filter["metadata.topic"] = topic;
     if (difficulty) filter["metadata.difficulty"] = difficulty;
 
+    for (const cf of columnFilters) {
+      if (cf.id === "topic") filter["metadata.topic"] = new RegExp(escapeRegex(cf.value), "i");
+      if (cf.id === "text") filter["content.text"] = new RegExp(escapeRegex(cf.value), "i");
+      if (cf.id === "year") filter["metadata.year"] = Number(cf.value) || cf.value;
+      if (cf.id === "difficulty") filter["metadata.difficulty"] = new RegExp(escapeRegex(cf.value), "i");
+    }
+
+    let sortObj = { createdAt: -1 };
+    if (sortField) {
+      const direction = sortDir === "desc" ? -1 : 1;
+      if (sortField === "topic") sortObj = { "metadata.topic": direction };
+      else if (sortField === "text") sortObj = { "content.text": direction };
+      else if (sortField === "year") sortObj = { "metadata.year": direction };
+      else if (sortField === "difficulty") sortObj = { "metadata.difficulty": direction };
+      else sortObj = { [sortField]: direction };
+    }
+
     const questions = await Question.find(filter)
       .populate("subjectId", "name")
-      .sort({ createdAt: -1 })
+      .sort(sortObj)
       .skip(skip)
       .limit(limit)
       .lean();
