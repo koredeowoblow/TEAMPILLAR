@@ -749,7 +749,6 @@ class AdminService {
     if (difficulty) filter["metadata.difficulty"] = difficulty;
 
     const questions = await Question.find(filter)
-      .select("subjectId metadata.topic metadata.difficulty content.text metadata.year options")
       .populate("subjectId", "name")
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -760,8 +759,9 @@ class AdminService {
 
     return {
       questions: questions.map(q => ({
+        ...q,
         id: q._id,
-        subject: q.subjectId?.name || "Unknown",
+        subject: q.subjectId,
         topic: q.metadata?.topic || "General",
         difficulty: q.metadata?.difficulty || "medium",
         text: q.content?.text || "No content",
