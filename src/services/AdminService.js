@@ -586,10 +586,26 @@ class AdminService {
     const totalStudents = await User.countDocuments({ role: "STUDENT" });
     const activeSessions = await PracticeSession.countDocuments({ sessionStatus: "ACTIVE" });
 
-    // ── Avg predicted score across all students ─────────────────────────────
-    const scoreAgg = await User.aggregate([
-      { $match: { role: "STUDENT", "stats.predictedScore": { $gt: 0 } } },
-      { $group: { _id: null, avg: { $avg: "$stats.predictedScore" } } },
+    // ── Avg score across all students based on practice/test sessions ─────────────────────────────
+    const scoreAgg = await PracticeSession.aggregate([
+      { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+      {
+        $project: {
+          scaledScore: {
+            $cond: {
+              if: { 
+                $or: [
+                  { $eq: ["$sessionType", "smart-mock"] },
+                  { $eq: ["$subjectId", null] }
+                ] 
+              },
+              then: "$score",
+              else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
+            }
+          }
+        }
+      },
+      { $group: { _id: null, avg: { $avg: "$scaledScore" } } }
     ]);
     const avgScore = scoreAgg.length ? Math.round(scoreAgg[0].avg) : 0;
 
@@ -613,16 +629,57 @@ class AdminService {
       count: distMap[lower] || 0,
     }));
 
-    // ── Top performers (top 5 students by predicted score) ──────────────────
-    const topPerformersRaw = await User.find({ role: "STUDENT", "stats.predictedScore": { $gt: 0 } })
-      .sort({ "stats.predictedScore": -1 })
-      .limit(5)
-      .select("name stats.predictedScore onboarding")
-      .lean();
-    const topPerformers = topPerformersRaw.map((u) => ({
+    // ── Top performers (top 5 students by practice/test score) ──────────────────
+    const topPerformersAgg = await PracticeSession.aggregate([
+      { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+      {
+        $project: {
+          userId: 1,
+          scaledScore: {
+            $cond: {
+              if: { 
+                $or: [
+                  { $eq: ["$sessionType", "smart-mock"] },
+                  { $eq: ["$subjectId", null] }
+                ] 
+              },
+              then: "$score",
+              else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$userId",
+          avgScoreUTME: { $avg: "$scaledScore" }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" },
+      { $match: { "user.role": "STUDENT" } },
+      { $sort: { avgScoreUTME: -1 } },
+      { $limit: 5 },
+      {
+        $project: {
+          name: "$user.name",
+          avgScoreUTME: { $round: ["$avgScoreUTME", 0] },
+          examType: "$user.onboarding.examType"
+        }
+      }
+    ]);
+
+    const topPerformers = topPerformersAgg.map((u) => ({
       name: u.name || "Student",
-      score: `${u.stats?.predictedScore || 0}/400`,
-      class: u.onboarding?.examType || "General",
+      score: `${Math.min(u.avgScoreUTME || 0, 400)}/400`,
+      class: u.examType || "General",
     }));
 
     // ── Subject heatmap (top 5 topics by failure rate, pivoted by subject) ──
@@ -677,25 +734,58 @@ class AdminService {
       };
     });
 
-    // ── Needs attention (5 students with lowest predicted scores, recently active) ─
+    // ── Needs attention (5 students with lowest practice/test scores, recently active) ─
     const recentCutoff = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000); // last 14 days
-    const recentActiveIds = await PracticeSession.distinct("userId", {
-      createdAt: { $gte: recentCutoff },
-    });
-    const needsAttentionRaw = await User.find({
-      role: "STUDENT",
-      _id: { $in: recentActiveIds },
-      "stats.predictedScore": { $gt: 0, $lt: 200 },
-    })
-      .sort({ "stats.predictedScore": 1 })
-      .limit(5)
-      .select("name stats.predictedScore")
-      .lean();
-    const needsAttention = needsAttentionRaw.map((u) => ({
+    const needsAttentionAgg = await PracticeSession.aggregate([
+      { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 }, createdAt: { $gte: recentCutoff } } },
+      {
+        $project: {
+          userId: 1,
+          scaledScore: {
+            $cond: {
+              if: { 
+                $or: [
+                  { $eq: ["$sessionType", "smart-mock"] },
+                  { $eq: ["$subjectId", null] }
+                ] 
+              },
+              then: "$score",
+              else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$userId",
+          avgScoreUTME: { $avg: "$scaledScore" }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" },
+      { $match: { "user.role": "STUDENT", avgScoreUTME: { $lt: 200 } } },
+      { $sort: { avgScoreUTME: 1 } },
+      { $limit: 5 },
+      {
+        $project: {
+          name: "$user.name",
+          avgScoreUTME: { $round: ["$avgScoreUTME", 0] }
+        }
+      }
+    ]);
+
+    const needsAttention = needsAttentionAgg.map((u) => ({
       id: String(u._id),
       name: u.name || "Student",
-      score: `${u.stats?.predictedScore || 0}/400`,
-      progress: `${Math.round(((u.stats?.predictedScore || 0) / 400) * 100)}%`,
+      score: `${Math.min(u.avgScoreUTME || 0, 400)}/400`,
+      progress: `${Math.round(((u.avgScoreUTME || 0) / 400) * 100)}%`,
     }));
 
     // ── Most Struggled Subject ───────────────────────────────────────────────
