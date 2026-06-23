@@ -7,6 +7,7 @@ import { AppError } from "../utils/AppError.js";
 import { toPracticeSessionSummaryDTO, toCBTQuestionDTO } from "../dto/index.js";
 import { CONSTANTS } from "../config/constants.js";
 import FreemiumGuard from "../services/FreemiumGuard.js";
+import { calculateExamTime } from "../utils/TimeEngine.js";
 
 // Maximum question count allowed for free-tier users
 const FREE_QUESTION_LIMIT = 20;
@@ -66,6 +67,7 @@ class SmartMockController {
       questionIds: formattedQuestions.map(q => q._id),
       questionLimit: formattedQuestions.length,
       startTime: new Date(),
+      totalDuration: calculateExamTime({ type: 'smart-mock', questions: formattedQuestions }),
     });
 
     // 4. Increment mock test counter ONLY after successful creation
