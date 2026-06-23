@@ -77,8 +77,17 @@ export function toQuestionReviewDTO(question) {
   const q = question.toObject ? question.toObject() : question;
 
   const hasDetails = q.explanationDetails && q.explanationStatus === "generated";
+  
+  // Safe fallback for legacy flat explanations
+  let legacyExplanation = "Explanation is pending generation.";
+  if (typeof q.explanation === 'string' && q.explanation.trim() !== '') {
+    legacyExplanation = q.explanation;
+  } else if (q.explanation && typeof q.explanation === 'object' && q.explanation.summary) {
+    legacyExplanation = q.explanation.summary; // Just in case it was stored as an object accidentally
+  }
+
   const explanationObj = {
-    summary: hasDetails ? q.explanationDetails.summary : (q.explanation || "Explanation is pending generation."),
+    summary: hasDetails ? q.explanationDetails.summary : legacyExplanation,
     whyCorrect: hasDetails ? q.explanationDetails.whyCorrect : "",
     whyOthersWrong: hasDetails ? (Array.isArray(q.explanationDetails.whyOthersWrong) ? q.explanationDetails.whyOthersWrong : []) : [],
     examTip: hasDetails ? q.explanationDetails.examTip : "",
