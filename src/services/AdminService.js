@@ -621,6 +621,7 @@ class AdminService {
         // ── Core counters ───────────────────────────────────────────────────────
         const [
           totalStudents,
+          studentsLastWeek,
           activeSessions,
           scoreAgg,
           distAgg,
@@ -630,6 +631,7 @@ class AdminService {
           struggledSubjectAgg
         ] = await Promise.all([
           User.countDocuments({ role: "STUDENT" }),
+          User.countDocuments({ role: "STUDENT", createdAt: { $lt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
           PracticeSession.countDocuments({ sessionStatus: "ACTIVE" }),
           PracticeSession.aggregate([
             { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
@@ -871,9 +873,19 @@ class AdminService {
           };
         }
 
+        let studentsTrendStr = "+0% vs last week";
+        if (studentsLastWeek > 0) {
+          const newStudents = totalStudents - studentsLastWeek;
+          const trendPct = Math.round((newStudents / studentsLastWeek) * 100);
+          const sign = trendPct > 0 ? "+" : "";
+          studentsTrendStr = `${sign}${trendPct}% vs last week`;
+        } else if (totalStudents > 0) {
+          studentsTrendStr = `+100% vs last week`;
+        }
+
         const result = {
           totalStudents,
-          studentsTrend: "+5% vs last week", // trend requires time-series; kept as label
+          studentsTrend: studentsTrendStr,
           avgScore,
           activeSessions,
           scoreDistribution,
