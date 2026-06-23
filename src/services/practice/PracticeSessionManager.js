@@ -10,18 +10,50 @@ class PracticeSessionManager {
     const user = await userRepository.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
+    const { default: PracticeSessionModel } = await import("../../models/PracticeSessionModel.js");
+
+    // 1. Enforce Single Active Session Constraint
+    const existingActiveSession = await PracticeSessionModel.findOne({ 
+      userId, 
+      sessionLedgerStatus: "ACTIVE" 
+    });
+
+    if (existingActiveSession) {
+      // Return the existing session to prevent duplicate concurrency
+      return existingActiveSession;
+    }
+
     const ids = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
     const resolvedSubjectIds = await Promise.all(ids.map(id => resolveSubjectId(id)));
 
-    const session = await practiceRepository.create({
+    // 2. Fetch questions FIRST so we can create a frozen snapshot
+    const { default: PracticeQuestionService } = await import("./PracticeQuestionService.js");
+    const questions = await PracticeQuestionService.getQuestionsForSubject(resolvedSubjectIds[0], {
+      userId,
+      limit: questionLimit,
+      isAdmin: false,
+      topic: topic || undefined,
+    });
+    const questionIds = questions.map(q => q._id || q.id);
+
+    const { calculateExamTime } = await import("../../utils/TimeEngine.js");
+    const totalDuration = calculateExamTime({ type: 'practice', limit: questionLimit });
+
+    const session = new PracticeSessionModel({
       userId,
       subjectId: resolvedSubjectIds[0],
       subjectIds: resolvedSubjectIds,
       sessionStatus: "ACTIVE",
+      sessionLedgerStatus: "ACTIVE",
       startTime: new Date(),
       questionLimit: Math.max(1, Number(questionLimit) || 20),
+      questionIds,
       topic: topic || null,
+      totalDuration
     });
+    
+    // sessionNonce and sessionFingerprint are generated in pre-validate hook
+    await session.save();
     return session;
   }
 

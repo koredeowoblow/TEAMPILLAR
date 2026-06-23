@@ -39,8 +39,30 @@ class PracticeGradingService {
 
   static async submitSession(sessionId, submission) {
     const { responses } = submission;
-    const session = await practiceRepository.findById(sessionId, [], { lean: true });
-    if (!session) throw new AppError("Session not found", 404);
+    const { default: PracticeSessionModel } = await import("../../models/PracticeSessionModel.js");
+    
+    // REDIS LOCK: Prevent race-condition simultaneous submissions
+    const lockKey = `session:lock:${sessionId}`;
+    const acquiredLock = await cache.client.set(lockKey, "1", "NX", "EX", 10);
+    if (!acquiredLock) {
+      throw new AppError("SESSION_REPLAY_DETECTED: A submission is already in progress.", 429);
+    }
+
+    // ATOMIC LEDGER LOCK: Prevents multiple concurrent submissions of the same session
+    const session = await PracticeSessionModel.findOneAndUpdate(
+      { _id: sessionId, sessionLedgerStatus: "ACTIVE" },
+      { $set: { sessionLedgerStatus: "SUBMITTED" } },
+      { new: false } // return old document to grade
+    ).lean();
+
+    if (!session) {
+      // It's either missing or already submitted
+      const existing = await PracticeSessionModel.findById(sessionId, { sessionLedgerStatus: 1 }).lean();
+      if (existing && existing.sessionLedgerStatus === "SUBMITTED") {
+        throw new AppError("SESSION_REPLAY_DETECTED: Session has already been submitted.", 403);
+      }
+      throw new AppError("INVALID_SESSION_STATE: Session not active or does not exist.", 400);
+    }
 
     if (session.sessionStatus === "COMPLETED") {
       const questionsWithReview = await questionRepository.find({
@@ -60,8 +82,24 @@ class PracticeGradingService {
       };
     }
 
-    if (session.sessionStatus !== "ACTIVE")
-      throw new AppError("Session not active", 400);
+    const { validateSessionFingerprint } = await import("../../utils/SessionCrypto.js");
+    if (!submission.sessionFingerprint || !submission.sessionNonce) {
+      // Revert ledger if invalid
+      await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
+      throw new AppError("SESSION_TAMPER_DETECTED: Cryptographic fingerprint or nonce is missing.", 403);
+    }
+    
+    // 1. Verify frontend tokens match DB tokens (Anti-Replay / Cloning)
+    if (submission.sessionFingerprint !== session.sessionFingerprint || submission.sessionNonce !== session.sessionNonce) {
+      await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
+      throw new AppError("SESSION_TAMPER_DETECTED: Fingerprint or Nonce mismatch.", 403);
+    }
+
+    // 2. Verify DB snapshot hasn't drifted from cryptographic seal
+    if (!validateSessionFingerprint(session, session.sessionFingerprint)) {
+      await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
+      throw new AppError("SESSION_TAMPER_DETECTED: Session snapshot has been corrupted or illegally mutated.", 403);
+    }
 
     if (session.questionIds && session.questionIds.length > 0) {
       const validIds = new Set(session.questionIds.map(String));
