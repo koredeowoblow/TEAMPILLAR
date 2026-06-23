@@ -1,5 +1,5 @@
 import AdaptiveEngineService from "../src/services/AdaptiveEngineService.js";
-import PracticeService from "../src/services/PracticeService.js";
+import PracticeService from "../src/services/practice/index.js";
 import { userRepository } from "../src/repository/UserRepository.js";
 import { practiceRepository } from "../src/repository/PracticeRepository.js";
 import { questionRepository } from "../src/repository/QuestionRepository.js";

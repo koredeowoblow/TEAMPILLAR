@@ -4,7 +4,7 @@ describe("PracticeService deterministic selection and scoring", () => {
   let practiceRepository;
 
   beforeAll(async () => {
-    PracticeService = (await import("../src/services/PracticeService.js"))
+    PracticeService = (await import("../src/services/practice/index.js"))
       .default;
     questionRepository = (
       await import("../src/repository/QuestionRepository.js")

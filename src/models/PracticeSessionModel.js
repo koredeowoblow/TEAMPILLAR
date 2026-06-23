@@ -66,7 +66,7 @@ const PracticeSessionSchema = new mongoose.Schema(
       default: "standard",
       immutable: true,
     },
-    questionIds: { 
+    questionIds: {
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
       immutable: true,
     },
@@ -103,11 +103,11 @@ PracticeSessionSchema.index(
 
 const IMMUTABLE_FIELDS = ['userId', 'subjectId', 'subjectIds', 'sessionType', 'questionIds', 'questionLimit', 'topic', 'isMockTest', 'totalDuration', 'sessionFingerprint', 'sessionNonce'];
 
-PracticeSessionSchema.pre('validate', async function(next) {
+PracticeSessionSchema.pre('validate', async function (next) {
   if (this.isNew) {
     if (!this.totalDuration) return next(new Error("SESSION_IS_IMMUTABLE: totalDuration is missing."));
     if (!this.questionIds || this.questionIds.length === 0) return next(new Error("SESSION_IS_IMMUTABLE: questionIds are missing or empty."));
-    
+
     if (!this.sessionNonce) {
       const crypto = await import("crypto");
       this.sessionNonce = crypto.randomBytes(32).toString("hex");
@@ -132,15 +132,15 @@ PracticeSessionSchema.pre('save', function (next) {
   next();
 });
 
-PracticeSessionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
+PracticeSessionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function () {
   const update = this.getUpdate();
   const setPayload = update.$set || update;
+  if (!setPayload) return;
   for (const field of IMMUTABLE_FIELDS) {
     if (setPayload[field] !== undefined) {
-      return next(new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`));
+      throw new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`);
     }
   }
-  next();
 });
 
 export default mongoose.model("PracticeSession", PracticeSessionSchema);
