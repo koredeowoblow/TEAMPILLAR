@@ -77,6 +77,7 @@ class AdminService {
                 score: 1,
                 subjectId: 1,
                 sessionType: 1,
+                createdAt: 1,
                 scaledScore: {
                   $cond: {
                     if: {
@@ -190,6 +191,22 @@ class AdminService {
       totalCount = await User.countDocuments(matchStage);
     }
 
+    const TopicPerformance = (await import("../models/TopicPerformanceModel.js")).default;
+    const userIds = users.map(u => u._id);
+    const weakestTopicsAgg = await TopicPerformance.aggregate([
+      { $match: { userId: { $in: userIds }, totalAttempted: { $gt: 0 } } },
+      { $sort: { masteryScore: 1 } },
+      { 
+        $group: { 
+          _id: "$userId", 
+          topicId: { $first: "$topicId" },
+          subjectId: { $first: "$subjectId" },
+          totalAttempted: { $first: "$totalAttempted" },
+          totalCorrect: { $first: "$totalCorrect" }
+        } 
+      }
+    ]);
+
     // Extract all unique subject IDs across the current page of users
     // Include both practice-session derived IDs and onboarding.subjects IDs
     const allSubjectIds = new Set();
@@ -206,6 +223,12 @@ class AdminService {
       }
     });
 
+    weakestTopicsAgg.forEach(wt => {
+      if (wt.subjectId && String(wt.subjectId) !== "undefined" && String(wt.subjectId) !== "null") {
+        allSubjectIds.add(String(wt.subjectId));
+      }
+    });
+
     const subjects = allSubjectIds.size > 0
       ? await Subject.find({ _id: { $in: Array.from(allSubjectIds) } }).select("_id name").lean()
       : [];
@@ -213,6 +236,15 @@ class AdminService {
     const subjectMap = {};
     subjects.forEach((subject) => {
       subjectMap[String(subject._id)] = subject.name;
+    });
+
+    const weakTopicsMap = {};
+    weakestTopicsAgg.forEach(wt => {
+      weakTopicsMap[String(wt._id)] = {
+        topic: wt.topicId,
+        subject: subjectMap[String(wt.subjectId)] || "General",
+        errors: (wt.totalAttempted || 0) - (wt.totalCorrect || 0)
+      };
     });
 
     const students = users.map(user => {
@@ -252,6 +284,10 @@ class AdminService {
         ? clamp(Math.round(progressRaw), 0, 100)
         : clamp(Math.round(((user.sessionCount || 0) / 20) * 100), 0, 100);
 
+      const lastSessionDate = user.sessions && user.sessions.length > 0 
+        ? user.sessions[0].createdAt 
+        : "Never";
+
       return {
         id: String(user._id),
         code: `PLR-${new Date(user.createdAt || Date.now()).getFullYear()}-${String(user._id).slice(-4).toUpperCase()}`,
@@ -260,10 +296,11 @@ class AdminService {
         initials: (user.name || "??").split(" ").map(n => n[0]).join("").toUpperCase(),
         subjects: subjectsList,
         avgScore,
-        lastSession: recent.length > 0 ? "Just now" : "No sessions", // Simple mock for now
+        lastSession: lastSessionDate,
         trend,
         progress,
         sessionCount: user.sessionCount || 0,
+        weakTopics: weakTopicsMap[String(user._id)] ? [weakTopicsMap[String(user._id)]] : []
       };
     });
 
@@ -341,24 +378,20 @@ class AdminService {
       }
     });
 
-    // Weak topics — ranked by frequency of topMistakeTopic across sessions
-    const topicCounts = {};
-    const topicSubjectMap = {};
-    for (const s of sessions) {
-      const topic = s.analytics?.topMistakeTopic;
-      if (topic) {
-        topicCounts[topic] = (topicCounts[topic] || 0) + 1;
-        topicSubjectMap[topic] = subjectMap[String(s.subjectId)] || "General";
-      }
-    }
-    const weakTopics = Object.keys(topicCounts)
-      .sort((a, b) => topicCounts[b] - topicCounts[a])
-      .slice(0, 5)
-      .map((topic) => ({
-        topic,
-        subject: topicSubjectMap[topic],
-        errors: topicCounts[topic],
-      }));
+    // Weak topics — derived from TopicPerformance model for comprehensive analysis
+    const TopicPerformance = (await import("../models/TopicPerformanceModel.js")).default;
+    const topicPerfs = await TopicPerformance.find({ userId: id })
+      .sort({ masteryScore: 1 }) // Lowest mastery first
+      .lean();
+
+    const weakTopics = topicPerfs
+      .map((tp) => ({
+        topic: tp.topicId,
+        subject: subjectMap[String(tp.subjectId)] || "General",
+        errors: tp.totalAttempted - tp.totalCorrect,
+      }))
+      .filter((t) => t.errors > 0)
+      .slice(0, 5);
 
     // Recent sessions — last 10, formatted for the UI table
     const recentSessions = sessions.slice(0, 10).map((s) => {
