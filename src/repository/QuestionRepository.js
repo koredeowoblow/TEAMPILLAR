@@ -35,8 +35,8 @@ class QuestionRepository {
     return await Question.findByIdAndDelete(id).exec();
   }
 
-  async deleteMany(filter = {}) {
-    return await Question.deleteMany(filter).exec();
+  async deleteMany(filter = {}, options = {}) {
+    return await Question.deleteMany(filter, options).exec();
   }
 
   async aggregate(pipeline = []) {

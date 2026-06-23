@@ -4,6 +4,7 @@ import { questionRepository } from "../repository/QuestionRepository.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import Subject from "../models/SubjectModel.js";
 import Question from "../models/QuestionModel.js";
+import Passage from "../models/PassageModel.js";
 import LogService from "../services/LogService.js";
 import { resolveSubjectId } from "../utils/subjectResolver.js";
 import mongoose from "mongoose";
@@ -373,6 +374,9 @@ class PracticeController {
 
       // Cascade delete questions
       await questionRepository.deleteMany({ subjectId: id }, { session });
+
+      // Cascade delete passages
+      await Passage.deleteMany({ subjectId: id }).session(session);
 
       // Delete the subject
       await Subject.findByIdAndDelete(id).session(session);
