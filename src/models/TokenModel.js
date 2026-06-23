@@ -9,7 +9,7 @@ const TokenSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["refresh", "reset", "verify"],
+      enum: ["refresh", "reset", "verify", "blacklist"],
       required: true,
     },
     token: {
@@ -38,7 +38,7 @@ const TokenSchema = new mongoose.Schema(
 TokenSchema.index({ userId: 1 });
 TokenSchema.index({ type: 1 });
 TokenSchema.index({ revoked: 1 });
-TokenSchema.index({ expiresAt: 1 });
+TokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 TokenSchema.index({ userId: 1, type: 1, revoked: 1 });
 
 export default mongoose.model("Token", TokenSchema);

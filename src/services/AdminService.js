@@ -134,6 +134,7 @@ class AdminService {
         $project: {
           name: 1,
           email: 1,
+          lastActive: 1,
           "onboarding.subjects": 1,
           "stats.progress": 1,
           sessionCount: 1,
@@ -284,9 +285,9 @@ class AdminService {
         ? clamp(Math.round(progressRaw), 0, 100)
         : clamp(Math.round(((user.sessionCount || 0) / 20) * 100), 0, 100);
 
-      const lastSessionDate = user.sessions && user.sessions.length > 0 
+      const lastSessionDate = user.lastActive || (user.sessions && user.sessions.length > 0 
         ? user.sessions[0].createdAt 
-        : "Never";
+        : "Never");
 
       return {
         id: String(user._id),

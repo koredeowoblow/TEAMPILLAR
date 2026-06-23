@@ -266,10 +266,37 @@ class AuthService {
   }
 
   // ================= LOGOUT =================
-  static async logout(token) {
+  static async logout(token, refreshToken = null) {
     const tokenHash = this.hashToken(token);
 
     const session = await authRepository.findSessionByToken(tokenHash);
+
+    // Blacklist the tokens for 3 months
+    let userId = session?.userId;
+    if (!userId && token) {
+      try {
+        const decoded = jwt.decode(token);
+        userId = decoded?.id;
+      } catch (e) {}
+    }
+
+    if (userId) {
+      const Token = (await import("../models/TokenModel.js")).default;
+      const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000); // 3 months
+      const blacklistEntries = [];
+
+      if (token) {
+        blacklistEntries.push({ userId, type: "blacklist", token, expiresAt });
+      }
+      if (refreshToken) {
+        blacklistEntries.push({ userId, type: "blacklist", token: refreshToken, expiresAt });
+      }
+
+      if (blacklistEntries.length > 0) {
+        await Token.insertMany(blacklistEntries).catch(() => {});
+      }
+    }
+
     if (session) {
       await authRepository.invalidateSession(tokenHash);
       try {
@@ -418,6 +445,9 @@ class AuthService {
     await Auth.updateMany(query, {
       $set: { isLoggedOut: true, loggedOutAt: new Date() },
     });
+    
+    // While we do not have the raw tokens for all other devices here to blacklist natively, 
+    // invalidating the sessions using isLoggedOut effectively revokes them. 
     invalidateCachedSessionUser(userId.toString());
     return { message: "All other devices logged out" };
   }

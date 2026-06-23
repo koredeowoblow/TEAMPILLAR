@@ -135,8 +135,16 @@ class AuthController {
   // Logout
   static async logout(req, res) {
     const token = req.headers.authorization?.split(" ")[1];
+    
+    const cookies = req.headers.cookie?.split(";").reduce((acc, cookie) => {
+        const [key, value] = cookie.split("=").map((c) => c.trim());
+        acc[key] = value;
+        return acc;
+    }, {}) || {};
+    const refreshToken = cookies.refreshToken || req.body.refreshToken;
+
     if (token) {
-      await AuthService.logout(token);
+      await AuthService.logout(token, refreshToken);
     }
 
     // Clear HttpOnly cookie
