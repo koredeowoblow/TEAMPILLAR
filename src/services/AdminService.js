@@ -57,7 +57,8 @@ class AdminService {
       if (["name", "email", "createdAt", "lastSession"].includes(sortField)) {
         initialSort = { [sortField]: direction };
       } else if (["avgScore", "trend"].includes(sortField)) {
-        finalSort = { [sortField]: direction };
+        const dbSortField = sortField === "avgScore" ? "avgScoreUTME" : sortField;
+        finalSort = { [dbSortField]: direction };
       }
     }
 
