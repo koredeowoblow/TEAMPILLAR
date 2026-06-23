@@ -43,7 +43,25 @@ class PracticeGradingService {
     
     // REDIS LOCK: Prevent race-condition simultaneous submissions
     const lockKey = `session:lock:${sessionId}`;
-    const acquiredLock = await cache.client.set(lockKey, "1", "NX", "EX", 10);
+    let acquiredLock = true;
+    try {
+      const { isRedisAvailable, getRedisClient } = await import("../../config/redis.js");
+      if (isRedisAvailable()) {
+        const redis = await getRedisClient();
+        const res = await redis.set(lockKey, "1", { NX: true, EX: 10 });
+        acquiredLock = !!res;
+      } else {
+        // Fallback to in-memory check (works for single instance)
+        if (await cache.get(lockKey)) {
+          acquiredLock = false;
+        } else {
+          await cache.set(lockKey, "1", 10);
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to acquire redis lock, falling back to ledger lock", err);
+    }
+
     if (!acquiredLock) {
       throw new AppError("SESSION_REPLAY_DETECTED: A submission is already in progress.", 429);
     }
