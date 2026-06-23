@@ -220,8 +220,16 @@ async function runMonitoredGeneration() {
 
         // Real LLM Generation via Groq
         const prompt = `Generate 5 UNIQUE, challenging UTME-style multiple choice questions for ${target.subject} on ${target.topic}.
+
+CRITICAL CONSTRAINTS TO PREVENT QUALITY ISSUES:
+1. For Mathematics: Generate complex, multi-step problem-solving questions. Do NOT generate overly simple or "cheap" direct-recall questions.
+2. For English: Questions MUST be complete. ALWAYS provide clear, explicit instructions (e.g., "Choose the option that is nearest in meaning to the italicized word").
+3. For English Passages: If testing comprehension, you MUST include the actual short passage text within the "question" field. Never reference a passage without providing it.
+4. For Physics: Strictly adhere to the high-school/UTME syllabus. Do NOT include advanced engineering or university-level concepts.
+5. Novelty: Every question must be semantically unique. Do not repeat similar question structures to prevent duplicates in the same exam.
+
 Each explanation MUST be between 30 and 150 words. Output strictly as a JSON object containing a "questions" array.
-Example format: {"questions": [{"question":"","options":{"A":"","B":"","C":"","D":""},"correctAnswer":"A","explanation":""}]}`;
+Example format: {"questions": [{"question":"[Instructions/Passage] Actual question text...","options":{"A":"","B":"","C":"","D":""},"correctAnswer":"A","explanation":""}]}`;
 
         let newQs = [];
         let retries = 0;

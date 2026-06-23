@@ -82,6 +82,14 @@ REQUIREMENTS:
 1. Academic accuracy, standard UTME difficulty.
 2. 4 realistic options (A, B, C, D). Only 1 is correct.
 3. Detailed explanation.
+
+CRITICAL CONSTRAINTS TO PREVENT QUALITY ISSUES:
+- For Mathematics: Generate complex, multi-step problem-solving questions. Do NOT generate overly simple or "cheap" direct-recall questions.
+- For English: Questions MUST be complete. ALWAYS provide clear, explicit instructions (e.g., "Choose the option that is nearest in meaning to the italicized word").
+- For English Passages: If testing comprehension, you MUST include the actual short passage text within the "question" field. Never reference a passage without providing it.
+- For Physics: Strictly adhere to the high-school/UTME syllabus. Do NOT include advanced engineering or university-level concepts.
+- Novelty: Every question must be semantically unique. Do not repeat similar question structures to prevent duplicates in the same exam.
+
 4. Provide the output EXACTLY in this JSON format ONLY (array of objects), no markdown wrappers:
 [
   {
@@ -89,7 +97,7 @@ REQUIREMENTS:
     "subject": "${subject}",
     "topic": "${topic}",
     "difficulty": "medium",
-    "question": "Question text here?",
+    "question": "[Instructions/Passage] Actual question text...?",
     "options": {
       "A": "Option 1",
       "B": "Option 2",

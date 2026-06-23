@@ -107,7 +107,7 @@ const QuestionSchema = new mongoose.Schema(
   }
 );
 
-QuestionSchema.pre("save", async function(next) {
+QuestionSchema.pre("save", async function() {
   // Reset quarantine status to evaluate freshly
   this.isQuarantined = false;
   this.quarantineReason = null;
@@ -177,7 +177,6 @@ QuestionSchema.pre("save", async function(next) {
     // return next(new Error(`Validation Failed: ${reasons.join(" | ")}`));
   }
   
-  next();
 });
 
 // Main lookup index

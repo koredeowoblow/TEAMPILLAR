@@ -15,7 +15,7 @@ async function queryGroq(prompt) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: "llama3-8b-8192", // Fast model for bulk processing
+      model: "llama-3.1-8b-instant", // Fast model for bulk processing
       messages: [
         { 
           role: "system", 
@@ -53,7 +53,7 @@ const recalibrateMaths = async () => {
   }
 
   // Find unquarantined math questions to review
-  const questions = await Question.find({ subjectId: mathSubject._id, isQuarantined: { $ne: true } }).limit(100);
+  const questions = await Question.find({ subjectId: mathSubject._id, isQuarantined: { $ne: true } });
   console.log(`Found ${questions.length} Mathematics questions for AI Review.`);
 
   let approved = 0;

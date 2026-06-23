@@ -131,10 +131,18 @@ async function runAdvancedGenerator() {
 
       const prompt = `Generate 3 UNIQUE, challenging UTME-style multiple choice questions for ${subject} on ${topic}.
 Include problem-solving, analytical, and scenario-based questions (Phase 11).
+
+CRITICAL CONSTRAINTS TO PREVENT QUALITY ISSUES:
+1. For Mathematics: Generate complex, multi-step problem-solving questions. Do NOT generate overly simple or "cheap" direct-recall questions.
+2. For English: Questions MUST be complete. ALWAYS provide clear, explicit instructions (e.g., "Choose the option that is nearest in meaning to the italicized word").
+3. For English Passages: If testing comprehension, you MUST include the actual short passage text within the "question" field. Never reference a passage without providing it.
+4. For Physics: Strictly adhere to the high-school/UTME syllabus. Do NOT include advanced engineering or university-level concepts.
+5. Novelty: Every question must be semantically unique. Do not repeat similar question structures to prevent duplicates in the same exam.
+
 Each explanation MUST be between 50 and 250 words, explaining exactly why the answer is correct and why the distractors are incorrect (Phase 7).
 Do NOT copy past JAMB questions; create original variations (Phase 9).
 Output strictly in JSON array format:
-[{"id":"","subject":"${subject}","topic":"${topic}","difficulty":"hard","question":"","options":{"A":"","B":"","C":"","D":""},"correctAnswer":"A","explanation":""}]`;
+[{"id":"","subject":"${subject}","topic":"${topic}","difficulty":"hard","question":"[Instructions/Passage] Actual question text...","options":{"A":"","B":"","C":"","D":""},"correctAnswer":"A","explanation":""}]`;
 
       try {
         const chat = await groq.chat.completions.create({
