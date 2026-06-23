@@ -103,10 +103,10 @@ PracticeSessionSchema.index(
 
 const IMMUTABLE_FIELDS = ['userId', 'subjectId', 'subjectIds', 'sessionType', 'questionIds', 'questionLimit', 'topic', 'isMockTest', 'totalDuration', 'sessionFingerprint', 'sessionNonce'];
 
-PracticeSessionSchema.pre('validate', async function (next) {
+PracticeSessionSchema.pre('validate', async function () {
   if (this.isNew) {
-    if (!this.totalDuration) return next(new Error("SESSION_IS_IMMUTABLE: totalDuration is missing."));
-    if (!this.questionIds || this.questionIds.length === 0) return next(new Error("SESSION_IS_IMMUTABLE: questionIds are missing or empty."));
+    if (!this.totalDuration) throw new Error("SESSION_IS_IMMUTABLE: totalDuration is missing.");
+    if (!this.questionIds || this.questionIds.length === 0) throw new Error("SESSION_IS_IMMUTABLE: questionIds are missing or empty.");
 
     if (!this.sessionNonce) {
       const crypto = await import("crypto");
@@ -118,10 +118,9 @@ PracticeSessionSchema.pre('validate', async function (next) {
       this.sessionFingerprint = generateSessionFingerprint(this);
     }
   }
-  next();
 });
 
-PracticeSessionSchema.pre('save', async function (next) {
+PracticeSessionSchema.pre('save', async function () {
   if (!this.isNew) {
     for (const field of IMMUTABLE_FIELDS) {
       if (this.isModified(field)) {
@@ -131,17 +130,16 @@ PracticeSessionSchema.pre('save', async function (next) {
         } catch (err) {
           console.error("Failed to log tamper attempt", err);
         }
-        return next(new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`));
+        throw new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`);
       }
     }
   }
-  next();
 });
 
-PracticeSessionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], async function (next) {
+PracticeSessionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], async function () {
   const update = this.getUpdate();
   const setPayload = update.$set || update;
-  if (!setPayload) return next();
+  if (!setPayload) return;
   for (const field of IMMUTABLE_FIELDS) {
     if (setPayload[field] !== undefined) {
       try {
@@ -150,10 +148,9 @@ PracticeSessionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], async
       } catch (err) {
         console.error("Failed to log tamper attempt", err);
       }
-      return next(new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`));
+      throw new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`);
     }
   }
-  next();
 });
 
 export default mongoose.model("PracticeSession", PracticeSessionSchema);
