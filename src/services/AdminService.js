@@ -866,8 +866,8 @@ class AdminService {
         if (struggledSubjectAgg.length > 0) {
           const subj = struggledSubjectAgg[0];
           mostStruggledSubject = {
-            name: subj.subject?.name || "Unknown",
-            percent: Math.round(100 - (subj.avgMastery || 0))
+            name: subj.name || "Unknown",
+            percent: Math.round(100 - (subj.mastery || 0))
           };
         }
 
