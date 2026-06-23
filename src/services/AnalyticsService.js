@@ -301,22 +301,85 @@ class AnalyticsService {
 
     const objectId = new mongoose.Types.ObjectId(userId);
 
-    // 1. Aggregation for overall stats (avg score, max score, total sessions, avg speed)
-    const statsAgg = await practiceRepository.aggregate([
-      { $match: { userId: objectId } },
-      { 
-        $group: { 
-          _id: null, 
-          totalSessions: { $sum: 1 },
-          averageScore: { $avg: "$score" },
-          overallScore: { $max: "$score" },
-          avgSpeed: { 
-            $avg: { 
-              $cond: [ { $eq: ["$sessionStatus", "COMPLETED"] }, "$analytics.speedPerQuestion", null ] 
-            } 
+    // Run aggregations concurrently
+    const [statsAgg, scoreHistoryDocs, subjectAgg, weakTopicsAgg] = await Promise.all([
+      // 1. Aggregation for overall stats
+      practiceRepository.aggregate([
+        { $match: { userId: objectId } },
+        { 
+          $group: { 
+            _id: null, 
+            totalSessions: { $sum: 1 },
+            averageScore: { $avg: "$score" },
+            overallScore: { $max: "$score" },
+            avgSpeed: { 
+              $avg: { 
+                $cond: [ { $eq: ["$sessionStatus", "COMPLETED"] }, "$analytics.speedPerQuestion", null ] 
+              } 
+            }
+          } 
+        }
+      ]),
+      // 2. Score History (limit 100)
+      practiceRepository.find(
+        { userId: objectId },
+        { sort: { createdAt: -1 }, limit: 100, lean: true, select: "score createdAt" }
+      ),
+      // 3. Subject Performance
+      practiceRepository.aggregate([
+        { $match: { userId: objectId, score: { $ne: null } } },
+        {
+          $group: {
+            _id: "$subjectId",
+            score: { $avg: "$score" }
           }
-        } 
-      }
+        },
+        {
+          $lookup: {
+            from: "subjects",
+            localField: "_id",
+            foreignField: "_id",
+            as: "subjectDetails"
+          }
+        },
+        { $unwind: { path: "$subjectDetails", preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            _id: 0,
+            name: { $ifNull: ["$subjectDetails.name", "Unknown"] },
+            score: { $round: ["$score", 0] }
+          }
+        }
+      ]),
+      // 4. Weak Topics
+      practiceRepository.aggregate([
+        { $match: { userId: objectId, "analytics.topMistakeTopic": { $exists: true, $ne: null } } },
+        {
+          $group: {
+            _id: { topic: "$analytics.topMistakeTopic", subjectId: "$subjectId" },
+            frequency: { $sum: 1 }
+          }
+        },
+        { $sort: { frequency: -1 } },
+        { $limit: 5 },
+        {
+          $lookup: {
+            from: "subjects",
+            localField: "_id.subjectId",
+            foreignField: "_id",
+            as: "subjectDetails"
+          }
+        },
+        { $unwind: { path: "$subjectDetails", preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            _id: 0,
+            name: "$_id.topic",
+            subject: { $ifNull: ["$subjectDetails.name", "Unknown"] },
+            frequency: 1
+          }
+        }
+      ])
     ]);
 
     const stats = statsAgg[0] || { totalSessions: 0, averageScore: 0, overallScore: 0, avgSpeed: 0 };
@@ -325,11 +388,6 @@ class AnalyticsService {
     const total = stats.totalSessions || 0;
     const averageTimePerQuestion = `${Math.round(stats.avgSpeed || 0)}s`;
 
-    // 2. Score History (limit 100)
-    const scoreHistoryDocs = await practiceRepository.find(
-      { userId: objectId },
-      { sort: { createdAt: -1 }, limit: 100, lean: true, select: "score createdAt" }
-    );
     const scoreHistory = scoreHistoryDocs
       .map((s) => ({
         date: new Date(s.createdAt).toISOString().split("T")[0],
@@ -337,63 +395,7 @@ class AnalyticsService {
       }))
       .reverse();
 
-    // 3. Subject Performance
-    const subjectAgg = await practiceRepository.aggregate([
-      { $match: { userId: objectId, score: { $ne: null } } },
-      {
-        $group: {
-          _id: "$subjectId",
-          score: { $avg: "$score" }
-        }
-      },
-      {
-        $lookup: {
-          from: "subjects",
-          localField: "_id",
-          foreignField: "_id",
-          as: "subjectDetails"
-        }
-      },
-      { $unwind: { path: "$subjectDetails", preserveNullAndEmptyArrays: true } },
-      {
-        $project: {
-          _id: 0,
-          name: { $ifNull: ["$subjectDetails.name", "Unknown"] },
-          score: { $round: ["$score", 0] }
-        }
-      }
-    ]);
     const subjectPerformance = subjectAgg;
-
-    // 4. Weak Topics
-    const weakTopicsAgg = await practiceRepository.aggregate([
-      { $match: { userId: objectId, "analytics.topMistakeTopic": { $exists: true, $ne: null } } },
-      {
-        $group: {
-          _id: { topic: "$analytics.topMistakeTopic", subjectId: "$subjectId" },
-          frequency: { $sum: 1 }
-        }
-      },
-      { $sort: { frequency: -1 } },
-      { $limit: 5 },
-      {
-        $lookup: {
-          from: "subjects",
-          localField: "_id.subjectId",
-          foreignField: "_id",
-          as: "subjectDetails"
-        }
-      },
-      { $unwind: { path: "$subjectDetails", preserveNullAndEmptyArrays: true } },
-      {
-        $project: {
-          _id: 0,
-          name: "$_id.topic",
-          subject: { $ifNull: ["$subjectDetails.name", "Unknown"] },
-          frequency: 1
-        }
-      }
-    ]);
     const weakTopicsList = weakTopicsAgg;
 
     // Try to load pre-calculated background analytics

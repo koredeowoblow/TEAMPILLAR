@@ -103,12 +103,14 @@ class PracticeController {
     // Strip internal fields and format for the specified CBT shape
     const formattedQuestions = questions.map((q, index) => toCBTQuestionDTO(q, index));
 
+    const { calculateExamTime } = await import("../utils/TimeEngine.js");
+
     return sendSuccess(res, {
       message: "Questions retrieved",
       status: "success",
       data: {
         examId: sessionId || "practice",
-        duration: formattedQuestions.length * 60, // 1 min per question total
+        duration: calculateExamTime({ type: 'practice', questions: formattedQuestions }),
         totalQuestions: formattedQuestions.length,
         questions: formattedQuestions
       },

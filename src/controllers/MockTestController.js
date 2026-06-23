@@ -24,7 +24,8 @@ class MockTestController {
   }
 
   static async getActiveSession(req, res) {
-    const data = await MockTestService.getActiveSession(req.user);
+    const { deviceToken } = req.query;
+    const data = await MockTestService.getActiveSession(req.user, deviceToken);
     return sendSuccess(res, {
       message: "Active session retrieved",
       data,
@@ -34,19 +35,23 @@ class MockTestController {
 
   static async saveProgress(req, res) {
     const { sessionId } = req.params;
-    const { responses, timeRemaining } = req.body;
-    await MockTestService.saveProgress(req.user, sessionId, responses, timeRemaining);
+    const { responses, timeRemaining, deviceToken, sessionVersion, idempotencyKey } = req.body;
+    const data = await MockTestService.saveProgress(req.user, sessionId, responses, timeRemaining, { deviceToken, sessionVersion, idempotencyKey });
     return sendSuccess(res, {
       message: "Progress saved",
+      data,
       statusCode: 200
     });
   }
 
   static async submitMockTest(req, res) {
-    const { sessionId, responses, tabSwitches, ipAddress } = req.body;
+    const { sessionId, responses, tabSwitches, ipAddress, deviceToken, sessionVersion, finalizationKey } = req.body;
     const submissionOptions = {
       tabSwitches: tabSwitches || 0,
-      ipAddress: ipAddress || req.ip || null
+      ipAddress: ipAddress || req.ip || null,
+      deviceToken,
+      sessionVersion,
+      finalizationKey
     };
     const data = await MockTestService.submitMockTest(req.user, sessionId, responses, submissionOptions);
     LogService.logAction({

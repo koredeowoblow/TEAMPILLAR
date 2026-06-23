@@ -66,7 +66,7 @@ const PracticeSessionSchema = new mongoose.Schema(
       correct: { type: Number },
       total: { type: Number },
     }],
-    totalDuration: { type: Number, default: 7200 },
+    totalDuration: { type: Number, required: true },
   },
   { timestamps: true },
 );

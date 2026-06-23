@@ -575,52 +575,211 @@ class AdminService {
   }
 
   static async getDashboardStats() {
-    const cacheKey = "admin:dashboard:stats";
-    const cached = await cache.get(cacheKey);
-    if (cached) return cached;
+    const { getOrSetWithFallback } = await import("../utils/CacheWrapper.js");
 
-    const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
-    const TopicPerformance = (await import("../models/TopicPerformanceModel.js")).default;
+    return getOrSetWithFallback(
+      "admin:dashboard:stats",
+      async () => {
+        const PracticeSession = (await import("../models/PracticeSessionModel.js")).default;
+        const TopicPerformance = (await import("../models/TopicPerformanceModel.js")).default;
 
-    // ── Core counters ───────────────────────────────────────────────────────
-    const totalStudents = await User.countDocuments({ role: "STUDENT" });
-    const activeSessions = await PracticeSession.countDocuments({ sessionStatus: "ACTIVE" });
-
-    // ── Avg score across all students based on practice/test sessions ─────────────────────────────
-    const scoreAgg = await PracticeSession.aggregate([
-      { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
-      {
-        $project: {
-          scaledScore: {
-            $cond: {
-              if: { 
-                $or: [
-                  { $eq: ["$sessionType", "smart-mock"] },
-                  { $eq: ["$subjectId", null] }
-                ] 
-              },
-              then: "$score",
-              else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
+        // ── Core counters ───────────────────────────────────────────────────────
+    const [
+      totalStudents,
+      activeSessions,
+      scoreAgg,
+      distAgg,
+      topPerformersAgg,
+      heatmapAgg,
+      needsAttentionAgg,
+      struggledSubjectAgg
+    ] = await Promise.all([
+      User.countDocuments({ role: "STUDENT" }),
+      PracticeSession.countDocuments({ sessionStatus: "ACTIVE" }),
+      PracticeSession.aggregate([
+        { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+        {
+          $project: {
+            scaledScore: {
+              $cond: {
+                if: { 
+                  $or: [
+                    { $eq: ["$sessionType", "smart-mock"] },
+                    { $eq: ["$subjectId", null] }
+                  ] 
+                },
+                then: "$score",
+                else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
+              }
             }
           }
+        },
+        { $group: { _id: null, avg: { $avg: "$scaledScore" } } }
+      ]),
+      PracticeSession.aggregate([
+        { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+        {
+          $bucket: {
+            groupBy: "$score",
+            boundaries: [0, 100, 200, 300, 400],
+            default: "400+",
+            output: { count: { $sum: 1 } },
+          },
+        },
+      ]),
+      PracticeSession.aggregate([
+        { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+        {
+          $project: {
+            userId: 1,
+            scaledScore: {
+              $cond: {
+                if: { 
+                  $or: [
+                    { $eq: ["$sessionType", "smart-mock"] },
+                    { $eq: ["$subjectId", null] }
+                  ] 
+                },
+                then: "$score",
+                else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
+              }
+            }
+          }
+        },
+        {
+          $group: {
+            _id: "$userId",
+            avgScoreUTME: { $avg: "$scaledScore" }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        { $unwind: "$user" },
+        { $match: { "user.role": "STUDENT" } },
+        { $sort: { avgScoreUTME: -1 } },
+        { $limit: 5 },
+        {
+          $project: {
+            name: "$user.name",
+            avgScoreUTME: { $round: ["$avgScoreUTME", 0] },
+            examType: "$user.onboarding.examType"
+          }
         }
-      },
-      { $group: { _id: null, avg: { $avg: "$scaledScore" } } }
+      ]),
+      TopicPerformance.aggregate([
+        { $match: { totalAttempted: { $gte: 3 } } },
+        {
+          $group: {
+            _id: { topicId: "$topicId", subjectId: "$subjectId" },
+            avgMasterySubject: { $avg: "$masteryScore" }
+          }
+        },
+        {
+          $lookup: {
+            from: "subjects",
+            localField: "_id.subjectId",
+            foreignField: "_id",
+            as: "subject",
+          },
+        },
+        { $unwind: { path: "$subject", preserveNullAndEmptyArrays: true } },
+        {
+          $group: {
+            _id: "$_id.topicId",
+            avgMastery: { $avg: "$avgMasterySubject" },
+            subjects: {
+              $push: {
+                name: { $ifNull: ["$subject.name", "General"] },
+                mastery: "$avgMasterySubject",
+              },
+            },
+          },
+        },
+        { $sort: { avgMastery: 1 } }, // lowest mastery first (most problematic)
+        { $limit: 6 },
+      ]),
+      PracticeSession.aggregate([
+        { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 }, createdAt: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } } },
+        {
+          $project: {
+            userId: 1,
+            scaledScore: {
+              $cond: {
+                if: { 
+                  $or: [
+                    { $eq: ["$sessionType", "smart-mock"] },
+                    { $eq: ["$subjectId", null] }
+                  ] 
+                },
+                then: "$score",
+                else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
+              }
+            }
+          }
+        },
+        {
+          $group: {
+            _id: "$userId",
+            avgScoreUTME: { $avg: "$scaledScore" }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        { $unwind: "$user" },
+        { $match: { "user.role": "STUDENT", avgScoreUTME: { $lt: 200 } } },
+        { $sort: { avgScoreUTME: 1 } },
+        { $limit: 5 },
+        {
+          $project: {
+            name: "$user.name",
+            avgScoreUTME: { $round: ["$avgScoreUTME", 0] }
+          }
+        }
+      ]),
+      TopicPerformance.aggregate([
+        { $match: { totalAttempted: { $gt: 0 } } },
+        {
+          $group: {
+            _id: "$subjectId",
+            avgMastery: { $avg: "$masteryScore" }
+          }
+        },
+        { $sort: { avgMastery: 1 } },
+        { $limit: 1 },
+        {
+          $lookup: {
+            from: "subjects",
+            localField: "_id",
+            foreignField: "_id",
+            as: "subjectDetails"
+          }
+        },
+        { $unwind: "$subjectDetails" },
+        {
+          $project: {
+            name: "$subjectDetails.name",
+            mastery: { $round: ["$avgMastery", 0] }
+          }
+        }
+      ])
     ]);
+
+    // ── Avg score across all students based on practice/test sessions ─────────────────────────────
     const avgScore = scoreAgg.length ? Math.round(scoreAgg[0].avg) : 0;
 
     // ── Score distribution (completed session scores bucketed into UTME bands) ─
-    const distAgg = await PracticeSession.aggregate([
-      { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
-      {
-        $bucket: {
-          groupBy: "$score",
-          boundaries: [0, 100, 200, 300, 400],
-          default: "400+",
-          output: { count: { $sum: 1 } },
-        },
-      },
-    ]);
     const bandLabels = ["0-100", "100-200", "200-300", "300-400"];
     const bandBoundaries = [0, 100, 200, 300];
     const distMap = Object.fromEntries(distAgg.map((b) => [b._id, b.count]));
@@ -630,51 +789,6 @@ class AdminService {
     }));
 
     // ── Top performers (top 5 students by practice/test score) ──────────────────
-    const topPerformersAgg = await PracticeSession.aggregate([
-      { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
-      {
-        $project: {
-          userId: 1,
-          scaledScore: {
-            $cond: {
-              if: { 
-                $or: [
-                  { $eq: ["$sessionType", "smart-mock"] },
-                  { $eq: ["$subjectId", null] }
-                ] 
-              },
-              then: "$score",
-              else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
-            }
-          }
-        }
-      },
-      {
-        $group: {
-          _id: "$userId",
-          avgScoreUTME: { $avg: "$scaledScore" }
-        }
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "_id",
-          as: "user"
-        }
-      },
-      { $unwind: "$user" },
-      { $match: { "user.role": "STUDENT" } },
-      { $sort: { avgScoreUTME: -1 } },
-      { $limit: 5 },
-      {
-        $project: {
-          name: "$user.name",
-          avgScoreUTME: { $round: ["$avgScoreUTME", 0] },
-          examType: "$user.onboarding.examType"
-        }
-      }
-    ]);
 
     const topPerformers = topPerformersAgg.map((u) => ({
       name: u.name || "Student",
@@ -683,38 +797,6 @@ class AdminService {
     }));
 
     // ── Subject heatmap (top 5 topics by failure rate, pivoted by subject) ──
-    const heatmapAgg = await TopicPerformance.aggregate([
-      { $match: { totalAttempted: { $gte: 3 } } },
-      {
-        $group: {
-          _id: { topicId: "$topicId", subjectId: "$subjectId" },
-          avgMasterySubject: { $avg: "$masteryScore" }
-        }
-      },
-      {
-        $lookup: {
-          from: "subjects",
-          localField: "_id.subjectId",
-          foreignField: "_id",
-          as: "subject",
-        },
-      },
-      { $unwind: { path: "$subject", preserveNullAndEmptyArrays: true } },
-      {
-        $group: {
-          _id: "$_id.topicId",
-          avgMastery: { $avg: "$avgMasterySubject" },
-          subjects: {
-            $push: {
-              name: { $ifNull: ["$subject.name", "General"] },
-              mastery: "$avgMasterySubject",
-            },
-          },
-        },
-      },
-      { $sort: { avgMastery: 1 } }, // lowest mastery first (most problematic)
-      { $limit: 6 },
-    ]);
 
     const subjectHeatmap = heatmapAgg.map((row) => {
       // Build a subject→mastery map from the pushed array
@@ -736,50 +818,6 @@ class AdminService {
 
     // ── Needs attention (5 students with lowest practice/test scores, recently active) ─
     const recentCutoff = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000); // last 14 days
-    const needsAttentionAgg = await PracticeSession.aggregate([
-      { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 }, createdAt: { $gte: recentCutoff } } },
-      {
-        $project: {
-          userId: 1,
-          scaledScore: {
-            $cond: {
-              if: { 
-                $or: [
-                  { $eq: ["$sessionType", "smart-mock"] },
-                  { $eq: ["$subjectId", null] }
-                ] 
-              },
-              then: "$score",
-              else: { $multiply: [{ $ifNull: ["$score", 0] }, 4] }
-            }
-          }
-        }
-      },
-      {
-        $group: {
-          _id: "$userId",
-          avgScoreUTME: { $avg: "$scaledScore" }
-        }
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "_id",
-          as: "user"
-        }
-      },
-      { $unwind: "$user" },
-      { $match: { "user.role": "STUDENT", avgScoreUTME: { $lt: 200 } } },
-      { $sort: { avgScoreUTME: 1 } },
-      { $limit: 5 },
-      {
-        $project: {
-          name: "$user.name",
-          avgScoreUTME: { $round: ["$avgScoreUTME", 0] }
-        }
-      }
-    ]);
 
     const needsAttention = needsAttentionAgg.map((u) => ({
       id: String(u._id),
@@ -789,26 +827,6 @@ class AdminService {
     }));
 
     // ── Most Struggled Subject ───────────────────────────────────────────────
-    const struggledSubjectAgg = await TopicPerformance.aggregate([
-      { $match: { totalAttempted: { $gt: 0 } } },
-      {
-        $group: {
-          _id: "$subjectId",
-          avgMastery: { $avg: "$masteryScore" }
-        }
-      },
-      { $sort: { avgMastery: 1 } },
-      { $limit: 1 },
-      {
-        $lookup: {
-          from: "subjects",
-          localField: "_id",
-          foreignField: "_id",
-          as: "subject"
-        }
-      },
-      { $unwind: { path: "$subject", preserveNullAndEmptyArrays: true } }
-    ]);
     let mostStruggledSubject = null;
     if (struggledSubjectAgg.length > 0) {
       const subj = struggledSubjectAgg[0];
@@ -829,9 +847,12 @@ class AdminService {
       needsAttention,
       mostStruggledSubject,
     };
-    await cache.set(cacheKey, result, 60); // Cache for 60 seconds
     return result;
-  }
+  },
+  3600, // TTL
+  1 // Cache version
+);
+}
 
 
   static async getLiveMonitorData() {

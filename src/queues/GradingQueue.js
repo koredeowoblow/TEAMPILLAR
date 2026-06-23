@@ -69,6 +69,16 @@ export const scoreWorker = new Worker("scoring", async (job) => {
     const { userId, sessionId, responses, options } = job.data;
     const { default: MockTestService } = await import("../services/MockTestService.js");
     await MockTestService.processScoring(userId, sessionId, responses, options);
+    
+    // Trigger async precomputation of user stats
+    const { default: UserStatsPrecomputeService } = await import("../services/UserStatsPrecomputeService.js");
+    await UserStatsPrecomputeService.recalculateAndSave(userId);
+    
+    // Invalidate dashboard stats incrementally to force a rebuild on next read
+    const { getRedisClient } = await import("../config/redis.js");
+    const redisClient = await getRedisClient();
+    await redisClient.del('admin:dashboard:stats:v1').catch(() => {});
+    
     logger.info(`Successfully processed score job for session ${sessionId}`);
   } catch (error) {
     logger.error(`Error processing score job for session ${job.data.sessionId}: ${error.message}`);

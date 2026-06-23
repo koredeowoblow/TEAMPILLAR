@@ -15,7 +15,7 @@ class QuestionPoolService {
 
     try {
       const subjectStr = subjectId.toString();
-      const questions = await Question.find({ subjectId: subjectStr })
+      const questions = await Question.find({ subjectId: subjectStr, isQuarantined: { $ne: true } })
         .select("_id metadata.topic metadata.difficulty")
         .lean();
 
@@ -82,7 +82,7 @@ class QuestionPoolService {
 
     const redis = await getRedisClient();
     if (!redis) {
-      return Question.find({ _id: { $in: questionIds } }).lean();
+      return Question.find({ _id: { $in: questionIds } }).populate("passageId").lean();
     }
 
     let cachedDocs = [];
@@ -116,7 +116,7 @@ class QuestionPoolService {
 
       const fetchPromise = (async () => {
         try {
-          const dbQuestions = await Question.find({ _id: { $in: missingIds } }).lean();
+          const dbQuestions = await Question.find({ _id: { $in: missingIds } }).populate("passageId").lean();
           
           if (dbQuestions.length > 0) {
             const pipeline = redis.multi();
@@ -141,21 +141,43 @@ class QuestionPoolService {
 
   /**
    * Returns N random question documents for a subject, bypassing MongoDB $sample.
+   * Enforces 30% Easy, 50% Medium, 20% Hard ratio if possible.
    */
   static async getRandomQuestionsBySubject(subjectId, limit) {
     const redis = await getRedisClient();
     if (!redis) {
       // Fallback to mongo if Redis is dead
       return Question.aggregate([
-        { $match: { subjectId: subjectId } },
+        { $match: { subjectId: subjectId, isQuarantined: { $ne: true } } },
         { $sample: { size: limit } }
       ]);
     }
 
     const key = `questions:subject:${subjectId.toString()}`;
-    let ids;
+    const easyKey = `${key}:easy`;
+    const medKey = `${key}:medium`;
+    const hardKey = `${key}:hard`;
+
+    let ids = [];
     try {
-      ids = await redis.sRandMemberCount(key, limit);
+      // Attempt ratio selection first
+      const limitEasy = Math.ceil(limit * 0.3);
+      const limitMed = Math.ceil(limit * 0.5);
+      const limitHard = limit - limitEasy - limitMed;
+
+      const [easyIds, medIds, hardIds] = await Promise.all([
+        redis.sRandMemberCount(easyKey, limitEasy),
+        redis.sRandMemberCount(medKey, limitMed),
+        redis.sRandMemberCount(hardKey, limitHard)
+      ]);
+
+      ids = [...(easyIds || []), ...(medIds || []), ...(hardIds || [])];
+
+      if (ids.length < limit) {
+        // Fallback to pool if difficulty ratio lacks questions
+        ids = await redis.sRandMemberCount(key, limit);
+      }
+
       if (!ids || ids.length === 0) {
         await this.rebuildSubjectPool(subjectId);
         ids = await redis.sRandMemberCount(key, limit);
@@ -231,13 +253,13 @@ class QuestionPoolService {
   }
 
   static async fallbackMongoSample(subjectId, topic, limit) {
-    const matchQuery = { subjectId: new mongoose.Types.ObjectId(subjectId) };
+    const matchQuery = { subjectId: new mongoose.Types.ObjectId(subjectId), isQuarantined: { $ne: true } };
     if (topic) matchQuery["metadata.topic"] = topic;
     
     // Completely remove $sample to prevent Mongo CPU exhaustion during Redis outages.
     // Fetch a slightly larger block using fast IXSCAN and shuffle in memory.
     const dbLimit = Math.max(limit * 3, 50);
-    const questions = await Question.find(matchQuery).limit(dbLimit).lean();
+    const questions = await Question.find(matchQuery).populate("passageId").limit(dbLimit).lean();
 
     for (let i = questions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));

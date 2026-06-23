@@ -73,6 +73,11 @@ const QuestionSchema = new mongoose.Schema(
 
       topic: String,
       subTopic: String,
+      
+      instruction: {
+        type: String,
+        default: null
+      },
 
       difficulty: {
         type: String,
@@ -80,11 +85,100 @@ const QuestionSchema = new mongoose.Schema(
         default: "medium",
       },
     },
+
+    passageId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Passage",
+      default: null,
+      index: true,
+    },
+    
+    isQuarantined: {
+      type: Boolean,
+      default: false,
+    },
+    quarantineReason: {
+      type: String,
+      default: null
+    }
   },
   {
     timestamps: true,
   }
 );
+
+QuestionSchema.pre("save", async function(next) {
+  // Reset quarantine status to evaluate freshly
+  this.isQuarantined = false;
+  this.quarantineReason = null;
+  const reasons = [];
+
+  // 1. Incomplete Question Text
+  if (!this.content?.text && !this.content?.image && !this.content?.equation) {
+    reasons.push("Missing question content/text");
+  }
+
+  // 2. Options check
+  if (!this.options || this.options.length < 4) {
+    reasons.push("Less than 4 options provided");
+  }
+
+  // 3. Missing correct answer
+  if (this.options && !this.options.some(opt => opt.isCorrect)) {
+    reasons.push("Missing correct answer");
+  }
+
+  // 4. Missing explanation
+  if (!this.explanation && (!this.explanationDetails || (!this.explanationDetails.whyCorrect && !this.explanationDetails.summary))) {
+    reasons.push("Missing explanation");
+  }
+
+  try {
+    const Subject = mongoose.model("Subject");
+    const subject = await Subject.findById(this.subjectId).lean();
+    if (subject) {
+      const subName = (subject.name || "").toLowerCase();
+
+      // English instruction check
+      if (subName.includes("english")) {
+        if (!this.metadata?.instruction) {
+          reasons.push("English question missing mandatory instruction");
+        }
+      }
+
+      // Physics check for engineering questions
+      if (subName.includes("physics")) {
+        const textLower = (this.content?.text || "").toLowerCase();
+        const engKeywords = ['thermodynamics engine', 'civil engineering', 'auto mechanic', 'structural load', 'engineering'];
+        if (engKeywords.some(k => textLower.includes(k))) {
+          reasons.push("Physics question contains engineering-level content");
+        }
+      }
+    }
+  } catch (err) {
+    // Ignore db fetch error during hook
+  }
+
+  // Passage check
+  const textLower = (this.content?.text || "").toLowerCase();
+  if (textLower.includes("passage") || textLower.includes("extract") || textLower.includes("statement above") || textLower.includes("comprehension")) {
+    if (!this.passageId) {
+      reasons.push("Question references a passage but no passageId is linked");
+    }
+  }
+
+  if (reasons.length > 0) {
+    // Instead of throwing an error that breaks bulk imports, we quarantine the question.
+    // It won't be picked up by the exam engine if it's quarantined.
+    this.isQuarantined = true;
+    this.quarantineReason = reasons.join(" | ");
+    
+    // In strict mode, we could reject:
+    // return next(new Error(`Validation Failed: ${reasons.join(" | ")}`));
+  }
+  
+  next();
+});
 
 // Main lookup index
 QuestionSchema.index({

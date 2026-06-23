@@ -33,11 +33,11 @@ function extractJson(text) {
 export function heuristicFactCheck(questionObj) {
   const { subject, question, options, correctAnswer, explanation } = questionObj;
   const text = `${question} ${options.A} ${options.B} ${options.C} ${options.D} ${explanation || ""}`.toLowerCase();
-  
+
   let factConfidence = 92; // Baseline confidence increased
-  
+
   if (text.length < 50) {
-     factConfidence -= 50; // Heavily penalize missing context
+    factConfidence -= 50; // Heavily penalize missing context
   }
 
   // Basic hallucination detection (heuristics)
@@ -56,13 +56,13 @@ export function heuristicFactCheck(questionObj) {
   else if (subject === "Chemistry") {
     if (/acid|base|atom|mole|electron|reaction|oxygen|carbon/.test(text)) factConfidence += 5;
   }
-  
+
   // Cap at 98 for heuristics
-  return { 
-    answerConfidence: Math.min(98, factConfidence + 2), 
-    factConfidence: Math.min(98, factConfidence), 
-    curriculumConfidence: Math.min(98, factConfidence + 1), 
-    overallConfidence: Math.min(98, factConfidence) 
+  return {
+    answerConfidence: Math.min(98, factConfidence + 2),
+    factConfidence: Math.min(98, factConfidence),
+    curriculumConfidence: Math.min(98, factConfidence + 1),
+    overallConfidence: Math.min(98, factConfidence)
   };
 }
 
@@ -70,55 +70,55 @@ export async function validateFactuality(questionObj) {
   const { subject, question, options, correctAnswer, explanation } = questionObj;
 
   const prompt = `You are an expert UTME Chief Examiner and Fact-Checker. 
-Validate the factual accuracy of this ${subject} question.
-Question: ${question}
-A: ${options.A}
-B: ${options.B}
-C: ${options.C}
-D: ${options.D}
-Provided Answer: ${correctAnswer}
-Explanation: ${explanation}
+      Validate the factual accuracy of this ${subject} question.
+      Question: ${question}
+      A: ${options.A}
+      B: ${options.B}
+      C: ${options.C}
+      D: ${options.D}
+      Provided Answer: ${correctAnswer}
+      Explanation: ${explanation}
 
-CRITICAL RULES:
-- Math/Physics: Solve the math/physics calculation yourself. Verify formulas and units.
-- Chemistry: Verify chemical equations and atomic facts.
-- Biology/Gov/Econs: Verify definitions, classifications, and principles.
-- Detect hallucinations (invented terms, laws, historical events).
+      CRITICAL RULES:
+      - Math/Physics: Solve the math/physics calculation yourself. Verify formulas and units.
+      - Chemistry: Verify chemical equations and atomic facts.
+      - Biology/Gov/Econs: Verify definitions, classifications, and principles.
+      - Detect hallucinations (invented terms, laws, historical events).
 
-You are a validation engine.
-Return ONLY valid JSON.
-Do not use markdown.
-Do not use bullet points.
-Do not use explanations.
-Do not wrap output in code fences.
+      You are a validation engine.
+      Return ONLY valid JSON.
+      Do not use markdown.
+      Do not use bullet points.
+      Do not use explanations.
+      Do not wrap output in code fences.
 
-EXAMPLE HIGH QUALITY:
-Question: What is the capital of Nigeria?
-Expected:
-{
-  "answerConfidence": 100,
-  "factConfidence": 100,
-  "curriculumConfidence": 100,
-  "overallConfidence": 100
-}
+      EXAMPLE HIGH QUALITY:
+      Question: What is the capital of Nigeria?
+      Expected:
+      {
+        "answerConfidence": 100,
+        "factConfidence": 100,
+        "curriculumConfidence": 100,
+        "overallConfidence": 100
+      }
 
-EXAMPLE POOR QUALITY:
-Question: Which planet is made of chocolate?
-Expected:
-{
-  "answerConfidence": 10,
-  "factConfidence": 0,
-  "curriculumConfidence": 0,
-  "overallConfidence": 3
-}
+      EXAMPLE POOR QUALITY:
+      Question: Which planet is made of chocolate?
+      Expected:
+      {
+        "answerConfidence": 10,
+        "factConfidence": 0,
+        "curriculumConfidence": 0,
+        "overallConfidence": 3
+      }
 
-Required schema:
-{
-  "answerConfidence": "<integer 0-100>",
-  "factConfidence": "<integer 0-100>",
-  "curriculumConfidence": "<integer 0-100>",
-  "overallConfidence": "<integer 0-100>"
-}`;
+      Required schema:
+      {
+        "answerConfidence": "<integer 0-100>",
+        "factConfidence": "<integer 0-100>",
+        "curriculumConfidence": "<integer 0-100>",
+        "overallConfidence": "<integer 0-100>"
+      }`;
 
   try {
     const chat = await groq.chat.completions.create({
@@ -128,15 +128,15 @@ Required schema:
     });
 
     let resText = chat.choices[0]?.message?.content || "";
-    
+
     fs.appendFileSync(resolve(process.cwd(), "logs/fact-check-raw.log"), `\nRAW FACT CHECK RESPONSE:\n${resText}\n------------------------`);
 
     const result = extractJson(resText);
-    
+
     if (!result) {
       throw new Error("Failed to extract JSON from LLM response");
     }
-    
+
     let aConf = parseInt(result.answerConfidence);
     let fConf = parseInt(result.factConfidence);
     let cConf = parseInt(result.curriculumConfidence);
@@ -147,14 +147,14 @@ Required schema:
     if (isNaN(cConf)) cConf = 0;
     if (isNaN(oConf)) oConf = 0;
 
-    if ((aConf === 0 && fConf === 0 && cConf === 0 && oConf === 0) || 
-        (aConf === 1 && fConf === 1 && cConf === 1 && oConf === 1)) {
-        throw new Error("LLM hallucinated placeholder values");
+    if ((aConf === 0 && fConf === 0 && cConf === 0 && oConf === 0) ||
+      (aConf === 1 && fConf === 1 && cConf === 1 && oConf === 1)) {
+      throw new Error("LLM hallucinated placeholder values");
     }
 
     const heuristic = heuristicFactCheck(questionObj);
     const finalConf = Math.round((oConf * 0.6) + (heuristic.overallConfidence * 0.4));
-    
+
     const finalResult = {
       llmConfidence: oConf,
       heuristicConfidence: heuristic.overallConfidence,
@@ -164,15 +164,15 @@ Required schema:
 
     let auditPath = resolve(process.cwd(), "confidence_audit.json");
     let auditLog = fs.existsSync(auditPath) ? JSON.parse(fs.readFileSync(auditPath, "utf8")) : [];
-       
+
     if (auditLog.length < 100) {
-       auditLog.push({
-          questionId: questionObj.id,
-          llmResponse: result,
-          heuristicScore: heuristic,
-          finalScore: finalResult
-       });
-       fs.writeFileSync(auditPath, JSON.stringify(auditLog, null, 2));
+      auditLog.push({
+        questionId: questionObj.id,
+        llmResponse: result,
+        heuristicScore: heuristic,
+        finalScore: finalResult
+      });
+      fs.writeFileSync(auditPath, JSON.stringify(auditLog, null, 2));
     }
 
     return finalResult;

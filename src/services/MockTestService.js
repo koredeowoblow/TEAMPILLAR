@@ -4,6 +4,80 @@ import Question from "../models/QuestionModel.js";
 import Subject from "../models/SubjectModel.js";
 import { AppError } from "../utils/AppError.js";
 import QuestionPoolService from "./QuestionPoolService.js";
+import crypto from "crypto";
+
+const LUA_FENCING_SCRIPT = `
+local sessionRaw = redis.call("GET", KEYS[1])
+if not sessionRaw then
+  return {"ERR", "SESSION_NOT_FOUND"}
+end
+
+local session = cjson.decode(sessionRaw)
+
+if session.status == "FINALIZING" or session.status == "FINALIZED" then
+  return {"ERR", "SESSION_LOCKED_FINAL"}
+end
+
+if session.lockOwner ~= ARGV[1] then
+  return {"ERR", "LOCK_MISMATCH"}
+end
+
+if tonumber(ARGV[2]) ~= tonumber(session.version) then
+  return {"ERR", "STALE_FENCING_TOKEN"}
+end
+
+local idemKey = KEYS[2] .. ":" .. ARGV[4]
+local exists = redis.call("GET", idemKey)
+if exists then
+  return {"OK", session.version, "DUPLICATE"}
+end
+
+redis.call("SET", idemKey, "1")
+redis.call("EXPIRE", idemKey, 14400)
+
+session.version = session.version + 1
+session.updatedAt = tonumber(ARGV[5])
+if ARGV[3] ~= nil and ARGV[3] ~= "" then
+  session.lastWrite = ARGV[3]
+end
+
+redis.call("SET", KEYS[1], cjson.encode(session))
+return {"OK", session.version, "NEW"}
+`;
+
+const LUA_FINALIZE_SCRIPT = `
+local sessionRaw = redis.call("GET", KEYS[1])
+if not sessionRaw then
+  return {"ERR", "SESSION_NOT_FOUND"}
+end
+
+local session = cjson.decode(sessionRaw)
+
+if session.lockOwner ~= ARGV[1] then
+  return {"ERR", "LOCK_MISMATCH"}
+end
+
+if tonumber(ARGV[2]) ~= tonumber(session.version) then
+  return {"ERR", "STALE_FENCING_TOKEN"}
+end
+
+if session.status == "FINALIZING" or session.status == "FINALIZED" then
+  return {"ERR", "SESSION_LOCKED_FINAL"}
+end
+
+local lockKey = KEYS[1] .. ":finalize_lock"
+local lockAcquired = redis.call("SETNX", lockKey, ARGV[3])
+if lockAcquired == 0 then
+  return {"ERR", "ALREADY_FINALIZING"}
+end
+redis.call("EXPIRE", lockKey, 14400)
+
+session.status = "FINALIZING"
+session.version = session.version + 1
+redis.call("SET", KEYS[1], cjson.encode(session))
+
+return {"OK", session.version}
+`;
 
 class MockTestService {
   static async startMockTest(user, requestedSubjectIds = null) {
@@ -55,7 +129,6 @@ class MockTestService {
     const redisClient = await getRedisClient();
     const sessionAnswers = {};
 
-    // Query 60 questions for English, 40 for other subjects
     // Query 60 questions for English, 40 for other subjects concurrently
     const subjectPromises = mockSubjects.map(async (subjectId) => {
       let questions = [];
@@ -90,7 +163,8 @@ class MockTestService {
           text: q.content?.text || q.text || '',
           content: q.content,
           options: safeOptions,
-          metadata: q.metadata
+          metadata: q.metadata,
+          passage: q.passageId || null
         });
       });
 
@@ -104,8 +178,19 @@ class MockTestService {
       Object.assign(sessionAnswers, res.localAnswers);
     }
 
+
+
+    const uniqueIds = new Set(allQuestionIds.map(id => id.toString()));
+    if (uniqueIds.size !== allQuestionIds.length) {
+      console.error("[MockTestService] Duplicate Question IDs detected in exam generation.");
+      throw new AppError("Exam generation aborted: Duplicate questions detected. Please try again.", 500);
+    }
+
+    // Removed Jaccard similarity deduplication from runtime critical path.
+    // Deduplication is handled offline by scripts/audit_questions.js to prevent O(N^2) event loop blocking.
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
 
+    const { calculateExamTime } = await import("../utils/TimeEngine.js");
     const session = await PracticeSessionModel.create({
       userId: user._id,
       subjectIds: mockSubjects,
@@ -113,7 +198,7 @@ class MockTestService {
       sessionType: "smart-mock",
       sessionStatus: "ACTIVE",
       questionIds: allQuestionIds,
-      totalDuration: 7200,
+      totalDuration: calculateExamTime({ type: 'smart-mock', questions: [] }),
       questionLimit: allQuestionIds.length
     });
 
@@ -125,74 +210,104 @@ class MockTestService {
     // Cache correct answers for grading (TTL: 4 hours)
     await redisClient.setEx(`session:${session._id}:answers`, 14400, JSON.stringify(sessionAnswers));
 
+    // Generate Fencing Token and Initialize Session Lock
+    const deviceToken = crypto.randomBytes(16).toString('hex');
+    await redisClient.setEx(`exam:session:${session._id}`, 14400, JSON.stringify({
+      lockOwner: deviceToken,
+      version: 1,
+      status: "ACTIVE",
+      updatedAt: Date.now()
+    }));
+
     return {
       sessionId: session._id,
-      questions: questionsBySubject
+      questions: questionsBySubject,
+      totalDuration: session.totalDuration,
+      deviceToken,
+      sessionVersion: 1
     };
   }
 
   static async submitMockTest(user, sessionId, responses, options = {}) {
-    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+    const { deviceToken, sessionVersion, finalizationKey, tabSwitches = 0, ipAddress = null, antiCheat = {}, isSweeper } = options;
     const { getRedisClient } = await import("../config/redis.js");
     const redisClient = await getRedisClient();
 
-    // 1. Resolve responses
+    if (!isSweeper && (!deviceToken || !sessionVersion || !finalizationKey)) {
+      throw new AppError("Missing strict finalization parameters.", 400);
+    }
+
+    if (!isSweeper) {
+      // Execute Finalization Lock
+      const result = await redisClient.eval(
+        LUA_FINALIZE_SCRIPT,
+        {
+          keys: [`exam:session:${sessionId}`],
+          arguments: [deviceToken, sessionVersion.toString(), finalizationKey]
+        }
+      );
+
+      if (result[0] === "ERR") {
+        if (result[1] === "ALREADY_FINALIZING" || result[1] === "SESSION_LOCKED_FINAL") {
+          return { status: "ALREADY_FINALIZED", sessionId };
+        }
+        throw new AppError(`Finalization rejected: ${result[1]}`, 409);
+      }
+    }
+
+    // Resolve final responses
     let finalResponses = [];
     const progressData = await redisClient.get(`session:${sessionId}:progress`);
 
     if (progressData) {
       finalResponses = JSON.parse(progressData).responses || [];
     } else if (responses && responses.length > 0) {
-      console.warn(`[MockTestService] Redis cache missing for session ${sessionId}, falling back to full client payload.`);
       finalResponses = responses;
-    } else if (options.isSweeper) {
-      console.warn(`[MockTestService] Sweeper finalizing session ${sessionId} with zero responses.`);
+    } else if (isSweeper) {
       finalResponses = [];
-    } else {
-      throw new AppError("requiresFullPayload", 400);
     }
 
-    const { tabSwitches = 0, ipAddress = null } = options;
-    const flagged = tabSwitches > 3;
-
-    // 2. Atomic Transition (Idempotency Lock)
-    const session = await PracticeSessionModel.findOneAndUpdate(
-      { _id: sessionId, userId: user._id, sessionStatus: "ACTIVE" },
-      { 
-        $set: { 
-          sessionStatus: "PENDING_GRADING", 
-          responses: finalResponses, 
-          endTime: new Date(),
-          security: { tabSwitches, ipAddress, flagged }
-        } 
-      },
-      { new: true }
-    );
-
-    if (!session) {
-      // It's either missing, or already submitted. Fetch to return safe state.
-      const existing = await PracticeSessionModel.findOne({ _id: sessionId, userId: user._id });
-      if (!existing) throw new AppError("Session not found", 404);
+    // Cross-exam penalty tracking
+    const violationsCount = antiCheat.violationsCount || tabSwitches || 0;
+    if (violationsCount > 0) {
+      const userUpdate = await User.findByIdAndUpdate(user._id, {
+        $inc: { 'antiCheat.totalViolations': violationsCount }
+      }, { new: true });
       
-      return {
-        compositeScore: existing.compositeScore || existing.score || 0,
-        subjectScores: existing.subjectScores || [],
-        sessionId: existing._id,
-        timeTaken: existing.timeTaken || 0,
-        status: existing.sessionStatus
-      };
+      const total = userUpdate?.antiCheat?.totalViolations || 0;
+      let suspensionDate = null;
+      if (total >= 10) {
+        suspensionDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      } else if (total >= 5) {
+        suspensionDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      }
+      
+      if (suspensionDate) {
+        await User.findByIdAndUpdate(user._id, { 'antiCheat.suspendedUntil': suspensionDate });
+      }
     }
+
+    // Push to BullMQ Finalization Queue
+    const { addFinalizationJob } = await import("../queues/ExamQueue.js");
+    await addFinalizationJob({
+      sessionId,
+      deviceToken,
+      finalizationKey,
+      finalResponses,
+      options
+    });
 
     try {
       const { addScoreJob } = await import("../queues/GradingQueue.js");
-      addScoreJob(user._id, session._id, finalResponses, options);
+      addScoreJob(user._id, sessionId, finalResponses, options);
     } catch (err) {
       console.warn("Failed to queue score job in mock test:", err.message);
     }
 
     return {
-      sessionId: session._id,
-      status: "PENDING_GRADING"
+      message: "Exam submission queued safely.",
+      sessionId,
+      status: "FINALIZING"
     };
   }
 
@@ -299,7 +414,7 @@ class MockTestService {
       }
 
       if (stats.total > expectedTotal) {
-        logger.error(`Scoring Bug Detected: stats.total (${stats.total}) exceeds actual questions (${expectedTotal}) for subject ${sid} in session ${sessionId}`);
+        console.error(`Scoring Bug Detected: stats.total (${stats.total}) exceeds actual questions (${expectedTotal}) for subject ${sid} in session ${sessionId}`);
         stats.total = expectedTotal; // Safety fallback
       }
 
@@ -379,7 +494,7 @@ class MockTestService {
     }
   }
 
-  static async getActiveSession(user) {
+  static async getActiveSession(user, incomingDeviceToken) {
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
     const { getRedisClient } = await import("../config/redis.js");
 
@@ -391,7 +506,25 @@ class MockTestService {
 
     if (!session) return null;
 
+    // We do NOT penalize simple connection drops or refreshes here.
+    // Legitimate users with bad network should be allowed to resume.
+    // Anti-cheat relies strictly on explicit tabSwitches and focusLosses reported by the client payload.
+
     const redisClient = await getRedisClient();
+    
+    // Check Fencing Lock
+    const sessionLockRaw = await redisClient.get(`exam:session:${session._id}`);
+    let sessionVersion = 1;
+    let lockOwner = incomingDeviceToken;
+    if (sessionLockRaw) {
+      const lockData = JSON.parse(sessionLockRaw);
+      if (lockData.lockOwner !== incomingDeviceToken && incomingDeviceToken) {
+        throw new AppError("LOCK_MISMATCH", 409);
+      }
+      sessionVersion = lockData.version;
+      lockOwner = lockData.lockOwner;
+    }
+
     const progressData = await redisClient.get(`session:${session._id}:progress`);
     let responses = [];
     let timeRemaining = session.totalDuration;
@@ -405,7 +538,7 @@ class MockTestService {
       timeRemaining = Math.max(0, session.totalDuration - elapsed);
     }
 
-    const questions = await Question.find({ _id: { $in: session.questionIds } }).lean();
+    const questions = await Question.find({ _id: { $in: session.questionIds } }).populate("passageId").lean();
     const subjects = await Subject.find({ _id: { $in: session.subjectIds } }).lean();
     const subjectMap = subjects.reduce((acc, s) => {
       acc[s._id.toString()] = s.name;
@@ -426,7 +559,8 @@ class MockTestService {
         text: q.content?.text || q.text || '',
         content: q.content,
         options: safeOptions,
-        metadata: q.metadata
+        metadata: q.metadata,
+        passage: q.passageId || null
       };
     });
 
@@ -435,20 +569,53 @@ class MockTestService {
       questions: formattedQuestions,
       responses,
       timeRemaining,
-      totalDuration: session.totalDuration
+      totalDuration: session.totalDuration,
+      deviceToken: lockOwner,
+      sessionVersion
     };
   }
 
-  static async saveProgress(user, sessionId, responses, timeRemaining) {
+  static async saveProgress(user, sessionId, responses, timeRemaining, options = {}) {
+    const { deviceToken, sessionVersion, idempotencyKey } = options;
     const { getRedisClient } = await import("../config/redis.js");
     const redisClient = await getRedisClient();
+
+    const payloadStr = JSON.stringify({ responses, timeRemaining });
+    const idemKeyBase = `exam:session:${sessionId}:idem`;
+
+    if (deviceToken && sessionVersion && idempotencyKey) {
+      // Execute atomic Lua script
+      const result = await redisClient.eval(
+        LUA_FENCING_SCRIPT,
+        {
+          keys: [`exam:session:${sessionId}`, idemKeyBase],
+          arguments: [deviceToken, sessionVersion.toString(), payloadStr, idempotencyKey, Date.now().toString()]
+        }
+      );
+
+      // result is an array: ["ERR", "REASON"] or ["OK", version, "DUPLICATE" | "NEW"]
+      if (result[0] === "ERR") {
+        throw new AppError(`Fencing rejected: ${result[1]}`, 409);
+      }
+      
+      const newVersion = result[1];
+      const status = result[2];
+
+      if (status === "DUPLICATE") {
+        return { version: newVersion, duplicate: true };
+      }
+      
+      await redisClient.setEx(`session:${sessionId}:progress`, 10800, payloadStr);
+      return { version: newVersion };
+    }
 
     // TTL matches max exam duration (2 hours) plus 1 hour grace period
     await redisClient.setEx(
       `session:${sessionId}:progress`,
       10800,
-      JSON.stringify({ responses, timeRemaining })
+      payloadStr
     );
+    return { version: sessionVersion };
   }
 
   static async getMockHistory(user, page = 1, limit = 10) {

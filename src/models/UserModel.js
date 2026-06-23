@@ -82,6 +82,10 @@ const UserSchema = new mongoose.Schema(
       totalMocksTaken:  { type: Number, default: 0 },
       avgMockScore:     { type: Number, default: 0 },
     },
+    antiCheat: {
+      totalViolations: { type: Number, default: 0 },
+      suspendedUntil: { type: Date, default: null }
+    },
     lastActive: { type: Date, default: Date.now },
   },
   {
