@@ -77,6 +77,8 @@ class SmartMockController {
       message: "Smart Mock generated successfully",
       data: {
         sessionId: String(session._id),
+        sessionFingerprint: session.sessionFingerprint,
+        sessionNonce: session.sessionNonce,
         questions: formattedQuestions,
         session: toPracticeSessionSummaryDTO(session)
       },
@@ -88,7 +90,7 @@ class SmartMockController {
    * Submits a smart mock session.
    */
   static async submitSmartMock(req, res) {
-    const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
+    const { sessionId, responses, tabSwitches, endTime, ipAddress, sessionFingerprint, sessionNonce } = req.body;
 
     if (!sessionId || !responses) {
       throw new AppError("sessionId and responses are required", 400);
@@ -100,6 +102,8 @@ class SmartMockController {
       tabSwitches,
       endTime,
       ipAddress,
+      sessionFingerprint,
+      sessionNonce,
     });
 
     return sendSuccess(res, {

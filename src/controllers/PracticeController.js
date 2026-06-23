@@ -163,7 +163,7 @@ class PracticeController {
 
 
   static async submit(req, res) {
-    const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
+    const { sessionId, responses, tabSwitches, endTime, ipAddress, sessionFingerprint, sessionNonce } = req.body;
     if (!sessionId || !responses)
       throw new AppError("sessionId and responses are required", 400);
 
@@ -172,6 +172,8 @@ class PracticeController {
       tabSwitches,
       endTime,
       ipAddress,
+      sessionFingerprint,
+      sessionNonce,
     });
 
     LogService.logAction({
@@ -291,6 +293,8 @@ class PracticeController {
       message: "Session started",
       data: {
         sessionId: String(session._id),
+        sessionFingerprint: session.sessionFingerprint,
+        sessionNonce: session.sessionNonce,
         session: toPracticeSessionSummaryDTO(session),
         questions,
       },
