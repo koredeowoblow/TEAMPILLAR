@@ -46,12 +46,12 @@ class PracticeController {
       throw new AppError("subjectId is required", 400);
     }
     const resolvedSubjectId = await resolveSubjectId(subjectId);
-    
+
     // Fast Redis caching for years
     const cacheKey = `years:subject:${resolvedSubjectId.toString()}`;
     const { getRedisClient } = await import("../config/redis.js");
     const redis = await getRedisClient();
-    
+
     let sortedYears;
     if (redis) {
       try {
@@ -71,7 +71,7 @@ class PracticeController {
       if (redis) {
         try {
           await redis.setEx(cacheKey, 86400, JSON.stringify(sortedYears));
-        } catch (e) {}
+        } catch (e) { }
       }
     }
 
@@ -84,7 +84,7 @@ class PracticeController {
 
   static async getQuestions(req, res) {
     const { subjectId, limit, difficulty, year, sessionId } = req.query;
-    
+
     // Support multi-subject sessions
     let session = null;
     if (sessionId) {
@@ -210,12 +210,12 @@ class PracticeController {
     const [sessions, total] = await Promise.all([
       practiceRepository.find(
         { userId, sessionStatus: "COMPLETED" },
-        { 
-          sort: { createdAt: -1 }, 
-          skip, 
-          limit, 
-          lean: true, 
-          select: "subjectId sessionStatus score questionLimit analytics startTime endTime createdAt" 
+        {
+          sort: { createdAt: -1 },
+          skip,
+          limit,
+          lean: true,
+          select: "subjectId sessionStatus score questionLimit analytics startTime endTime createdAt"
         },
       ),
       practiceRepository.count({ userId, sessionStatus: "COMPLETED" }),

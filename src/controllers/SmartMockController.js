@@ -35,7 +35,7 @@ class SmartMockController {
 
     // Enforce question count restriction for free-tier users
     const isPro = resolveUserTier(req.user) === "pro";
-    
+
     // Check subject limit for free users
     const requestedSubjects = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
     if (!isPro && requestedSubjects.length > 2) {
@@ -44,7 +44,7 @@ class SmartMockController {
 
     // Check TOTAL question limit for free users
     const totalRequestedQuestions = questionLimit * requestedSubjects.length;
-    if (!isPro && totalRequestedQuestions > 40) { 
+    if (!isPro && totalRequestedQuestions > 40) {
       throw new AppError(
         `Question Limit Reached: Free users are limited to 40 questions total for multi-subject sessions. You requested ${totalRequestedQuestions}. Upgrade to Pro!`,
         403,
@@ -89,7 +89,7 @@ class SmartMockController {
    */
   static async submitSmartMock(req, res) {
     const { sessionId, responses, tabSwitches, endTime, ipAddress } = req.body;
-    
+
     if (!sessionId || !responses) {
       throw new AppError("sessionId and responses are required", 400);
     }
