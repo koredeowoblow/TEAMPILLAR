@@ -121,10 +121,16 @@ PracticeSessionSchema.pre('validate', async function (next) {
   next();
 });
 
-PracticeSessionSchema.pre('save', function (next) {
+PracticeSessionSchema.pre('save', async function (next) {
   if (!this.isNew) {
     for (const field of IMMUTABLE_FIELDS) {
       if (this.isModified(field)) {
+        try {
+          const LogService = (await import("../services/LogService.js")).default;
+          await LogService.createLog("security", "SESSION_TAMPER_DETECTED", "Attempted to modify immutable session field on save", { field, sessionId: this._id }, "system");
+        } catch (err) {
+          console.error("Failed to log tamper attempt", err);
+        }
         return next(new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`));
       }
     }
@@ -132,15 +138,22 @@ PracticeSessionSchema.pre('save', function (next) {
   next();
 });
 
-PracticeSessionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function () {
+PracticeSessionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], async function (next) {
   const update = this.getUpdate();
   const setPayload = update.$set || update;
-  if (!setPayload) return;
+  if (!setPayload) return next();
   for (const field of IMMUTABLE_FIELDS) {
     if (setPayload[field] !== undefined) {
-      throw new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`);
+      try {
+        const LogService = (await import("../services/LogService.js")).default;
+        await LogService.createLog("security", "SESSION_TAMPER_DETECTED", "Attempted to modify immutable session field", { field, operation: this.op, query: this.getQuery() }, "system");
+      } catch (err) {
+        console.error("Failed to log tamper attempt", err);
+      }
+      return next(new Error(`SESSION_IS_IMMUTABLE: Cannot modify ${field} after session creation.`));
     }
   }
+  next();
 });
 
 export default mongoose.model("PracticeSession", PracticeSessionSchema);
