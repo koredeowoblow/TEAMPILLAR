@@ -28,9 +28,13 @@ class FreemiumGuard {
   static async checkAIExplanation(user) {
     if (resolveUserTier(user) === "pro") return;
 
+    const userId = user._id || user.id || user;
+    const dbUser = await User.findById(userId);
+    if (!dbUser) throw new AppError("User not found", 404);
+
     const limit = this.LIMITS.free.dailyAIExplanations;
     const now = new Date();
-    const lastReset = new Date(user.limits.lastAIReset || now);
+    const lastReset = new Date(dbUser.limits.lastAIReset || now);
 
     // Reset counter if it's a new day (UTC)
     const isNewDay =
@@ -38,7 +42,7 @@ class FreemiumGuard {
       now.getUTCMonth() !== lastReset.getUTCMonth() ||
       now.getUTCDate() !== lastReset.getUTCDate();
 
-    let currentCount = isNewDay ? 0 : user.limits.dailyAICount;
+    let currentCount = isNewDay ? 0 : dbUser.limits.dailyAICount;
 
     if (currentCount >= limit) {
       const resetAt = new Date(now);
@@ -53,9 +57,9 @@ class FreemiumGuard {
     }
 
     // Increment and save
-    user.limits.dailyAICount = currentCount + 1;
-    user.limits.lastAIReset = now;
-    await user.save();
+    dbUser.limits.dailyAICount = currentCount + 1;
+    dbUser.limits.lastAIReset = now;
+    await dbUser.save();
   }
 
   /**
@@ -66,8 +70,12 @@ class FreemiumGuard {
   static async checkMockTest(user) {
     if (resolveUserTier(user) === "pro") return;
 
+    const userId = user._id || user.id || user;
+    const dbUser = await User.findById(userId).select("limits");
+    if (!dbUser) return;
+
     const limit = this.LIMITS.free.mockTests;
-    const totalTests = user.limits?.totalMockTests || 0;
+    const totalTests = dbUser.limits?.totalMockTests || 0;
 
     if (totalTests >= limit) {
       throw new AppError(`Lifetime free mock test limit reached (${totalTests}/${limit}). Upgrade to Pro for unlimited exams!`, 403, {
@@ -81,9 +89,13 @@ class FreemiumGuard {
   static async incrementMockTest(user) {
     if (resolveUserTier(user) === "pro") return;
 
-    if (!user.limits) user.limits = { totalMockTests: 0 };
-    user.limits.totalMockTests = (user.limits.totalMockTests || 0) + 1;
-    await user.save();
+    const userId = user._id || user.id || user;
+    const dbUser = await User.findById(userId);
+    if (!dbUser) return;
+
+    if (!dbUser.limits) dbUser.limits = { totalMockTests: 0 };
+    dbUser.limits.totalMockTests = (dbUser.limits.totalMockTests || 0) + 1;
+    await dbUser.save();
   }
 
   /**
