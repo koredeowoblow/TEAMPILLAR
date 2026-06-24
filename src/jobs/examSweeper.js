@@ -1,16 +1,16 @@
 import cron from "node-cron";
 import PracticeSessionModel from "../models/PracticeSessionModel.js";
 import MockTestService from "../services/MockTestService.js";
+import PracticeService from "../services/practice/index.js";
 import { logger } from "../core/logger.js";
 
 // Run every 5 minutes
 export const startExamSweeper = () => {
   cron.schedule("*/5 * * * *", async () => {
-    logger.info("[ExamSweeper] Starting sweep for abandoned mock exams...");
+    logger.info("[ExamSweeper] Starting sweep for abandoned sessions...");
     try {
-      // Find all ACTIVE mock sessions
+      // Find ALL ACTIVE sessions (Mock Tests, Smart Mocks, Practice)
       const activeSessions = await PracticeSessionModel.find({
-        isMockTest: true,
         sessionStatus: "ACTIVE"
       });
 
@@ -21,14 +21,22 @@ export const startExamSweeper = () => {
         const elapsedSeconds = Math.floor((Date.now() - session.createdAt.getTime()) / 1000);
         // Add a 60-second grace period
         if (elapsedSeconds > session.totalDuration + 60) {
-          logger.info(`[ExamSweeper] Session ${session._id} (User: ${session.userId}) is expired. Sweeping...`);
+          logger.info(`[ExamSweeper] Session ${session._id} (Type: ${session.sessionType}) is expired. Sweeping...`);
           try {
-            await MockTestService.submitMockTest(
-              { _id: session.userId },
-              session._id,
-              [],
-              { isSweeper: true, tabSwitches: session.security?.tabSwitches || 0 }
-            );
+            if (session.isMockTest || session.sessionType === "mock-test") {
+              await MockTestService.submitMockTest(
+                { _id: session.userId },
+                session._id,
+                [],
+                { isSweeper: true, tabSwitches: session.security?.tabSwitches || 0 }
+              );
+            } else {
+              await PracticeService.submitSession(session._id, {
+                responses: [],
+                isSweeper: true,
+                tabSwitches: session.security?.tabSwitches || 0
+              });
+            }
             sweptCount++;
             logger.info(`[ExamSweeper] Successfully swept session ${session._id}`);
           } catch (err) {

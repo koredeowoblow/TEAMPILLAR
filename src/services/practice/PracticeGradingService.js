@@ -100,23 +100,25 @@ class PracticeGradingService {
       };
     }
 
-    const { validateSessionFingerprint } = await import("../../utils/SessionCrypto.js");
-    if (!submission.sessionFingerprint || !submission.sessionNonce) {
-      // Revert ledger if invalid
-      await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
-      throw new AppError("SESSION_TAMPER_DETECTED: Cryptographic fingerprint or nonce is missing.", 403);
-    }
-    
-    // 1. Verify frontend tokens match DB tokens (Anti-Replay / Cloning)
-    if (submission.sessionFingerprint !== session.sessionFingerprint || submission.sessionNonce !== session.sessionNonce) {
-      await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
-      throw new AppError("SESSION_TAMPER_DETECTED: Fingerprint or Nonce mismatch.", 403);
-    }
+    if (!submission.isSweeper) {
+      const { validateSessionFingerprint } = await import("../../utils/SessionCrypto.js");
+      if (!submission.sessionFingerprint || !submission.sessionNonce) {
+        // Revert ledger if invalid
+        await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
+        throw new AppError("SESSION_TAMPER_DETECTED: Cryptographic fingerprint or nonce is missing.", 403);
+      }
+      
+      // 1. Verify frontend tokens match DB tokens (Anti-Replay / Cloning)
+      if (submission.sessionFingerprint !== session.sessionFingerprint || submission.sessionNonce !== session.sessionNonce) {
+        await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
+        throw new AppError("SESSION_TAMPER_DETECTED: Fingerprint or Nonce mismatch.", 403);
+      }
 
-    // 2. Verify DB snapshot hasn't drifted from cryptographic seal
-    if (!validateSessionFingerprint(session, session.sessionFingerprint)) {
-      await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
-      throw new AppError("SESSION_TAMPER_DETECTED: Session snapshot has been corrupted or illegally mutated.", 403);
+      // 2. Verify DB snapshot hasn't drifted from cryptographic seal
+      if (!validateSessionFingerprint(session, session.sessionFingerprint)) {
+        await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
+        throw new AppError("SESSION_TAMPER_DETECTED: Session snapshot has been corrupted or illegally mutated.", 403);
+      }
     }
 
     if (session.questionIds && session.questionIds.length > 0) {
