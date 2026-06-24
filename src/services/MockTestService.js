@@ -418,79 +418,23 @@ class MockTestService {
 
   static async getActiveSession(user, incomingDeviceToken) {
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
-    const { getRedisClient } = await import("../config/redis.js");
 
     const session = await PracticeSessionModel.findOne({
       userId: user._id,
       isMockTest: true,
       sessionStatus: "ACTIVE"
-    }).lean();
+    });
 
     if (!session) return null;
 
-    if (session.isFlagged || session.cheatingPenalty) {
-      const { AppError } = await import("../utils/AppError.js");
-      throw new AppError("Exam session terminated due to a violation.", 403);
-    }
+    // A user is not meant to resume a mock test ever.
+    // If they try to fetch the active session (e.g. they reloaded the page or navigated away),
+    // we instantly abandon the session so they are not locked out from starting a new one.
+    session.sessionStatus = "ABANDONED";
+    session.endTime = new Date();
+    await session.save();
 
-    // We do NOT penalize simple connection drops or refreshes here.
-    // Legitimate users with bad network should be allowed to resume.
-    // Anti-cheat relies strictly on explicit tabSwitches and focusLosses reported by the client payload.
-
-    const redisClient = await getRedisClient();
-    
-    // Remove Redis lock checking, simply re-issue the token
-    const lockOwner = session.fencingToken;
-    let sessionVersion = 1;
-
-    const progressData = await redisClient.get(`session:${session._id}:progress`);
-    let responses = [];
-    let timeRemaining = session.totalDuration;
-
-    if (progressData) {
-      const parsed = JSON.parse(progressData);
-      responses = parsed.responses || [];
-      timeRemaining = parsed.timeRemaining !== undefined ? parsed.timeRemaining : timeRemaining;
-    } else {
-      const elapsed = Math.floor((Date.now() - session.createdAt.getTime()) / 1000);
-      timeRemaining = Math.max(0, session.totalDuration - elapsed);
-    }
-
-    const questions = await Question.find({ _id: { $in: session.questionIds } }).populate("passageId").lean();
-    const subjects = await Subject.find({ _id: { $in: session.subjectIds } }).lean();
-    const subjectMap = subjects.reduce((acc, s) => {
-      acc[s._id.toString()] = s.name;
-      return acc;
-    }, {});
-
-    const formattedQuestions = questions.map(q => {
-      const safeOptions = Array.isArray(q.options)
-        ? q.options.map(o => ({ key: o.id || o.key, text: o.text, image: o.image }))
-        : [];
-      return {
-        _id: q._id,
-        subjectId: q.subjectId,
-        subject: {
-          _id: q.subjectId,
-          name: subjectMap[q.subjectId.toString()] || 'Unknown'
-        },
-        text: q.content?.text || q.text || '',
-        content: q.content,
-        options: safeOptions,
-        metadata: q.metadata,
-        passage: q.passageId || null
-      };
-    });
-
-    return {
-      sessionId: session._id,
-      questions: formattedQuestions,
-      responses,
-      timeRemaining,
-      totalDuration: session.totalDuration,
-      deviceToken: lockOwner,
-      sessionVersion
-    };
+    return null;
   }
 
   static async saveProgress(user, sessionId, responses, timeRemaining, options = {}) {
