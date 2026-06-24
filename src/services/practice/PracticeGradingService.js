@@ -210,6 +210,18 @@ class PracticeGradingService {
         Object.keys(topics).sort((a, b) => topics[a] - topics[b])[0] || null,
     };
 
+    let utmeScore = 0;
+    if (session.sessionType === "smart-mock" || session.isMockTest || !session.subjectId) {
+      utmeScore = Math.round(accuracy * 4); // Full mock/Smart mock total score is 400
+    } else {
+      const subject = await Subject.findById(session.subjectId).select("name").lean();
+      const subjectName = subject?.name || "";
+      const sessionSubjectScores = { [subjectName]: Math.round(accuracy) };
+      utmeScore = PracticeGradingService.computeUTMEScoreFromMap(sessionSubjectScores);
+    }
+
+    const finalScore = session.sessionType === "smart-mock" || session.isMockTest || !session.subjectId ? utmeScore : Math.round(accuracy);
+
     const updated = await practiceRepository.update(sessionId, {
       responses: finalResponses,
       sessionStatus: submission.isSweeper ? "ABANDONED" : "COMPLETED",
@@ -220,7 +232,8 @@ class PracticeGradingService {
         ipAddress: submission.ipAddress || null,
         flagged: flagged || timeDriftFlag,
       },
-      score: Math.round(accuracy),
+      score: finalScore,
+      compositeScore: utmeScore,
       isFlagged: submission.isFlagged || flagged || timeDriftFlag,
       flagReason: submission.flagReason || (flagged ? "Excessive tab switches" : (timeDriftFlag ? "Time drift detected" : null)),
       cheatingPenalty: submission.cheatingPenalty || false,
@@ -232,16 +245,6 @@ class PracticeGradingService {
     }, { lean: true });
     const sessionWithQuestions = updated.toObject();
     sessionWithQuestions.questions = questionsWithReview;
-
-    let utmeScore = 0;
-    if (session.sessionType === "smart-mock" || session.isMockTest || !session.subjectId) {
-      utmeScore = Math.round(accuracy * 4); // Full mock/Smart mock total score is 400
-    } else {
-      const subject = await Subject.findById(session.subjectId).select("name").lean();
-      const subjectName = subject?.name || "";
-      const sessionSubjectScores = { [subjectName]: Math.round(accuracy) };
-      utmeScore = PracticeGradingService.computeUTMEScoreFromMap(sessionSubjectScores);
-    }
 
     if (!submission.cheatingPenalty) {
       await AdaptiveEngineService.updateTopicPerformance(
