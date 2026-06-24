@@ -225,12 +225,6 @@ class MockTestService {
       options
     });
 
-    try {
-      const { addScoreJob } = await import("../queues/GradingQueue.js");
-      addScoreJob(user._id, sessionId, finalResponses, options);
-    } catch (err) {
-      console.warn("Failed to queue score job in mock test:", err.message);
-    }
 
     return {
       message: "Exam submission queued safely.",

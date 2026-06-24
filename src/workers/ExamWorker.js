@@ -68,6 +68,15 @@ const processFinalization = async (job) => {
     
     await dbSession.commitTransaction();
     console.log(`[ExamWorker] Session ${sessionId} successfully finalized.`);
+
+    // Trigger scoring now that the session is officially PENDING_GRADING
+    try {
+      const { addScoreJob } = await import("../queues/GradingQueue.js");
+      addScoreJob(session.userId, sessionId, finalResponses, options);
+    } catch (err) {
+      console.warn(`[ExamWorker] Failed to queue score job for session ${sessionId}:`, err.message);
+    }
+
     return { status: "SUCCESS" };
 
   } catch (error) {
