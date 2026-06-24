@@ -40,7 +40,7 @@ class PracticeGradingService {
   static async submitSession(sessionId, submission) {
     const { responses } = submission;
     const { default: PracticeSessionModel } = await import("../../models/PracticeSessionModel.js");
-    
+
     // REDIS LOCK: Prevent race-condition simultaneous submissions
     const lockKey = `session:lock:${sessionId}`;
     let acquiredLock = true;
@@ -78,13 +78,13 @@ class PracticeGradingService {
       const existing = await PracticeSessionModel.findById(sessionId).lean();
       if (existing && existing.sessionLedgerStatus === "SUBMITTED") {
         console.warn(`[PracticeGradingService] Idempotent replay handled for session ${sessionId}`);
-        
+
         const questionsWithReview = await questionRepository.find({
           _id: { $in: existing.questionIds || [] },
         }, { lean: true });
         const sessionWithQuestions = { ...existing };
         sessionWithQuestions.questions = questionsWithReview;
-        
+
         let subjectName = "";
         if (existing.subjectId) {
           const { default: Subject } = await import("../../models/SubjectModel.js");
@@ -95,7 +95,7 @@ class PracticeGradingService {
         const utmeScore = PracticeGradingService.computeUTMEScoreFromMap(
           subjectName ? { [subjectName]: existing.score || 0 } : {}
         );
-        
+
         return {
           session: sessionWithQuestions,
           utmeScore,
@@ -130,7 +130,7 @@ class PracticeGradingService {
         await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
         throw new AppError("SESSION_TAMPER_DETECTED: Cryptographic fingerprint or nonce is missing.", 403);
       }
-      
+
       // 1. Verify frontend tokens match DB tokens (Anti-Replay / Cloning)
       if (submission.sessionFingerprint !== session.sessionFingerprint || submission.sessionNonce !== session.sessionNonce) {
         await PracticeSessionModel.updateOne({ _id: sessionId }, { $set: { sessionLedgerStatus: "REJECTED" } });
@@ -176,10 +176,10 @@ class PracticeGradingService {
     }
 
     // Fix: Use total questions in the session, not just the ones answered, to avoid inflating score
-    const totalQuestions = (session.questionIds && session.questionIds.length > 0) 
-      ? session.questionIds.length 
+    const totalQuestions = (session.questionIds && session.questionIds.length > 0)
+      ? session.questionIds.length
       : (questions.length || submission.responses.length || 1);
-      
+
     const accuracy = (correct / totalQuestions) * 100;
 
     const flagged =
@@ -191,7 +191,7 @@ class PracticeGradingService {
     const drift = reportedDuration
       ? Math.abs(reportedDuration / 1000 - totalTime)
       : 0;
-    const timeDriftFlag = drift > 10; 
+    const timeDriftFlag = drift > 10;
 
     const analytics = {
       accuracy: Math.round(accuracy),
@@ -266,7 +266,7 @@ class PracticeGradingService {
           if (mastery) {
             const rawScore = mastery.totalMastery / mastery.distinctTopics;
             const isConfident = mastery.totalAttempted >= MIN_QUESTIONS && mastery.distinctTopics >= MIN_TOPICS;
-            
+
             if (isConfident) {
               userSubjectScores[s.name] = rawScore;
               confidentSubjectsCount++;
@@ -287,13 +287,28 @@ class PracticeGradingService {
         const predictedScore = PracticeGradingService.computeUTMEScoreFromMap(userSubjectScores);
         const isPredictedScoreConfident = confidentSubjectsCount >= 4;
 
-        user.stats = { 
-          ...(user.stats || {}), 
+        user.stats = {
+          ...(user.stats || {}),
           predictedScore,
           isPredictedScoreConfident,
-          predictedScoreDetails 
+          predictedScoreDetails
         };
-        await user.save();
+
+        if (!user.analytics) user.analytics = {};
+        const lastStreakDate = user.analytics.lastStreakUpdate ? new Date(user.analytics.lastStreakUpdate) : new Date(0);
+        const today = new Date();
+        if (lastStreakDate.toDateString() !== today.toDateString()) {
+          user.analytics.streak = (user.analytics.streak || 0) + 1;
+          user.analytics.lastStreakUpdate = today;
+          try {
+            const { achievementRepository } = await import("../../repository/AchievementRepository.js");
+            await achievementRepository.updateStreak(session.userId, user.analytics.streak);
+          } catch (err) {
+            console.warn("Failed to update StreakModel:", err.message);
+          }
+        }
+
+        await userRepository.updateUser(session.userId, { stats: user.stats, analytics: user.analytics });
       }
     }
 

@@ -56,8 +56,7 @@ class AchievementController {
       if (user) {
         if (!user.analytics) user.analytics = {};
         user.analytics.streak = streakCount;
-        user.markModified('analytics');
-        await user.save();
+        await userRepository.updateUser(userId, { analytics: user.analytics });
       }
     }
 
