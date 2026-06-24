@@ -42,7 +42,7 @@ class AnalyticsController {
   static async _getUserCompletedSessionsData(userId) {
     const sessions = await PracticeSession.find({
       userId,
-      sessionStatus: "COMPLETED",
+      sessionStatus: { $in: ["COMPLETED", "ABANDONED"] },
     }).lean();
 
     const questionIds = [];
@@ -323,7 +323,7 @@ class AnalyticsController {
 
     const sessions = await PracticeSession.find({
       userId,
-      sessionStatus: "COMPLETED",
+      sessionStatus: { $in: ["COMPLETED", "ABANDONED"] },
     })
       .sort({ createdAt: -1 })
       .limit(limit)

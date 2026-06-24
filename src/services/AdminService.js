@@ -634,7 +634,7 @@ class AdminService {
           User.countDocuments({ role: "STUDENT", createdAt: { $lt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
           PracticeSession.countDocuments({ sessionStatus: "ACTIVE" }),
           PracticeSession.aggregate([
-            { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+            { $match: { sessionStatus: { $in: ["COMPLETED", "ABANDONED"] }, score: { $gt: 0 } } },
             {
               $project: {
                 scaledScore: {
@@ -654,7 +654,7 @@ class AdminService {
             { $group: { _id: null, avg: { $avg: "$scaledScore" } } }
           ]),
           PracticeSession.aggregate([
-            { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+            { $match: { sessionStatus: { $in: ["COMPLETED", "ABANDONED"] }, score: { $gt: 0 } } },
             {
               $bucket: {
                 groupBy: "$score",
@@ -665,7 +665,7 @@ class AdminService {
             },
           ]),
           PracticeSession.aggregate([
-            { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 } } },
+            { $match: { sessionStatus: { $in: ["COMPLETED", "ABANDONED"] }, score: { $gt: 0 } } },
             {
               $project: {
                 userId: 1,
@@ -742,7 +742,7 @@ class AdminService {
             { $limit: 6 },
           ]),
           PracticeSession.aggregate([
-            { $match: { sessionStatus: "COMPLETED", score: { $gt: 0 }, createdAt: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } } },
+            { $match: { sessionStatus: { $in: ["COMPLETED", "ABANDONED"] }, score: { $gt: 0 }, createdAt: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } } },
             {
               $project: {
                 userId: 1,

@@ -448,7 +448,7 @@ class MockTestService {
       topMistakeTopic: Object.keys(topics).sort((a, b) => topics[a] - topics[b])[0] || null,
     };
 
-    session.sessionStatus = "COMPLETED";
+    session.sessionStatus = options.isSweeper ? "ABANDONED" : "COMPLETED";
     session.responses = processedResponses;
     session.compositeScore = compositeScore;
     session.subjectScores = subjectScores;
@@ -629,7 +629,7 @@ class MockTestService {
     const sessions = await PracticeSessionModel.find({
       userId: user._id,
       isMockTest: true,
-      sessionStatus: "COMPLETED"
+      sessionStatus: { $in: ["COMPLETED", "ABANDONED"] }
     })
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -640,7 +640,7 @@ class MockTestService {
     const total = await PracticeSessionModel.countDocuments({
       userId: user._id,
       isMockTest: true,
-      sessionStatus: "COMPLETED"
+      sessionStatus: { $in: ["COMPLETED", "ABANDONED"] }
     });
 
     return {

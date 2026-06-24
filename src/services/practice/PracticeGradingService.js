@@ -203,7 +203,7 @@ class PracticeGradingService {
 
     const updated = await practiceRepository.update(sessionId, {
       responses: submission.responses,
-      sessionStatus: "COMPLETED",
+      sessionStatus: submission.isSweeper ? "ABANDONED" : "COMPLETED",
       endTime: submission.endTime ? new Date(submission.endTime) : new Date(),
       analytics,
       security: {
