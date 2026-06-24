@@ -566,12 +566,33 @@ class MockTestService {
   }
 
   static async getMockStats(user) {
-    const stats = user.stats || {};
+    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+
+    const stats = await PracticeSessionModel.aggregate([
+      {
+        $match: {
+          userId: user._id,
+          isMockTest: true,
+          sessionStatus: { $in: ["COMPLETED", "ABANDONED"] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalMocksTaken: { $sum: 1 },
+          highestMockScore: { $max: "$compositeScore" },
+          avgMockScore: { $avg: "$compositeScore" }
+        }
+      }
+    ]);
+
+    const result = stats[0] || { totalMocksTaken: 0, highestMockScore: 0, avgMockScore: 0 };
+
     return {
-      totalMocksTaken: stats.totalMocksTaken || 0,
-      highestMockScore: stats.highestMockScore || 0,
-      avgMockScore: stats.avgMockScore || 0,
-      predictedScore: stats.predictedScore || 0
+      totalMocksTaken: result.totalMocksTaken,
+      highestMockScore: result.highestMockScore || 0,
+      avgMockScore: Math.round(result.avgMockScore || 0),
+      predictedScore: user.stats?.predictedScore || 0
     };
   }
 }
