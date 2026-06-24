@@ -233,10 +233,15 @@ class PracticeGradingService {
     const sessionWithQuestions = updated.toObject();
     sessionWithQuestions.questions = questionsWithReview;
 
-    const subject = await Subject.findById(session.subjectId).select("name").lean();
-    const subjectName = subject?.name || "";
-    const sessionSubjectScores = { [subjectName]: Math.round(accuracy) };
-    const utmeScore = PracticeGradingService.computeUTMEScoreFromMap(sessionSubjectScores);
+    let utmeScore = 0;
+    if (session.sessionType === "smart-mock" || session.isMockTest || !session.subjectId) {
+      utmeScore = Math.round(accuracy * 4); // Full mock/Smart mock total score is 400
+    } else {
+      const subject = await Subject.findById(session.subjectId).select("name").lean();
+      const subjectName = subject?.name || "";
+      const sessionSubjectScores = { [subjectName]: Math.round(accuracy) };
+      utmeScore = PracticeGradingService.computeUTMEScoreFromMap(sessionSubjectScores);
+    }
 
     if (!submission.cheatingPenalty) {
       await AdaptiveEngineService.updateTopicPerformance(

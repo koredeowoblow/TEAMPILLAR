@@ -1,6 +1,4 @@
 import { Queue } from "bullmq";
-import { getRedisConnection } from "../config/redis.js"; // Assuming a robust connection getter
-
 // We might need to abstract the exact connection if the project has a different structure.
 // For now, using a standard BullMQ pattern.
 const connection = {
