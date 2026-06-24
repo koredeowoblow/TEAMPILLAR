@@ -6,78 +6,7 @@ import { AppError } from "../utils/AppError.js";
 import QuestionPoolService from "./QuestionPoolService.js";
 import crypto from "crypto";
 
-const LUA_FENCING_SCRIPT = `
-local sessionRaw = redis.call("GET", KEYS[1])
-if not sessionRaw then
-  return {"ERR", "SESSION_NOT_FOUND"}
-end
-
-local session = cjson.decode(sessionRaw)
-
-if session.status == "FINALIZING" or session.status == "FINALIZED" then
-  return {"ERR", "SESSION_LOCKED_FINAL"}
-end
-
-if session.lockOwner ~= ARGV[1] then
-  return {"ERR", "LOCK_MISMATCH"}
-end
-
-if tonumber(ARGV[2]) ~= tonumber(session.version) then
-  return {"ERR", "STALE_FENCING_TOKEN"}
-end
-
-local idemKey = KEYS[2] .. ":" .. ARGV[4]
-local exists = redis.call("GET", idemKey)
-if exists then
-  return {"OK", session.version, "DUPLICATE"}
-end
-
-redis.call("SET", idemKey, "1")
-redis.call("EXPIRE", idemKey, 14400)
-
-session.version = session.version + 1
-session.updatedAt = tonumber(ARGV[5])
-if ARGV[3] ~= nil and ARGV[3] ~= "" then
-  session.lastWrite = ARGV[3]
-end
-
-redis.call("SET", KEYS[1], cjson.encode(session))
-return {"OK", session.version, "NEW"}
-`;
-
-const LUA_FINALIZE_SCRIPT = `
-local sessionRaw = redis.call("GET", KEYS[1])
-if not sessionRaw then
-  return {"ERR", "SESSION_NOT_FOUND"}
-end
-
-local session = cjson.decode(sessionRaw)
-
-if session.lockOwner ~= ARGV[1] then
-  return {"ERR", "LOCK_MISMATCH"}
-end
-
-if tonumber(ARGV[2]) ~= tonumber(session.version) then
-  return {"ERR", "STALE_FENCING_TOKEN"}
-end
-
-if session.status == "FINALIZING" or session.status == "FINALIZED" then
-  return {"ERR", "SESSION_LOCKED_FINAL"}
-end
-
-local lockKey = KEYS[1] .. ":finalize_lock"
-local lockAcquired = redis.call("SETNX", lockKey, ARGV[3])
-if lockAcquired == 0 then
-  return {"ERR", "ALREADY_FINALIZING"}
-end
-redis.call("EXPIRE", lockKey, 14400)
-
-session.status = "FINALIZING"
-session.version = session.version + 1
-redis.call("SET", KEYS[1], cjson.encode(session))
-
-return {"OK", session.version}
-`;
+// Lua scripts removed in favor of MongoDB fencingToken
 
 class MockTestService {
   static async startMockTest(user, requestedSubjectIds = null) {
@@ -210,20 +139,13 @@ class MockTestService {
     // Cache correct answers for grading (TTL: 4 hours)
     await redisClient.setEx(`session:${session._id}:answers`, 14400, JSON.stringify(sessionAnswers));
 
-    // Generate Fencing Token and Initialize Session Lock
-    const deviceToken = crypto.randomBytes(16).toString('hex');
-    await redisClient.setEx(`exam:session:${session._id}`, 14400, JSON.stringify({
-      lockOwner: deviceToken,
-      version: 1,
-      status: "ACTIVE",
-      updatedAt: Date.now()
-    }));
+    // Return MongoDB Fencing Token to frontend
 
     return {
       sessionId: session._id,
       questions: questionsBySubject,
       totalDuration: session.totalDuration,
-      deviceToken,
+      deviceToken: session.fencingToken,
       sessionVersion: 1
     };
   }
@@ -233,30 +155,26 @@ class MockTestService {
     const { getRedisClient } = await import("../config/redis.js");
     const redisClient = await getRedisClient();
 
-    if (!isSweeper && (!deviceToken || !sessionVersion || !finalizationKey)) {
-      throw new AppError("Missing strict finalization parameters.", 400);
+    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+    const session = await PracticeSessionModel.findById(sessionId).lean();
+    if (!session) {
+      throw new AppError("Session not found.", 404);
+    }
+    if (session.isFlagged || session.cheatingPenalty) {
+      throw new AppError("Exam session terminated due to a violation.", 403);
     }
 
     if (!isSweeper) {
-      // Execute Finalization Lock
-      const result = await redisClient.eval(
-        LUA_FINALIZE_SCRIPT,
-        {
-          keys: [`exam:session:${sessionId}`],
-          arguments: [deviceToken, sessionVersion.toString(), finalizationKey]
-        }
-      );
-
-      if (result[0] === "ERR") {
-        if (result[1] === "ALREADY_FINALIZING" || result[1] === "SESSION_LOCKED_FINAL") {
-          return { status: "ALREADY_FINALIZED", sessionId };
-        }
-        if (result[1] === "SESSION_NOT_FOUND") {
-          console.warn(`Mock test session ${sessionId} lock missing from Redis (expired or flushed). Bypassing lock.`);
-        } else {
-          throw new AppError(`Finalization rejected: ${result[1]}`, 409);
-        }
+      if (deviceToken && deviceToken !== session.fencingToken) {
+        throw new AppError("STALE_FENCING_TOKEN", 409);
       }
+      
+      const lockKey = `exam:session:${sessionId}:finalize_lock`;
+      const lockAcquired = await redisClient.setNX(lockKey, finalizationKey || "1");
+      if (!lockAcquired) {
+        return { status: "ALREADY_FINALIZED", sessionId };
+      }
+      await redisClient.expire(lockKey, 14400);
     }
 
     // Resolve final responses
@@ -510,24 +428,20 @@ class MockTestService {
 
     if (!session) return null;
 
+    if (session.isFlagged || session.cheatingPenalty) {
+      const { AppError } = await import("../utils/AppError.js");
+      throw new AppError("Exam session terminated due to a violation.", 403);
+    }
+
     // We do NOT penalize simple connection drops or refreshes here.
     // Legitimate users with bad network should be allowed to resume.
     // Anti-cheat relies strictly on explicit tabSwitches and focusLosses reported by the client payload.
 
     const redisClient = await getRedisClient();
     
-    // Check Fencing Lock
-    const sessionLockRaw = await redisClient.get(`exam:session:${session._id}`);
+    // Remove Redis lock checking, simply re-issue the token
+    const lockOwner = session.fencingToken;
     let sessionVersion = 1;
-    let lockOwner = incomingDeviceToken;
-    if (sessionLockRaw) {
-      const lockData = JSON.parse(sessionLockRaw);
-      if (lockData.lockOwner !== incomingDeviceToken && incomingDeviceToken) {
-        throw new AppError("LOCK_MISMATCH", 409);
-      }
-      sessionVersion = lockData.version;
-      lockOwner = lockData.lockOwner;
-    }
 
     const progressData = await redisClient.get(`session:${session._id}:progress`);
     let responses = [];
@@ -585,32 +499,25 @@ class MockTestService {
     const redisClient = await getRedisClient();
 
     const payloadStr = JSON.stringify({ responses, timeRemaining });
-    const idemKeyBase = `exam:session:${sessionId}:idem`;
 
-    if (deviceToken && sessionVersion && idempotencyKey) {
-      // Execute atomic Lua script
-      const result = await redisClient.eval(
-        LUA_FENCING_SCRIPT,
-        {
-          keys: [`exam:session:${sessionId}`, idemKeyBase],
-          arguments: [deviceToken, sessionVersion.toString(), payloadStr, idempotencyKey, Date.now().toString()]
-        }
-      );
+    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+    const session = await PracticeSessionModel.findById(sessionId).lean();
+    if (session && (session.isFlagged || session.cheatingPenalty)) {
+      const { AppError } = await import("../utils/AppError.js");
+      throw new AppError("Exam session terminated due to a violation.", 403);
+    }
 
-      // result is an array: ["ERR", "REASON"] or ["OK", version, "DUPLICATE" | "NEW"]
-      if (result[0] === "ERR") {
-        throw new AppError(`Fencing rejected: ${result[1]}`, 409);
+    if (session && deviceToken && deviceToken !== session.fencingToken) {
+      throw new AppError("STALE_FENCING_TOKEN", 409);
+    }
+
+    if (idempotencyKey) {
+      const idemKeyBase = `exam:session:${sessionId}:idem:${idempotencyKey}`;
+      const exists = await redisClient.get(idemKeyBase);
+      if (exists) {
+        return { version: sessionVersion, duplicate: true };
       }
-      
-      const newVersion = result[1];
-      const status = result[2];
-
-      if (status === "DUPLICATE") {
-        return { version: newVersion, duplicate: true };
-      }
-      
-      await redisClient.setEx(`session:${sessionId}:progress`, 10800, payloadStr);
-      return { version: newVersion };
+      await redisClient.setEx(idemKeyBase, 14400, "1");
     }
 
     // TTL matches max exam duration (2 hours) plus 1 hour grace period

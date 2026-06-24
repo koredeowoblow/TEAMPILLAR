@@ -94,6 +94,7 @@ const PracticeSessionSchema = new mongoose.Schema(
     flagReason: { type: String },
     questionOrder: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }], immutable: true },
     submittedAt: { type: Date },
+    fencingToken: { type: String, immutable: true },
   },
   { timestamps: true },
 );
@@ -106,7 +107,7 @@ PracticeSessionSchema.index(
   { unique: true, partialFilterExpression: { sessionLedgerStatus: "ACTIVE" } }
 );
 
-const IMMUTABLE_FIELDS = ['userId', 'subjectId', 'subjectIds', 'sessionType', 'questionIds', 'questionOrder', 'questionLimit', 'topic', 'isMockTest', 'totalDuration', 'sessionFingerprint', 'sessionNonce'];
+const IMMUTABLE_FIELDS = ['userId', 'subjectId', 'subjectIds', 'sessionType', 'questionIds', 'questionOrder', 'questionLimit', 'topic', 'isMockTest', 'totalDuration', 'sessionFingerprint', 'sessionNonce', 'fencingToken'];
 
 PracticeSessionSchema.pre('validate', async function () {
   if (this.isNew) {
@@ -121,6 +122,11 @@ PracticeSessionSchema.pre('validate', async function () {
     if (!this.sessionFingerprint) {
       const { generateSessionFingerprint } = await import("../utils/SessionCrypto.js");
       this.sessionFingerprint = generateSessionFingerprint(this);
+    }
+    
+    if (!this.fencingToken) {
+      const crypto = await import("crypto");
+      this.fencingToken = crypto.randomUUID();
     }
   }
 });

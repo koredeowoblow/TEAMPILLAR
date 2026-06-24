@@ -99,10 +99,8 @@ class SmartMockController {
 
     const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
     const existing = await PracticeSessionModel.findById(sessionId).lean();
-    if (existing && (existing.sessionStatus === "COMPLETED" || existing.sessionStatus === "SUBMITTED" || existing.sessionLedgerStatus === "SUBMITTED")) {
-      if (existing.isFlagged || existing.cheatingPenalty) {
-        return res.status(403).json({ success: false, message: "This exam session was flagged and has already been submitted. It cannot be resumed or resubmitted." });
-      }
+    if (existing && (existing.isFlagged || existing.cheatingPenalty)) {
+      return res.status(403).json({ success: false, message: "Exam session terminated due to a violation." });
     }
 
     // Re-use existing submission logic from PracticeService
