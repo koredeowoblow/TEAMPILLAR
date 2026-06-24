@@ -95,7 +95,11 @@ export function toPracticeSessionResultDTO(session) {
     responses: enrichedResponses,
     // Mock test specific fields
     isMockTest:     s.isMockTest     ?? false,
-    compositeScore: s.compositeScore ?? null,
+    compositeScore: s.compositeScore ?? (
+      (s.isMockTest || s.sessionType === 'smart-mock') 
+        ? (s.score <= 100 ? s.score * 4 : s.score) 
+        : null
+    ),
     subjectScores:  s.subjectScores  ?? [],
     sessionType:    s.sessionType    ?? 'standard',
     // Expose tab-switch count to the student (they already know they switched)
