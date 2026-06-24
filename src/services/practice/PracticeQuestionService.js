@@ -31,6 +31,7 @@ class PracticeQuestionService {
           subjectId: 1,
           content: { text: 1, image: 1, equation: 1 },
           metadata: 1,
+          passageId: 1,
           options: isAdmin
             ? 1
             : { id: 1, text: 1 }
@@ -57,8 +58,8 @@ class PracticeQuestionService {
         }, {
           lean: true,
           select: isAdmin
-            ? "_id subjectId content metadata options"
-            : "_id subjectId content metadata options.id options.text"
+            ? "_id subjectId content metadata passageId options"
+            : "_id subjectId content metadata passageId options.id options.text"
         });
 
         const subjectIds = [...new Set(questions.map(q => q.subjectId).filter(Boolean).map(String))];
@@ -83,6 +84,7 @@ class PracticeQuestionService {
               equation: q.content?.equation,
             },
             metadata: q.metadata,
+            passageId: q.passageId,
           };
 
           if (isAdmin) {
@@ -170,6 +172,7 @@ class PracticeQuestionService {
             subjectName: q.subjectName,
             content: { text: q.content?.text, image: q.content?.image, equation: q.content?.equation },
             metadata: q.metadata,
+            passageId: q.passageId,
             options: q.options?.map(o => ({ id: o.id, text: o.text })) || []
           };
           return slim;
@@ -315,6 +318,7 @@ class PracticeQuestionService {
             equation: q.content?.equation,
           },
           metadata: q.metadata,
+          passageId: q.passageId,
         };
 
         if (isAdmin) {

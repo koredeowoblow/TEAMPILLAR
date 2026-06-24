@@ -38,6 +38,12 @@ export function toQuestionDTO(question) {
       year:       q.metadata?.year       ?? null,
     },
     subjectId: String(q.subjectId?._id || q.subjectId?.id || q.subjectId),
+    passage: q.passageId && typeof q.passageId === 'object' ? {
+      id: String(q.passageId._id || q.passageId.id),
+      title: q.passageId.title || null,
+      text: q.passageId.text || null,
+      imageUrl: q.passageId.imageUrl || null
+    } : null,
   };
   // NEVER include: options[].isCorrect, explanation (during active session)
 }
@@ -62,7 +68,13 @@ export function toCBTQuestionDTO(question, index = 0) {
       key: o.id || o.key,
       text: o.text
     })),
-    metadata: q.metadata || {}
+    metadata: q.metadata || {},
+    passage: q.passageId && typeof q.passageId === 'object' ? {
+      id: String(q.passageId._id || q.passageId.id),
+      title: q.passageId.title || null,
+      text: q.passageId.text || null,
+      imageUrl: q.passageId.imageUrl || null
+    } : null,
   };
 }
 
