@@ -38,6 +38,7 @@ import { initSocket } from "./config/socket.js";
 import "./queues/supportQueue.js";
 import "./queues/logQueue.js";
 import "./queues/GradingQueue.js";
+import "./workers/ExamWorker.js";
 
 // Routes utils
 import { measurePerformance } from "./utils/performance.js";

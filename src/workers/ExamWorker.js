@@ -2,12 +2,7 @@ import { Worker } from "bullmq";
 import mongoose from "mongoose";
 import PracticeSessionModel from "../models/PracticeSessionModel.js";
 
-const connection = {
-  host: process.env.REDIS_HOST || "127.0.0.1",
-  port: process.env.REDIS_PORT || 6379,
-  username: process.env.REDIS_USERNAME || "default",
-  password: process.env.REDIS_PASSWORD || ""
-};
+import { connectionConfig } from "../config/bullmqConnection.js";
 
 const processFinalization = async (job) => {
   const { sessionId, deviceToken, finalizationKey, finalResponses, options } = job.data;
@@ -88,7 +83,7 @@ const processFinalization = async (job) => {
   }
 };
 
-export const examFinalizationWorker = new Worker("ExamFinalizationQueue", processFinalization, { connection });
+export const examFinalizationWorker = new Worker("ExamFinalizationQueue", processFinalization, { connection: connectionConfig });
 
 examFinalizationWorker.on("completed", (job) => {
   console.log(`[ExamWorker] Job ${job.id} completed successfully.`);

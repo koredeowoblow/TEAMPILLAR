@@ -1,15 +1,8 @@
 import { Queue } from "bullmq";
-// We might need to abstract the exact connection if the project has a different structure.
-// For now, using a standard BullMQ pattern.
-const connection = {
-  host: process.env.REDIS_HOST || "127.0.0.1",
-  port: process.env.REDIS_PORT || 6379,
-  username: process.env.REDIS_USERNAME || "default",
-  password: process.env.REDIS_PASSWORD || ""
-};
+import { connectionConfig } from "../config/bullmqConnection.js";
 
 export const examFinalizationQueue = new Queue("ExamFinalizationQueue", {
-  connection,
+  connection: connectionConfig,
   defaultJobOptions: {
     attempts: 5,
     backoff: {

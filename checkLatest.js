@@ -4,12 +4,14 @@ import PracticeSession from "./src/models/PracticeSessionModel.js";
 
 async function checkLatest() {
   await connectMongoDB();
-  const session = await PracticeSession.findOne().sort({ createdAt: -1 });
-  console.log("Session ID:", session._id);
-  console.log("Status:", session.sessionStatus);
-  console.log("Responses length:", session.responses ? session.responses.length : 0);
-  console.log("Score:", session.score);
-  console.log("Composite Score:", session.compositeScore);
+  const sessions = await PracticeSession.find().sort({ createdAt: -1 }).limit(5);
+  for (const session of sessions) {
+    console.log("-----------------------");
+    console.log("Session ID:", session._id);
+    console.log("Mock Test:", session.isMockTest);
+    console.log("Status:", session.sessionStatus);
+    console.log("Responses length:", session.responses ? session.responses.length : 0);
+  }
   process.exit(0);
 }
 
