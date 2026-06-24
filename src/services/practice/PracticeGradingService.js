@@ -219,12 +219,12 @@ class PracticeGradingService {
         tabSwitches: submission.tabSwitches || 0,
         ipAddress: submission.ipAddress || null,
         flagged: flagged || timeDriftFlag,
-        score: Math.round(accuracy),
-        isFlagged: submission.isFlagged || flagged || timeDriftFlag,
-        flagReason: submission.flagReason || (flagged ? "Excessive tab switches" : (timeDriftFlag ? "Time drift detected" : null)),
-        cheatingPenalty: submission.cheatingPenalty || false,
-        submittedAt: submission.isFlagged || submission.cheatingPenalty ? new Date() : null,
-      }
+      },
+      score: Math.round(accuracy),
+      isFlagged: submission.isFlagged || flagged || timeDriftFlag,
+      flagReason: submission.flagReason || (flagged ? "Excessive tab switches" : (timeDriftFlag ? "Time drift detected" : null)),
+      cheatingPenalty: submission.cheatingPenalty || false,
+      submittedAt: submission.isFlagged || submission.cheatingPenalty ? new Date() : null,
     });
 
     const questionsWithReview = await questionRepository.find({

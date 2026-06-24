@@ -344,12 +344,16 @@ class PracticeController {
 
     const { default: PracticeGradingService } = await import("../services/practice/PracticeGradingService.js");
 
-    const responses = session.responses || [];
+    const responses = req.body.responses && req.body.responses.length > 0 
+      ? req.body.responses 
+      : (session.responses || []);
     const result = await PracticeGradingService.submitSession(sessionId, {
       responses,
       tabSwitches: session.security?.tabSwitches || 0,
       endTime: new Date(),
       ipAddress: req.ip,
+      sessionFingerprint: session.sessionFingerprint, // Pass from session document
+      sessionNonce: session.sessionNonce, // Pass from session document
       isSweeper: false,
       isFlagged: true,
       flagReason: flagReason || "Cheating detected",

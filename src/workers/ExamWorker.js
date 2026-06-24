@@ -51,7 +51,7 @@ const processFinalization = async (job) => {
       sessionId,
       {
         $set: {
-          sessionStatus: "COMPLETED", // Or PENDING_GRADING if scoring is separate
+          sessionStatus: "PENDING_GRADING", // Changed from COMPLETED so processScoring will run
           responses: finalResponses,
           endTime: new Date(),
           "security.finalizationKey": finalizationKey,
