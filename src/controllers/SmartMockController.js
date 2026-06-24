@@ -4,7 +4,11 @@ import { resolveUserTier } from "../middleware/entitlement.js";
 import { practiceRepository } from "../repository/PracticeRepository.js";
 import { sendSuccess } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
-import { toPracticeSessionSummaryDTO, toCBTQuestionDTO } from "../dto/index.js";
+import {
+  toPracticeSessionSummaryDTO,
+  toPracticeSessionResultDTO,
+  toCBTQuestionDTO,
+} from "../dto/index.js";
 import { CONSTANTS } from "../config/constants.js";
 import FreemiumGuard from "../services/FreemiumGuard.js";
 import { calculateExamTime } from "../utils/TimeEngine.js";
@@ -116,7 +120,7 @@ class SmartMockController {
     return sendSuccess(res, {
       message: "Smart Mock graded successfully",
       data: {
-        session: toPracticeSessionSummaryDTO(result.session),
+        session: toPracticeSessionResultDTO(result.session),
         utmeScore: result.utmeScore,
         flagged: result.flagged,
       },
