@@ -144,17 +144,26 @@ class PracticeGradingService {
       }
     }
 
+    let finalResponses = submission.responses;
+    if (!finalResponses || finalResponses.length === 0) {
+      if (session.responses && session.responses.length > 0) {
+        finalResponses = session.responses;
+      } else {
+        finalResponses = [];
+      }
+    }
+
     if (session.questionIds && session.questionIds.length > 0) {
       const validIds = new Set(session.questionIds.map(String));
-      const invalidResponse = responses.find(
-        (r) => !validIds.has(String(r.questionId)),
+      const invalidResponse = finalResponses.find(
+        (r) => !validIds.has(String(r.questionId || r._id)),
       );
       if (invalidResponse)
         throw new AppError("Invalid question in submission", 400);
     }
 
     const questions = await questionRepository.find({
-      _id: { $in: submission.responses.map((r) => r.questionId) },
+      _id: { $in: finalResponses.map((r) => r.questionId || r._id) },
     }, {
       lean: true,
       select: "_id options.id options.isCorrect metadata.topic"
@@ -165,8 +174,8 @@ class PracticeGradingService {
     let totalTime = 0;
     const topics = {};
 
-    for (const r of submission.responses) {
-      const q = qMap.get(String(r.questionId));
+    for (const r of finalResponses) {
+      const q = qMap.get(String(r.questionId || r._id));
       if (!q) continue;
       const opt = q.options.find((o) => o.id === r.selectedOption);
       if (opt && opt.isCorrect) correct += 1;
@@ -202,7 +211,7 @@ class PracticeGradingService {
     };
 
     const updated = await practiceRepository.update(sessionId, {
-      responses: submission.responses,
+      responses: finalResponses,
       sessionStatus: submission.isSweeper ? "ABANDONED" : "COMPLETED",
       endTime: submission.endTime ? new Date(submission.endTime) : new Date(),
       analytics,

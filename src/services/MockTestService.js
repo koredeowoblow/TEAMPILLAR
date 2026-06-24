@@ -177,16 +177,22 @@ class MockTestService {
       await redisClient.expire(lockKey, 14400);
     }
 
-    // Resolve final responses
+    // Resolve final responses: Prefer incoming payload as it's the most recent, then fallback to Redis
     let finalResponses = [];
     const progressData = await redisClient.get(`session:${sessionId}:progress`);
 
-    if (progressData) {
-      finalResponses = JSON.parse(progressData).responses || [];
-    } else if (responses && responses.length > 0) {
+    if (responses && Array.isArray(responses) && responses.length > 0) {
       finalResponses = responses;
+    } else if (progressData) {
+      finalResponses = JSON.parse(progressData).responses || [];
+    } else if (session.responses && session.responses.length > 0) {
+      finalResponses = session.responses; // fallback to DB if available
     } else if (isSweeper) {
       finalResponses = [];
+    }
+
+    if (!finalResponses || finalResponses.length === 0) {
+      console.warn(`[MockTestService] No answers found for session ${sessionId} during submission.`);
     }
 
     // Cross-exam penalty tracking
