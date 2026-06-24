@@ -251,7 +251,11 @@ class MockTestService {
         if (result[1] === "ALREADY_FINALIZING" || result[1] === "SESSION_LOCKED_FINAL") {
           return { status: "ALREADY_FINALIZED", sessionId };
         }
-        throw new AppError(`Finalization rejected: ${result[1]}`, 409);
+        if (result[1] === "SESSION_NOT_FOUND") {
+          console.warn(`Mock test session ${sessionId} lock missing from Redis (expired or flushed). Bypassing lock.`);
+        } else {
+          throw new AppError(`Finalization rejected: ${result[1]}`, 409);
+        }
       }
     }
 

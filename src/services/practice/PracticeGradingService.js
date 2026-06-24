@@ -75,9 +75,32 @@ class PracticeGradingService {
 
     if (!session) {
       // It's either missing or already submitted
-      const existing = await PracticeSessionModel.findById(sessionId, { sessionLedgerStatus: 1 }).lean();
+      const existing = await PracticeSessionModel.findById(sessionId).lean();
       if (existing && existing.sessionLedgerStatus === "SUBMITTED") {
-        throw new AppError("SESSION_REPLAY_DETECTED: Session has already been submitted.", 403);
+        console.warn(`[PracticeGradingService] Idempotent replay handled for session ${sessionId}`);
+        
+        const questionsWithReview = await questionRepository.find({
+          _id: { $in: existing.questionIds || [] },
+        }, { lean: true });
+        const sessionWithQuestions = { ...existing };
+        sessionWithQuestions.questions = questionsWithReview;
+        
+        let subjectName = "";
+        if (existing.subjectId) {
+          const { default: Subject } = await import("../../models/SubjectModel.js");
+          const subject = await Subject.findById(existing.subjectId).select("name").lean();
+          subjectName = subject?.name || "";
+        }
+
+        const utmeScore = PracticeGradingService.computeUTMEScoreFromMap(
+          subjectName ? { [subjectName]: existing.score || 0 } : {}
+        );
+        
+        return {
+          session: sessionWithQuestions,
+          utmeScore,
+          flagged: existing.security?.flagged || false,
+        };
       }
       throw new AppError("INVALID_SESSION_STATE: Session not active or does not exist.", 400);
     }
