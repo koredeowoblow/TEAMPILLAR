@@ -89,6 +89,11 @@ const PracticeSessionSchema = new mongoose.Schema(
     }],
     totalDuration: { type: Number, required: true, immutable: true },
     sessionFingerprint: { type: String, required: true, immutable: true, index: true },
+    cheatingPenalty: { type: Boolean, default: false },
+    isFlagged: { type: Boolean, default: false },
+    flagReason: { type: String },
+    questionOrder: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }], immutable: true },
+    submittedAt: { type: Date },
   },
   { timestamps: true },
 );
@@ -101,7 +106,7 @@ PracticeSessionSchema.index(
   { unique: true, partialFilterExpression: { sessionLedgerStatus: "ACTIVE" } }
 );
 
-const IMMUTABLE_FIELDS = ['userId', 'subjectId', 'subjectIds', 'sessionType', 'questionIds', 'questionLimit', 'topic', 'isMockTest', 'totalDuration', 'sessionFingerprint', 'sessionNonce'];
+const IMMUTABLE_FIELDS = ['userId', 'subjectId', 'subjectIds', 'sessionType', 'questionIds', 'questionOrder', 'questionLimit', 'topic', 'isMockTest', 'totalDuration', 'sessionFingerprint', 'sessionNonce'];
 
 PracticeSessionSchema.pre('validate', async function () {
   if (this.isNew) {

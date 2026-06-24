@@ -210,8 +210,12 @@ class PracticeGradingService {
         tabSwitches: submission.tabSwitches || 0,
         ipAddress: submission.ipAddress || null,
         flagged: flagged || timeDriftFlag,
-      },
-      score: Math.round(accuracy),
+        score: Math.round(accuracy),
+        isFlagged: submission.isFlagged || flagged || timeDriftFlag,
+        flagReason: submission.flagReason || (flagged ? "Excessive tab switches" : (timeDriftFlag ? "Time drift detected" : null)),
+        cheatingPenalty: submission.cheatingPenalty || false,
+        submittedAt: submission.isFlagged || submission.cheatingPenalty ? new Date() : null,
+      }
     });
 
     const questionsWithReview = await questionRepository.find({
@@ -225,11 +229,13 @@ class PracticeGradingService {
     const sessionSubjectScores = { [subjectName]: Math.round(accuracy) };
     const utmeScore = PracticeGradingService.computeUTMEScoreFromMap(sessionSubjectScores);
 
-    await AdaptiveEngineService.updateTopicPerformance(
-      session.userId,
-      submission.responses,
-      session.subjectId,
-    );
+    if (!submission.cheatingPenalty) {
+      await AdaptiveEngineService.updateTopicPerformance(
+        session.userId,
+        submission.responses,
+        session.subjectId,
+      );
+    }
 
     const user = await userRepository.findById(session.userId);
     if (user) {

@@ -32,6 +32,10 @@ class PracticeQuestionService {
           content: { text: 1, image: 1, equation: 1 },
           metadata: 1,
           passageId: 1,
+          passage: 1,
+          passageText: 1,
+          image: 1,
+          imageUrl: 1,
           options: isAdmin
             ? 1
             : { id: 1, text: 1 }
@@ -52,14 +56,15 @@ class PracticeQuestionService {
 
       const sessionTopic = topic || session?.topic || null;
 
-      if (session && session.questionIds && session.questionIds.length > 0) {
+      const orderToUse = (session && session.questionOrder && session.questionOrder.length > 0) ? session.questionOrder : (session && session.questionIds ? session.questionIds : []);
+      if (orderToUse.length > 0) {
         const questions = await questionRepository.find({
-          _id: { $in: session.questionIds },
+          _id: { $in: orderToUse },
         }, {
           lean: true,
           select: isAdmin
-            ? "_id subjectId content metadata passageId options"
-            : "_id subjectId content metadata passageId options.id options.text"
+            ? "_id subjectId content metadata passageId passage passageText image imageUrl options"
+            : "_id subjectId content metadata passageId passage passageText image imageUrl options.id options.text"
         });
 
         const subjectIds = [...new Set(questions.map(q => q.subjectId).filter(Boolean).map(String))];
@@ -68,11 +73,11 @@ class PracticeQuestionService {
         subjectDocs.forEach(d => { subjectMap[String(d._id)] = d.name; });
 
         const qMap = new Map(questions.map((q) => [String(q._id || q.id), q]));
-        const orderedQuestions = session.questionIds
+        const orderedQuestions = orderToUse
           .map((id) => qMap.get(String(id)))
           .filter(Boolean);
 
-        const safe = orderedQuestions.map((q) => {
+        const safe = orderedQuestions.map((q, index) => {
           const correctOpt = q.options?.find((o) => o.isCorrect);
           const slim = {
             _id: q._id,
@@ -85,6 +90,11 @@ class PracticeQuestionService {
             },
             metadata: q.metadata,
             passageId: q.passageId,
+            passage: q.passage,
+            passageText: q.passageText,
+            image: q.image,
+            imageUrl: q.imageUrl,
+            questionNumber: index + 1,
           };
 
           if (isAdmin) {
@@ -165,7 +175,7 @@ class PracticeQuestionService {
           allQuestions = allQuestions.concat(enrichedSubQuestions);
         }
 
-        const safe = allQuestions.map((q) => {
+        const safe = allQuestions.map((q, index) => {
           const slim = {
             _id: q._id,
             subjectId: q.subjectId,
@@ -173,6 +183,11 @@ class PracticeQuestionService {
             content: { text: q.content?.text, image: q.content?.image, equation: q.content?.equation },
             metadata: q.metadata,
             passageId: q.passageId,
+            passage: q.passage,
+            passageText: q.passageText,
+            image: q.image,
+            imageUrl: q.imageUrl,
+            questionNumber: index + 1,
             options: q.options?.map(o => ({ id: o.id, text: o.text })) || []
           };
           return slim;
@@ -181,6 +196,7 @@ class PracticeQuestionService {
         if (session && session.sessionStatus === "ACTIVE") {
           await practiceRepository.update(sessionId, {
             questionIds: safe.map((q) => q._id),
+            questionOrder: safe.map((q) => q._id),
             questionLimit: safe.length 
           });
         }
@@ -306,7 +322,7 @@ class PracticeQuestionService {
         }
       }
 
-      const safe = questions.map((q) => {
+      const safe = questions.map((q, index) => {
         const correctOpt = q.options?.find((o) => o.isCorrect);
 
         const slim = {
@@ -319,6 +335,11 @@ class PracticeQuestionService {
           },
           metadata: q.metadata,
           passageId: q.passageId,
+          passage: q.passage,
+          passageText: q.passageText,
+          image: q.image,
+          imageUrl: q.imageUrl,
+          questionNumber: index + 1,
         };
 
         if (isAdmin) {
@@ -342,6 +363,7 @@ class PracticeQuestionService {
       if (session && session.sessionStatus === "ACTIVE" && (!session.questionIds || session.questionIds.length === 0)) {
         await practiceRepository.update(sessionId, {
           questionIds: safe.map((q) => q._id),
+          questionOrder: safe.map((q) => q._id),
         });
       }
 

@@ -30,7 +30,7 @@ class AnalyticsService {
     const cached = await cache.get(cacheKey);
     if (cached) return cached;
 
-    const match = {};
+    const match = { cheatingPenalty: { $ne: true } };
     if (from || to) match.createdAt = {};
     if (from) match.createdAt.$gte = new Date(from);
     if (to) match.createdAt.$lte = new Date(to);
@@ -253,8 +253,9 @@ class AnalyticsService {
     if (cached) return cached;
 
     const totalStudents = await userRepository.count({ role: "STUDENT" });
-    const totalSessions = await practiceRepository.count({});
+    const totalSessions = await practiceRepository.count({ cheatingPenalty: { $ne: true } });
     const avgScorePipeline = [
+      { $match: { cheatingPenalty: { $ne: true } } },
       { $group: { _id: null, avgScore: { $avg: "$score" } } },
     ];
     const agg = await practiceRepository.aggregate(avgScorePipeline);
@@ -305,7 +306,7 @@ class AnalyticsService {
     const [statsAgg, scoreHistoryDocs, subjectAgg, weakTopicsAgg] = await Promise.all([
       // 1. Aggregation for overall stats
       practiceRepository.aggregate([
-        { $match: { userId: objectId } },
+        { $match: { userId: objectId, cheatingPenalty: { $ne: true } } },
         { 
           $group: { 
             _id: null, 
@@ -322,12 +323,12 @@ class AnalyticsService {
       ]),
       // 2. Score History (limit 100)
       practiceRepository.find(
-        { userId: objectId },
+        { userId: objectId, cheatingPenalty: { $ne: true } },
         { sort: { createdAt: -1 }, limit: 100, lean: true, select: "score createdAt" }
       ),
       // 3. Subject Performance
       practiceRepository.aggregate([
-        { $match: { userId: objectId, score: { $ne: null } } },
+        { $match: { userId: objectId, score: { $ne: null }, cheatingPenalty: { $ne: true } } },
         {
           $group: {
             _id: "$subjectId",
@@ -353,7 +354,7 @@ class AnalyticsService {
       ]),
       // 4. Weak Topics
       practiceRepository.aggregate([
-        { $match: { userId: objectId, "analytics.topMistakeTopic": { $exists: true, $ne: null } } },
+        { $match: { userId: objectId, "analytics.topMistakeTopic": { $exists: true, $ne: null }, cheatingPenalty: { $ne: true } } },
         {
           $group: {
             _id: { topic: "$analytics.topMistakeTopic", subjectId: "$subjectId" },

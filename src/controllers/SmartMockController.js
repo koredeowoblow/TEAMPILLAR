@@ -65,6 +65,7 @@ class SmartMockController {
       sessionStatus: "ACTIVE",
       sessionType: "smart-mock",
       questionIds: formattedQuestions.map(q => q._id),
+      questionOrder: formattedQuestions.map(q => q._id),
       questionLimit: formattedQuestions.length,
       startTime: new Date(),
       totalDuration: calculateExamTime({ type: 'smart-mock', questions: formattedQuestions }),
@@ -94,6 +95,14 @@ class SmartMockController {
 
     if (!sessionId || !responses) {
       throw new AppError("sessionId and responses are required", 400);
+    }
+
+    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+    const existing = await PracticeSessionModel.findById(sessionId).lean();
+    if (existing && (existing.sessionStatus === "COMPLETED" || existing.sessionStatus === "SUBMITTED" || existing.sessionLedgerStatus === "SUBMITTED")) {
+      if (existing.isFlagged || existing.cheatingPenalty) {
+        return res.status(403).json({ success: false, message: "This exam session was flagged and has already been submitted. It cannot be resumed or resubmitted." });
+      }
     }
 
     // Re-use existing submission logic from PracticeService

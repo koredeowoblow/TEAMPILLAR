@@ -58,8 +58,10 @@ export function toCBTQuestionDTO(question, index = 0) {
 
   return {
     _id: String(q._id || q.id),
-    number: index + 1,
+    number: q.questionNumber || index + 1,
+    questionNumber: q.questionNumber || index + 1,
     text: q.text || q.content?.text || "",
+    image: q.image || q.imageUrl || q.content?.image || q.content?.imageUrl || null,
     subject: { 
       name: q.subjectName || (q.subjectId?.name) || "Subject" 
     },
@@ -69,12 +71,12 @@ export function toCBTQuestionDTO(question, index = 0) {
       text: o.text
     })),
     metadata: q.metadata || {},
-    passage: q.passageId && typeof q.passageId === 'object' ? {
+    passage: q.passage || q.passageText || (q.passageId && typeof q.passageId === 'object' ? {
       id: String(q.passageId._id || q.passageId.id),
       title: q.passageId.title || null,
       text: q.passageId.text || null,
       imageUrl: q.passageId.imageUrl || null
-    } : null,
+    } : null),
   };
 }
 

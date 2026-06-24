@@ -168,6 +168,14 @@ class PracticeController {
     if (!sessionId || !responses)
       throw new AppError("sessionId and responses are required", 400);
 
+    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+    const existing = await PracticeSessionModel.findById(sessionId).lean();
+    if (existing && (existing.sessionStatus === "COMPLETED" || existing.sessionStatus === "SUBMITTED" || existing.sessionLedgerStatus === "SUBMITTED")) {
+      if (existing.isFlagged || existing.cheatingPenalty) {
+        return res.status(403).json({ success: false, message: "This exam session was flagged and has already been submitted. It cannot be resumed or resubmitted." });
+      }
+    }
+
     const result = await PracticeService.submitSession(sessionId, {
       responses,
       tabSwitches,
@@ -314,6 +322,42 @@ class PracticeController {
     return sendSuccess(res, {
       message: "Visibility recorded",
       data: result,
+      statusCode: 200,
+    });
+  }
+
+  static async flagAndSubmit(req, res) {
+    const { sessionId, flagReason } = req.body;
+    if (!sessionId) throw new AppError("sessionId is required", 400);
+
+    const { default: PracticeSessionModel } = await import("../models/PracticeSessionModel.js");
+    const session = await PracticeSessionModel.findById(sessionId);
+    
+    if (!session) throw new AppError("Session not found", 404);
+    if (session.sessionStatus === "COMPLETED" || session.sessionStatus === "SUBMITTED" || session.sessionLedgerStatus === "SUBMITTED") {
+       return res.status(403).json({ success: false, message: "This exam session was flagged and has already been submitted. It cannot be resumed or resubmitted." });
+    }
+
+    const { default: PracticeGradingService } = await import("../services/practice/PracticeGradingService.js");
+
+    const responses = session.responses || [];
+    const result = await PracticeGradingService.submitSession(sessionId, {
+      responses,
+      tabSwitches: session.security?.tabSwitches || 0,
+      endTime: new Date(),
+      ipAddress: req.ip,
+      isSweeper: false,
+      isFlagged: true,
+      flagReason: flagReason || "Cheating detected",
+      cheatingPenalty: true
+    });
+
+    return sendSuccess(res, {
+      message: "Session flagged and submitted",
+      data: {
+        utmeScore: result.utmeScore,
+        flagged: true
+      },
       statusCode: 200,
     });
   }

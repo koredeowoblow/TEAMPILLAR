@@ -12,13 +12,14 @@ export default class UserStatsPrecomputeService {
       const sessions = await PracticeSessionModel.find({ 
         userId, 
         sessionStatus: 'COMPLETED',
-        score: { $gt: 0 }
+        score: { $gt: 0 },
+        cheatingPenalty: { $ne: true }
       })
       .sort({ createdAt: -1 })
       .limit(50)
       .lean();
 
-      const sessionCount = await PracticeSessionModel.countDocuments({ userId });
+      const sessionCount = await PracticeSessionModel.countDocuments({ userId, cheatingPenalty: { $ne: true } });
       
       let avgScoreUTME = 0;
       let recentScores = [];

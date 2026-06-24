@@ -67,6 +67,13 @@ router.post(
 );
 
 router.post(
+  "/session/flag-and-submit",
+  protectUser,
+  onboardingGuard,
+  tryCatch(PracticeController.flagAndSubmit),
+);
+
+router.post(
   "/session/visibility",
   protectUser,
   onboardingGuard,

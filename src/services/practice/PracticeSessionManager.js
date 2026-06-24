@@ -48,6 +48,7 @@ class PracticeSessionManager {
       startTime: new Date(),
       questionLimit: Math.max(1, Number(questionLimit) || 20),
       questionIds,
+      questionOrder: questionIds,
       topic: topic || null,
       totalDuration
     });
@@ -107,7 +108,9 @@ class PracticeSessionManager {
     const result = { ...session };
 
     let rawQuestionIds = [];
-    if (Array.isArray(session.questionIds) && session.questionIds.length > 0) {
+    if (Array.isArray(session.questionOrder) && session.questionOrder.length > 0) {
+      rawQuestionIds = session.questionOrder.map(id => String(id));
+    } else if (Array.isArray(session.questionIds) && session.questionIds.length > 0) {
       rawQuestionIds = session.questionIds.map(id => String(id));
     } else if (Array.isArray(session.responses) && session.responses.length > 0) {
       rawQuestionIds = session.responses
