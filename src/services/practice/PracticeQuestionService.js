@@ -25,6 +25,7 @@ class PracticeQuestionService {
       topic,
     } = {},
   ) {
+    limit = Number(limit);
     try {
       const projectionStage = {
         $project: {

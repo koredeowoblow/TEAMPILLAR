@@ -182,6 +182,12 @@ class QuestionPoolService {
         await this.rebuildSubjectPool(subjectId);
         ids = await redis.sRandMemberCount(key, limit);
       }
+
+      // If Redis still doesn't have enough, it might be stale or lacking questions.
+      // We should query Mongo to guarantee we get the maximum possible.
+      if (ids && ids.length < limit) {
+        return this.fallbackMongoSample(subjectId, null, limit);
+      }
     } catch (redisErr) {
       logger.error("Redis SRANDMEMBER failed, falling back to Mongo directly:", redisErr);
       return this.fallbackMongoSample(subjectId, null, limit);
