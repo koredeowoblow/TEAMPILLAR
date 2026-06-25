@@ -211,8 +211,8 @@ class PracticeGradingService {
     };
 
     let utmeScore = 0;
-    if (session.sessionType === "smart-mock" || session.isMockTest) {
-      utmeScore = Math.round(accuracy * 4); // Full mock/Smart mock total score is 400
+    if (session.isMockTest) {
+      utmeScore = Math.round(accuracy * 4); // Full mock total score is 400
     } else {
       let subjectName = "";
       if (session.subjectId) {
@@ -223,7 +223,7 @@ class PracticeGradingService {
       utmeScore = PracticeGradingService.computeUTMEScoreFromMap(sessionSubjectScores);
     }
 
-    const finalScore = session.sessionType === "smart-mock" || session.isMockTest ? utmeScore : Math.round(accuracy);
+    const finalScore = session.isMockTest ? utmeScore : Math.round(accuracy);
 
     const updated = await practiceRepository.update(sessionId, {
       responses: finalResponses,

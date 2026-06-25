@@ -96,7 +96,7 @@ export function toPracticeSessionResultDTO(session) {
     // Mock test specific fields
     isMockTest:     s.isMockTest     ?? false,
     compositeScore: s.compositeScore ?? (
-      (s.isMockTest || s.sessionType === 'smart-mock') && s.score != null
+      s.isMockTest && s.score != null
         ? (s.score <= 100 ? s.score * 4 : s.score) 
         : null
     ),
