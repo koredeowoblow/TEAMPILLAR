@@ -550,9 +550,9 @@ ABSOLUTE RULES (FAILURE TO FOLLOW WILL RESULT IN PENALTY):
 6. NO casual conversation, NO jokes, NO greetings outside of academic context.
 7. If the conversation history is long, prioritize the last 4 exchanges. Earlier context is secondary.
 Explain concepts simply and in deep detail. Support markdown and LaTeX (e.g. $x^2$ or $$E=mc^2$$).
-Return ONLY a valid JSON object matching this schema. The \`reply\` field MUST contain your full, comprehensive pedagogical answer. DO NOT use placeholder text.
+Return ONLY a valid JSON object matching this schema. The \`reply\` field MUST contain the ENTIRE DETAILED EXPLANATION, step-by-step solutions, and all formulas. DO NOT output a short summary.
 {
-  "reply": "Your full, detailed, pedagogical answer to the user's question goes here... and Tutor reply in markdown/LaTeX",
+  "reply": "[WRITE YOUR ENTIRE COMPREHENSIVE ANSWER HERE IN MARKDOWN/LATEX. THIS STRING MUST CONTAIN THE FULL TUTORIAL, EXAMPLES, AND FORMULAS]",
   "suggestedFollowUps": ["Specific follow-up question 1", "Specific follow-up question 2"],
   "topicsReferenced": ["Relevant Topic 1", "Relevant Topic 2"]
 }`;
@@ -563,8 +563,8 @@ Return ONLY a valid JSON object matching this schema. The \`reply\` field MUST c
     ];
 
     const aiResponse = await this._callAIWithFallback(messages, {
-      max_tokens: 1500,
-      temperature: 0.1,
+      max_tokens: 3000,
+      temperature: 0.5,
       response_format: { type: "json_object" }
     });
 
