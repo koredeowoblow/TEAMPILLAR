@@ -34,6 +34,7 @@ class PracticeSessionManager {
       userId,
       limit: questionLimit,
       isAdmin: false,
+      isInitializing: true,
       topic: topic || undefined,
       difficulty: difficulty || undefined,
     });

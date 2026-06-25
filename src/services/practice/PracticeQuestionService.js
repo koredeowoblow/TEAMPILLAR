@@ -21,6 +21,7 @@ class PracticeQuestionService {
       filters = {},
       deterministic = false,
       isAdmin = false,
+      isInitializing = false,
       topic,
     } = {},
   ) {
@@ -211,7 +212,7 @@ class PracticeQuestionService {
       if (year) matchStage["metadata.year"] = Number(year);
 
       const excludedIds = new Set();
-      if (!isAdmin && process.env.NODE_ENV !== "test") {
+      if (!isAdmin && !isInitializing && process.env.NODE_ENV !== "test") {
         if (!sessionId) {
           throw new AppError("sessionId is required to fetch questions", 400);
         }
