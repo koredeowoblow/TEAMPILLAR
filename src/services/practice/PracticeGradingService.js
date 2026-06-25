@@ -211,16 +211,19 @@ class PracticeGradingService {
     };
 
     let utmeScore = 0;
-    if (session.sessionType === "smart-mock" || session.isMockTest || !session.subjectId) {
+    if (session.sessionType === "smart-mock" || session.isMockTest) {
       utmeScore = Math.round(accuracy * 4); // Full mock/Smart mock total score is 400
     } else {
-      const subject = await Subject.findById(session.subjectId).select("name").lean();
-      const subjectName = subject?.name || "";
+      let subjectName = "";
+      if (session.subjectId) {
+        const subject = await Subject.findById(session.subjectId).select("name").lean();
+        subjectName = subject?.name || "";
+      }
       const sessionSubjectScores = { [subjectName]: Math.round(accuracy) };
       utmeScore = PracticeGradingService.computeUTMEScoreFromMap(sessionSubjectScores);
     }
 
-    const finalScore = session.sessionType === "smart-mock" || session.isMockTest || !session.subjectId ? utmeScore : Math.round(accuracy);
+    const finalScore = session.sessionType === "smart-mock" || session.isMockTest ? utmeScore : Math.round(accuracy);
 
     const updated = await practiceRepository.update(sessionId, {
       responses: finalResponses,
