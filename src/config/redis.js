@@ -41,6 +41,8 @@ const initializeRedis = async () => {
       redisClient.hGet = redisClient.hget.bind(redisClient);
       redisClient.hGetAll = redisClient.hgetall.bind(redisClient);
       redisClient.expireAt = redisClient.expireat.bind(redisClient);
+      redisClient.sRandMemberCount = redisClient.srandmember.bind(redisClient);
+      redisClient.sInter = redisClient.sinter.bind(redisClient);
       redisClient.isOpen = true; // Mock isOpen since ioredis doesn't have it natively
       
       const originalQuit = redisClient.quit.bind(redisClient);
