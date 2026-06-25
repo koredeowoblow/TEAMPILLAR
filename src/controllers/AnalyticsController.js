@@ -115,48 +115,62 @@ class AnalyticsController {
     const userId = req.user?.id;
     const { sessions, questionMap } = await AnalyticsController._getUserCompletedSessionsData(userId);
 
-    const subjectGroups = {};
-    sessions.forEach(s => {
-      if (s.subjectId) {
-        const subIdStr = String(s.subjectId);
-        if (!subjectGroups[subIdStr]) {
-          subjectGroups[subIdStr] = [];
+    const userSelectedSubjectIds = req.user?.selectedSubjects?.map(id => String(id)) || [];
+    const subjectStats = {};
+
+    sessions.forEach(session => {
+      // Standard sessions
+      if (session.subjectId) {
+        const subIdStr = String(session.subjectId);
+        if (userSelectedSubjectIds.length > 0 && !userSelectedSubjectIds.includes(subIdStr)) return;
+
+        if (!subjectStats[subIdStr]) {
+          subjectStats[subIdStr] = { sessionsCount: 0, totalScore: 0, correct: 0, totalResponses: 0 };
         }
-        subjectGroups[subIdStr].push(s);
-      }
-    });
+        subjectStats[subIdStr].sessionsCount++;
+        subjectStats[subIdStr].totalScore += (session.score || 0);
 
-    const subjectIds = Object.keys(subjectGroups);
-    const subjects = await Subject.find({ _id: { $in: subjectIds } }).lean();
-    const subjectMap = new Map(subjects.map(sub => [String(sub._id), sub]));
-
-    const data = [];
-    for (const [subIdStr, subSessions] of Object.entries(subjectGroups)) {
-      const subjectDoc = subjectMap.get(subIdStr);
-      const subjectName = subjectDoc ? subjectDoc.name : "Unknown Subject";
-
-      const sessionsCount = subSessions.length;
-      const averageScore = subSessions.reduce((acc, s) => acc + (s.score || 0), 0) / sessionsCount;
-
-      let correctCount = 0;
-      let totalResponses = 0;
-
-      subSessions.forEach(session => {
         if (session.responses) {
           session.responses.forEach(r => {
             const q = questionMap.get(String(r.questionId));
             if (q) {
-              totalResponses++;
+              subjectStats[subIdStr].totalResponses++;
               const correctOption = q.options?.find(o => o.isCorrect);
               if (correctOption && String(r.selectedOption) === String(correctOption.id)) {
-                correctCount++;
+                subjectStats[subIdStr].correct++;
               }
             }
           });
         }
-      });
+      } 
+      // Smart-mock sessions
+      else if (session.subjectScores && Array.isArray(session.subjectScores)) {
+        session.subjectScores.forEach(ss => {
+          const subIdStr = String(ss.subjectId);
+          if (userSelectedSubjectIds.length > 0 && !userSelectedSubjectIds.includes(subIdStr)) return;
 
-      const accuracy = totalResponses > 0 ? (correctCount / totalResponses) * 100 : 0;
+          if (!subjectStats[subIdStr]) {
+            subjectStats[subIdStr] = { sessionsCount: 0, totalScore: 0, correct: 0, totalResponses: 0 };
+          }
+          subjectStats[subIdStr].sessionsCount++;
+          subjectStats[subIdStr].totalScore += (ss.score || 0);
+          subjectStats[subIdStr].correct += (ss.correct || 0);
+          subjectStats[subIdStr].totalResponses += (ss.total || 0);
+        });
+      }
+    });
+
+    const subjectIds = Object.keys(subjectStats);
+    const subjects = await Subject.find({ _id: { $in: subjectIds } }).lean();
+    const subjectMap = new Map(subjects.map(sub => [String(sub._id), sub]));
+
+    const data = [];
+    for (const [subIdStr, stats] of Object.entries(subjectStats)) {
+      const subjectDoc = subjectMap.get(subIdStr);
+      const subjectName = subjectDoc ? subjectDoc.name : "Unknown Subject";
+
+      const averageScore = stats.sessionsCount > 0 ? stats.totalScore / stats.sessionsCount : 0;
+      const accuracy = stats.totalResponses > 0 ? (stats.correct / stats.totalResponses) * 100 : 0;
       const masteryLevel = `${Math.round(accuracy)}%`;
 
       data.push({
@@ -164,7 +178,7 @@ class AnalyticsController {
         name: subjectName,
         averageScore: Math.round(averageScore * 100) / 100,
         accuracy: Math.round(accuracy * 100) / 100,
-        sessionsCount,
+        sessionsCount: stats.sessionsCount,
         masteryLevel,
       });
     }
@@ -181,12 +195,17 @@ class AnalyticsController {
     const { subjectId } = req.query;
     const { sessions, questionMap } = await AnalyticsController._getUserCompletedSessionsData(userId);
 
+    const userSelectedSubjectIds = req.user?.selectedSubjects?.map(id => String(id)) || [];
     const topicGroups = {};
+
     sessions.forEach(session => {
       if (session.responses) {
         session.responses.forEach(r => {
           const q = questionMap.get(String(r.questionId));
           if (q) {
+            const subIdStr = String(q.subjectId);
+            if (userSelectedSubjectIds.length > 0 && !userSelectedSubjectIds.includes(subIdStr)) return;
+
             // Apply subjectId filter if provided
             if (subjectId && String(q.subjectId) !== String(subjectId)) {
               return;
