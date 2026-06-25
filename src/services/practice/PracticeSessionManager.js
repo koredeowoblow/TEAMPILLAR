@@ -21,7 +21,7 @@ class PracticeSessionManager {
     if (existingActiveSession) {
       // Abandon the existing session to allow the new one to start
       existingActiveSession.sessionStatus = "ABANDONED";
-      existingActiveSession.sessionLedgerStatus = "ABANDONED";
+      existingActiveSession.sessionLedgerStatus = "REJECTED";
       await existingActiveSession.save();
     }
 
