@@ -224,7 +224,7 @@ class PracticeController {
 
     const [sessions, total] = await Promise.all([
       practiceRepository.find(
-        { userId, sessionStatus: { $in: ["COMPLETED", "ABANDONED"] } },
+        { userId, isMockTest: { $ne: true }, sessionStatus: { $in: ["COMPLETED", "ABANDONED"] } },
         {
           sort: { createdAt: -1 },
           skip,
@@ -233,7 +233,7 @@ class PracticeController {
           select: "subjectId sessionStatus score questionLimit analytics startTime endTime createdAt"
         },
       ),
-      practiceRepository.count({ userId, sessionStatus: { $in: ["COMPLETED", "ABANDONED"] } }),
+      practiceRepository.count({ userId, isMockTest: { $ne: true }, sessionStatus: { $in: ["COMPLETED", "ABANDONED"] } }),
     ]);
 
     return sendSuccess(res, {
