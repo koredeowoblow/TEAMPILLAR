@@ -1,8 +1,8 @@
 import { Queue } from "bullmq";
-import { connectionConfig } from "../config/bullmqConnection.js";
+import bullmqRedis from "../config/bullmqRedis.js";
 
 export const examFinalizationQueue = new Queue("ExamFinalizationQueue", {
-  connection: connectionConfig,
+  connection: bullmqRedis,
   defaultJobOptions: {
     attempts: 5,
     backoff: {

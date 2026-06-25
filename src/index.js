@@ -276,13 +276,18 @@ async function bootstrap() {
         logger.info("HTTP server closed");
 
         try {
-          // Close Redis
           try {
             const { getRedisClient } = await import("./config/redis.js");
             const redis = await getRedisClient();
             if (redis && redis.isOpen) {
               await redis.quit();
-              logger.info("Redis connection closed");
+              logger.info("App Redis connection closed");
+            }
+            
+            const { default: bullmqRedis } = await import("./config/bullmqRedis.js");
+            if (bullmqRedis) {
+              await bullmqRedis.quit();
+              logger.info("BullMQ Redis connection closed");
             }
           } catch (rErr) {
             logger.warn("Error closing Redis during shutdown", {

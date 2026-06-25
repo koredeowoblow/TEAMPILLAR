@@ -2,10 +2,10 @@ import { Queue, Worker } from "bullmq";
 import { logger } from "../core/logger.js";
 import "../config/env.js";
 
-import { sharedQueueConnection, connectionConfig } from "../config/bullmqConnection.js";
+import bullmqRedis from "../config/bullmqRedis.js";
 
-export const gradingQueue = new Queue("grading", { connection: sharedQueueConnection });
-export const scoreQueue = new Queue("scoring", { connection: sharedQueueConnection });
+export const gradingQueue = new Queue("grading", { connection: bullmqRedis });
+export const scoreQueue = new Queue("scoring", { connection: bullmqRedis });
 
 gradingQueue.on("error", (err) => logger.warn(`[BullMQ] gradingQueue error: ${err.message}`));
 scoreQueue.on("error", (err) => logger.warn(`[BullMQ] scoreQueue error: ${err.message}`));
@@ -51,7 +51,7 @@ export const gradingWorker = new Worker("grading", async (job) => {
     throw error;
   }
 }, { 
-  connection: sharedQueueConnection,
+  connection: bullmqRedis,
   concurrency: 10 // High throughput for DB operations
 });
 
@@ -85,7 +85,7 @@ export const scoreWorker = new Worker("scoring", async (job) => {
     throw error;
   }
 }, { 
-  connection: sharedQueueConnection,
+  connection: bullmqRedis,
   concurrency: 50 // High concurrency since it's mostly computation and DB writes
 });
 

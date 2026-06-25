@@ -1,6 +1,6 @@
 import { Worker } from "bullmq";
 import { logger } from "../core/logger.js";
-import { sharedQueueConnection } from "../config/bullmqConnection.js";
+import bullmqRedis from "../config/bullmqRedis.js";
 
 // Abstract the dynamic redis logic
 export const startWatchdogWorker = async () => {
@@ -66,7 +66,7 @@ export const startWatchdogWorker = async () => {
       logger.error("Watchdog execution failed:", err);
     }
   }, { 
-    connection: sharedQueueConnection,
+    connection: bullmqRedis,
     concurrency: 1 
   });
 

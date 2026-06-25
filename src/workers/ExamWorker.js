@@ -2,7 +2,7 @@ import { Worker } from "bullmq";
 import mongoose from "mongoose";
 import PracticeSessionModel from "../models/PracticeSessionModel.js";
 
-import { connectionConfig } from "../config/bullmqConnection.js";
+import bullmqRedis from "../config/bullmqRedis.js";
 
 const processFinalization = async (job) => {
   const { sessionId, deviceToken, finalizationKey, finalResponses, options } = job.data;
@@ -83,7 +83,7 @@ const processFinalization = async (job) => {
   }
 };
 
-export const examFinalizationWorker = new Worker("ExamFinalizationQueue", processFinalization, { connection: connectionConfig });
+export const examFinalizationWorker = new Worker("ExamFinalizationQueue", processFinalization, { connection: bullmqRedis });
 
 examFinalizationWorker.on("completed", (job) => {
   console.log(`[ExamWorker] Job ${job.id} completed successfully.`);

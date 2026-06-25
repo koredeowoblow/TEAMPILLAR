@@ -2,6 +2,7 @@ import { Queue, Worker } from "bullmq";
 import { getRedisClient } from "../config/redis.js";
 import { logger } from "../core/logger.js";
 import QuestionPoolService from "../services/QuestionPoolService.js";
+import bullmqRedis from "../config/bullmqRedis.js";
 
 const redisOptions = {
   host: process.env.REDIS_HOST || "127.0.0.1",

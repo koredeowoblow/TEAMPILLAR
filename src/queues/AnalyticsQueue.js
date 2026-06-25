@@ -8,9 +8,9 @@ import { logger } from "../core/logger.js";
 import { Queue, Worker } from "bullmq";
 import "../config/env.js";
 
-import { sharedQueueConnection, connectionConfig } from "../config/bullmqConnection.js";
+import bullmqRedis from "../config/bullmqRedis.js";
 
-export const analyticsQueue = new Queue("analytics", { connection: sharedQueueConnection });
+export const analyticsQueue = new Queue("analytics", { connection: bullmqRedis });
 
 analyticsQueue.on("error", (err) => {
   logger.warn(`[BullMQ] analyticsQueue error: ${err.message}`);
@@ -263,7 +263,7 @@ Please generate the tips, fill in the AI-generated fields for the focusAreas (co
     throw error; // Throw so BullMQ can retry
   }
 }, { 
-  connection: sharedQueueConnection,
+  connection: bullmqRedis,
   concurrency: 5 // Rate limit Groq API concurrency
 });
 

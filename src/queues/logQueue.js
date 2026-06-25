@@ -3,9 +3,9 @@ import LogEntry from "../models/LogEntryModel.js";
 import { logger } from "../core/logger.js";
 import "../config/env.js";
 
-import { sharedQueueConnection, connectionConfig } from "../config/bullmqConnection.js";
+import bullmqRedis from "../config/bullmqRedis.js";
 
-export const logQueue = new Queue("logs", { connection: sharedQueueConnection });
+export const logQueue = new Queue("logs", { connection: bullmqRedis });
 
 logQueue.on("error", (err) => logger.warn(`[BullMQ] logQueue error: ${err.message}`));
 
@@ -20,7 +20,7 @@ export const logWorker = new Worker(
       logger.error(`Error processing job ${job.name} in logQueue:`, { message: error.message });
     }
   },
-  { connection: sharedQueueConnection }
+  { connection: bullmqRedis }
 );
 
 logWorker.on("error", (err) => logger.warn(`[BullMQ] logWorker connection error: ${err.message}`));
