@@ -88,6 +88,33 @@ class SmartMockService {
         pool = pool.filter(q => !seenStrSet.has(q._id.toString()));
       }
 
+      // 7. PASS 2 Fallback: If pool is smaller than limit after filtering, fetch MORE questions ignoring seenIdSet
+      if (pool.length < limit) {
+        const needed = limit - pool.length;
+        // Fetch up to 2x needed to ensure we can get unique ones
+        const extra = await QuestionPoolService.getRandomQuestionsBySubject(subjectId, needed * 2);
+        const currentPoolSet = new Set(pool.map(q => q._id.toString()));
+        
+        for (const q of extra) {
+          if (!currentPoolSet.has(q._id.toString())) {
+            pool.push(q);
+            currentPoolSet.add(q._id.toString());
+            if (pool.length >= limit) break;
+          }
+        }
+      }
+
+      // 8. PASS 3 Ultimate DB Fallback: Directly from DB if still insufficient
+      if (pool.length < limit) {
+        const needed = limit - pool.length;
+        const dbQuestions = await questionRepository.find({
+          subjectId: safeSubjectId,
+          _id: { $nin: pool.map(q => new mongoose.Types.ObjectId(q._id)) },
+          isQuarantined: { $ne: true }
+        }, { lean: true, limit: needed });
+        pool = pool.concat(dbQuestions);
+      }
+
       return pool;
     } catch (error) {
       logger.error("SmartMock Filtering Failed", { error: error.message });
