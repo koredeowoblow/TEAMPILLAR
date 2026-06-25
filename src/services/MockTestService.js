@@ -571,7 +571,7 @@ class MockTestService {
     const stats = await PracticeSessionModel.aggregate([
       {
         $match: {
-          userId: user._id,
+          userId: new mongoose.Types.ObjectId(user._id),
           isMockTest: true,
           sessionStatus: { $in: ["COMPLETED", "ABANDONED"] }
         }
