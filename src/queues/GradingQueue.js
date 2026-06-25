@@ -4,8 +4,8 @@ import "../config/env.js";
 
 import bullmqRedis from "../config/bullmqRedis.js";
 
-export const gradingQueue = new Queue("grading", { connection: bullmqRedis });
-export const scoreQueue = new Queue("scoring", { connection: bullmqRedis });
+export const gradingQueue = new Queue("grading", { connection: bullmqRedis, sharedConnection: true,});
+export const scoreQueue = new Queue("scoring", { connection: bullmqRedis, sharedConnection: true,});
 
 gradingQueue.on("error", (err) => logger.warn(`[BullMQ] gradingQueue error: ${err.message}`));
 scoreQueue.on("error", (err) => logger.warn(`[BullMQ] scoreQueue error: ${err.message}`));
@@ -51,7 +51,7 @@ export const gradingWorker = new Worker("grading", async (job) => {
     throw error;
   }
 }, { 
-  connection: bullmqRedis,
+  connection: bullmqRedis, sharedConnection: true,
   concurrency: 10 // High throughput for DB operations
 });
 
@@ -85,7 +85,7 @@ export const scoreWorker = new Worker("scoring", async (job) => {
     throw error;
   }
 }, { 
-  connection: bullmqRedis,
+  connection: bullmqRedis, sharedConnection: true,
   concurrency: 50 // High concurrency since it's mostly computation and DB writes
 });
 

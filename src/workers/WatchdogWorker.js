@@ -66,7 +66,7 @@ export const startWatchdogWorker = async () => {
       logger.error("Watchdog execution failed:", err);
     }
   }, { 
-    connection: bullmqRedis,
+    connection: bullmqRedis, sharedConnection: true,
     concurrency: 1 
   });
 

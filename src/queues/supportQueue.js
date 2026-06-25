@@ -6,7 +6,7 @@ import "../config/env.js";
 
 import bullmqRedis from "../config/bullmqRedis.js";
 
-export const supportQueue = new Queue("support", { connection: bullmqRedis });
+export const supportQueue = new Queue("support", { connection: bullmqRedis, sharedConnection: true,});
 
 supportQueue.on("error", (err) => logger.warn(`[BullMQ] supportQueue error: ${err.message}`));
 
@@ -69,7 +69,7 @@ export const supportWorker = new Worker("support", async (job) => {
     logger.error(`Error processing job ${job.name} in supportQueue:`, { message: error.message });
     throw error;
   }
-}, { connection: bullmqRedis });
+}, { connection: bullmqRedis, sharedConnection: true,});
 
 supportWorker.on("error", (err) => logger.warn(`[BullMQ] supportWorker connection error: ${err.message}`));
 

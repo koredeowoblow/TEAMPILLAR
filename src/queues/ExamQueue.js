@@ -2,7 +2,7 @@ import { Queue } from "bullmq";
 import bullmqRedis from "../config/bullmqRedis.js";
 
 export const examFinalizationQueue = new Queue("ExamFinalizationQueue", {
-  connection: bullmqRedis,
+  connection: bullmqRedis, sharedConnection: true,
   defaultJobOptions: {
     attempts: 5,
     backoff: {

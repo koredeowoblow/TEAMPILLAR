@@ -83,7 +83,7 @@ const processFinalization = async (job) => {
   }
 };
 
-export const examFinalizationWorker = new Worker("ExamFinalizationQueue", processFinalization, { connection: bullmqRedis });
+export const examFinalizationWorker = new Worker("ExamFinalizationQueue", processFinalization, { connection: bullmqRedis, sharedConnection: true,});
 
 examFinalizationWorker.on("completed", (job) => {
   console.log(`[ExamWorker] Job ${job.id} completed successfully.`);

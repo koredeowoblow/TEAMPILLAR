@@ -2,7 +2,7 @@ import { Queue } from "bullmq";
 import { logger } from "../core/logger.js";
 import bullmqRedis from "../config/bullmqRedis.js";
 
-export const watchdogQueue = new Queue("cluster-watchdog", { connection: bullmqRedis });
+export const watchdogQueue = new Queue("cluster-watchdog", { connection: bullmqRedis, sharedConnection: true,});
 
 export const startWatchdogCron = async () => {
   // Add a repeatable job running every 10 seconds
