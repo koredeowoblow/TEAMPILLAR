@@ -177,7 +177,7 @@ class PracticeGradingService {
     for (const r of finalResponses) {
       const q = qMap.get(String(r.questionId || r._id));
       if (!q) continue;
-      const opt = q.options.find((o) => o.id === r.selectedOption);
+      const opt = q.options.find((o) => (o.id || o.key || String(o._id)) === r.selectedOption);
       if (opt && opt.isCorrect) correct += 1;
       totalTime += Number(r.timeTaken || 0);
       const topic = q.metadata?.topic || "unknown";

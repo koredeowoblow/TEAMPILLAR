@@ -28,8 +28,8 @@ export function toQuestionDTO(question) {
     },
     // Strip isCorrect — never expose during active session
     options: (q.options ?? []).map((o) => ({
-      id:   o.id,
-      key:  o.id, // For compatibility with CBT engine
+      id:   o.id || o.key || String(o._id),
+      key:  o.id || o.key || String(o._id), // For compatibility with CBT engine
       text: o.text,
     })),
     metadata: {
@@ -67,7 +67,7 @@ export function toCBTQuestionDTO(question, index = 0) {
     },
     subjectId: String(q.subjectId?._id || q.subjectId?.id || q.subjectId || ""),
     options: (q.options || []).map(o => ({
-      key: o.id || o.key,
+      key: o.id || o.key || String(o._id),
       text: o.text
     })),
     metadata: q.metadata || {},
@@ -112,8 +112,8 @@ export function toQuestionReviewDTO(question) {
     ...toQuestionDTO(question),
     // Safe to reveal after submission
     options: (q.options ?? []).map((o) => ({
-      id:        o.id,
-      key:       o.id, // For compatibility with CBT engine
+      id:        o.id || o.key || String(o._id),
+      key:       o.id || o.key || String(o._id), // For compatibility with CBT engine
       text:      o.text,
       isCorrect: o.isCorrect ?? false,
     })),

@@ -78,7 +78,7 @@ class MockTestService {
         const correctOpt = Array.isArray(q.options) ? q.options.find(o => o.isCorrect) : null;
         localAnswers[q._id.toString()] = {
           subjectId: q.subjectId.toString(),
-          correctAnswer: correctOpt ? (correctOpt.id || correctOpt.key) : null,
+          correctAnswer: correctOpt ? (correctOpt.id || correctOpt.key || String(correctOpt._id)) : null,
           topic: q.metadata?.topic || "unknown"
         };
 
@@ -258,7 +258,7 @@ class MockTestService {
         const correct = Array.isArray(q.options) ? q.options.find(o => o.isCorrect) : null;
         acc[q._id.toString()] = {
           subjectId: q.subjectId.toString(),
-          correctAnswer: correct ? (correct.id || correct.key) : null,
+          correctAnswer: correct ? (correct.id || correct.key || String(correct._id)) : null,
           topic: q.metadata?.topic || "unknown"
         };
         return acc;
