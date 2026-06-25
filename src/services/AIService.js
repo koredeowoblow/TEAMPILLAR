@@ -130,26 +130,26 @@ class AIService {
       const correctAnswer = options.find((o) => o.isCorrect)?.text || "Unknown";
 
       const systemPrompt = `You are a UTME tutor explaining concepts to Nigerian secondary school students (SS3).
-STRICT RULES:
-1. Math/Chemistry: Use LaTeX. Inline: $x^2$. Block (own line): $$E = mc^2$$. Never use plain text. E.g., write $CH_4$, not CH4.
-2. Structure:
-   - **Quick Answer**: 1 sentence with the key term bolded.
-   - **Explanation**: Clear paragraphs, max 3 sentences each.
-   - **Step-by-Step** (if applicable): Numbered steps, each on its own line.
-   - **Key Formula** (if applicable): Display block LaTeX.
-   - **Remember This**: 1-line memory tip/mnemonic.
-3. Clarity: Define variables immediately. Use simple language. Never use "obviously" or "as we know".
-4. Content: Only include Step-by-Step and Key Formula sections when they are directly applicable to the question type. Never fabricate a formula section for non-mathematical questions.`;
+            STRICT RULES:
+            1. Math/Chemistry: ALL math, equations, variables, numbers, and formulas MUST be wrapped in LaTeX delimiters. Inline: $x^2$. Block (own line): $$E = mc^2$$. NEVER write raw formulas in plain text or markdown bold. For example, write $CH_4$, not **CH4**.
+            2. Structure:
+              - **Quick Answer**: 1 sentence with the key term bolded.
+              - **Explanation**: Clear paragraphs, max 3 sentences each.
+              - **Step-by-Step** (if applicable): Numbered steps, each on its own line.
+              - **Key Formula** (if applicable): Display block LaTeX.
+              - **Remember This**: 1-line memory tip/mnemonic.
+            3. Clarity: Define variables immediately. Use simple language. Never use "obviously" or "as we know".
+            4. Content: Only include Step-by-Step and Key Formula sections when they are directly applicable to the question type. Never fabricate a formula section for non-mathematical questions.`;
 
       const userPrompt = `### INPUT DATA:
-QUESTION: "${content.text || content.value || ""}"
-OPTIONS: ${options.map((o) => `${o.id}: ${o.text}`).join(" | ")}
-CORRECT ANSWER: ${correctAnswer}
-STUDENT_CHOICE: ${context.selectedOptionId || "NOT_PROVIDED"}
-TOPIC: ${metadata.topic || "General"}
+            QUESTION: "${content.text || content.value || ""}"
+            OPTIONS: ${options.map((o) => `${o.id}: ${o.text}`).join(" | ")}
+            CORRECT ANSWER: ${correctAnswer}
+            STUDENT_CHOICE: ${context.selectedOptionId || "NOT_PROVIDED"}
+            TOPIC: ${metadata.topic || "General"}
 
-### TASK:
-Produce a deep-dive pedagogical explanation following the rules above. If STUDENT_CHOICE is incorrect, prioritize correcting that logic error. If STUDENT_CHOICE is NOT_PROVIDED, skip the error-correction paragraph entirely.`;
+            ### TASK:
+            Produce a deep-dive pedagogical explanation following the rules above. If STUDENT_CHOICE is incorrect, prioritize correcting that logic error. If STUDENT_CHOICE is NOT_PROVIDED, skip the error-correction paragraph entirely.`;
 
       const aiResponse = await this._callAIWithFallback([
         { role: "system", content: systemPrompt },
@@ -549,6 +549,8 @@ ABSOLUTE RULES (FAILURE TO FOLLOW WILL RESULT IN PENALTY):
 5. If you are unsure whether a topic is in the UTME syllabus, DO NOT GUESS. Refuse to answer.
 6. NO casual conversation, NO jokes, NO greetings outside of academic context.
 7. If the conversation history is long, prioritize the last 4 exchanges. Earlier context is secondary.
+8. ALL math, equations, variables, numbers, and formulas MUST be wrapped in LaTeX delimiters: inline math in $...$ and block math in $$...$$. NEVER write raw formulas in plain text or markdown bold. For example, write $v = u + at$, NOT **v = u + at**.
+
 Explain concepts simply and in deep detail. Support markdown and LaTeX (e.g. $x^2$ or $$E=mc^2$$).
 Return ONLY a valid JSON object matching this schema. The \`reply\` field MUST contain the ENTIRE DETAILED EXPLANATION, step-by-step solutions, and all formulas. DO NOT output a short summary.
 {
