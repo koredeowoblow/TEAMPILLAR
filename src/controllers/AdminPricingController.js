@@ -12,15 +12,17 @@ const planSchema = Joi.object({
   isPopular: Joi.boolean(),
   billingCycles: Joi.array().items(
     Joi.object({
+      _id: Joi.any(),
       label: Joi.string().required(),
       price: Joi.number().required(),
       currency: Joi.string().default("NGN"),
       discountPercent: Joi.number().default(0),
-      paystackPlanCode: Joi.string(),
+      paystackPlanCode: Joi.string().allow("", null).optional(),
     })
   ),
   features: Joi.array().items(
     Joi.object({
+      _id: Joi.any(),
       label: Joi.string().required(),
       included: Joi.boolean().default(true),
     })
@@ -33,7 +35,7 @@ const planSchema = Joi.object({
     prioritySupport: Joi.boolean(),
   }),
   displayOrder: Joi.number(),
-});
+}).unknown(true);
 
 class AdminPricingController {
   static async listPlans(req, res) {
