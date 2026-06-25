@@ -260,7 +260,7 @@ class PracticeController {
 
   static async startSession(req, res) {
     const userId = req.user?.id;
-    const { subjectId, subjectIds, limit, duration, topic } = req.body;
+    const { subjectId, subjectIds, limit, duration, topic, difficulty } = req.body;
     if (!userId) throw new AppError("Unauthorized", 401);
     if (!subjectId && (!subjectIds || subjectIds.length === 0)) {
       throw new AppError("subjectId or subjectIds is required", 400);
@@ -273,7 +273,9 @@ class PracticeController {
 
 
 
-    const session = await PracticeService.startSession(userId, subjectId, questionLimit, subjectIds, topic);
+    const normalizedDifficulty = difficulty === "standard" ? "medium" : difficulty;
+
+    const session = await PracticeService.startSession(userId, subjectId, questionLimit, subjectIds, topic, normalizedDifficulty);
 
     // Fetch questions immediately after session creation so the frontend CBT
     // component can start rendering without a separate round-trip.

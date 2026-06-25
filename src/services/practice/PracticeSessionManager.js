@@ -6,7 +6,7 @@ import { CONSTANTS } from "../../config/constants.js";
 import PracticeGradingService from "./PracticeGradingService.js";
 
 class PracticeSessionManager {
-  static async startSession(userId, subjectId, questionLimit = 20, subjectIds = [], topic = null) {
+  static async startSession(userId, subjectId, questionLimit = 20, subjectIds = [], topic = null, difficulty = null) {
     const user = await userRepository.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
@@ -19,8 +19,10 @@ class PracticeSessionManager {
     });
 
     if (existingActiveSession) {
-      // Return the existing session to prevent duplicate concurrency
-      return existingActiveSession;
+      // Abandon the existing session to allow the new one to start
+      existingActiveSession.sessionStatus = "ABANDONED";
+      existingActiveSession.sessionLedgerStatus = "ABANDONED";
+      await existingActiveSession.save();
     }
 
     const ids = Array.isArray(subjectIds) && subjectIds.length > 0 ? subjectIds : [subjectId];
@@ -33,6 +35,7 @@ class PracticeSessionManager {
       limit: questionLimit,
       isAdmin: false,
       topic: topic || undefined,
+      difficulty: difficulty || undefined,
     });
     const questionIds = questions.map(q => q._id || q.id);
 
