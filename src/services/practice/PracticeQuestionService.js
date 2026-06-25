@@ -296,7 +296,7 @@ class PracticeQuestionService {
 
       if (sessionTopic) matchStage["metadata.topic"] = sessionTopic;
       if (topicId) matchStage["metadata.topic"] = topicId;
-      if (difficulty)
+      if (difficulty && difficulty !== "adaptive")
         matchStage["metadata.difficulty"] = difficulty.toLowerCase();
       if (year) matchStage["metadata.year"] = Number(year);
 
@@ -313,12 +313,15 @@ class PracticeQuestionService {
 
       if (!deterministic && questions.length < limit) {
         let fallbackLimit = limit - questions.length;
-        let extraQuestions = await QuestionPoolService.getRandomQuestionsBySubject(resolvedSubjectId, fallbackLimit);
+        // Fetch 3x the needed amount to account for overlaps, then slice
+        let extraQuestions = await QuestionPoolService.getRandomQuestionsBySubject(resolvedSubjectId, fallbackLimit * 3);
         
         let existingIds = new Set(questions.map(q => q._id.toString()));
         for (const eq of extraQuestions) {
+          if (questions.length >= limit) break;
           if (!existingIds.has(eq._id.toString()) && !excludedIds.has(eq._id.toString())) {
             questions.push(eq);
+            existingIds.add(eq._id.toString());
           }
         }
       }

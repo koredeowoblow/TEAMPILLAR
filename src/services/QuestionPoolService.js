@@ -215,7 +215,9 @@ class QuestionPoolService {
    */
   static async getRandomFilteredQuestions(subjectId, filters = {}, limit) {
     const redis = await getRedisClient();
-    if (!redis) return this.fallbackMongoSample(subjectId, filters.topic, limit);
+    if (!redis || typeof filters.topic === 'object' || typeof filters.difficulty === 'object') {
+      return this.fallbackMongoSample(subjectId, filters.topic, limit);
+    }
 
     const subjectStr = subjectId.toString();
     const setsToIntersect = [];
