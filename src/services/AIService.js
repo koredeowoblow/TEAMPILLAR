@@ -138,7 +138,8 @@ STRICT RULES:
    - **Step-by-Step** (if applicable): Numbered steps, each on its own line.
    - **Key Formula** (if applicable): Display block LaTeX.
    - **Remember This**: 1-line memory tip/mnemonic.
-3. Clarity: Define variables immediately. Use simple language. Never use "obviously" or "as we know".`;
+3. Clarity: Define variables immediately. Use simple language. Never use "obviously" or "as we know".
+4. Content: Only include Step-by-Step and Key Formula sections when they are directly applicable to the question type. Never fabricate a formula section for non-mathematical questions.`;
 
       const userPrompt = `### INPUT DATA:
 QUESTION: "${content.text || content.value || ""}"
@@ -148,7 +149,7 @@ STUDENT_CHOICE: ${context.selectedOptionId || "NOT_PROVIDED"}
 TOPIC: ${metadata.topic || "General"}
 
 ### TASK:
-Produce a deep-dive pedagogical explanation following the 3 rules above. If STUDENT_CHOICE is incorrect, prioritize correcting that logic error.`;
+Produce a deep-dive pedagogical explanation following the rules above. If STUDENT_CHOICE is incorrect, prioritize correcting that logic error. If STUDENT_CHOICE is NOT_PROVIDED, skip the error-correction paragraph entirely.`;
 
       const aiResponse = await this._callAIWithFallback([
         { role: "system", content: systemPrompt },
@@ -189,6 +190,8 @@ Produce a deep-dive pedagogical explanation following the 3 rules above. If STUD
         {
           role: "system",
           content: `You are an academic planner. Generate a 7-day strategic study plan based on the student's weak topics.
+Weight the days by urgency: topics with lower mastery scores MUST appear more frequently across the 7 days.
+Mix the topics across days to interleave studying, rather than grouping the same topic consecutively.
 Return a valid JSON object containing a "plan" key with an array of daily study sessions.
 JSON Schema:
 {
@@ -197,14 +200,15 @@ JSON Schema:
       "day": 1,
       "topic": "Topic Name",
       "duration": "45m",
-      "focus": "Conceptual Review or Practice Questions"
+      "focus": "Conceptual Review or Practice Questions",
+      "rationale": "Reason for prioritizing this topic today."
     }
   ]
 }`
         },
         {
           role: "user",
-          content: `Weak Topics: ${weakTopics.join(", ")}.`
+          content: `Weak Topics: ${JSON.stringify(weakTopics)}.`
         }
       ];
 
@@ -262,16 +266,16 @@ Synthesize complex platform metrics into a high-impact executive briefing for th
 - Format: Professional 3-point executive briefing.
 - Max Tokens: 400.`;
 
-      const userPrompt = `### PLATFORM ANALYTICS SNAPSHOT:
-- **Average Proficiency**: ${data.averageScore || 0}%
-- **Subject Distribution**: ${data.subjectComparison?.map(p => `${p.subject}(${p.performance}%)`).join(", ") || "N/A"}
-- **Critical Curriculum Gaps**: ${mistakes}
-- **Engagement Trend**: ${data.enrollmentTrend?.slice(-1)[0]?.active || 0} active sessions in latest window.
+      const userPrompt = `PLATFORM ANALYTICS SNAPSHOT:
+- AVERAGE PROFICIENCY: ${data.averageScore || 0}%
+- SUBJECT DISTRIBUTION: ${data.subjectComparison?.map(p => `${p.subject}(${p.performance}%)`).join(", ") || "N/A"}
+- CRITICAL CURRICULUM GAPS: ${mistakes}
+- ENGAGEMENT TREND: ${data.enrollmentTrend?.slice(-1)[0]?.active || 0} active sessions in latest window.
 
-### TASK:
-1. Provide a **High-Level Learning State** assessment.
-2. Identify the **Primary Strategic Bottleneck** impacting platform success.
-3. Recommend one **Systemic Intervention** to improve student mastery scores.`;
+TASK:
+1. Provide a High-Level Learning State assessment.
+2. Identify the Primary Strategic Bottleneck impacting platform success.
+3. Recommend one Systemic Intervention to improve student mastery scores.`;
 
       const aiResponse = await this._callAIWithFallback([
         { role: "system", content: systemPrompt },
@@ -309,7 +313,7 @@ Structure your response strictly using markdown:
 - **Priority Bottlenecks**: Explain WHY focusing on the provided top 3 priority topics will mathematically bridge the gap.
 - **Action Plan**: 3 concrete, actionable bullet points they should do next.
 
-DO NOT invent new metrics or hallucinate topics. Use only the data provided. Write in an encouraging but authoritative tone.`;
+DO NOT invent new metrics or hallucinate topics. Use only the data provided. Write in an encouraging but authoritative tone. Write like a coach who expects the student to win, not a teacher who expects them to fail.`;
 
       const userPrompt = `### STUDENT PROFILE:
 Current Average Score: ${data.averageScore}%
@@ -365,13 +369,14 @@ Conduct a high-fidelity diagnostic audit of a UTME question with a significant f
 - Format: Structured plain text with clear headings.
 - Clarity over brevity.`;
 
-      const userPrompt = `### QUESTION DIAGNOSTIC DATA:
-- **Topic**: ${data.topic}
-- **Failure Rate**: ${data.failRate}%
-- **Primary Distractor Trap**: "${data.distractor}"
-- **Question Context**: ${JSON.stringify(data.content || "N/A")}
+      const userPrompt = `QUESTION DIAGNOSTIC DATA:
+- Topic: ${data.topic}
+- Failure Rate: ${data.failRate}%
+- Question Text: ${data.content?.text || data.content?.value || "N/A"}
+- Correct Answer: ${data.options?.find(o => o.isCorrect)?.text || data.content?.options?.find(o => o.isCorrect)?.text || "N/A"}
+- Primary Distractor Trap: "${data.distractor}"
 
-### TASK:
+TASK:
 Produce a comprehensive 4-point diagnostic report following the structure above. Highlight specific interventions for the administrator.`;
 
       const aiResponse = await this._callAIWithFallback([
@@ -405,6 +410,8 @@ Produce a comprehensive 4-point diagnostic report following the structure above.
         {
           role: "system",
           content: `You are an adaptive learning engine. Analyze student performance data and output a MongoDB $match stage query.
+STRICT CONSTRAINT: The "matchStage" MUST only use the field "metadata.topic" with the "$in" operator and an array of strings. No other MongoDB operators, no nested fields, no $expr, no $where are allowed. This is a hard safety rule.
+If the performance data is insufficient to make a confident selection, return an empty matchStage object {} and explain why in the reasoning field.
 Return a valid JSON object containing a "matchStage" key and a "reasoning" key.
 JSON Schema:
 {
@@ -537,18 +544,18 @@ JSON Schema:
 ABSOLUTE RULES (FAILURE TO FOLLOW WILL RESULT IN PENALTY):
 1. You are strictly a UTME (JAMB) educational tutor. You are NOT a general AI, NOT a friend, and NOT a university professor.
 2. You MUST ONLY answer questions that fall STRICTLY within the Nigerian UTME (JAMB) syllabus for ${activeSubject}.
-3. If the user asks about ANY topic outside the UTME syllabus for ${activeSubject} (even if it's advanced academic, university-level, or general knowledge), you MUST refuse to answer. Reply exactly with: "I can only answer questions related to the UTME ${activeSubject} syllabus. Please ask a relevant question."
+3. If the user asks about ANY topic outside the UTME syllabus for ${activeSubject} (even if it's advanced academic, university-level, or general knowledge), you MUST refuse to answer. Name the specific topic they asked about, explain in one sentence why it falls outside the UTME syllabus, and then ask them to provide a relevant question.
 4. If the user asks about a subject other than ${activeSubject}, you MUST refuse and ask them to switch to the appropriate subject tutor.
 5. If you are unsure whether a topic is in the UTME syllabus, DO NOT GUESS. Refuse to answer.
 6. NO casual conversation, NO jokes, NO greetings outside of academic context.
-Explain concepts simply. Support markdown and LaTeX (e.g. $x^2$ or $$E=mc^2$$).
-Return ONLY a valid JSON object matching this schema:
+7. If the conversation history is long, prioritize the last 4 exchanges. Earlier context is secondary.
+Explain concepts simply and in deep detail. Support markdown and LaTeX (e.g. $x^2$ or $$E=mc^2$$).
+Return ONLY a valid JSON object matching this schema. The \`reply\` field MUST contain your full, comprehensive pedagogical answer. DO NOT use placeholder text.
 {
-  "reply": "Tutor reply in markdown/LaTeX",
-  "suggestedFollowUps": ["Question 1", "Question 2", "Question 3"],
-  "topicsReferenced": ["Topic Name"]
+  "reply": "Your full, detailed, pedagogical answer to the user's question goes here... and Tutor reply in markdown/LaTeX",
+  "suggestedFollowUps": ["Specific follow-up question 1", "Specific follow-up question 2"],
+  "topicsReferenced": ["Relevant Topic 1", "Relevant Topic 2"]
 }`;
-
     const messages = [
       { role: "system", content: systemPrompt },
       ...previousHistory.map(msg => ({ role: msg.role === "user" ? "user" : "assistant", content: msg.content })),
@@ -556,7 +563,7 @@ Return ONLY a valid JSON object matching this schema:
     ];
 
     const aiResponse = await this._callAIWithFallback(messages, {
-      max_tokens: 800,
+      max_tokens: 1500,
       temperature: 0.1,
       response_format: { type: "json_object" }
     });
