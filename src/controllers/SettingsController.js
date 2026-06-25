@@ -15,6 +15,12 @@ class SettingsController {
 
   static async updateProfile(req, res) {
     const user = await SettingsService.updateProfile(req.user.id, req.body);
+
+    if (req.tokenHash) {
+      const { invalidateCachedSessionUser } = await import("../utils/authSessionCache.js");
+      await invalidateCachedSessionUser(req.tokenHash);
+    }
+
     return sendSuccess(res, {
       message: "Profile updated",
       data: toUserDTO(user),
@@ -28,6 +34,9 @@ class SettingsController {
     }
 
     const user = await SettingsService.updatePhoto(req.user.id, req.file.buffer);
+
+    // Invalidate cache so the next /auth/me request gets the updated photo
+
     return sendSuccess(res, {
       message: "Profile photo updated",
       data: toUserDTO(user),
