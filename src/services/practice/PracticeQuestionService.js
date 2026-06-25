@@ -314,16 +314,44 @@ class PracticeQuestionService {
 
       if (!deterministic && questions.length < limit) {
         let fallbackLimit = limit - questions.length;
-        // Fetch 3x the needed amount to account for overlaps, then slice
-        let extraQuestions = await QuestionPoolService.getRandomQuestionsBySubject(resolvedSubjectId, fallbackLimit * 3);
+        // Fetch a massive chunk just to be safe
+        let extraQuestions = await QuestionPoolService.getRandomQuestionsBySubject(resolvedSubjectId, Math.max(50, limit * 2));
         
         let existingIds = new Set(questions.map(q => q._id.toString()));
+        
+        // Pass 1: Try to respect excludedIds
         for (const eq of extraQuestions) {
           if (questions.length >= limit) break;
           if (!existingIds.has(eq._id.toString()) && !excludedIds.has(eq._id.toString())) {
             questions.push(eq);
             existingIds.add(eq._id.toString());
           }
+        }
+        
+        // Pass 2: If STILL short, ignore excludedIds to guarantee volume
+        if (questions.length < limit) {
+          for (const eq of extraQuestions) {
+            if (questions.length >= limit) break;
+            if (!existingIds.has(eq._id.toString())) {
+              questions.push(eq);
+              existingIds.add(eq._id.toString());
+            }
+          }
+        }
+        
+        // Pass 3: Ultimate guarantee directly from DB
+        if (questions.length < limit) {
+           const needed = limit - questions.length;
+           const finalFallback = await questionRepository.find({
+             subjectId: new mongoose.Types.ObjectId(resolvedSubjectId),
+             _id: { $nin: Array.from(existingIds).map(id => new mongoose.Types.ObjectId(id)) },
+             isQuarantined: { $ne: true }
+           }, { lean: true, limit: needed });
+           
+           for (const eq of finalFallback) {
+             questions.push(eq);
+             existingIds.add(eq._id.toString());
+           }
         }
       }
 
