@@ -41,7 +41,7 @@ class PracticeSessionManager {
     const questionIds = questions.map(q => q._id || q.id);
 
     const { calculateExamTime } = await import("../../utils/TimeEngine.js");
-    const totalDuration = calculateExamTime({ type: 'practice', limit: questionLimit });
+    const totalDuration = calculateExamTime({ type: 'practice', questions });
 
     const session = new PracticeSessionModel({
       userId,

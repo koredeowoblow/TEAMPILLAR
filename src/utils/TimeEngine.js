@@ -3,7 +3,7 @@ export function calculateExamTime({ type, questions }) {
   
   let total = 0;
   for (const q of questions) {
-    const diff = (q.difficulty || 'medium').toLowerCase();
+    const diff = (q.metadata?.difficulty || q.difficulty || 'medium').toLowerCase();
     if (diff === 'easy') total += 60;
     else if (diff === 'hard') total += 120;
     else total += 90; // medium default
