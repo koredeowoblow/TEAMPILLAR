@@ -12,7 +12,7 @@ const PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
 
 class BillingController {
   static async initializeSubscription(req, res) {
-    const { planId, billingCycle } = req.body;
+    const { planId, billingCycle, callbackUrl } = req.body;
     const email = req.user.email;
 
     const plan = await PricingPlan.findById(planId).lean();
@@ -25,7 +25,7 @@ class BillingController {
       email,
       amount: cycle.price,
       plan: cycle.paystackPlanCode,
-      callback_url: process.env.PAYSTACK_CALLBACK_URL,
+      callback_url: callbackUrl || process.env.PAYSTACK_CALLBACK_URL,
       metadata: {
         userId: req.user.id,
         planId: plan._id,
