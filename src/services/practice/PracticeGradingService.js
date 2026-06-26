@@ -321,17 +321,33 @@ class PracticeGradingService {
         };
 
         if (!user.analytics) user.analytics = {};
-        const lastStreakDate = user.analytics.lastStreakUpdate ? new Date(user.analytics.lastStreakUpdate) : new Date(0);
-        const today = new Date();
-        if (lastStreakDate.toDateString() !== today.toDateString()) {
-          user.analytics.streak = (user.analytics.streak || 0) + 1;
-          user.analytics.lastStreakUpdate = today;
-          try {
-            const { achievementRepository } = await import("../../repository/AchievementRepository.js");
-            await achievementRepository.updateStreak(session.userId, user.analytics.streak);
-          } catch (err) {
-            console.warn("Failed to update StreakModel:", err.message);
+
+        try {
+          const { achievementRepository } = await import("../../repository/AchievementRepository.js");
+          const streakDoc = await achievementRepository.getStreakByUser(session.userId);
+          const today = new Date();
+          let newStreakCount = 1;
+          
+          if (streakDoc) {
+            const lastStreakDate = new Date(streakDoc.updatedAt);
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (lastStreakDate.toDateString() === yesterday.toDateString()) {
+               newStreakCount = streakDoc.streakCount + 1;
+            } else if (lastStreakDate.toDateString() === today.toDateString()) {
+               newStreakCount = streakDoc.streakCount; // Already updated today
+            } else {
+               newStreakCount = 1; // Streak broken
+            }
           }
+          
+          if (!streakDoc || new Date(streakDoc.updatedAt).toDateString() !== today.toDateString()) {
+            await achievementRepository.updateStreak(session.userId, newStreakCount);
+          }
+          user.analytics.streak = newStreakCount; // For legacy reference if any
+        } catch (err) {
+          console.warn("Failed to update StreakModel:", err.message);
         }
 
         await userRepository.updateUser(session.userId, { stats: user.stats, analytics: user.analytics });

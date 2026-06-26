@@ -50,13 +50,23 @@ class AchievementController {
     let streakCount = req.body.streakCount;
 
     if (streakCount === undefined) {
-      const user = await userRepository.findById(userId);
-      streakCount = (user?.analytics?.streak || 0) + 1;
-      
-      if (user) {
-        if (!user.analytics) user.analytics = {};
-        user.analytics.streak = streakCount;
-        await userRepository.updateUser(userId, { analytics: user.analytics });
+      const { achievementRepository } = await import("../repository/AchievementRepository.js");
+      const streakDoc = await achievementRepository.getStreakByUser(userId);
+      const today = new Date();
+      streakCount = 1;
+
+      if (streakDoc) {
+        const lastStreakDate = new Date(streakDoc.updatedAt);
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        if (lastStreakDate.toDateString() === yesterday.toDateString()) {
+           streakCount = streakDoc.streakCount + 1;
+        } else if (lastStreakDate.toDateString() === today.toDateString()) {
+           streakCount = streakDoc.streakCount;
+        } else {
+           streakCount = 1;
+        }
       }
     }
 
