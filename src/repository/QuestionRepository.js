@@ -13,6 +13,7 @@ class QuestionRepository {
   async findById(id, options = {}) {
     const query = Question.findById(id);
     if (options.select) query.select(options.select);
+    if (options.populate) query.populate(options.populate);
     if (options.lean) query.lean();
     return await query.exec();
   }
@@ -23,6 +24,7 @@ class QuestionRepository {
     if (options.skip) query.skip(options.skip);
     if (options.sort) query.sort(options.sort);
     if (options.select) query.select(options.select);
+    if (options.populate) query.populate(options.populate);
     if (options.lean) query.lean();
     return await query.exec();
   }

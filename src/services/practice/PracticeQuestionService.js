@@ -66,7 +66,8 @@ class PracticeQuestionService {
           lean: true,
           select: isAdmin
             ? "_id subjectId content metadata passageId passage passageText image imageUrl options"
-            : "_id subjectId content metadata passageId passage passageText image imageUrl options.id options.text"
+            : "_id subjectId content metadata passageId passage passageText image imageUrl options.id options.text",
+          populate: "passageId"
         });
 
         const subjectIds = [...new Set(questions.map(q => q.subjectId).filter(Boolean).map(String))];
@@ -91,8 +92,8 @@ class PracticeQuestionService {
               equation: q.content?.equation,
             },
             metadata: q.metadata,
-            passageId: q.passageId,
-            passage: q.passage,
+            passageId: q.passageId && q.passageId._id ? q.passageId._id : q.passageId,
+            passage: q.passageId && q.passageId.text ? q.passageId : q.passage,
             passageText: q.passageText,
             image: q.image,
             imageUrl: q.imageUrl,
@@ -184,8 +185,8 @@ class PracticeQuestionService {
             subjectName: q.subjectName,
             content: { text: q.content?.text, image: q.content?.image, equation: q.content?.equation },
             metadata: q.metadata,
-            passageId: q.passageId,
-            passage: q.passage,
+            passageId: q.passageId && q.passageId._id ? q.passageId._id : q.passageId,
+            passage: q.passageId && q.passageId.text ? q.passageId : q.passage,
             passageText: q.passageText,
             image: q.image,
             imageUrl: q.imageUrl,
@@ -367,8 +368,8 @@ class PracticeQuestionService {
             equation: q.content?.equation,
           },
           metadata: q.metadata,
-          passageId: q.passageId,
-          passage: q.passage,
+          passageId: q.passageId && q.passageId._id ? q.passageId._id : q.passageId,
+          passage: q.passageId && q.passageId.text ? q.passageId : q.passage,
           passageText: q.passageText,
           image: q.image,
           imageUrl: q.imageUrl,
