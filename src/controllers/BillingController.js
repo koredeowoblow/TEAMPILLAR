@@ -1,6 +1,5 @@
 import { sendSuccess, sendError } from "../core/response.js";
 import { AppError } from "../utils/AppError.js";
-import fetch from "node-fetch";
 import crypto from "crypto";
 import EmailService from "../services/emailService.js";
 import LogService from "../services/LogService.js";
@@ -38,7 +37,7 @@ class BillingController {
     const initRes = await fetch(PAYSTACK_INIT_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
@@ -63,7 +62,7 @@ class BillingController {
 
   static async webhook(req, res) {
     const signature = req.headers["x-paystack-signature"];
-    const secret = process.env.PAYSTACK_SECRET || "";
+    const secret = process.env.PAYSTACK_SECRET_KEY || "";
     const payload = JSON.stringify(req.body || {});
 
     if (secret) {
@@ -79,6 +78,18 @@ class BillingController {
     }
 
     const event = req.body;
+
+    const email = event.data?.customer?.email;
+    // TODO: Track transaction references separately from subscription codes
+    // charge.success sends a transaction reference, which shouldn't be checked against subscriptionCode
+    const incomingReference = event.data?.reference || event.data?.subscription_code;
+    
+    if (email && incomingReference) {
+      const user = await User.findOne({ email }).select("subscriptionDetails");
+      if (user && user.subscriptionDetails?.paystackSubscriptionCode === incomingReference) {
+        return res.status(200).send("OK");
+      }
+    }
 
     switch (event.event) {
       case "charge.success":
@@ -221,13 +232,13 @@ class BillingController {
   }
 
   static async verify(req, res) {
-    const { reference } = req.query;
+    const { reference } = req.params;
     if (!reference) throw new AppError("Reference is required", 400);
 
     const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
       },
     });
 
