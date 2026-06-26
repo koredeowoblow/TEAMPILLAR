@@ -7,6 +7,7 @@ import { toUserDTO } from "../dto/index.js";
 import FreemiumGuard from "../services/FreemiumGuard.js";
 import { invalidateCachedSessionUser } from "../utils/authSessionCache.js";
 import mongoose from "mongoose";
+import Streak from "../models/StreakModel.js";
 
 /* ── UTME exam date: set UTME_DATE in .env as YYYY-MM-DD ── */
 function getDaysToExam() {
@@ -245,10 +246,15 @@ class StudentController {
     );
 
     // ── Streak & study time ──────────────────────────────────
-    const streak = user.analytics?.streak ?? user.analytics?.streakDays ?? 0;
-    const studyHoursTotal = user.analytics?.totalStudyHours
-      ?? user.analytics?.total_study_hours
-      ?? Math.round((total * 20) / 60 * 10) / 10; // fallback: 20min per session
+    let streak = 0;
+    try {
+      const streakDoc = await Streak.findOne({ userId: objectId }).lean();
+      if (streakDoc) streak = streakDoc.streakCount;
+    } catch (err) {
+      console.error("Error fetching streak:", err);
+    }
+    
+    const studyHoursTotal = Math.round((total * 20) / 60 * 10) / 10; // fallback: 20min per session
 
     const questionsAttempted =
       user.analytics?.questionsAttempted
