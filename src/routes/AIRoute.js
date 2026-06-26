@@ -61,4 +61,16 @@ router.post(
   tryCatch(AIController.chat),
 );
 
+router.get(
+  "/chat/sessions",
+  protectUser,
+  tryCatch(AIController.getSessions)
+);
+
+router.get(
+  "/chat/sessions/:sessionId",
+  protectUser,
+  tryCatch(AIController.getSessionMessages)
+);
+
 export default router;

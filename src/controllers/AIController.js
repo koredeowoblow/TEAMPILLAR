@@ -72,6 +72,37 @@ class AIController {
       statusCode: 200,
     });
   }
+
+  static async getSessions(req, res) {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError("Unauthorized", 401);
+    }
+    const sessions = await AIService.getChatSessions(userId);
+    return sendSuccess(res, {
+      message: "Chat sessions retrieved",
+      data: sessions,
+      statusCode: 200,
+    });
+  }
+
+  static async getSessionMessages(req, res) {
+    const { sessionId } = req.params;
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError("Unauthorized", 401);
+    }
+    try {
+      const data = await AIService.getSessionMessages(sessionId, userId);
+      return sendSuccess(res, {
+        message: "Chat messages retrieved",
+        data,
+        statusCode: 200,
+      });
+    } catch (e) {
+      throw new AppError(e.message, 404);
+    }
+  }
 }
 
 export default AIController;

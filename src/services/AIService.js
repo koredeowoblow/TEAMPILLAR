@@ -600,12 +600,42 @@ Return ONLY a valid JSON object matching this schema. The \`reply\` field MUST c
       metadata: { tokensUsed, latencyMs }
     }).catch(e => logger.error("Failed to persist AI response", { error: e.message }));
 
+    // Update session's updatedAt
+    AITutorSession.findByIdAndUpdate(session._id, { updatedAt: new Date() })
+      .catch(e => logger.error("Failed to update session updatedAt", { error: e.message }));
+
     return {
       reply: replyText,
       suggestedFollowUps,
       topicsReferenced,
       sessionId: session._id
     };
+  }
+
+  static async getChatSessions(userId) {
+    const sessions = await AITutorSession.find({ studentId: userId })
+      .sort({ updatedAt: -1 })
+      .limit(30)
+      .lean();
+    
+    const sessionsWithLastMessage = await Promise.all(sessions.map(async (session) => {
+      const lastMessage = await AITutorMessage.findOne({ sessionId: session._id })
+        .sort({ createdAt: -1 })
+        .lean();
+      return { ...session, lastMessage };
+    }));
+    return sessionsWithLastMessage;
+  }
+
+  static async getSessionMessages(sessionId, userId) {
+    const session = await AITutorSession.findOne({ _id: sessionId, studentId: userId }).lean();
+    if (!session) {
+      throw new Error("Session not found");
+    }
+    const messages = await AITutorMessage.find({ sessionId })
+      .sort({ createdAt: 1 })
+      .lean();
+    return { session, messages };
   }
 }
 
