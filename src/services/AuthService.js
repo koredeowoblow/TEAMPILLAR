@@ -7,7 +7,7 @@ import { AppError } from "../utils/AppError.js";
 import { userRepository } from "../repository/UserRepository.js";
 import AuthRepository from "../repository/AuthRepository.js";
 import { logger } from "../core/logger.js";
-import { invalidateCachedSessionUser } from "../utils/authSessionCache.js";
+import { invalidateCachedSessionUser, invalidateAllUserSessionsCache } from "../utils/authSessionCache.js";
 
 const authRepository = new AuthRepository();
 
@@ -397,6 +397,15 @@ class AuthService {
     if (!userExists) throw new AppError("Not found", 404);
 
     return await userRepository.updateUser(userId, profileData);
+  }
+
+  static async updateUserByAdmin(userId, profileData) {
+    const userExists = await userRepository.findById(userId, { lean: true, select: "_id" });
+    if (!userExists) throw new AppError("Not found", 404);
+
+    const updatedUser = await userRepository.updateUser(userId, profileData);
+    await invalidateAllUserSessionsCache(userId);
+    return updatedUser;
   }
 
   static async toggleAdminStatus(userId) {
