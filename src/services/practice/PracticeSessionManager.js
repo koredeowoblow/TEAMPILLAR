@@ -131,6 +131,7 @@ class PracticeSessionManager {
       result.questions = validIds.length > 0
         ? await (await import("../../models/QuestionModel.js")).default
             .find({ _id: { $in: validIds } })
+            .populate("passageId")
             .lean()
         : [];
     } else {
