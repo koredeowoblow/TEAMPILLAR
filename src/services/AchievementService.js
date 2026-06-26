@@ -78,16 +78,16 @@ class AchievementService {
     const { userRepository } = await import("../repository/UserRepository.js");
     const parsedLimit = limit ? parseInt(limit, 10) : 10;
     
-    // Fetch users sorted by their predicted score or highest mock score
+    // Fetch users sorted by their highest mock score
     const topUsers = await userRepository.find({}, {
-       sort: { "stats.predictedScore": -1, "stats.highestMockScore": -1 },
+       sort: { "stats.highestMockScore": -1 },
        limit: parsedLimit,
-       select: "firstName lastName stats photoUrl profilePicture username email privacySettings",
+       select: "firstName lastName name stats photoUrl profilePicture username email privacySettings",
        lean: true
     });
 
     const board = topUsers.map(user => {
-       const score = user.stats?.predictedScore || user.stats?.highestMockScore || 0;
+       const score = user.stats?.highestMockScore || 0;
        return {
          userId: user._id,
          user: user, 
