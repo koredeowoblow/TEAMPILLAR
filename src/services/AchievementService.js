@@ -6,7 +6,26 @@ class AchievementService {
     const { practiceRepository } = await import("../repository/PracticeRepository.js");
     const sessionCount = await practiceRepository.count({ userId, sessionStatus: "COMPLETED" }) || 0;
     const streakDoc = await achievementRepository.getStreakByUser(userId);
-    const streakCount = streakDoc ? streakDoc.streakCount : 0;
+    let streakCount = 1;
+    const today = new Date();
+
+    if (streakDoc) {
+      const lastStreakDate = new Date(streakDoc.updatedAt);
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      if (lastStreakDate.toDateString() === yesterday.toDateString()) {
+         streakCount = streakDoc.streakCount + 1;
+      } else if (lastStreakDate.toDateString() === today.toDateString()) {
+         streakCount = streakDoc.streakCount;
+      } else {
+         streakCount = 1;
+      }
+    }
+
+    if (!streakDoc || new Date(streakDoc.updatedAt).toDateString() !== today.toDateString()) {
+      await achievementRepository.updateStreak(userId, streakCount);
+    }
 
     const BADGES = [
       { id: "m1", title: "First Steps", description: "Complete your first practice session.", threshold: 1, field: "sessionCount" },

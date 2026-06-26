@@ -248,10 +248,31 @@ class StudentController {
     // ── Streak & study time ──────────────────────────────────
     let streak = 0;
     try {
-      const streakDoc = await Streak.findOne({ userId: objectId }).lean();
-      if (streakDoc) streak = streakDoc.streakCount;
+      const { achievementRepository } = await import("../repository/AchievementRepository.js");
+      const streakDoc = await achievementRepository.getStreakByUser(user.id);
+      const today = new Date();
+      streak = 1;
+
+      if (streakDoc) {
+        const lastStreakDate = new Date(streakDoc.updatedAt);
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        if (lastStreakDate.toDateString() === yesterday.toDateString()) {
+           streak = streakDoc.streakCount + 1;
+        } else if (lastStreakDate.toDateString() === today.toDateString()) {
+           streak = streakDoc.streakCount;
+        } else {
+           streak = 1;
+        }
+      }
+      
+      // Auto-sync if it needs to be updated
+      if (!streakDoc || new Date(streakDoc.updatedAt).toDateString() !== today.toDateString()) {
+         await achievementRepository.updateStreak(user.id, streak);
+      }
     } catch (err) {
-      console.error("Error fetching streak:", err);
+      console.error("Error fetching/syncing streak:", err);
     }
     
     const studyHoursTotal = Math.round((total * 20) / 60 * 10) / 10; // fallback: 20min per session
