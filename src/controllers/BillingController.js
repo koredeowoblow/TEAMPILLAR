@@ -24,7 +24,7 @@ class BillingController {
     const body = {
       email,
       amount: cycle.price,
-      plan: cycle.paystackPlanCode,
+      ...(cycle.paystackPlanCode && !cycle.paystackPlanCode.endsWith('_code') && { plan: cycle.paystackPlanCode }),
       callback_url: callbackUrl || process.env.PAYSTACK_CALLBACK_URL,
       metadata: {
         userId: req.user.id,
