@@ -27,12 +27,15 @@ export function toLeaderboardDTO(entry) {
   if (!entry) return null;
   const l = entry.toObject ? entry.toObject() : entry;
 
-  const userObj = l.userId && typeof l.userId === 'object' ? l.userId : null;
+  const userObj = l.user || (l.userId && typeof l.userId === 'object' ? l.userId : null);
+  
+  const isPrivate = userObj?.privacySettings?.profileVisibility === 'private';
+  
   return {
-    id: String(l._id),
+    id: String(l._id || l.id || Math.random().toString(36).substr(2, 9)),
     user_id: userObj ? String(userObj._id) : String(l.userId),
-    userName: userObj ? userObj.name : "Student",
-    userPhoto: userObj ? userObj.photo : null,
+    userName: isPrivate ? "Hidden Scholar" : (userObj ? (userObj.firstName ? `${userObj.firstName} ${userObj.lastName}` : userObj.name || userObj.username) : "Student"),
+    userPhoto: isPrivate ? null : (userObj ? (userObj.photoUrl || userObj.profilePicture || userObj.photo) : null),
     score: l.score,
     rank: l.rank || 0,
     updated_at: l.updatedAt,

@@ -75,8 +75,26 @@ class AchievementService {
    * Get ranked leaderboard
    */
   static async getLeaderboard(limit) {
+    const { userRepository } = await import("../repository/UserRepository.js");
     const parsedLimit = limit ? parseInt(limit, 10) : 10;
-    const board = await achievementRepository.getLeaderboard(parsedLimit);
+    
+    // Fetch users sorted by their predicted score or highest mock score
+    const topUsers = await userRepository.find({}, {
+       sort: { "stats.predictedScore": -1, "stats.highestMockScore": -1 },
+       limit: parsedLimit,
+       select: "firstName lastName stats photoUrl profilePicture username email privacySettings",
+       lean: true
+    });
+
+    const board = topUsers.map(user => {
+       const score = user.stats?.predictedScore || user.stats?.highestMockScore || 0;
+       return {
+         userId: user._id,
+         user: user, 
+         score: score
+       };
+    }).filter(u => u.score > 0)
+      .sort((a, b) => b.score - a.score);
 
     let currentRank = 1;
     for (let i = 0; i < board.length; i++) {
