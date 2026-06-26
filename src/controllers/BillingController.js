@@ -45,7 +45,9 @@ class BillingController {
     });
 
     const data = await initRes.json();
-    if (!initRes.ok) throw new AppError("Payment initialization failed", 400);
+    if (!initRes.ok) {
+      throw new AppError(`Paystack Error: ${data.message || "Payment initialization failed"}`, 400);
+    }
 
     LogService.logAction({
       userId: req.user.id,
