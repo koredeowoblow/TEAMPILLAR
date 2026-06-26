@@ -41,13 +41,13 @@ class AchievementController {
   }
 
   static async updateStreak(req, res) {
-    const userId = req.body.userId || req.user?.id;
+    const userId = req.body?.userId || req.user?.id;
 
     if (!userId) {
       throw new AppError("Authentication required", 401);
     }
 
-    let streakCount = req.body.streakCount;
+    let streakCount = req.body?.streakCount;
 
     if (streakCount === undefined) {
       const { achievementRepository } = await import("../repository/AchievementRepository.js");
