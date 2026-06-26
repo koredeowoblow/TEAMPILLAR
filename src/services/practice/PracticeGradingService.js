@@ -34,6 +34,13 @@ class PracticeGradingService {
     }
 
     const total = selected.reduce((s, e) => s + e.score, 0);
+    
+    // Adaptive scoring: if less than 4 subjects, extrapolate to 400 based on average
+    if (selected.length > 0 && selected.length < 4) {
+      const averageScore = total / selected.length;
+      return Math.round(Math.min(400, averageScore * 4));
+    }
+    
     return Math.round(Math.min(400, total));
   }
 
@@ -293,8 +300,10 @@ class PracticeGradingService {
             const rawScore = mastery.totalMastery / mastery.distinctTopics;
             const isConfident = mastery.totalAttempted >= MIN_QUESTIONS && mastery.distinctTopics >= MIN_TOPICS;
 
+            // Always include in userSubjectScores to make it adaptive
+            userSubjectScores[s.name] = rawScore;
+
             if (isConfident) {
-              userSubjectScores[s.name] = rawScore;
               confidentSubjectsCount++;
             }
 
