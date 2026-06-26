@@ -1,5 +1,6 @@
 import { getRedisClient } from "../config/redis.js";
 import { logger } from "../core/logger.js";
+import AuthRepository from "../repository/AuthRepository.js";
 
 const sessionCacheKey = (tokenHash) => `auth:${tokenHash}`;
 const touchCacheKey = (sessionId) => `touch:${sessionId}`;
@@ -37,6 +38,24 @@ export const invalidateCachedSessionUser = async (tokenHash) => {
     await client.del(sessionCacheKey(tokenHash));
   } catch (err) {
     logger.warn(`Redis session delete failed: ${err.message}`);
+  }
+};
+
+export const invalidateAllUserSessionsCache = async (userId) => {
+  try {
+    const authRepo = new AuthRepository();
+    const sessions = await authRepo.findByUserId(userId);
+    if (!sessions || sessions.length === 0) return;
+    
+    const client = await getRedisClient();
+    if (!client) return;
+
+    const keys = sessions.map(s => sessionCacheKey(s.tokenHash)).filter(Boolean);
+    if (keys.length > 0) {
+      await client.del(keys);
+    }
+  } catch (err) {
+    logger.warn(`Redis all user sessions delete failed: ${err.message}`);
   }
 };
 

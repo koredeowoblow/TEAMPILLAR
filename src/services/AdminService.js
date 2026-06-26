@@ -8,6 +8,7 @@ import { escapeRegex } from "../utils/stringUtils.js";
 import cache from "../utils/cache.js";
 import AITutorSession from "../models/AITutorSessionModel.js";
 import AITutorMessage from "../models/AITutorMessageModel.js";
+import { invalidateAllUserSessionsCache } from "../utils/authSessionCache.js";
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -477,6 +478,7 @@ class AdminService {
   static async updateStudent(id, data) {
     const updated = await User.findByIdAndUpdate(id, data, { new: true });
     await cache.del("admin:dashboard:stats");
+    await invalidateAllUserSessionsCache(id);
     return updated;
   }
 

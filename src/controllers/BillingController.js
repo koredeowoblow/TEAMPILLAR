@@ -7,6 +7,7 @@ import { logger } from "../core/logger.js";
 import User from "../models/UserModel.js";
 
 import PricingPlan from "../models/PricingPlanModel.js";
+import { invalidateCachedSessionUser } from "../utils/authSessionCache.js";
 
 const PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
 
@@ -265,6 +266,10 @@ class BillingController {
       };
     }
     await user.save();
+
+    if (req.tokenHash) {
+      await invalidateCachedSessionUser(req.tokenHash);
+    }
 
     // Send confirmation email
     try {
