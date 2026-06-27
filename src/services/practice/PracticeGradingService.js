@@ -322,11 +322,25 @@ class PracticeGradingService {
         const predictedScore = PracticeGradingService.computeUTMEScoreFromMap(userSubjectScores);
         const isPredictedScoreConfident = confidentSubjectsCount >= 4;
 
+        // ── Session threshold gate ──────────────────────────────────────────
+        // Only surface a predicted score after the student has completed the
+        // minimum number of sessions. Before that, keep score = 0 so the UI
+        // stays in the "Learning / Analyzing" state rather than showing a
+        // premature range after just one attempt.
+        const MIN_SESSIONS = CONSTANTS.PREDICTION?.MIN_SESSIONS || 3;
+        const completedSessionCount = await practiceRepository.count({
+          userId: session.userId,
+          sessionStatus: "COMPLETED",
+        });
+        const hasEnoughSessions = completedSessionCount >= MIN_SESSIONS;
+
         user.stats = {
           ...(user.stats || {}),
-          predictedScore,
-          isPredictedScoreConfident,
-          predictedScoreDetails
+          predictedScore: hasEnoughSessions ? predictedScore : 0,
+          isPredictedScoreConfident: hasEnoughSessions && isPredictedScoreConfident,
+          predictedScoreDetails,
+          sessionsCompleted: completedSessionCount,
+          sessionsNeededForPrediction: Math.max(0, MIN_SESSIONS - completedSessionCount),
         };
 
         if (!user.analytics) user.analytics = {};

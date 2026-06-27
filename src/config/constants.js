@@ -16,6 +16,7 @@ export const CONSTANTS = {
   },
   PREDICTION: {
     MIN_QUESTIONS_PER_SUBJECT: 30,
-    MIN_TOPICS_PER_SUBJECT: 5
+    MIN_TOPICS_PER_SUBJECT: 5,
+    MIN_SESSIONS: 4   // Student must complete at least this many sessions before a score is shown
   }
 };
