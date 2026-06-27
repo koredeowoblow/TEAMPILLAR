@@ -376,20 +376,27 @@ class MockTestService {
     await session.save();
 
     // Update user stats atomically
-    const prevTotal = user.stats?.totalMocksTaken || 0;
-    const prevAvg = user.stats?.avgMockScore || 0;
-    const newTotal = prevTotal + 1;
-    const newAvg = Math.round(((prevAvg * prevTotal) + compositeScore) / newTotal);
-    const prevHigh = user.stats?.highestMockScore || 0;
-
     const UserModel = (await import("../models/UserModel.js")).default;
-    await UserModel.findByIdAndUpdate(userId, {
-      $set: {
-        'stats.totalMocksTaken': newTotal,
-        'stats.avgMockScore': newAvg,
-        'stats.highestMockScore': Math.max(prevHigh, compositeScore),
+    await UserModel.updateOne(
+      { _id: userId },
+      {
+        $inc: {
+          "stats.totalMocksTaken": 1
+        },
+        $max: {
+          "stats.highestMockScore": compositeScore
+        }
       }
-    });
+    );
+
+    // Invalidate leaderboard cache so next request gets fresh data
+    try {
+      if (redisClient) {
+        await redisClient.del("leaderboard:top10");
+      }
+    } catch (err) {
+      console.error("[Leaderboard Cache] Invalidation failed:", err.message);
+    }
 
     try {
       const { addGradingJob } = await import("../queues/GradingQueue.js");

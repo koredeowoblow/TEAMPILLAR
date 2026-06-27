@@ -8,6 +8,37 @@ import AdaptiveEngineService from "../AdaptiveEngineService.js";
 import { AppError } from "../../utils/AppError.js";
 import cache from "../../utils/cache.js";
 
+/**
+ * Computes a blended predicted JAMB score from two signals:
+ * - mockTestAverage: average score across all completed mock tests (out of 400)
+ * - practiceProjection: mastery-based projection from practice sessions (out of 400)
+ * - mockTestCount: number of completed mock tests the student has taken
+ *
+ * Weighting: mock tests 60%, practice projection 40%
+ * Clamp: result is always between 0 and 400
+ */
+const computeBlendedPrediction = (mockTestAverage, practiceProjection, mockTestCount) => {
+
+  // No mock test data and no practice data — return null (UI shows placeholder)
+  if (mockTestCount === 0 && (!practiceProjection || practiceProjection === 0)) {
+    return null;
+  }
+
+  // Only mock test data available — no practice projection yet
+  if (!practiceProjection || practiceProjection === 0) {
+    return Math.round(Math.min(400, Math.max(0, mockTestAverage)));
+  }
+
+  // Only practice data available — no mock tests taken yet
+  if (mockTestCount === 0 || !mockTestAverage) {
+    return Math.round(Math.min(400, Math.max(0, practiceProjection)));
+  }
+
+  // Both signals available — full blend
+  const blended = (mockTestAverage * 0.6) + (practiceProjection * 0.4);
+  return Math.round(Math.min(400, Math.max(0, blended)));
+};
+
 class PracticeGradingService {
   static computeUTMEScoreFromMap(subjectScores = {}) {
     const entries = Object.keys(subjectScores).map((k) => ({
@@ -319,8 +350,50 @@ class PracticeGradingService {
           }
         });
 
-        const predictedScore = PracticeGradingService.computeUTMEScoreFromMap(userSubjectScores);
+        const practiceProjection = PracticeGradingService.computeUTMEScoreFromMap(userSubjectScores);
         const isPredictedScoreConfident = confidentSubjectsCount >= 4;
+
+        // Fetch mock test performance for blended prediction
+        const completedMockTests = await PracticeSessionModel.find(
+          { 
+            userId: session.userId,
+            sessionStatus: "COMPLETED",
+            isMockTest: true
+          },
+          { compositeScore: 1, _id: 0 }
+        ).lean();
+
+        const mockTestCount = completedMockTests.length;
+        const mockTestAverage = mockTestCount > 0
+          ? completedMockTests.reduce((sum, s) => sum + (s.compositeScore || 0), 0) / mockTestCount
+          : 0;
+
+        const blendedScore = computeBlendedPrediction(
+          mockTestAverage,
+          practiceProjection,
+          mockTestCount
+        );
+
+        const predictedScore = blendedScore;
+
+        // Compute band width based on mock test score variance
+        // Wider band = inconsistent scores, narrower band = consistent scores
+        let bandWidth = 25; // default when no mock data
+
+        if (mockTestCount >= 2) {
+          const scores = completedMockTests.map(s => s.compositeScore || 0);
+          const maxScore = Math.max(...scores);
+          const minScore = Math.min(...scores);
+          const variance = maxScore - minScore;
+
+          if (variance > 80) bandWidth = 30;
+          else if (variance > 40) bandWidth = 20;
+          else bandWidth = 10;
+        }
+
+        // Apply band around blended prediction
+        predictedScoreDetails.min = Math.max(0, (predictedScore || 0) - bandWidth);
+        predictedScoreDetails.max = Math.min(400, (predictedScore || 0) + bandWidth);
 
         // ── Session threshold gate ──────────────────────────────────────────
         // Only surface a predicted score after the student has completed the

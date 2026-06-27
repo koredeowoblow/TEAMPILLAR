@@ -163,6 +163,27 @@ class AchievementService {
    * Get ranked leaderboard
    */
   static async getLeaderboard(limit) {
+    const CACHE_KEY = "leaderboard:top10";
+    const CACHE_TTL = 60; // seconds
+
+    const { getRedisClient } = await import("../config/redis.js");
+    const redisClient = await getRedisClient();
+
+    // 1. Try Redis first
+    try {
+      if (redisClient) {
+        const cached = await redisClient.get(CACHE_KEY);
+        if (cached) {
+          const board = JSON.parse(cached);
+          return board;
+        }
+      }
+    } catch (redisErr) {
+      // Redis is down — log and fall through to MongoDB
+      console.error("[Leaderboard Cache] Redis read failed:", redisErr.message);
+    }
+
+    // 2. Cache miss — query MongoDB exactly as before
     const { userRepository } = await import("../repository/UserRepository.js");
     const parsedLimit = limit ? parseInt(limit, 10) : 10;
     
@@ -190,6 +211,21 @@ class AchievementService {
         currentRank = i + 1;
       }
       board[i].rank = currentRank;
+    }
+
+    // 3. Store result in Redis before returning
+    try {
+      if (redisClient) {
+        await redisClient.set(
+          CACHE_KEY,
+          JSON.stringify(board), 
+          "EX",
+          CACHE_TTL
+        );
+      }
+    } catch (redisErr) {
+      // Redis write failed — not critical, just log it
+      console.error("[Leaderboard Cache] Redis write failed:", redisErr.message);
     }
 
     return board;
