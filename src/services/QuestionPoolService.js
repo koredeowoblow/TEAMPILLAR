@@ -193,11 +193,29 @@ class QuestionPoolService {
       return this.fallbackMongoSample(subjectId, null, limit);
     }
 
-    if (!ids || ids.length === 0) {
-      return this.fallbackMongoSample(subjectId, null, limit);
+    let docs = await this.getQuestionDocuments(ids);
+    
+    // If Redis had stale IDs and we fell short of the required limit, 
+    // fetch directly from MongoDB to guarantee the exact amount without duplicates.
+    if (docs.length < limit) {
+      const existingIds = docs.map(d => d._id);
+      const remainingLimit = limit - docs.length;
+      
+      const extraDocs = await Question.find({
+        subjectId: subjectId,
+        isQuarantined: { $ne: true },
+        _id: { $nin: existingIds }
+      }).limit(Math.max(remainingLimit * 3, 50)).lean();
+      
+      for (let i = extraDocs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [extraDocs[i], extraDocs[j]] = [extraDocs[j], extraDocs[i]];
+      }
+      
+      docs = [...docs, ...extraDocs.slice(0, remainingLimit)];
     }
-
-    return this.getQuestionDocuments(ids);
+    
+    return docs;
   }
 
   /**
