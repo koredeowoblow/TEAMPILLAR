@@ -56,7 +56,9 @@ class AnalyticsController {
       }
     });
 
-    const questions = await Question.find({ _id: { $in: questionIds } }).lean();
+    const MAX_IN_SIZE = 100;
+    const safeQuestionIds = questionIds.slice(0, MAX_IN_SIZE);
+    const questions = await Question.find({ _id: { $in: safeQuestionIds } }).lean();
     const questionMap = new Map(questions.map(q => [String(q._id), q]));
 
     return { sessions, questionMap };
@@ -161,7 +163,9 @@ class AnalyticsController {
     });
 
     const subjectIds = Object.keys(subjectStats);
-    const subjects = await Subject.find({ _id: { $in: subjectIds } }).lean();
+    const MAX_IN_SIZE = 100;
+    const safeSubjectIds = subjectIds.slice(0, MAX_IN_SIZE);
+    const subjects = await Subject.find({ _id: { $in: safeSubjectIds } }).lean();
     const subjectMap = new Map(subjects.map(sub => [String(sub._id), sub]));
 
     const data = [];
@@ -232,7 +236,9 @@ class AnalyticsController {
     });
 
     const uniqueSubjectIds = Array.from(new Set(Object.values(topicGroups).map(t => String(t.subjectId)).filter(Boolean)));
-    const topicsSubjects = await Subject.find({ _id: { $in: uniqueSubjectIds } }).lean();
+    const MAX_IN_SIZE = 100;
+    const safeUniqueSubjectIds = uniqueSubjectIds.slice(0, MAX_IN_SIZE);
+    const topicsSubjects = await Subject.find({ _id: { $in: safeUniqueSubjectIds } }).lean();
     const topicsSubjectMap = new Map(topicsSubjects.map(sub => [String(sub._id), sub]));
 
     const data = [];

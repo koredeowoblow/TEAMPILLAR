@@ -153,7 +153,12 @@ const healthCheckHandler = measurePerformance(async (_req, res) => {
 app.get("/health", healthCheckHandler);
 
 // Parsers
-app.use(express.json({ limit: "512kb" }));
+app.use(express.json({ 
+  limit: "512kb",
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true, limit: "512kb" }));
 
 const apiRouter = express.Router();

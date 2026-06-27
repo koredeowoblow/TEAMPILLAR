@@ -37,6 +37,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["free", "active", "expired", "cancelled", "paid"],
       default: "free",
+      index: true,
     },
     proExpiresAt: { type: Date, default: null },
     isActive: { type: Boolean, default: true },
@@ -86,7 +87,7 @@ const UserSchema = new mongoose.Schema(
       totalViolations: { type: Number, default: 0 },
       suspendedUntil: { type: Date, default: null }
     },
-    lastActive: { type: Date, default: Date.now },
+    lastActive: { type: Date, default: Date.now, index: true },
   },
   {
     timestamps: true,

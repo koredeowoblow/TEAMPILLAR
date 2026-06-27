@@ -3,6 +3,7 @@ import { logger } from "../core/logger.js";
 import "../config/env.js";
 
 import bullmqRedis from "../config/bullmqRedis.js";
+import AdminService from "../services/AdminService.js";
 
 export const gradingQueue = new Queue("grading", { connection: bullmqRedis, sharedConnection: true,});
 export const scoreQueue = new Queue("scoring", { connection: bullmqRedis, sharedConnection: true,});
@@ -77,7 +78,19 @@ export const scoreWorker = new Worker("scoring", async (job) => {
     // Invalidate dashboard stats incrementally to force a rebuild on next read
     const { getRedisClient } = await import("../config/redis.js");
     const redisClient = await getRedisClient();
-    await redisClient.del('admin:dashboard:stats:v1').catch(() => {});
+    setImmediate(async () => {
+      try {
+        const freshStats = await AdminService.computeDashboardStats();
+        await redisClient.set(
+          "admin:dashboard:stats:v1",
+          JSON.stringify(freshStats),
+          "EX",
+          300
+        );
+      } catch (err) {
+        console.error("[Cache] Background stats recompute failed:", err);
+      }
+    });
     
     logger.info(`Successfully processed score job for session ${sessionId}`);
   } catch (error) {

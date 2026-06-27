@@ -66,12 +66,10 @@ class BillingController {
   static async webhook(req, res) {
     const signature = req.headers["x-paystack-signature"];
     const secret = process.env.PAYSTACK_SECRET_KEY || "";
-    const payload = JSON.stringify(req.body || {});
-
     if (secret) {
       const hash = crypto
         .createHmac("sha512", secret)
-        .update(payload)
+        .update(req.rawBody)
         .digest("hex");
       if (hash !== signature) {
         return res
