@@ -117,8 +117,6 @@ class StudentService {
       if (!user.onboarding) user.onboarding = {};
       user.onboarding.targetScoreSet = true;
       user.onboarding.targetScore = targetScore;
-      if (!user.stats) user.stats = {};
-      user.stats.predictedScore = targetScore;
     }
 
     if (studyHours !== undefined) {
@@ -340,8 +338,8 @@ class StudentService {
     return {
       name: (user.name || "Student").split(" ")[0],
       avgScore,
-      predictedScore: user.stats?.predictedScore || 0,
-      isPredictedScoreConfident: user.stats?.isPredictedScoreConfident || false,
+      predictedScore: questionsAttempted > 0 ? (user.stats?.predictedScore || 0) : 0,
+      isPredictedScoreConfident: questionsAttempted > 0 ? (user.stats?.isPredictedScoreConfident || false) : false,
       predictedScoreDetails: user.stats?.predictedScoreDetails || null,
       targetScore,
       progressPercent,
