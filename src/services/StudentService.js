@@ -341,6 +341,7 @@ class StudentService {
       predictedScore: questionsAttempted > 0 ? (user.stats?.predictedScore || 0) : 0,
       isPredictedScoreConfident: questionsAttempted > 0 ? (user.stats?.isPredictedScoreConfident || false) : false,
       predictedScoreDetails: user.stats?.predictedScoreDetails || null,
+      sessionsNeeded: user.stats?.sessionsNeededForPrediction || 0,
       targetScore,
       progressPercent,
       questionsAttempted,
