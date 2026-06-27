@@ -80,7 +80,7 @@ export const scoreWorker = new Worker("scoring", async (job) => {
     const redisClient = await getRedisClient();
     setImmediate(async () => {
       try {
-        const freshStats = await AdminService.computeDashboardStats();
+        const freshStats = await AdminService.getDashboardStats();
         await redisClient.set(
           "admin:dashboard:stats:v1",
           JSON.stringify(freshStats),
