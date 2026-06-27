@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
 import { AppError } from "../utils/AppError.js";
 import { userRepository } from "../repository/UserRepository.js";
