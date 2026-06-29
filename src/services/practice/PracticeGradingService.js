@@ -34,8 +34,12 @@ const computeBlendedPrediction = (mockTestAverage, practiceProjection, mockTestC
     return Math.round(Math.min(400, Math.max(0, practiceProjection)));
   }
 
-  // Both signals available — full blend
-  const blended = (mockTestAverage * 0.6) + (practiceProjection * 0.4);
+  // Both signals available — give much higher weight to mock tests to prevent practice session inflation
+  let mockWeight = 0.8;
+  if (mockTestCount >= 5) mockWeight = 0.9;
+  
+  const practiceWeight = 1 - mockWeight;
+  const blended = (mockTestAverage * mockWeight) + (practiceProjection * practiceWeight);
   return Math.round(Math.min(400, Math.max(0, blended)));
 };
 
@@ -400,12 +404,24 @@ class PracticeGradingService {
         // minimum number of sessions. Before that, keep score = 0 so the UI
         // stays in the "Learning / Analyzing" state rather than showing a
         // premature range after just one attempt.
-        const MIN_SESSIONS = CONSTANTS.PREDICTION?.MIN_SESSIONS || 3;
         const completedSessionCount = await practiceRepository.count({
           userId: session.userId,
           sessionStatus: "COMPLETED",
         });
-        const hasEnoughSessions = completedSessionCount >= MIN_SESSIONS;
+        const practiceCount = Math.max(0, completedSessionCount - mockTestCount);
+        
+        const hasEnoughSessions = 
+          (mockTestCount >= 5) || 
+          (mockTestCount >= 3 && practiceCount >= 5) || 
+          (practiceCount >= 10);
+
+        let sessionsNeededForPrediction = 0;
+        if (!hasEnoughSessions) {
+          const path1 = Math.max(0, 5 - mockTestCount);
+          const path2 = Math.max(0, 3 - mockTestCount) + Math.max(0, 5 - practiceCount);
+          const path3 = Math.max(0, 10 - practiceCount);
+          sessionsNeededForPrediction = Math.min(path1, path2, path3);
+        }
 
         user.stats = {
           ...(user.stats || {}),
@@ -413,7 +429,7 @@ class PracticeGradingService {
           isPredictedScoreConfident: hasEnoughSessions && isPredictedScoreConfident,
           predictedScoreDetails,
           sessionsCompleted: completedSessionCount,
-          sessionsNeededForPrediction: Math.max(0, MIN_SESSIONS - completedSessionCount),
+          sessionsNeededForPrediction,
         };
 
         if (!user.analytics) user.analytics = {};
