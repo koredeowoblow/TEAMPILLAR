@@ -335,13 +335,31 @@ class StudentService {
 
     const nextBadge = this.deriveNextBadge(streak, total);
 
+    const mockTestsTaken = user.stats?.totalMocksTaken || 0;
+    const practiceCount = Math.max(0, (user.stats?.sessionsCompleted || total) - mockTestsTaken);
+    
+    const hasEnoughSessions = 
+      (mockTestsTaken >= 5) || 
+      (mockTestsTaken >= 3 && practiceCount >= 5) || 
+      (practiceCount >= 10);
+
+    let fallbackSessionsNeeded = 0;
+    if (!hasEnoughSessions) {
+      const path1 = Math.max(0, 5 - mockTestsTaken);
+      const path2 = Math.max(0, 3 - mockTestsTaken) + Math.max(0, 5 - practiceCount);
+      const path3 = Math.max(0, 10 - practiceCount);
+      fallbackSessionsNeeded = Math.min(path1, path2, path3);
+    }
+    
+    const finalSessionsNeeded = hasEnoughSessions ? 0 : (user.stats?.sessionsNeededForPrediction || fallbackSessionsNeeded);
+
     return {
       name: (user.name || "Student").split(" ")[0],
       avgScore,
       predictedScore: total > 0 ? (user.stats?.predictedScore || 0) : 0,
       isPredictedScoreConfident: total > 0 ? (user.stats?.isPredictedScoreConfident || false) : false,
       predictedScoreDetails: user.stats?.predictedScoreDetails || null,
-      sessionsNeeded: user.stats?.sessionsNeededForPrediction || 0,
+      sessionsNeeded: finalSessionsNeeded,
       targetScore,
       progressPercent,
       questionsAttempted,
