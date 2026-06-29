@@ -133,6 +133,12 @@ class BillingController {
         // If it was a one-time payment that should upgrade them
         if (metadata?.tier === "pro") {
           user.subscriptionStatus = "paid";
+          user.subscriptionDetails = {
+            ...user.subscriptionDetails,
+            reference: data.reference,
+            nextPaymentDate: null,
+            billingCycle: metadata?.billingCycle || 'one-time'
+          };
           await user.save();
         }
 
@@ -256,13 +262,12 @@ class BillingController {
 
     // Update user subscription
     user.subscriptionStatus = "active";
-    if (paystackSubCode) {
-      user.subscriptionDetails = {
-        paystackSubscriptionCode: paystackSubCode,
-        nextPaymentDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default to 30 days
-        billingCycle: metadata?.billingCycle || "monthly",
-      };
-    }
+    user.subscriptionDetails = {
+      paystackSubscriptionCode: paystackSubCode || user.subscriptionDetails?.paystackSubscriptionCode,
+      reference: reference,
+      nextPaymentDate: paystackSubCode ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null,
+      billingCycle: metadata?.billingCycle || "monthly",
+    };
     await user.save();
 
     if (req.tokenHash) {

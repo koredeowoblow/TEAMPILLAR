@@ -46,8 +46,9 @@ const UserSchema = new mongoose.Schema(
     lastSubjectUpdate: { type: Date, default: null },
     subscriptionDetails: {
       paystackSubscriptionCode: String,
+      reference: String,
       nextPaymentDate: Date,
-      billingCycle: String, // 'monthly' | 'yearly'
+      billingCycle: String, // 'monthly' | 'yearly' | 'one-time'
     },
     limits: {
       dailyAICount: { type: Number, default: 0 },
